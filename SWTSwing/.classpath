@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="Eclipse SWT/common"/>
+	<classpathentry kind="src" path="Eclipse SWT/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Accessibility/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT AWT/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Browser/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Custom Widgets/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT PI/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Printing/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Program/swing"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="/org.eclipse.swt"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

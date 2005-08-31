@@ -1,0 +1,39 @@
+Widget
+  Caret
+  Control
+    Button                   CArrowButton, JToggleButton, JRadioButton, JCheckBox, JButton
+    Label                    JLabel, JSeparator
+    Link
+    ProgressBar              JProgressBar
+    Sash                     JSplitPane
+    Scale                    JSlider
+    Scrollable
+      Composite              ScrollPane (PI), JPanel
+        Browser
+        Canvas
+          Decorations
+            Shell            JFrame, JDialog
+        Combo                JPanel (JTextField + JList), JComboBox
+        CoolBar
+        Group                JPanel (w/ TitledBorder)
+        Spinner
+        TabFolder            JLayeredPane
+        Table                JTable
+        ToolBar              JToolBar
+        Tree                 JTree
+      List                   JList
+      Text                   JTextArea, JPasswordField
+    Slider                   JScrollBar
+  Item
+    CoolItem                 CCoolItem
+    MenuItem                 JSeparator, JMenu, JMenuItem, JCheckBoxMenuItem, JRadioButtonMenuItem
+    TabItem
+    TableColumn
+    TableItem
+    ToolItem                 JButton, JToggleButton, CComboButton, JToolBar.Separator
+    TrayItem
+    TreeColumn
+    TreeItem
+  Menu                       JPopupMenu, JMenuBar, JMenu
+  ScrollBar                  parent.getXxxScrollBar()
+  Tray

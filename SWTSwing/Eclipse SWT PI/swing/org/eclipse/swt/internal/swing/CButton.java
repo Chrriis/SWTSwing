@@ -14,7 +14,6 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -27,7 +26,6 @@ import org.eclipse.swt.widgets.Button;
 class CButtonCommon {
 
   public static void applyStyle(AbstractButton component, int style) {
-    component.setBorder(BorderFactory.createLineBorder(component.getBackground().darker()));
     component.setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
   }
 

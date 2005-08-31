@@ -6,7 +6,7 @@ public class Test {
 
   static Object[] definitions = new Object[] {
     new Object[] {"Button", new String[][] {
-//      {"108", "set the default button"},
+      {"108", "set the default button"},
     }}, new Object[] {"Canvas", new String[][] {
 //      {"48", "scroll an image (flicker free, no double buffering)"},
 //      {"21", "implement tab traversal (behave like a tab group)"},
@@ -97,8 +97,8 @@ public class Test {
 //      {"104", "create a splash screen"},
 //      {"99", "prevent a shell from closing (prompt the user)"},
 //      {"4", "prevent escape from closing a dialog"},
-//      {"27", "open a shell minimized (iconified)"},
-//      {"28", "open a shell maximized (full screen)"},
+      {"27", "open a shell minimized (iconified)"},
+      {"28", "open a shell maximized (full screen)"},
     }}, new Object[] {"Slider", new String[][] {
 //      {"17", "print scroll event details"},
     }}, new Object[] {"TabFolder", new String[][] {
@@ -127,7 +127,7 @@ public class Test {
 //      {"11", "set the selection (i-beam)"},
 //      {"12", "set the selection (start, end)"},
 //      {"19", "verify input (only allow digits)"},
-//      {"22", "select all the text in the control"},
+      {"22", "select all the text in the control"},
 //      {"24", "detect CR in a text control (default selelection)"},
 //      {"55", "resize a text control (show about 10 characters)"},
 //      {"116", "stop CR from going to the default button"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "22";
+  static String snippetNumber = "108";
 
   public static void main(String[] args) {
     String number = null;

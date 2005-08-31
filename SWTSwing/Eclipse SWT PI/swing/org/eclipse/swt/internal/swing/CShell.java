@@ -13,6 +13,7 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Image;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -39,7 +40,7 @@ class CShellFrame extends JFrame implements CShell {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
+    enableEvents(handle.getAWTEvents() | WindowEvent.WINDOW_OPENED);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
     if((style & SWT.RESIZE) == 0) {
@@ -94,6 +95,9 @@ class CShellFrame extends JFrame implements CShell {
   }
 
   public void processEvent(AWTEvent e) {
+    if(e.getID() == WindowEvent.WINDOW_OPENED) {
+      transferFocusDownCycle();
+    }
     if(handle.beforeProcessEvent(e)) {
       super.processEvent(e);
       handle.afterProcessEvent(e);
@@ -123,7 +127,7 @@ class CShellDialog extends JDialog implements CShell {
   }
 
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
+    enableEvents(handle.getAWTEvents() | WindowEvent.WINDOW_OPENED);
 //    if((style & SWT.APPLICATION_MODAL) != 0) {
 //      setModal(true);
 //      // TODO: implement
@@ -192,6 +196,9 @@ class CShellDialog extends JDialog implements CShell {
   }
 
   public void processEvent(AWTEvent e) {
+    if(e.getID() == WindowEvent.WINDOW_OPENED) {
+      transferFocusDownCycle();
+    }
     if(handle.beforeProcessEvent(e)) {
       super.processEvent(e);
       handle.afterProcessEvent(e);

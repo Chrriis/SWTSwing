@@ -37,6 +37,16 @@ class CTextMulti extends JScrollPane implements CText {
     enableEvents(handle.getAWTEvents());
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
+      textArea.setBorder(null);
+    }
+    if((style & SWT.H_SCROLL) == 0) {
+      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+    }
+    if((style & SWT.V_SCROLL) == 0) {
+      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+    }
+    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+      setBorder(null);
     }
   }
 
@@ -145,7 +155,7 @@ class CTextField extends JScrollPane implements CText {
 
   public CTextField(Text text, int style) {
     this.handle = text;
-    passwordField = new JPasswordField(7);
+    passwordField = new JPasswordField();
     passwordField.setEchoChar('\0');
     getViewport().setView(passwordField);
     init(style);
@@ -154,6 +164,16 @@ class CTextField extends JScrollPane implements CText {
   protected void init(int style) {
     enableEvents(handle.getAWTEvents());
     if((style & SWT.BORDER) == 0) {
+      setBorder(null);
+      passwordField.setBorder(null);
+    }
+    if((style & SWT.H_SCROLL) == 0) {
+      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+    }
+    if((style & SWT.V_SCROLL) == 0) {
+      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+    }
+    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
       setBorder(null);
     }
   }

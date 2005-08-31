@@ -1,0 +1,14 @@
+Some eclipse.org projects are required for SWTSwing to compile.
+
+Use the following CVS repository:
+
+:pserver:anonymous@dev.eclipse.org:/home/eclipse
+
+
+And check out the Modules:
+
+org.eclipse.swt
+org.eclipse.swt.examples
+org.eclipse.swt.examples.launcher
+org.eclipse.swt.snippets
+org.eclipse.swt.win32

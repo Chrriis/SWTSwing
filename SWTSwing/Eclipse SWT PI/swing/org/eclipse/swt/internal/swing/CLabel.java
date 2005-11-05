@@ -9,10 +9,11 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.AWTEvent;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -31,7 +32,6 @@ class CSeparator extends JPanel implements CLabel {
 
   public CSeparator(Label label, int style) {
     this.handle = label;
-    init(style);
     GridBagLayout gridBag = new GridBagLayout();
     setLayout(gridBag);
     GridBagConstraints c = new GridBagConstraints();
@@ -41,13 +41,18 @@ class CSeparator extends JPanel implements CLabel {
     separator = new JSeparator((style & SWT.HORIZONTAL) != 0? JSeparator.HORIZONTAL: JSeparator.VERTICAL);
     gridBag.setConstraints(separator, c);
     add(separator);
+    init(style);
   }
 
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     }
+    separator.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -67,13 +72,6 @@ class CSeparator extends JPanel implements CLabel {
   public void setIcon(Icon icon) {
   }
 
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
-  }
-
 }
 
 class CLabelImplementation extends JLabel implements CLabel {
@@ -86,10 +84,14 @@ class CLabelImplementation extends JLabel implements CLabel {
   }
 
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     }
+    addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -98,13 +100,6 @@ class CLabelImplementation extends JLabel implements CLabel {
 
   public void setAlignment(int alignment) {
     setHorizontalAlignment(alignment);
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
   }
 
 }

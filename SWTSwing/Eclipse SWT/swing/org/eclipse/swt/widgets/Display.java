@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -23,6 +24,7 @@ import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.AWTEventListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -356,6 +358,14 @@ public class Display extends Device {
 //		PACKAGE_PREFIX = name.substring (0, index + 1);
 //	}
 
+  static {
+    Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+      public void eventDispatched(AWTEvent event) {
+        java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)event;
+        modifiersEx = me.getModifiersEx();
+      }
+    }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+  }
 	/*
 	* TEMPORARY CODE.  Install the runnable that
 	* gets the current display. This code will
@@ -2199,8 +2209,10 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
   return new Rectangle(point.x, point.y, point.x + width - x, point.y + height - y);
 }
 
+static int modifiersEx;
+
 int getInputState() {
-  return convertModifiersEx(managedEventQueue.getModifiersEx());
+  return convertModifiersEx(modifiersEx);
 }
 
 static int convertModifiersEx(int modifiersEx) {

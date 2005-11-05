@@ -9,9 +9,12 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -37,7 +40,6 @@ class CGroupImplementation extends JPanel implements CGroup {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     // TODO: support styles
     titledBorder = BorderFactory.createTitledBorder("");
     setBorder(titledBorder);
@@ -50,6 +52,16 @@ class CGroupImplementation extends JPanel implements CGroup {
       contentPane = new JPanel(null);
       add(contentPane, BorderLayout.CENTER);
     }
+    contentPane.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -70,13 +82,6 @@ class CGroupImplementation extends JPanel implements CGroup {
 
   public JScrollBar getHorizontalScrollBar() {
     return scrollPane == null? null: scrollPane.getHorizontalScrollBar();
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
   }
 
 }

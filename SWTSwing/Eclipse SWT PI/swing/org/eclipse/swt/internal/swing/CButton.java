@@ -9,9 +9,10 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.AWTEvent;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -56,8 +57,12 @@ class CButtonArrow extends CArrowButton implements CButton {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     CButtonCommon.applyStyle(this, style);
+    addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -69,14 +74,7 @@ class CButtonArrow extends CArrowButton implements CButton {
   }
   
   protected void fireActionPerformed(ActionEvent e) {
-    processEvent(e);
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
+    handle.processEvent(e);
   }
 
 }
@@ -91,8 +89,12 @@ class CButtonPush extends JButton implements CButton {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     CButtonCommon.applyStyle(this, style);
+    addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -104,14 +106,7 @@ class CButtonPush extends JButton implements CButton {
   }
 
   protected void fireActionPerformed(ActionEvent e) {
-    processEvent(e);
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
+    handle.processEvent(e);
   }
 
 }
@@ -126,8 +121,12 @@ class CButtonCheck extends JCheckBox implements CButton {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     CButtonCommon.applyStyle(this, style);
+    addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -139,14 +138,7 @@ class CButtonCheck extends JCheckBox implements CButton {
   }
   
   protected void fireActionPerformed(ActionEvent e) {
-    processEvent(e);
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
+    handle.processEvent(e);
   }
 
 }
@@ -161,8 +153,12 @@ class CButtonToggle extends JToggleButton implements CButton {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     CButtonCommon.applyStyle(this, style);
+    addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -174,14 +170,7 @@ class CButtonToggle extends JToggleButton implements CButton {
   }
 
   protected void fireActionPerformed(ActionEvent e) {
-    processEvent(e);
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
+    handle.processEvent(e);
   }
 
 }
@@ -196,8 +185,12 @@ class CButtonRadio extends JRadioButton implements CButton {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     CButtonCommon.applyStyle(this, style);
+    addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -209,14 +202,7 @@ class CButtonRadio extends JRadioButton implements CButton {
   }
   
   protected void fireActionPerformed(ActionEvent e) {
-    processEvent(e);
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
+    handle.processEvent(e);
   }
 
 }

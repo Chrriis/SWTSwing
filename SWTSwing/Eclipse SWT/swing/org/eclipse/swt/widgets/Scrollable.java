@@ -112,16 +112,16 @@ public Scrollable (Composite parent, int style) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-    java.awt.Dimension hSize = handle.getSize();
-    java.awt.Container clientArea = ((CComponent)handle).getClientArea();
-    java.awt.Dimension cSize = clientArea.getSize();
-    java.awt.Point location = new java.awt.Point(0, 0);
-    SwingUtilities.convertPoint(clientArea, location, handle);
-    int top = location.y; 
-    int left = location.x;
-    int bottom = hSize.height - cSize.height - top;
-    int right = hSize.width - cSize.width - left;
-    return new Rectangle(x - left, y - top, left + width + right, top + height + bottom);
+	java.awt.Dimension hSize = handle.getPreferredSize();
+	java.awt.Container clientArea = ((CComponent)handle).getClientArea();
+	java.awt.Dimension cSize = clientArea.getPreferredSize();
+	java.awt.Point location = new java.awt.Point(0, 0);
+	SwingUtilities.convertPoint(clientArea, location, handle);
+	int top = location.y; 
+	int left = location.x;
+	int bottom = hSize.height - cSize.height - top;
+	int right = hSize.width - cSize.width - left;
+	return new Rectangle(x - left, y - top, left + width + right, top + height + bottom);
 }
 
 ScrollBar createScrollBar (int type) {

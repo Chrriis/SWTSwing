@@ -9,10 +9,14 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Image;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
@@ -40,7 +44,6 @@ class CShellFrame extends JFrame implements CShell {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents() | WindowEvent.WINDOW_OPENED);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
     if((style & SWT.RESIZE) == 0) {
@@ -59,6 +62,24 @@ class CShellFrame extends JFrame implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
+    contentPane.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addWindowListener(new WindowAdapter() {
+      public void windowOpened(WindowEvent e) {
+        transferFocusDownCycle();
+      }
+      public void windowClosing(WindowEvent e) {
+        handle.processEvent(e);
+      };
+    });
   }
 
   public void forceActive() {
@@ -94,16 +115,6 @@ class CShellFrame extends JFrame implements CShell {
     }
   }
 
-  public void processEvent(AWTEvent e) {
-    if(e.getID() == WindowEvent.WINDOW_OPENED) {
-      transferFocusDownCycle();
-    }
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
-  }
-
 }
 
 class CShellDialog extends JDialog implements CShell {
@@ -127,7 +138,6 @@ class CShellDialog extends JDialog implements CShell {
   }
 
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents() | WindowEvent.WINDOW_OPENED);
 //    if((style & SWT.APPLICATION_MODAL) != 0) {
 //      setModal(true);
 //      // TODO: implement
@@ -149,6 +159,24 @@ class CShellDialog extends JDialog implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
+    contentPane.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addWindowListener(new WindowAdapter() {
+      public void windowOpened(WindowEvent e) {
+        transferFocusDownCycle();
+      }
+      public void windowClosing(WindowEvent e) {
+        handle.processEvent(e);
+      };
+    });
   }
 
   public void forceActive() {
@@ -192,16 +220,6 @@ class CShellDialog extends JDialog implements CShell {
   public void setDefaultButton(CButton button) {
     if(button instanceof JButton) {
       getRootPane().setDefaultButton((JButton)button);
-    }
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(e.getID() == WindowEvent.WINDOW_OPENED) {
-      transferFocusDownCycle();
-    }
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
     }
   }
 

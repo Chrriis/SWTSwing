@@ -1898,7 +1898,7 @@ boolean traverseEscape () {
 //	return result;
 //}
 
-public boolean beforeProcessEvent(AWTEvent e) {
+public void processEvent(AWTEvent e) {
   switch(e.getID()) {
   case WindowEvent.WINDOW_CLOSING:
     Display display = getDisplay();
@@ -1906,24 +1906,20 @@ public boolean beforeProcessEvent(AWTEvent e) {
     if(isEnabled()) {
       closeWidget();
     }
-    if(!isDisposed()) {
-      return false;
+    if(isDisposed()) {
+      display.stopExclusiveSection();
+      super.processEvent(e);
+      return;
     }
-    boolean beforeProcess = super.beforeProcessEvent(e);
     display.stopExclusiveSection();
-    return beforeProcess;
   }
-  return super.beforeProcessEvent(e);
-}
-
-public void afterProcessEvent(AWTEvent e) {
-  super.afterProcessEvent(e);
-  switch(e.getID()) {
-  case WindowEvent.WINDOW_ACTIVATED:
-    // TODO: implement
-    break;
-    // TODO: implement other cases
-  }
+  super.processEvent(e);
+//  switch(e.getID()) {
+//  case WindowEvent.WINDOW_ACTIVATED:
+//    // TODO: implement
+//    break;
+//    // TODO: implement other cases
+//  }
 }
 
 }

@@ -490,21 +490,31 @@ void createWidget () {
 	handle = createHandle ();
   if(!(handle instanceof CComponent)) throw new IllegalStateException("The widget should implement the CComponent interface!");
   if(handle instanceof Window) {
-    handle.addNotify();
-    handle.validate();
+    Dimension size = ((Window)handle).getSize();
+    ((Window)handle).pack();
+    handle.setSize(size);
   }
-    if(parent != null && !(handle instanceof Window)) {
-      ((CComponent)parent.handle).getClientArea().add(handle);
+  if(parent != null && !(handle instanceof Window)) {
+    Container clientArea = ((CComponent)parent.handle).getClientArea();
+    clientArea.setLayout(null);
+    clientArea.add(handle);
+    if(clientArea instanceof JComponent) {
+      ((JComponent)clientArea).revalidate();
+    } else {
+      clientArea.invalidate();
+      clientArea.validate();
     }
+    clientArea.repaint();
+  }
     // TODO: should have a fixInitSize like in old implementation
 //    if(handle.getSize().equals(new java.awt.Dimension(0, 0))) {
 //      handle.setSize(handle.getPreferredSize());
       if(handle instanceof JComponent) {
         JComponent component = (JComponent)handle;
         component.setOpaque(true);
-        component.revalidate();
-      } else {
-        handle.validate();
+//        component.revalidate();
+//      } else {
+//        handle.validate();
       }
 //    }
     register ();
@@ -3925,35 +3935,28 @@ public boolean setParent (Composite parent) {
  * platforms and should never be accessed from application code.
  * </p>
  */
-public boolean beforeProcessEvent(AWTEvent e) {
-  return true;
-}
-
-/**
- * the entry point for callbacks 
- * (Warning: This method is platform dependent)
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
- * public API. It is marked public only so that it can be shared
- * within the packages provided by SWT. It is not available on all
- * platforms and should never be accessed from application code.
- * </p>
- */
-public void afterProcessEvent(AWTEvent e) {
-}
-
-/**
- * the entry point for callbacks 
- * (Warning: This method is platform dependent)
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
- * public API. It is marked public only so that it can be shared
- * within the packages provided by SWT. It is not available on all
- * platforms and should never be accessed from application code.
- * </p>
- */
-public long getAWTEvents() {
-  return 0;
+public void processEvent(AWTEvent e) {
+  switch(e.getID()) {
+  case java.awt.event.MouseEvent.MOUSE_PRESSED:
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    Event event = new Event();
+    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+    java.awt.Point point = /*convertPointToControl(*/me.getPoint();//);
+    event.x = point.x;
+    event.y = point.y;
+    if((me.getModifiersEx() & java.awt.event.MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+      event.button = 1;
+    } else if((me.getModifiersEx() & java.awt.event.MouseEvent.BUTTON2_DOWN_MASK) != 0) {
+      event.button = 2;
+    } else if((me.getModifiersEx() & java.awt.event.MouseEvent.BUTTON3_DOWN_MASK) != 0) {
+      event.button = 3;
+    }
+    event.stateMask = getDisplay().getInputState();
+    postEvent(SWT.MouseDown, event);
+    display.stopExclusiveSection();
+    break;
+  }
 }
 
 }

@@ -17,9 +17,12 @@ import java.awt.Container;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.internal.swing.CComposite;
 
 /**
  * Instances of this class are controls which are capable
@@ -205,7 +208,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			size = new Point (wHint, hHint);
 		}
 	} else {
-		size = minimumSize (wHint, hHint, changed);
+	  size = minimumSize (wHint, hHint, changed);
 	}
 	if (size.x == 0) size.x = DEFAULT_WIDTH;
 	if (size.y == 0) size.y = DEFAULT_HEIGHT;
@@ -216,10 +219,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 Container createHandle () {
-	Container container = super.createHandle ();
-	state |= CANVAS;
-  return container;
+  state |= CANVAS;
+  return (Container)CComposite.Instanciator.createInstance(this, style);
 }
+
+
 
 //Menu [] findMenus (Control control) {
 //	if (control == this) return new Menu [0];
@@ -1271,28 +1275,25 @@ void updateLayout (boolean resize, boolean all) {
 //	return result;
 //}
 
-public long getAWTEvents() {
-  return ComponentEvent.COMPONENT_RESIZED | super.getAWTEvents();
-}
-
-public void afterProcessEvent(AWTEvent e) {
-  super.afterProcessEvent(e);
+public void processEvent(AWTEvent e) {
   switch(e.getID()) {
   case ComponentEvent.COMPONENT_RESIZED:
     Display display = getDisplay();
     display.startExclusiveSection();
     if(isDisposed()) {
+      display.stopExclusiveSection();
+      super.processEvent(e);
       return;
     }
     if(layout != null) {
       markLayout(false, false);
       updateLayout(false, false);
     }
-    super.afterProcessEvent(e);
+    super.processEvent(e);
     display.stopExclusiveSection();
     return;
   }
-  super.afterProcessEvent(e);
+  super.processEvent(e);
 }
 
 }

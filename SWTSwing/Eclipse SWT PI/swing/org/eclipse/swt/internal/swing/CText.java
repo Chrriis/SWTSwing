@@ -1,5 +1,5 @@
 /*
- * @(#)CButton.java
+ * @(#)CText.java
  * 
  * Christopher Deckers (chrriis@brainlex.com)
  * http://chrriis.brainlex.com
@@ -9,9 +9,12 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.AWTEvent;
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -34,7 +37,6 @@ class CTextMulti extends JScrollPane implements CText {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
       textArea.setBorder(null);
@@ -43,22 +45,25 @@ class CTextMulti extends JScrollPane implements CText {
       setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     }
     if((style & SWT.V_SCROLL) == 0) {
-      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
     }
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
       setBorder(null);
     }
+    textArea.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
     return textArea;
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
   }
 
   public String getText() {
@@ -162,7 +167,6 @@ class CTextField extends JScrollPane implements CText {
   }
   
   protected void init(int style) {
-    enableEvents(handle.getAWTEvents());
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
       passwordField.setBorder(null);
@@ -171,22 +175,25 @@ class CTextField extends JScrollPane implements CText {
       setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     }
     if((style & SWT.V_SCROLL) == 0) {
-      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
+      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
     }
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
       setBorder(null);
     }
+    passwordField.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
     return passwordField;
-  }
-
-  public void processEvent(AWTEvent e) {
-    if(handle.beforeProcessEvent(e)) {
-      super.processEvent(e);
-      handle.afterProcessEvent(e);
-    }
   }
 
   public String getText() {
@@ -270,7 +277,7 @@ class CTextField extends JScrollPane implements CText {
 }
 
 /**
- * The button equivalent on the Swing side.
+ * The text equivalent on the Swing side.
  * @version 1.0 2005.08.30
  * @author Christopher Deckers (chrriis@brainlex.com)
  */

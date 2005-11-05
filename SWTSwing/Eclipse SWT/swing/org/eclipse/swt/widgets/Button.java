@@ -752,21 +752,17 @@ public void setText (String string) {
 //	return null;
 //}
 
-public long getAWTEvents() {
-  return ActionEvent.ACTION_PERFORMED | super.getAWTEvents();
-}
-
-public void afterProcessEvent(AWTEvent e) {
+public void processEvent(AWTEvent e) {
   switch(e.getID()) {
   case ActionEvent.ACTION_PERFORMED:
-    display = getDisplay();
+    Display display = getDisplay();
     display.startExclusiveSection();
     postEvent (SWT.Selection);
-    super.afterProcessEvent(e);
+    super.processEvent(e);
     display.stopExclusiveSection();
     return;
   }
-  super.afterProcessEvent(e);
+  super.processEvent(e);
 }
 
 }

@@ -1906,11 +1906,6 @@ public void processEvent(AWTEvent e) {
     if(isEnabled()) {
       closeWidget();
     }
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
     display.stopExclusiveSection();
   }
   super.processEvent(e);

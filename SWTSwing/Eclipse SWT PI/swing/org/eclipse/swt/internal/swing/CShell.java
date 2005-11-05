@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -54,7 +55,7 @@ class CShellFrame extends JFrame implements CShell {
     contentPane = getContentPane();
     JPanel panel = new JPanel(null);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-      JScrollPane scrollPane = new JScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
       contentPane.add(scrollPane, BorderLayout.CENTER);
       scrollPane.getViewport().setView(panel);
@@ -151,7 +152,7 @@ class CShellDialog extends JDialog implements CShell {
     contentPane = getContentPane();
     JPanel panel = new JPanel(null);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-      JScrollPane scrollPane = new JScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
       contentPane.add(scrollPane, BorderLayout.CENTER);
       scrollPane.getViewport().setView(panel);
@@ -238,6 +239,10 @@ public interface CShell extends CScrollable {
 
   public static class Instanciator {
     private Instanciator() {}
+
+    static {
+      Toolkit.getDefaultToolkit().setDynamicLayout(true);
+    }
 
     public static CShell createInstance(Shell shell, CShell parent, int style) {
       if(parent instanceof CShellFrame) {

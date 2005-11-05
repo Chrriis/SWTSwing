@@ -19,6 +19,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -1128,7 +1129,7 @@ public Graphics internal_new_GC (GCData data) {
     data.background = handle.getBackground();
     data.hFont = handle.getFont();
   }
-  return handle.getGraphics();
+  return ((CComponent)handle).getClientArea().getGraphics();
 //	int hwnd = handle;
 //	if (data != null && data.hwnd != 0) {
 //		hwnd = data.hwnd;
@@ -3937,7 +3938,7 @@ public boolean setParent (Composite parent) {
  */
 public void processEvent(AWTEvent e) {
   switch(e.getID()) {
-  case java.awt.event.MouseEvent.MOUSE_PRESSED:
+  case java.awt.event.MouseEvent.MOUSE_PRESSED: {
     Display display = getDisplay();
     display.startExclusiveSection();
     Event event = new Event();
@@ -3956,6 +3957,14 @@ public void processEvent(AWTEvent e) {
     postEvent(SWT.MouseDown, event);
     display.stopExclusiveSection();
     break;
+  }
+  case ComponentEvent.COMPONENT_RESIZED: {
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    postEvent(SWT.Resize);
+    display.stopExclusiveSection();
+    break;
+  }
   }
 }
 

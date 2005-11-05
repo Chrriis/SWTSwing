@@ -11,6 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+
 import javax.swing.JScrollBar;
 
 import org.eclipse.swt.internal.swing.CScrollable;
@@ -166,7 +169,7 @@ static int checkStyle (int style) {
 }
 
 void createWidget () {
-  handle = (style = SWT.HORIZONTAL) != 0? ((CScrollable)parent.handle).getHorizontalScrollBar(): ((CScrollable)parent.handle).getVerticalScrollBar();
+  handle = (style & SWT.HORIZONTAL) != 0? ((CScrollable)parent.handle).getHorizontalScrollBar(): ((CScrollable)parent.handle).getVerticalScrollBar();
 	increment = 1;
 	pageIncrement = 10;
 	/*
@@ -179,6 +182,27 @@ void createWidget () {
 	* override the initial values provided by the
 	* list widget.
 	*/
+  handle.addAdjustmentListener(new AdjustmentListener() {
+    public void adjustmentValueChanged(AdjustmentEvent e) {
+      Event event = new Event ();
+      event.detail = SWT.DRAG;
+      switch(e.getAdjustmentType()) {
+      case AdjustmentEvent.BLOCK_DECREMENT:
+        event.detail = SWT.PAGE_DOWN;
+        break;
+      case AdjustmentEvent.BLOCK_INCREMENT:
+        event.detail = SWT.PAGE_UP;
+        break;
+      case AdjustmentEvent.UNIT_DECREMENT:
+        event.detail = SWT.ARROW_DOWN;
+        break;
+      case AdjustmentEvent.UNIT_INCREMENT:
+        event.detail = SWT.ARROW_UP;
+        break;
+      }
+      sendEvent (SWT.Selection, event);
+    }
+  });
 }
 
 public void dispose () {
@@ -571,6 +595,8 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget();
   if (value < 0) return;
+  int minimum = handle.getMinimum();
+  if (value <= minimum) return;
   handle.setMaximum(value);
 }
 
@@ -590,6 +616,8 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
+  int maximum = handle.getMaximum();
+  if (value >= maximum) return;
   handle.setMinimum(value);
 }
 
@@ -709,7 +737,18 @@ public void setSelection (int selection) {
 public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
-  handle.setVisibleAmount(value);
+  int minimum = handle.getMinimum();
+  int maximum = handle.getMaximum();
+  int range = maximum - minimum;
+  if (value > range) {
+    value = range;
+  }
+  int maxSelection = maximum - value;
+  int selection = handle.getValue();
+  if (selection > maxSelection) {
+    selection = maxSelection;
+  }
+  handle.setValues(selection, value, minimum, maximum);
 }
 
 /**

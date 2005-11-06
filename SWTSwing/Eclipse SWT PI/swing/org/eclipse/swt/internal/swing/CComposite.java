@@ -9,6 +9,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -16,21 +17,22 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-class CCompositeImplementation extends JScrollPane implements CComposite {
+class CCompositeImplementation extends JPanel implements CComposite {
 
   protected Composite handle;
   protected JPanel contentPane;
+  protected JScrollPane scrollPane;
 
   public CCompositeImplementation(Composite composite, int style) {
+    super(new BorderLayout(0, 0));
     this.handle = composite;
-    contentPane = new JPanel();
-    getViewport().setView(contentPane);
     init(style);
   }
   
@@ -40,18 +42,22 @@ class CCompositeImplementation extends JScrollPane implements CComposite {
     } else {
       setBorder(null);
     }
-    if((style & SWT.H_SCROLL) == 0) {
-      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+    JPanel panel = new JPanel(null);
+    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+      JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      this.scrollPane = scrollPane;
+      add(scrollPane, BorderLayout.CENTER);
+      scrollPane.getViewport().setView(panel);
+    } else {
+      add(panel, BorderLayout.CENTER);
     }
-    if((style & SWT.V_SCROLL) == 0) {
-      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
-    }
+    contentPane = panel;
     contentPane.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
         handle.processEvent(e);
       }
     });
-    addComponentListener(new ComponentAdapter() {
+    contentPane.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent e) {
         handle.processEvent(e);
       }
@@ -60,6 +66,14 @@ class CCompositeImplementation extends JScrollPane implements CComposite {
 
   public Container getClientArea() {
     return contentPane;
+  }
+
+  public JScrollBar getVerticalScrollBar() {
+    return scrollPane == null? null: scrollPane.getVerticalScrollBar();
+  }
+
+  public JScrollBar getHorizontalScrollBar() {
+    return scrollPane == null? null: scrollPane.getHorizontalScrollBar();
   }
 
 }

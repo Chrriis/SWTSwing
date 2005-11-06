@@ -68,7 +68,7 @@ class CShellFrame extends JFrame implements CShell {
         handle.processEvent(e);
       }
     });
-    addComponentListener(new ComponentAdapter() {
+    contentPane.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent e) {
         handle.processEvent(e);
       }

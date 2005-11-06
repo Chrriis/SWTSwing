@@ -18,7 +18,7 @@ public class Test {
     }}, new Object[] {"Combo", new String[][] {
 //      {"26", "create a combo box (non-editable)"},
     }}, new Object[] {"Composite", new String[][] {
-//      {"9", "scroll a child control automatically"},
+      {"9", "scroll a child control automatically"},
 //      {"75", "set the tab traversal order of children"},
 //      {"98", "create and dispose children of a composite"},
 //      {"115", "force radio behavior on two different composites"},
@@ -39,8 +39,8 @@ public class Test {
     }}, new Object[] {"DirectoryDialog", new String[][] {
 //      {"33", "prompt for a directory"},
     }}, new Object[] {"Display", new String[][] {
-//      {"60", "create two one shot timers (5000 ms, 2000 ms)"},
-//      {"16", "create one repeating timer (every 500 ms)"},
+      {"60", "create two one shot timers (5000 ms, 2000 ms)"},
+      {"16", "create one repeating timer (every 500 ms)"},
       {"68", "stop a repeating timer when a button is pressed"},
       {"42", "get the bounds and client area of a display"},
     }}, new Object[] {"Drag and Drop", new String[][] {
@@ -54,16 +54,16 @@ public class Test {
 //      {"100", "create a large font for use by a text widget"},
     }}, new Object[] {"FormLayout", new String[][] {
 //      {"65", "create a simple dialog using form layout"},
-//      {"69", "display a label and single line text using a form layout"},
+      {"69", "display a label and single line text using a form layout"},
 //      {"71", "create a simple OK/CANCEL dialog using form layout"},
     }}, new Object[] {"GC", new String[][] {
-//      {"13", "draw a thick line"}, <-- Works, but repaint in Swing is too fast and hides the result.
+      {"13", "draw a thick line"}, //<-- Works, but repaint in Swing is too fast and hides the result.
 //      {"93", "measure a string"},
 //      {"66", "implement a simple scribble program"},
 //      {"70", "create an icon (in memory)"},
 //      {"95", "capture a widget image with a GC"},
     }}, new Object[] {"GridLayout", new String[][] {
-//      {"6", "insert widgets into a grid layout"},
+      {"6", "insert widgets into a grid layout"},
     }}, new Object[] {"Image", new String[][] {
 //      {"112", "display an image in a group"},
     }}, new Object[] {"Label", new String[][] {
@@ -90,7 +90,7 @@ public class Test {
     }}, new Object[] {"Scale", new String[][] {
 //      {"45", "create a scale (maximum 40, page increment 5)"},
     }}, new Object[] {"ScrolledComposite", new String[][] {
-//      {"5", "scroll a control in a scrolled composite"},
+      {"5", "scroll a control in a scrolled composite"},
     }}, new Object[] {"Shell", new String[][] {
       {"50", "create a dialog shell"},
       {"63", "create a dialog shell (prompt for a value)"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "108";
+  static String snippetNumber = "5";
 
   public static void main(String[] args) {
     String number = null;

@@ -22,6 +22,7 @@ import java.awt.Window;
 import java.awt.event.ComponentEvent;
 
 import javax.swing.JComponent;
+import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -3943,7 +3944,7 @@ public void processEvent(AWTEvent e) {
     display.startExclusiveSection();
     Event event = new Event();
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-    java.awt.Point point = /*convertPointToControl(*/me.getPoint();//);
+    java.awt.Point point = convertPointToControl(me.getComponent(), me.getPoint());
     event.x = point.x;
     event.y = point.y;
     if((me.getModifiersEx() & java.awt.event.MouseEvent.BUTTON1_DOWN_MASK) != 0) {
@@ -3966,6 +3967,14 @@ public void processEvent(AWTEvent e) {
     break;
   }
   }
+}
+
+protected java.awt.Point convertPointToControl(java.awt.Component source, java.awt.Point point) {
+  Container container = handle;
+  if(container instanceof RootPaneContainer) {
+    container = ((RootPaneContainer)container).getContentPane();
+  }
+  return SwingUtilities.convertPoint(source, point, container);
 }
 
 }

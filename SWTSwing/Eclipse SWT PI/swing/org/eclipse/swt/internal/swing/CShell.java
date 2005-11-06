@@ -27,8 +27,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 class CShellFrame extends JFrame implements CShell {
@@ -138,11 +140,41 @@ class CShellDialog extends JDialog implements CShell {
     init(style);
   }
 
+  public void setVisible(final boolean isVisible) {
+    if(isVisible && isModal()) {
+      Display display = handle.getDisplay();
+      if(display != null && display.getThread() == Thread.currentThread() || SwingUtilities.isEventDispatchThread()) {
+        final Object LOCK = new Object();
+        Thread t = new Thread() {
+          public void run() {
+            synchronized(LOCK) {
+              LOCK.notify();
+            }
+            setVisible(isVisible);
+          }
+        };
+        synchronized(LOCK) {
+          t.start();
+          try {
+            LOCK.wait();
+          } catch(Exception e) {}
+          int count = 0;
+          while(!isVisible() && count++ < 10) {
+            try {
+              Thread.sleep(10);
+            } catch(Exception e) {}
+          }
+        }
+        return;
+      }
+    }
+    super.setVisible(isVisible);
+  }
+
   protected void init(int style) {
-//    if((style & SWT.APPLICATION_MODAL) != 0) {
-//      setModal(true);
-//      // TODO: implement
-//    }
+    if((style & SWT.APPLICATION_MODAL) != 0) {
+      setModal(true);
+    }
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
     if((style & SWT.RESIZE) == 0) {

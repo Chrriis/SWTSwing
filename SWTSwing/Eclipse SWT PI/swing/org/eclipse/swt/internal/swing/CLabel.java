@@ -12,6 +12,10 @@ package org.eclipse.swt.internal.swing;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -81,6 +85,19 @@ class CSeparator extends JPanel implements CLabel {
         handle.processEvent(e);
       }
     });
+    separator.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -142,6 +159,19 @@ class CLabelImplementation extends JLabel implements CLabel {
     });
     addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
         handle.processEvent(e);
       }
     });

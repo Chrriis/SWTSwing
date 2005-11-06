@@ -13,6 +13,8 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -82,6 +84,14 @@ class CCompositeImplementation extends JPanel implements CComposite {
     });
     contentPane.addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
         handle.processEvent(e);
       }
     });

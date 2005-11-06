@@ -13,6 +13,8 @@ import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -80,6 +82,14 @@ class CTextMulti extends JScrollPane implements CText {
     });
     textArea.addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    textArea.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
         handle.processEvent(e);
       }
     });
@@ -235,6 +245,14 @@ class CTextField extends JScrollPane implements CText {
     });
     passwordField.addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    passwordField.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
         handle.processEvent(e);
       }
     });

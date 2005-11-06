@@ -11,6 +11,10 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -91,6 +95,19 @@ class CButtonArrow extends CArrowButton implements CButton {
         handle.processEvent(e);
       }
     });
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -145,6 +162,19 @@ class CButtonPush extends JButton implements CButton {
     });
     addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
         handle.processEvent(e);
       }
     });
@@ -205,6 +235,19 @@ class CButtonCheck extends JCheckBox implements CButton {
         handle.processEvent(e);
       }
     });
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -262,6 +305,19 @@ class CButtonToggle extends JToggleButton implements CButton {
         handle.processEvent(e);
       }
     });
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -316,6 +372,19 @@ class CButtonRadio extends JRadioButton implements CButton {
     });
     addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentResized(ComponentEvent e) {
         handle.processEvent(e);
       }
     });

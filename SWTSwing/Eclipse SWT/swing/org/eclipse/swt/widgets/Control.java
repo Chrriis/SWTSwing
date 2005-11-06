@@ -29,6 +29,7 @@ import javax.swing.UIManager;
 //import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.accessibility.*;
@@ -3946,14 +3947,24 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
     Display display = getDisplay();
     display.startExclusiveSection();
-    postEvent(SWT.MouseDown, createMouseEvent((java.awt.event.MouseEvent)e, false));
+    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+    Event event = createMouseEvent(me, true);
+    postEvent(SWT.MouseDown, event);
+    if(me.isPopupTrigger()) {
+      postEvent(SWT.MenuDetect, event);
+    }
     display.stopExclusiveSection();
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_RELEASED: {
     Display display = getDisplay();
     display.startExclusiveSection();
-    postEvent(SWT.MouseUp, createMouseEvent((java.awt.event.MouseEvent)e, true));
+    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+    Event event = createMouseEvent(me, true);
+    postEvent(SWT.MouseUp, event);
+    if(me.isPopupTrigger()) {
+      postEvent(SWT.MenuDetect, event);
+    }
     display.stopExclusiveSection();
     break;
   }
@@ -4037,6 +4048,20 @@ public void processEvent(AWTEvent e) {
     display.stopExclusiveSection();
     break;
   }
+  case java.awt.event.KeyEvent.KEY_PRESSED: {
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    postEvent(SWT.KeyDown, createKeyEvent((java.awt.event.KeyEvent)e));
+    display.stopExclusiveSection();
+    break;
+  }
+  case java.awt.event.KeyEvent.KEY_RELEASED: {
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    postEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e));
+    display.stopExclusiveSection();
+    break;
+  }
   case ComponentEvent.COMPONENT_RESIZED: {
     Display display = getDisplay();
     display.startExclusiveSection();
@@ -4065,6 +4090,94 @@ private Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousI
     event.button = 3;
   }
   event.stateMask = isPreviousInputState? getDisplay().getPreviousInputState(): getDisplay().getInputState();
+  return event;
+}
+
+private Event createKeyEvent(java.awt.event.KeyEvent ke) {
+  Event event = new Event();
+  Container container = handle;
+  if(container instanceof RootPaneContainer) {
+    container = ((RootPaneContainer)container).getContentPane();
+  }
+  int modifiersEx = ke.getModifiersEx();
+  if((modifiersEx & java.awt.event.MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+    event.button = 1;
+  } else if((modifiersEx & java.awt.event.MouseEvent.BUTTON2_DOWN_MASK) != 0) {
+    event.button = 2;
+  } else if((modifiersEx & java.awt.event.MouseEvent.BUTTON3_DOWN_MASK) != 0) {
+    event.button = 3;
+  }
+  char c = ke.getKeyChar();
+  if(c == java.awt.event.KeyEvent.CHAR_UNDEFINED) {
+    c = 0;
+  }
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_ALT: event.keyCode = SWT.ALT; break;
+  case java.awt.event.KeyEvent.VK_SHIFT: event.keyCode = SWT.SHIFT; break;
+  case java.awt.event.KeyEvent.VK_CONTROL: event.keyCode = SWT.CONTROL; break;
+//  case java.awt.event.KeyEvent.VK_????: event.keyCode = SWT.COMMAND; break;
+  /* Non-Numeric Keypad Keys */
+  case java.awt.event.KeyEvent.VK_UP: event.keyCode = SWT.ARROW_UP; break;
+  case java.awt.event.KeyEvent.VK_DOWN: event.keyCode = SWT.ARROW_DOWN; break;
+  case java.awt.event.KeyEvent.VK_LEFT: event.keyCode = SWT.ARROW_LEFT; break;
+  case java.awt.event.KeyEvent.VK_RIGHT: event.keyCode = SWT.ARROW_RIGHT; break;
+  case java.awt.event.KeyEvent.VK_PAGE_UP: event.keyCode = SWT.PAGE_UP; break;
+  case java.awt.event.KeyEvent.VK_PAGE_DOWN: event.keyCode = SWT.PAGE_DOWN; break;
+  case java.awt.event.KeyEvent.VK_HOME: event.keyCode = SWT.HOME; break;
+  case java.awt.event.KeyEvent.VK_END: event.keyCode = SWT.END; break;
+  case java.awt.event.KeyEvent.VK_INSERT: event.keyCode = SWT.INSERT; break;
+  /* Virtual and Ascii Keys */
+  case java.awt.event.KeyEvent.VK_BACK_SPACE: event.keyCode = SWT.BS; break;
+  case java.awt.event.KeyEvent.VK_ENTER: event.keyCode = SWT.CR; break;
+  case java.awt.event.KeyEvent.VK_DELETE: event.keyCode = SWT.DEL; break;
+  case java.awt.event.KeyEvent.VK_ESCAPE: event.keyCode = SWT.ESC; break;
+//  case java.awt.event.KeyEvent.VK_ENTER: event.keyCode = SWT.LF; break;
+  case java.awt.event.KeyEvent.VK_TAB: event.keyCode = SWT.TAB; break;
+  /* Functions Keys */
+  case java.awt.event.KeyEvent.VK_F1: event.keyCode = SWT.F1; break;
+  case java.awt.event.KeyEvent.VK_F2: event.keyCode = SWT.F2; break;
+  case java.awt.event.KeyEvent.VK_F3: event.keyCode = SWT.F3; break;
+  case java.awt.event.KeyEvent.VK_F4: event.keyCode = SWT.F4; break;
+  case java.awt.event.KeyEvent.VK_F5: event.keyCode = SWT.F5; break;
+  case java.awt.event.KeyEvent.VK_F6: event.keyCode = SWT.F6; break;
+  case java.awt.event.KeyEvent.VK_F7: event.keyCode = SWT.F7; break;
+  case java.awt.event.KeyEvent.VK_F8: event.keyCode = SWT.F8; break;
+  case java.awt.event.KeyEvent.VK_F9: event.keyCode = SWT.F9; break;
+  case java.awt.event.KeyEvent.VK_F10: event.keyCode = SWT.F10; break;
+  case java.awt.event.KeyEvent.VK_F11: event.keyCode = SWT.F11; break;
+  case java.awt.event.KeyEvent.VK_F12: event.keyCode = SWT.F12; break;
+  case java.awt.event.KeyEvent.VK_F13: event.keyCode = SWT.F13; break;
+  case java.awt.event.KeyEvent.VK_F14: event.keyCode = SWT.F14; break;
+  case java.awt.event.KeyEvent.VK_F15: event.keyCode = SWT.F15; break;
+  /* Numeric Keypad Keys */
+  case java.awt.event.KeyEvent.VK_MULTIPLY: event.keyCode = SWT.KEYPAD_MULTIPLY; break;
+  case java.awt.event.KeyEvent.VK_ADD: event.keyCode = SWT.KEYPAD_ADD; break;
+//  case java.awt.event.KeyEvent.VK_ENTER: event.keyCode = SWT.KEYPAD_CR; break;
+  case java.awt.event.KeyEvent.VK_SUBTRACT: event.keyCode = SWT.KEYPAD_SUBTRACT; break;
+  case java.awt.event.KeyEvent.VK_DECIMAL: event.keyCode = SWT.KEYPAD_DECIMAL; break;
+  case java.awt.event.KeyEvent.VK_DIVIDE: event.keyCode = SWT.KEYPAD_DIVIDE; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD0: event.keyCode = SWT.KEYPAD_0; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD1: event.keyCode = SWT.KEYPAD_1; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD2: event.keyCode = SWT.KEYPAD_2; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD3: event.keyCode = SWT.KEYPAD_3; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD4: event.keyCode = SWT.KEYPAD_4; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD5: event.keyCode = SWT.KEYPAD_5; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD6: event.keyCode = SWT.KEYPAD_6; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD7: event.keyCode = SWT.KEYPAD_7; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD8: event.keyCode = SWT.KEYPAD_8; break;
+  case java.awt.event.KeyEvent.VK_NUMPAD9: event.keyCode = SWT.KEYPAD_9; break;
+  case java.awt.event.KeyEvent.VK_EQUALS: event.keyCode = SWT.KEYPAD_EQUAL; break;
+  /* Other keys */
+  case java.awt.event.KeyEvent.VK_CAPS_LOCK: event.keyCode = SWT.CAPS_LOCK; break;
+  case java.awt.event.KeyEvent.VK_NUM_LOCK: event.keyCode = SWT.NUM_LOCK; break;
+  case java.awt.event.KeyEvent.VK_SCROLL_LOCK: event.keyCode = SWT.SCROLL_LOCK; break;
+  case java.awt.event.KeyEvent.VK_PAUSE: event.keyCode = SWT.PAUSE; break;
+  case java.awt.event.KeyEvent.VK_CANCEL: event.keyCode = SWT.BREAK; break;
+  case java.awt.event.KeyEvent.VK_PRINTSCREEN: event.keyCode = SWT.PRINT_SCREEN; break;
+  case java.awt.event.KeyEvent.VK_HELP: event.keyCode = SWT.HELP; break;
+  }
+  event.character = c;
+  event.stateMask = getDisplay().getInputState();
   return event;
 }
 

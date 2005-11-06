@@ -25,7 +25,7 @@ public class Test {
 //      {"46", "intercept mouse events (drag a button with the mouse)"},
     }}, new Object[] {"Control", new String[][] {
       {"14", "detect mouse enter, exit and hover events"},
-//      {"25", "print key state, code and character"},
+      {"25", "print key state, code and character"},
       {"62", "print mouse state and button (down, move, up)"},
     }}, new Object[] {"CoolBar", new String[][] {
 //      {"20", "create a cool bar"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "62";
+  static String snippetNumber = "25";
 
   public static void main(String[] args) {
     String number = null;

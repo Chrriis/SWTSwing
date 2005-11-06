@@ -15,6 +15,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -68,6 +70,7 @@ class CShellFrame extends JFrame implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
+    contentPane.setFocusable(true);
     contentPane.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
         handle.processEvent(e);
@@ -95,6 +98,14 @@ class CShellFrame extends JFrame implements CShell {
     });
     contentPane.addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
         handle.processEvent(e);
       }
     });
@@ -220,6 +231,7 @@ class CShellDialog extends JDialog implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
+    contentPane.setFocusable(true);
     contentPane.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
         handle.processEvent(e);
@@ -247,6 +259,14 @@ class CShellDialog extends JDialog implements CShell {
     });
     contentPane.addMouseWheelListener(new MouseWheelListener() {
       public void mouseWheelMoved(MouseWheelEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        handle.processEvent(e);
+      }
+      public void keyReleased(KeyEvent e) {
         handle.processEvent(e);
       }
     });

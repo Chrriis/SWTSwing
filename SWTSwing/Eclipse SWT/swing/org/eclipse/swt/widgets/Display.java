@@ -361,11 +361,11 @@ public class Display extends Device {
   static {
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
       public void eventDispatched(AWTEvent event) {
-        java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)event;
+        java.awt.event.InputEvent me = (java.awt.event.InputEvent)event;
         previousModifiersEx = modifiersEx;
         modifiersEx = me.getModifiersEx();
       }
-    }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+    }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
   }
 	/*
 	* TEMPORARY CODE.  Install the runnable that

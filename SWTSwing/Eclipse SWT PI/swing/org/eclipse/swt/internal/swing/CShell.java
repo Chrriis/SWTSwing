@@ -15,8 +15,11 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -65,8 +68,33 @@ class CShellFrame extends JFrame implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
-    contentPane.addMouseListener(new MouseAdapter() {
+    contentPane.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseClicked(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseEntered(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseExited(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addMouseMotionListener(new MouseMotionListener() {
+      public void mouseDragged(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addMouseWheelListener(new MouseWheelListener() {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         handle.processEvent(e);
       }
     });
@@ -192,8 +220,33 @@ class CShellDialog extends JDialog implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
-    contentPane.addMouseListener(new MouseAdapter() {
+    contentPane.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseClicked(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseEntered(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseExited(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addMouseMotionListener(new MouseMotionListener() {
+      public void mouseDragged(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addMouseWheelListener(new MouseWheelListener() {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         handle.processEvent(e);
       }
     });

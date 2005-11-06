@@ -12,8 +12,11 @@ package org.eclipse.swt.internal.swing;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -48,8 +51,33 @@ class CSeparator extends JPanel implements CLabel {
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     }
-    separator.addMouseListener(new MouseAdapter() {
+    separator.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseClicked(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseEntered(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseExited(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    separator.addMouseMotionListener(new MouseMotionListener() {
+      public void mouseDragged(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    separator.addMouseWheelListener(new MouseWheelListener() {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         handle.processEvent(e);
       }
     });
@@ -87,8 +115,33 @@ class CLabelImplementation extends JLabel implements CLabel {
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     }
-    addMouseListener(new MouseAdapter() {
+    addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseClicked(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseEntered(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseExited(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addMouseMotionListener(new MouseMotionListener() {
+      public void mouseDragged(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addMouseWheelListener(new MouseWheelListener() {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         handle.processEvent(e);
       }
     });

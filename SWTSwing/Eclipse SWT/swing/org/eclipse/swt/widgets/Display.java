@@ -362,6 +362,7 @@ public class Display extends Device {
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
       public void eventDispatched(AWTEvent event) {
         java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)event;
+        previousModifiersEx = modifiersEx;
         modifiersEx = me.getModifiersEx();
       }
     }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
@@ -2209,7 +2210,12 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
   return new Rectangle(point.x, point.y, point.x + width - x, point.y + height - y);
 }
 
+static int previousModifiersEx;
 static int modifiersEx;
+
+int getPreviousInputState() {
+  return convertModifiersEx(previousModifiersEx);
+}
 
 int getInputState() {
   return convertModifiersEx(modifiersEx);

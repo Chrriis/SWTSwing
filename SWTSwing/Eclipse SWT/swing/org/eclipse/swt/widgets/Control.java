@@ -3927,6 +3927,10 @@ public boolean setParent (Composite parent) {
 //	return null;
 //}
 
+private long mouseHoverTimeStamp;
+private Thread mouseHoverThread;
+private java.awt.event.MouseEvent mouseHoverEvent;
+
 /**
  * the entry point for callbacks 
  * (Warning: This method is platform dependent)
@@ -3942,20 +3946,94 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
     Display display = getDisplay();
     display.startExclusiveSection();
-    Event event = new Event();
+    postEvent(SWT.MouseDown, createMouseEvent((java.awt.event.MouseEvent)e, false));
+    display.stopExclusiveSection();
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_RELEASED: {
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    postEvent(SWT.MouseUp, createMouseEvent((java.awt.event.MouseEvent)e, true));
+    display.stopExclusiveSection();
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_CLICKED: {
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-    java.awt.Point point = convertPointToControl(me.getComponent(), me.getPoint());
-    event.x = point.x;
-    event.y = point.y;
-    if((me.getModifiersEx() & java.awt.event.MouseEvent.BUTTON1_DOWN_MASK) != 0) {
-      event.button = 1;
-    } else if((me.getModifiersEx() & java.awt.event.MouseEvent.BUTTON2_DOWN_MASK) != 0) {
-      event.button = 2;
-    } else if((me.getModifiersEx() & java.awt.event.MouseEvent.BUTTON3_DOWN_MASK) != 0) {
-      event.button = 3;
+    if(me.getClickCount() == 2) {
+      Display display = getDisplay();
+      display.startExclusiveSection();
+      postEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false));
+      display.stopExclusiveSection();
     }
-    event.stateMask = getDisplay().getInputState();
-    postEvent(SWT.MouseDown, event);
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_DRAGGED:
+  case java.awt.event.MouseEvent.MOUSE_MOVED: {
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+    postEvent(SWT.MouseMove, createMouseEvent(me, false));
+    long now = System.currentTimeMillis();
+    mouseHoverTimeStamp = now + 500;
+    mouseHoverEvent = me;
+    if(mouseHoverThread == null) {
+      mouseHoverThread = new Thread("Mouse Hover Thread") {
+        public void run() {
+          while(mouseHoverThread == this) {
+            try {
+              sleep(mouseHoverTimeStamp - System.currentTimeMillis());
+            } catch(Exception e) {}
+            if(mouseHoverThread != this) {
+              return;
+            }
+            if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
+              final Thread t = this;
+              SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  if(mouseHoverThread != t) {
+                    return;
+                  }
+                  if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
+                    mouseHoverThread = null;
+                    java.awt.event.MouseEvent me = mouseHoverEvent;
+                    mouseHoverEvent = null;
+                    if(me.getComponent().contains(me.getPoint())) {
+                      Display display = getDisplay();
+                      display.startExclusiveSection();
+                      postEvent(SWT.MouseHover, createMouseEvent(me, false));
+                      display.stopExclusiveSection();
+                    }
+                  }
+                }
+              });
+            }
+          }
+        }
+      };
+      mouseHoverThread.start();
+    }
+    display.stopExclusiveSection();
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_ENTERED: {
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    postEvent(SWT.MouseEnter, createMouseEvent((java.awt.event.MouseEvent)e, false));
+    display.stopExclusiveSection();
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_EXITED: {
+    mouseHoverThread = null;
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    postEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
+    display.stopExclusiveSection();
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_WHEEL: {
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    postEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false));
     display.stopExclusiveSection();
     break;
   }
@@ -3969,12 +4047,25 @@ public void processEvent(AWTEvent e) {
   }
 }
 
-protected java.awt.Point convertPointToControl(java.awt.Component source, java.awt.Point point) {
+private Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputState) {
+  Event event = new Event();
   Container container = handle;
   if(container instanceof RootPaneContainer) {
     container = ((RootPaneContainer)container).getContentPane();
   }
-  return SwingUtilities.convertPoint(source, point, container);
+  java.awt.Point point = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), container);
+  event.x = point.x;
+  event.y = point.y;
+  int modifiersEx = me.getModifiersEx();
+  if((modifiersEx & java.awt.event.MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+    event.button = 1;
+  } else if((modifiersEx & java.awt.event.MouseEvent.BUTTON2_DOWN_MASK) != 0) {
+    event.button = 2;
+  } else if((modifiersEx & java.awt.event.MouseEvent.BUTTON3_DOWN_MASK) != 0) {
+    event.button = 3;
+  }
+  event.stateMask = isPreviousInputState? getDisplay().getPreviousInputState(): getDisplay().getInputState();
+  return event;
 }
 
 }

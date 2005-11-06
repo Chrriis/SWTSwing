@@ -13,8 +13,11 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -52,8 +55,33 @@ class CGroupImplementation extends JPanel implements CGroup {
       contentPane = new JPanel(null);
       add(contentPane, BorderLayout.CENTER);
     }
-    contentPane.addMouseListener(new MouseAdapter() {
+    contentPane.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseClicked(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseEntered(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseExited(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addMouseMotionListener(new MouseMotionListener() {
+      public void mouseDragged(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addMouseWheelListener(new MouseWheelListener() {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         handle.processEvent(e);
       }
     });

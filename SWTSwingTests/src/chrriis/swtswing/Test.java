@@ -24,9 +24,9 @@ public class Test {
 //      {"115", "force radio behavior on two different composites"},
 //      {"46", "intercept mouse events (drag a button with the mouse)"},
     }}, new Object[] {"Control", new String[][] {
-//      {"14", "detect mouse enter, exit and hover events"},
+      {"14", "detect mouse enter, exit and hover events"},
 //      {"25", "print key state, code and character"},
-//      {"62", "print mouse state and button (down, move, up)"},
+      {"62", "print mouse state and button (down, move, up)"},
     }}, new Object[] {"CoolBar", new String[][] {
 //      {"20", "create a cool bar"},
     }}, new Object[] {"CTabFolder", new String[][] {
@@ -59,7 +59,7 @@ public class Test {
     }}, new Object[] {"GC", new String[][] {
       {"13", "draw a thick line"}, //<-- Works, but repaint in Swing is too fast and hides the result.
 //      {"93", "measure a string"},
-//      {"66", "implement a simple scribble program"},
+      {"66", "implement a simple scribble program"},
 //      {"70", "create an icon (in memory)"},
 //      {"95", "capture a widget image with a GC"},
     }}, new Object[] {"GridLayout", new String[][] {
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "5";
+  static String snippetNumber = "62";
 
   public static void main(String[] args) {
     String number = null;

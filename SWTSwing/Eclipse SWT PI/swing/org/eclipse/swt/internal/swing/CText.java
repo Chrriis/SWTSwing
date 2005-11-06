@@ -13,8 +13,11 @@ import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -50,8 +53,33 @@ class CTextMulti extends JScrollPane implements CText {
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
       setBorder(null);
     }
-    textArea.addMouseListener(new MouseAdapter() {
+    textArea.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseClicked(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseEntered(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseExited(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    textArea.addMouseMotionListener(new MouseMotionListener() {
+      public void mouseDragged(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    textArea.addMouseWheelListener(new MouseWheelListener() {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         handle.processEvent(e);
       }
     });
@@ -180,8 +208,33 @@ class CTextField extends JScrollPane implements CText {
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
       setBorder(null);
     }
-    passwordField.addMouseListener(new MouseAdapter() {
+    passwordField.addMouseListener(new MouseListener() {
       public void mousePressed(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseClicked(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseEntered(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseExited(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    passwordField.addMouseMotionListener(new MouseMotionListener() {
+      public void mouseDragged(MouseEvent e) {
+        handle.processEvent(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    passwordField.addMouseWheelListener(new MouseWheelListener() {
+      public void mouseWheelMoved(MouseWheelEvent e) {
         handle.processEvent(e);
       }
     });
@@ -197,11 +250,15 @@ class CTextField extends JScrollPane implements CText {
   }
 
   public String getText() {
-    return passwordField.getText();
+    return new String(passwordField.getPassword());
   }
 
   public String getText(int offs, int len) throws BadLocationException {
-    return passwordField.getText(offs, len);
+    try {
+      return new String(passwordField.getPassword()).substring(offs, len + offs);
+    } catch(Exception e) {
+      throw new BadLocationException(e.getMessage(), offs);
+    }
   }
 
   public void setText(String text) {

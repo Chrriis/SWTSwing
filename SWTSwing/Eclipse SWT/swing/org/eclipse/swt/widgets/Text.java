@@ -11,7 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.AWTEvent;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.text.BadLocationException;
 
@@ -1677,5 +1680,23 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 //	}
 //	return super.wmCommandChild (wParam, lParam);
 //}
+
+public void processEvent(AWTEvent e) {
+  switch(e.getID()) {
+  case ActionEvent.ACTION_PERFORMED:
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    if(isDisposed()) {
+      display.stopExclusiveSection();
+      super.processEvent(e);
+      return;
+    }
+    postEvent(SWT.DefaultSelection);
+    super.processEvent(e);
+    display.stopExclusiveSection();
+    return;
+  }
+  super.processEvent(e);
+}
 
 }

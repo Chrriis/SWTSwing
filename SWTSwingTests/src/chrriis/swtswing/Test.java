@@ -21,8 +21,8 @@ public class Test {
       {"9", "scroll a child control automatically"},
 //      {"75", "set the tab traversal order of children"},
 //      {"98", "create and dispose children of a composite"},
-//      {"115", "force radio behavior on two different composites"},
-//      {"46", "intercept mouse events (drag a button with the mouse)"},
+      {"115", "force radio behavior on two different composites"},
+      {"46", "intercept mouse events (drag a button with the mouse)"},
     }}, new Object[] {"Control", new String[][] {
       {"14", "detect mouse enter, exit and hover events"},
       {"25", "print key state, code and character"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "25";
+  static String snippetNumber = "46";
 
   public static void main(String[] args) {
     String number = null;

@@ -109,6 +109,25 @@ class CShellFrame extends JFrame implements CShell {
         handle.processEvent(e);
       }
     });
+//    contentPane.addFocusListener(new FocusListener() {
+//      public void focusGained(FocusEvent e) {
+//        handle.processEvent(e);
+//      }
+//      public void focusLost(FocusEvent e) {
+//        handle.processEvent(e);
+//      }
+//    });
+    addComponentListener(new ComponentAdapter() {
+      public void componentHidden(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentShown(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentMoved(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
     contentPane.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent e) {
         handle.processEvent(e);
@@ -121,6 +140,21 @@ class CShellFrame extends JFrame implements CShell {
       public void windowClosing(WindowEvent e) {
         handle.processEvent(e);
       };
+      public void windowActivated(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowDeactivated(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowClosed(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowIconified(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowDeiconified(WindowEvent e) {
+        handle.processEvent(e);
+      }
     });
   }
 
@@ -270,7 +304,26 @@ class CShellDialog extends JDialog implements CShell {
         handle.processEvent(e);
       }
     });
+//    contentPane.addFocusListener(new FocusListener() {
+//      public void focusGained(FocusEvent e) {
+//        handle.processEvent(e);
+//      }
+//      public void focusLost(FocusEvent e) {
+//        handle.processEvent(e);
+//      }
+//    });
     addComponentListener(new ComponentAdapter() {
+      public void componentHidden(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentShown(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentMoved(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    contentPane.addComponentListener(new ComponentAdapter() {
       public void componentResized(ComponentEvent e) {
         handle.processEvent(e);
       }
@@ -282,6 +335,21 @@ class CShellDialog extends JDialog implements CShell {
       public void windowClosing(WindowEvent e) {
         handle.processEvent(e);
       };
+      public void windowActivated(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowDeactivated(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowClosed(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowIconified(WindowEvent e) {
+        handle.processEvent(e);
+      }
+      public void windowDeiconified(WindowEvent e) {
+        handle.processEvent(e);
+      }
     });
   }
 

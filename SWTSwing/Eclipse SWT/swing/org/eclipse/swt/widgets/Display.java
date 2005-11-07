@@ -2213,11 +2213,11 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 static int previousModifiersEx;
 static int modifiersEx;
 
-int getPreviousInputState() {
+static int getPreviousInputState() {
   return convertModifiersEx(previousModifiersEx);
 }
 
-int getInputState() {
+static int getInputState() {
   return convertModifiersEx(modifiersEx);
 }
 

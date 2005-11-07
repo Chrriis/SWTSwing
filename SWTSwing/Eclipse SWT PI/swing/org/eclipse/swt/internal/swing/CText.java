@@ -11,8 +11,10 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
 import java.awt.Point;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -93,8 +95,25 @@ class CTextMulti extends JScrollPane implements CText {
         handle.processEvent(e);
       }
     });
-    addComponentListener(new ComponentAdapter() {
+    textArea.addFocusListener(new FocusListener() {
+      public void focusGained(FocusEvent e) {
+        handle.processEvent(e);
+      }
+      public void focusLost(FocusEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentListener() {
+      public void componentHidden(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentShown(ComponentEvent e) {
+        handle.processEvent(e);
+      }
       public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentMoved(ComponentEvent e) {
         handle.processEvent(e);
       }
     });
@@ -256,8 +275,25 @@ class CTextField extends JScrollPane implements CText {
         handle.processEvent(e);
       }
     });
-    addComponentListener(new ComponentAdapter() {
+    passwordField.addFocusListener(new FocusListener() {
+      public void focusGained(FocusEvent e) {
+        handle.processEvent(e);
+      }
+      public void focusLost(FocusEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    addComponentListener(new ComponentListener() {
+      public void componentHidden(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentShown(ComponentEvent e) {
+        handle.processEvent(e);
+      }
       public void componentResized(ComponentEvent e) {
+        handle.processEvent(e);
+      }
+      public void componentMoved(ComponentEvent e) {
         handle.processEvent(e);
       }
     });

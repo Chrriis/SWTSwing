@@ -266,52 +266,9 @@ class CShellDialog extends JDialog implements CShell {
     }
     contentPane = panel;
     contentPane.setFocusable(true);
-    contentPane.addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-//    contentPane.addFocusListener(new FocusListener() {
-//      public void focusGained(FocusEvent e) {
-//        handle.processEvent(e);
-//      }
-//      public void focusLost(FocusEvent e) {
-//        handle.processEvent(e);
-//      }
-//    });
+    Utils.installMouseListener(contentPane, handle);
+    Utils.installKeyListener(contentPane, handle);
+//    Utils.installFocusListener(contentPane, handle);
     addComponentListener(new ComponentAdapter() {
       public void componentHidden(ComponentEvent e) {
         handle.processEvent(e);

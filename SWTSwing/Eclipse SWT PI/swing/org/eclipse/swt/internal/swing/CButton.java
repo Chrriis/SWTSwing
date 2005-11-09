@@ -11,17 +11,6 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -67,66 +56,10 @@ class CButtonArrow extends CArrowButton implements CButton {
   
   protected void init(int style) {
     CButtonCommon.applyStyle(this, style);
-    addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -138,6 +71,7 @@ class CButtonArrow extends CArrowButton implements CButton {
   }
   
   protected void fireActionPerformed(ActionEvent e) {
+    super.fireActionPerformed(e);
     handle.processEvent(e);
   }
 
@@ -154,66 +88,10 @@ class CButtonPush extends JButton implements CButton {
   
   protected void init(int style) {
     CButtonCommon.applyStyle(this, style);
-    addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -225,6 +103,7 @@ class CButtonPush extends JButton implements CButton {
   }
 
   protected void fireActionPerformed(ActionEvent e) {
+    super.fireActionPerformed(e);
     handle.processEvent(e);
   }
 
@@ -241,66 +120,10 @@ class CButtonCheck extends JCheckBox implements CButton {
   
   protected void init(int style) {
     CButtonCommon.applyStyle(this, style);
-    addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -312,6 +135,7 @@ class CButtonCheck extends JCheckBox implements CButton {
   }
   
   protected void fireActionPerformed(ActionEvent e) {
+    super.fireActionPerformed(e);
     handle.processEvent(e);
   }
 
@@ -328,66 +152,10 @@ class CButtonToggle extends JToggleButton implements CButton {
   
   protected void init(int style) {
     CButtonCommon.applyStyle(this, style);
-    addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -399,6 +167,7 @@ class CButtonToggle extends JToggleButton implements CButton {
   }
 
   protected void fireActionPerformed(ActionEvent e) {
+    super.fireActionPerformed(e);
     handle.processEvent(e);
   }
 
@@ -415,66 +184,10 @@ class CButtonRadio extends JRadioButton implements CButton {
   
   protected void init(int style) {
     CButtonCommon.applyStyle(this, style);
-    addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -486,6 +199,7 @@ class CButtonRadio extends JRadioButton implements CButton {
   }
   
   protected void fireActionPerformed(ActionEvent e) {
+    super.fireActionPerformed(e);
     handle.processEvent(e);
   }
 

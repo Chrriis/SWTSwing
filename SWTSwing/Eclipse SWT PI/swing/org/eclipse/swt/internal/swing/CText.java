@@ -11,17 +11,6 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
 import java.awt.Point;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -57,66 +46,10 @@ class CTextMulti extends JScrollPane implements CText {
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
       setBorder(null);
     }
-    textArea.addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    textArea.addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    textArea.addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    textArea.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    textArea.addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(textArea, handle);
+    Utils.installKeyListener(textArea, handle);
+    Utils.installFocusListener(textArea, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -237,66 +170,10 @@ class CTextField extends JScrollPane implements CText {
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
       setBorder(null);
     }
-    passwordField.addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    passwordField.addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    passwordField.addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    passwordField.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    passwordField.addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(passwordField, handle);
+    Utils.installKeyListener(passwordField, handle);
+    Utils.installFocusListener(passwordField, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {

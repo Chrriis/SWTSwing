@@ -11,17 +11,6 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -59,66 +48,10 @@ class CGroupImplementation extends JPanel implements CGroup {
       contentPane = new JPanel(null);
       add(contentPane, BorderLayout.CENTER);
     }
-    contentPane.addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-        handle.processEvent(e);
-      }
-      public void focusLost(FocusEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    addComponentListener(new ComponentListener() {
-      public void componentHidden(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentShown(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentResized(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-      public void componentMoved(ComponentEvent e) {
-        handle.processEvent(e);
-      }
-    });
+    Utils.installMouseListener(contentPane, handle);
+    Utils.installKeyListener(contentPane, handle);
+    Utils.installFocusListener(contentPane, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {

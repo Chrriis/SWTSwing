@@ -10,14 +10,20 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.swing.event.FilterEvent;
 import org.eclipse.swt.widgets.Text;
 
 class CTextMulti extends JScrollPane implements CText {
@@ -28,6 +34,7 @@ class CTextMulti extends JScrollPane implements CText {
   public CTextMulti(Text text, int style) {
     this.handle = text;
     textArea = new JTextArea(4, 7);
+    setFocusable(false);
     getViewport().setView(textArea);
     init(style);
   }
@@ -50,6 +57,20 @@ class CTextMulti extends JScrollPane implements CText {
     Utils.installKeyListener(textArea, handle);
     Utils.installFocusListener(textArea, handle);
     Utils.installComponentListener(this, handle);
+    ((AbstractDocument)textArea.getDocument()).setDocumentFilter(new DocumentFilter() {
+//      public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+//      }
+      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+        FilterEvent filterEvent = new FilterEvent(this, text, offset, length);
+        handle.processEvent(filterEvent);
+        text = filterEvent.getText();
+        if(text != null) {
+          super.replace(fb, offset, length, text, attrs);
+        }
+      }
+//      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+//      }
+    });
   }
 
   public Container getClientArea() {
@@ -141,6 +162,23 @@ class CTextMulti extends JScrollPane implements CText {
     return null;
   }
 
+  public void showSelection() {
+    try {
+      Rectangle rec1 = textArea.modelToView(getSelectionStart());
+      Rectangle rec2 = textArea.modelToView(getSelectionEnd());
+      if(rec1.y < rec2.y) {
+        Dimension size = textArea.getSize();
+        rec1.x = 0;
+        rec1.width = size.width;
+        rec2.x = 0;
+        rec2.width = size.width;
+      }
+      rec1.add(rec2);
+      scrollRectToVisible(rec1);
+    } catch(Exception e) {
+    }
+  }
+
 }
 
 class CTextField extends JScrollPane implements CText {
@@ -152,6 +190,7 @@ class CTextField extends JScrollPane implements CText {
     this.handle = text;
     passwordField = new JPasswordField();
     passwordField.setEchoChar('\0');
+    setFocusable(false);
     getViewport().setView(passwordField);
     init(style);
   }
@@ -174,6 +213,21 @@ class CTextField extends JScrollPane implements CText {
     Utils.installKeyListener(passwordField, handle);
     Utils.installFocusListener(passwordField, handle);
     Utils.installComponentListener(this, handle);
+    ((AbstractDocument)passwordField.getDocument()).setDocumentFilter(new DocumentFilter() {
+      public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+        int caretPosition = getCaretPosition();
+        FilterEvent filterEvent = new FilterEvent(this, string, caretPosition, caretPosition);
+        handle.processEvent(filterEvent);
+        string = filterEvent.getText();
+        if(string != null) {
+          super.insertString(fb, offset, string, attr);
+        }
+      }
+//      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+//      }
+//      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+//      }
+    });
   }
 
   public Container getClientArea() {
@@ -262,6 +316,16 @@ class CTextField extends JScrollPane implements CText {
     return new Point(passwordField.getCaretPosition(), 0);
   }
 
+  public void showSelection() {
+    try {
+      Rectangle rec1 = passwordField.modelToView(getSelectionStart());
+      Rectangle rec2 = passwordField.modelToView(getSelectionEnd());
+      rec1.add(rec2);
+      scrollRectToVisible(rec1);
+    } catch(Exception e) {
+    }
+  }
+
 }
 
 /**
@@ -322,5 +386,7 @@ public interface CText extends CScrollable {
   public int getLineCount();
 
   public Point getCaretLocation();
+
+  public void showSelection();
 
 }

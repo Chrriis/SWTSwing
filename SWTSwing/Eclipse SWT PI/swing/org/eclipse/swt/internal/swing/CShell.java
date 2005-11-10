@@ -15,13 +15,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -70,53 +63,11 @@ class CShellFrame extends JFrame implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
-    contentPane.setFocusable(true);
-    contentPane.addMouseListener(new MouseListener() {
-      public void mousePressed(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseReleased(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseClicked(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseEntered(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseExited(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addMouseMotionListener(new MouseMotionListener() {
-      public void mouseDragged(MouseEvent e) {
-        handle.processEvent(e);
-      }
-      public void mouseMoved(MouseEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addMouseWheelListener(new MouseWheelListener() {
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    contentPane.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        handle.processEvent(e);
-      }
-      public void keyReleased(KeyEvent e) {
-        handle.processEvent(e);
-      }
-    });
-//    contentPane.addFocusListener(new FocusListener() {
-//      public void focusGained(FocusEvent e) {
-//        handle.processEvent(e);
-//      }
-//      public void focusLost(FocusEvent e) {
-//        handle.processEvent(e);
-//      }
-//    });
+    setFocusable(false);
+//    contentPane.setFocusable(true);
+    Utils.installMouseListener(contentPane, handle);
+    Utils.installKeyListener(contentPane, handle);
+//    Utils.installFocusListener(contentPane, handle);
     addComponentListener(new ComponentAdapter() {
       public void componentHidden(ComponentEvent e) {
         handle.processEvent(e);
@@ -135,7 +86,7 @@ class CShellFrame extends JFrame implements CShell {
     });
     addWindowListener(new WindowAdapter() {
       public void windowOpened(WindowEvent e) {
-        transferFocusDownCycle();
+//        transferFocusDownCycle();
       }
       public void windowClosing(WindowEvent e) {
         handle.processEvent(e);
@@ -265,7 +216,8 @@ class CShellDialog extends JDialog implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
-    contentPane.setFocusable(true);
+    setFocusable(false);
+//    contentPane.setFocusable(true);
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
 //    Utils.installFocusListener(contentPane, handle);
@@ -287,7 +239,7 @@ class CShellDialog extends JDialog implements CShell {
     });
     addWindowListener(new WindowAdapter() {
       public void windowOpened(WindowEvent e) {
-        transferFocusDownCycle();
+//        transferFocusDownCycle();
       }
       public void windowClosing(WindowEvent e) {
         handle.processEvent(e);

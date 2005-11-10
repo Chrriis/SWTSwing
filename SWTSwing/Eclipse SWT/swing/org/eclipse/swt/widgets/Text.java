@@ -20,6 +20,7 @@ import javax.swing.text.BadLocationException;
 
 import org.eclipse.swt.internal.swing.CLabel;
 import org.eclipse.swt.internal.swing.CText;
+import org.eclipse.swt.internal.swing.event.FilterEvent;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -1324,7 +1325,7 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget ();
-	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
+  ((CText)handle).showSelection();
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
@@ -1683,6 +1684,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 public void processEvent(AWTEvent e) {
   switch(e.getID()) {
+  case FilterEvent.ID:
   case ActionEvent.ACTION_PERFORMED:
     Display display = getDisplay();
     display.startExclusiveSection();
@@ -1691,7 +1693,15 @@ public void processEvent(AWTEvent e) {
       super.processEvent(e);
       return;
     }
-    postEvent(SWT.DefaultSelection);
+    switch(e.getID()) {
+    case FilterEvent.ID:
+      FilterEvent filterEvent = (FilterEvent)e;
+      filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getEnd(), null));
+      break;
+    case ActionEvent.ACTION_PERFORMED:
+      postEvent(SWT.DefaultSelection);
+      break;
+    }
     super.processEvent(e);
     display.stopExclusiveSection();
     return;

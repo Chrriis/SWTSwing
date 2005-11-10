@@ -447,10 +447,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
   int width = size.width;
   int height = size.height;
   if(wHint != SWT.DEFAULT) {
-    width = wHint + width - contentSize.width;
+    width = Math.max(width, wHint + width - contentSize.width);
   }
   if(hHint != SWT.DEFAULT) {
-    height = hHint + height - contentSize.height;
+    height = Math.max(height, hHint + height - contentSize.height);
   }
 	return new Point (width, height);
 }

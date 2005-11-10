@@ -13,6 +13,7 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -42,6 +43,7 @@ public class DisabledStatePanel extends JPanel {
         boolean isRevalidationNeeded = false;
         if(parent != null) {
           parent.add(component);
+          checkFocus();
           isRevalidationNeeded = true;
         } else {
           parent = getParent();
@@ -83,9 +85,26 @@ public class DisabledStatePanel extends JPanel {
     if(parent != null) {
       parent.add(this, 0);
       revalidate();
+      checkFocus();
     }
     component.addHierarchyListener(hierarchyListener);
     component.addComponentListener(componentListener);
+  }
+
+  protected void checkFocus() {
+    Component component = control.handle;
+    Container parent = component.getParent();
+    if(component.isFocusOwner()) {
+      parent.transferFocus();
+    } else if(component instanceof Container) {
+      Window window = SwingUtilities.getWindowAncestor(parent);
+      if(window != null) {
+        Component focusOwner = window.getFocusOwner();
+        if(focusOwner != null && ((Container)component).isAncestorOf(focusOwner)) {
+          parent.transferFocus();
+        }
+      }
+    }
   }
 
   protected void processEvent(AWTEvent e) {

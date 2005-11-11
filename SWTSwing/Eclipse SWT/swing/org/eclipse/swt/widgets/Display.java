@@ -3595,7 +3595,9 @@ protected int exclusiveSectionCount = 0;
 
 protected void startExclusiveSection() {
   if(!SwingUtilities.isEventDispatchThread()) {
-    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");
+    exclusiveSectionCount++;
+    return;
+//    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");
   }
   synchronized(UI_LOCK) {
     exclusiveSectionCount++;
@@ -3611,7 +3613,9 @@ protected void startExclusiveSection() {
 
 protected void stopExclusiveSection() {
   if(!SwingUtilities.isEventDispatchThread()) {
-    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");
+    exclusiveSectionCount--;
+    return;
+//    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");
   }
   synchronized(UI_LOCK) {
     exclusiveSectionCount--;

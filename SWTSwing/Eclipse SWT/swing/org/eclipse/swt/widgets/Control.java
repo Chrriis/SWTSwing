@@ -16,6 +16,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
+import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -443,14 +444,19 @@ public Point computeSize (int wHint, int hHint) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
   Dimension size = handle.getPreferredSize();
-  Dimension contentSize = ((CComponent)handle).getClientArea().getPreferredSize();
+  Container clientArea = ((CComponent)handle).getClientArea();
+  Dimension contentSize = clientArea.getPreferredSize();
+  Insets insets = clientArea.getInsets();
+  contentSize.width -= insets.left + insets.right;
+  contentSize.height -= insets.top + insets.bottom;
   int width = size.width;
   int height = size.height;
   if(wHint != SWT.DEFAULT) {
-    width = Math.max(width, wHint + width - contentSize.width);
+    
+    width = wHint + width - contentSize.width;
   }
   if(hHint != SWT.DEFAULT) {
-    height = Math.max(height, hHint + height - contentSize.height);
+    height = hHint + height - contentSize.height;
   }
 	return new Point (width, height);
 }

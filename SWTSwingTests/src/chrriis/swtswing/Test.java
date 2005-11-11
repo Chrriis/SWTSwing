@@ -58,7 +58,7 @@ public class Test {
 //      {"71", "create a simple OK/CANCEL dialog using form layout"},
     }}, new Object[] {"GC", new String[][] {
       {"13", "draw a thick line"}, //<-- Works, but repaint in Swing is too fast and hides the result.
-//      {"93", "measure a string"},
+      {"93", "measure a string"},
       {"66", "implement a simple scribble program"},
 //      {"70", "create an icon (in memory)"},
 //      {"95", "capture a widget image with a GC"},
@@ -124,13 +124,13 @@ public class Test {
     }}, new Object[] {"TableEditor", new String[][] {
 //      {"88", "edit a cell in a table (in place)"},
     }}, new Object[] {"Text", new String[][] {
-//      {"11", "set the selection (i-beam)"},
-//      {"12", "set the selection (start, end)"},
+      {"11", "set the selection (i-beam)"},
+      {"12", "set the selection (start, end)"},
       {"19", "verify input (only allow digits)"},
       {"22", "select all the text in the control"},
 //      {"24", "detect CR in a text control (default selelection)"},
       {"55", "resize a text control (show about 10 characters)"},
-//      {"116", "stop CR from going to the default button"},
+      {"116", "stop CR from going to the default button"},
 //      {"117", "add a select all menu item to the control"},
     }}, new Object[] {"ToolBar", new String[][] {
 //      {"18", "create a tool bar (text)"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "19";
+  static String snippetNumber = "72";
 
   public static void main(String[] args) {
     String number = null;

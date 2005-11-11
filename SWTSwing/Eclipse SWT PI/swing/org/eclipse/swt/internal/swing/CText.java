@@ -9,10 +9,14 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.AWTEvent;
+import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -23,7 +27,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.swing.event.FilterEvent;
 import org.eclipse.swt.widgets.Text;
 
 class CTextMulti extends JScrollPane implements CText {
@@ -57,15 +60,24 @@ class CTextMulti extends JScrollPane implements CText {
     Utils.installKeyListener(textArea, handle);
     Utils.installFocusListener(textArea, handle);
     Utils.installComponentListener(this, handle);
+    // TODO: find out the expected behaviour for default selection event
+//    textArea.addActionListener(new ActionListener() {
+//      public void actionPerformed(ActionEvent e) {
+//        handle.processEvent(e);
+//      }
+//    });
     ((AbstractDocument)textArea.getDocument()).setDocumentFilter(new DocumentFilter() {
 //      public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
 //      }
       public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+        if(getText().length() - length + text.length() > getTextLimit()) {
+          return;
+        }
         FilterEvent filterEvent = new FilterEvent(this, text, offset, length);
         handle.processEvent(filterEvent);
-        text = filterEvent.getText();
-        if(text != null) {
-          super.replace(fb, offset, length, text, attrs);
+        String s = filterEvent.getText();
+        if(s != null) {
+          super.replace(fb, offset, length, s, attrs);
         }
       }
 //      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
@@ -156,7 +168,8 @@ class CTextMulti extends JScrollPane implements CText {
     int caretPosition = textArea.getCaretPosition();
     try {
       int line = textArea.getLineOfOffset(caretPosition);
-      return new Point(caretPosition - textArea.getLineStartOffset(line), line);
+      int width = textArea.getFontMetrics(textArea.getFont()).stringWidth(textArea.getText().substring(textArea.getLineStartOffset(line), caretPosition));
+      return new Point(width, line * getRowHeight());
     } catch(BadLocationException e) {
     }
     return null;
@@ -177,6 +190,45 @@ class CTextMulti extends JScrollPane implements CText {
       scrollRectToVisible(rec1);
     } catch(Exception e) {
     }
+  }
+
+  public int getCaretLineNumber() {
+    try {
+      return textArea.getLineOfOffset(textArea.getCaretPosition());
+    } catch(Exception e) {
+      return -1;
+    }
+  }
+
+  public int getRowHeight() {
+    return textArea.getFontMetrics(textArea.getFont()).getHeight();
+  }
+
+  public void setComponentOrientation(ComponentOrientation o) {
+    super.setComponentOrientation(o);
+    textArea.setComponentOrientation(o);
+  }
+
+  public Point getViewPosition() {
+    return getViewport().getViewPosition();
+  }
+
+  public void setViewPosition(Point p) {
+    getViewport().setViewPosition(p);
+  }
+
+  public void setTextLimit(int limit) {
+    textLimit = limit;
+    String text = getText();
+    if(text.length() > limit) {
+      setText(text.substring(0, limit));
+    }
+  }
+
+  protected int textLimit = Text.LIMIT;
+
+  public int getTextLimit() {
+    return textLimit;
   }
 
 }
@@ -213,18 +265,25 @@ class CTextField extends JScrollPane implements CText {
     Utils.installKeyListener(passwordField, handle);
     Utils.installFocusListener(passwordField, handle);
     Utils.installComponentListener(this, handle);
+    passwordField.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        handle.processEvent(e);
+      }
+    });
     ((AbstractDocument)passwordField.getDocument()).setDocumentFilter(new DocumentFilter() {
-      public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-        int caretPosition = getCaretPosition();
-        FilterEvent filterEvent = new FilterEvent(this, string, caretPosition, caretPosition);
+//      public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+//      }
+      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+        if(getText().length() - length + text.length() > getTextLimit()) {
+          return;
+        }
+        FilterEvent filterEvent = new FilterEvent(this, text, offset, length);
         handle.processEvent(filterEvent);
-        string = filterEvent.getText();
-        if(string != null) {
-          super.insertString(fb, offset, string, attr);
+        String s = filterEvent.getText();
+        if(s != null) {
+          super.replace(fb, offset, length, s, attrs);
         }
       }
-//      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-//      }
 //      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
 //      }
     });
@@ -326,6 +385,41 @@ class CTextField extends JScrollPane implements CText {
     }
   }
 
+  public int getCaretLineNumber() {
+    return 0;
+  }
+
+  public int getRowHeight() {
+    return passwordField.getFontMetrics(passwordField.getFont()).getHeight();
+  }
+
+  public void setComponentOrientation(ComponentOrientation o) {
+    super.setComponentOrientation(o);
+    passwordField.setComponentOrientation(o);
+  }
+
+  public Point getViewPosition() {
+    return getViewport().getViewPosition();
+  }
+
+  public void setViewPosition(Point p) {
+    getViewport().setViewPosition(p);
+  }
+
+  public void setTextLimit(int limit) {
+    textLimit = limit;
+    String text = getText();
+    if(text.length() > limit) {
+      setText(text.substring(0, limit));
+    }
+  }
+
+  protected int textLimit = Text.LIMIT;
+
+  public int getTextLimit() {
+    return textLimit;
+  }
+
 }
 
 /**
@@ -334,6 +428,40 @@ class CTextField extends JScrollPane implements CText {
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
 public interface CText extends CScrollable {
+
+  public static class FilterEvent extends AWTEvent {
+
+    public static final int ID = AWTEvent.RESERVED_ID_MAX + 1;
+
+    protected String text;
+    protected int start;
+    protected int end;
+
+    public FilterEvent(Object source, String text, int start, int end) {
+      super(source, ID);
+      this.text = text;
+      this.start = start;
+      this.end = end;
+    }
+
+    public String getText() {
+      return text;
+    }
+
+    public void setText(String text) {
+      this.text = text;
+    }
+
+    public int getStart() {
+      return start;
+    }
+
+    public int getEnd() {
+      return end;
+    }
+
+  }
+
 
   public static class Instanciator {
     private Instanciator() {}
@@ -388,5 +516,19 @@ public interface CText extends CScrollable {
   public Point getCaretLocation();
 
   public void showSelection();
+
+  public int getCaretLineNumber();
+
+  public int getRowHeight();
+
+  public void setComponentOrientation(ComponentOrientation o);
+
+  public Point getViewPosition();
+
+  public void setViewPosition(Point p);
+
+  public void setTextLimit(int limit);
+
+  public int getTextLimit();
 
 }

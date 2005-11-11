@@ -11,8 +11,15 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 
 /**
  * Instances of this class allow the user to navigate
@@ -148,209 +155,68 @@ public String getFilterPath () {
  * </ul>
  */
 public String open () {
-	int hHeap = OS.GetProcessHeap ();
-	
-	/* Get the owner HWND for the dialog */
-	int hwndOwner = 0;
-	if (parent != null) hwndOwner = parent.handle;
-
-	/* Convert the title and copy it into lpstrTitle */
-	if (title == null) title = "";	
-	/* Use the character encoding for the default locale */
-	TCHAR buffer3 = new TCHAR (0, title, true);
-	int byteCount3 = buffer3.length () * TCHAR.sizeof;
-	int lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount3);
-	OS.MoveMemory (lpstrTitle, buffer3, byteCount3); 
-
-	/* Compute filters and copy into lpstrFilter */
-	String strFilter = "";
-	if (filterNames == null) filterNames = new String [0];
-	if (filterExtensions == null) filterExtensions = new String [0];
-	for (int i=0; i<filterExtensions.length; i++) {
-		String filterName = filterExtensions [i];
-		if (i < filterNames.length) filterName = filterNames [i];
-		strFilter = strFilter + filterName + '\0' + filterExtensions [i] + '\0';
-	}
-	if (filterExtensions.length == 0) {
-		strFilter = strFilter + FILTER + '\0' + FILTER + '\0';
-	}
-	/* Use the character encoding for the default locale */
-	TCHAR buffer4 = new TCHAR (0, strFilter, true);
-	int byteCount4 = buffer4.length () * TCHAR.sizeof;
-	int lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount4);
-	OS.MoveMemory (lpstrFilter, buffer4, byteCount4);
-	
-	/* Convert the fileName and filterName to C strings */
-	if (fileName == null) fileName = "";
-	/* Use the character encoding for the default locale */
-	TCHAR name = new TCHAR (0, fileName, true);
-
-	/*
-	* Copy the name into lpstrFile and ensure that the
-	* last byte is NULL and the buffer does not overrun.
-	*/
-	int nMaxFile = OS.MAX_PATH;
-	if ((style & SWT.MULTI) != 0) nMaxFile = Math.max (nMaxFile, BUFFER_SIZE);
-	int byteCount = nMaxFile * TCHAR.sizeof;
-	int lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	int byteCountFile = Math.min (name.length () * TCHAR.sizeof, byteCount - TCHAR.sizeof);
-	OS.MoveMemory (lpstrFile, name, byteCountFile);
-
-	/*
-	* Copy the path into lpstrInitialDir and ensure that
-	* the last byte is NULL and the buffer does not overrun.
-	*/
-	if (filterPath == null) filterPath = "";
-	/* Use the character encoding for the default locale */
-	TCHAR path = new TCHAR (0, filterPath.replace ('/', '\\'), true);
-	int byteCount5 = OS.MAX_PATH * TCHAR.sizeof;
-	int lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount5);
-	int byteCountDir = Math.min (path.length () * TCHAR.sizeof, byteCount5 - TCHAR.sizeof);
-	OS.MoveMemory (lpstrInitialDir, path, byteCountDir);
-
-	/* Create the file dialog struct */
-	OPENFILENAME struct = new OPENFILENAME ();
-	struct.lStructSize = OPENFILENAME.sizeof;
-	struct.Flags = OS.OFN_HIDEREADONLY | OS.OFN_NOCHANGEDIR;
-	if ((style & SWT.MULTI) != 0) {
-		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER;
-	}
-	struct.hwndOwner = hwndOwner;
-	struct.lpstrTitle = lpstrTitle;
-	struct.lpstrFile = lpstrFile;
-	struct.nMaxFile = nMaxFile;
-	struct.lpstrInitialDir = lpstrInitialDir;
-	struct.lpstrFilter = lpstrFilter;
-	struct.nFilterIndex = 0;
-
-	/*
-	* Set the default extension to an empty string.  If the
-	* user fails to type an extension and this extension is
-	* empty, Windows uses the current value of the filter
-	* extension at the time that the dialog is closed.
-	*/
-	int lpstrDefExt = 0;
-	boolean save = (style & SWT.SAVE) != 0;
-	if (save) {
-		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
-		struct.lpstrDefExt = lpstrDefExt;
-	}
-	
-	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
-	Display display = null;
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display = parent.getDisplay ();
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
-	}
-	
-	/*
-	* Open the dialog.  If the open fails due to an invalid
-	* file name, use an empty file name and open it again.
-	*/
-	boolean success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
-	if (OS.CommDlgExtendedError () == OS.FNERR_INVALIDFILENAME) {
-		OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
-		success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
-	}
-
-	/* Clear the temporary dialog modal parent */
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
-	}
-	
-	/* Set the new path, file name and filter */
-	fileNames = new String [0];
-	String fullPath = null;
-	if (success) {
-		
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, struct.nMaxFile);
-		int byteCount1 = buffer.length () * TCHAR.sizeof;
-		OS.MoveMemory (buffer, lpstrFile, byteCount1);
-		
-		/*
-		* Bug in WinCE.  For some reason, nFileOffset and nFileExtension
-		* are always zero on WinCE HPC. nFileOffset is always zero on
-		* WinCE PPC when using GetSaveFileName.  nFileOffset is correctly
-		* set on WinCE PPC when using OpenFileName.  The fix is to parse
-		* lpstrFile to calculate nFileOffset.
-		* 
-		* Note: WinCE does not support multi-select file dialogs.
-		*/
-		int nFileOffset = struct.nFileOffset;
-		if (OS.IsWinCE && nFileOffset == 0) {
-			int index = 0; 
-			while (index < buffer.length ()) {
-				int ch = buffer.tcharAt (index);
-				if (ch == 0) break;
-				if (ch == '\\') nFileOffset = index + 1;
-				index++;
-			}
-		}
-		if (nFileOffset > 0) {
-		
-			/* Use the character encoding for the default locale */
-			TCHAR prefix = new TCHAR (0, nFileOffset - 1);
-			int byteCount2 = prefix.length () * TCHAR.sizeof;
-			OS.MoveMemory (prefix, lpstrFile, byteCount2);
-			filterPath = prefix.toString (0, prefix.length ());
-			
-			/*
-			* Get each file from the buffer.  Files are delimited
-			* by a NULL character with 2 NULL characters at the end.
-			*/
-			int count = 0;
-			fileNames = new String [(style & SWT.MULTI) != 0 ? 4 : 1];
-			int start = nFileOffset;
-			do {
-				int end = start;
-				while (end < buffer.length () && buffer.tcharAt (end) != 0) end++;
-				String string = buffer.toString (start, end - start);
-				start = end;
-				if (count == fileNames.length) {
-					String [] newFileNames = new String [fileNames.length + 4];
-					System.arraycopy (fileNames, 0, newFileNames, 0, fileNames.length);
-					fileNames = newFileNames;
-				}
-				fileNames [count++] = string;
-				if ((style & SWT.MULTI) == 0) break;
-				start++;
-			} while (start < buffer.length () && buffer.tcharAt (start) != 0);
-			
-			if (fileNames.length > 0) fileName = fileNames  [0];
-			String separator = "";
-			int length = filterPath.length ();
-			if (length > 0 && filterPath.charAt (length - 1) != '\\') {
-				separator = "\\";
-			}
-			fullPath = filterPath + separator + fileName;
-			if (count < fileNames.length) {
-				String [] newFileNames = new String [count];
-				System.arraycopy (fileNames, 0, newFileNames, 0, count);
-				fileNames = newFileNames;
-			}
-		}
-	}
-	
-	/* Free the memory that was allocated. */
-	OS.HeapFree (hHeap, 0, lpstrFile);
-	OS.HeapFree (hHeap, 0, lpstrFilter);
-	OS.HeapFree (hHeap, 0, lpstrInitialDir);
-	OS.HeapFree (hHeap, 0, lpstrTitle);
-	if (lpstrDefExt != 0) OS.HeapFree (hHeap, 0, lpstrDefExt);
-
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
-	/* Answer the full path or null */
-	return fullPath;
+  if(!SwingUtilities.isEventDispatchThread()) {
+    final String[] result = new String[1];
+    try {
+      class PopEventQueue extends EventQueue {
+        public void pop() {
+          super.pop();
+        }
+      }
+      PopEventQueue eq = new PopEventQueue();
+      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
+      SwingUtilities.invokeAndWait(new Runnable() {
+        public void run() {
+          result[0] = open();
+        }
+      });
+      eq.pop();
+    } catch(Exception e) {
+    }
+    return result[0];
+  }
+  final JFileChooser fileChooser = new JFileChooser();
+  fileName = "";
+  fileNames = null;
+  String fullPath = null;
+  fileChooser.setMultiSelectionEnabled((style & SWT.MULTI) != 0);
+  if(filterExtensions != null && filterExtensions.length > 1) {
+    // TODO: file filters
+//    fileChooser.setFileFilter(new FileFilter() {
+//      public String getDescription() {
+//        return null;
+//      }
+//      public boolean accept(File pathname) {
+//        return true;
+////        new FilenameFilter();
+////        pathname.
+//      }
+//    });
+  }
+  int returnValue;
+  if((style & SWT.SAVE) != 0) {
+    returnValue = fileChooser.showSaveDialog(getParent().handle);
+  } else {
+    returnValue = fileChooser.showOpenDialog(getParent().handle);
+  }
+  if(returnValue == JFileChooser.APPROVE_OPTION) {
+    if((style & SWT.MULTI) != 0) {
+      File[] selectedFiles = fileChooser.getSelectedFiles();
+      fileNames = new String[selectedFiles.length];
+      for(int i=0; i<fileNames.length; i++) {
+        fileNames[i] = selectedFiles[i].getName();
+      }
+      if(selectedFiles.length > 0) {
+        fullPath = selectedFiles[0].getParentFile().getAbsolutePath();
+      }
+    } else {
+      File selectedFile = fileChooser.getSelectedFile();
+      fileName = selectedFile.getName();
+      fullPath = selectedFile.getAbsolutePath();
+    }
+    filterPath = new String(fullPath);
+  }
+  return fullPath;
 }
 
 /**

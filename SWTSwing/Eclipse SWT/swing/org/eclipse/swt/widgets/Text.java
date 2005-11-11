@@ -12,19 +12,23 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.AWTEvent;
+import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
-import java.awt.event.ComponentEvent;
 
+import javax.swing.JButton;
+import javax.swing.RootPaneContainer;
 import javax.swing.text.BadLocationException;
 
-import org.eclipse.swt.internal.swing.CLabel;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CText;
-import org.eclipse.swt.internal.swing.event.FilterEvent;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.swing.CText.FilterEvent;
 
 /**
  * Instances of this class are selectable user interface
@@ -71,7 +75,7 @@ public class Text extends Scrollable {
 	*/
 	static {
 		LIMIT = 0x7FFFFFFF;
-		DELIMITER = "\n";
+		DELIMITER = System.getProperty("line.separator");//"\n";
 	}
 	
 /**
@@ -377,7 +381,7 @@ public void cut () {
  */
 public int getCaretLineNumber () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.EM_LINEFROMCHAR, -1, 0);
+  return ((CText)handle).getCaretLineNumber();
 }
 
 /**
@@ -529,15 +533,7 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-	int newFont, oldFont = 0;
-	int hDC = OS.GetDC (handle);
-	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-	OS.GetTextMetrics (hDC, tm);
-	if (newFont != 0) OS.SelectObject (hDC, oldFont);
-	OS.ReleaseDC (handle, hDC);
-	return tm.tmHeight;
+  return ((CText)handle).getRowHeight();
 }
 
 /**
@@ -704,7 +700,7 @@ public String getText (int start, int end) {
  */
 public int getTextLimit () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0);
+  return ((CText)handle).getTextLimit();
 }
 
 /**
@@ -724,7 +720,7 @@ public int getTextLimit () {
 public int getTopIndex () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
-	return OS.SendMessage (handle, OS.EM_GETFIRSTVISIBLELINE, 0, 0);
+  return ((CText)handle).getViewPosition().y / getLineHeight();
 }
 
 /**
@@ -749,15 +745,7 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-	/*
-	* Note, EM_GETSCROLLPOS is implemented in Rich Edit 3.0
-	* and greater.  The plain text widget and previous versions
-	* of Rich Edit return zero.
-	*/
-	int [] buffer = new int [2];
-	int code = OS.SendMessage (handle, OS.EM_GETSCROLLPOS, 0, buffer);
-	if (code == 1) return buffer [1];
-	return getTopIndex () * getLineHeight ();
+  return ((CText)handle).getViewPosition().y;
 }
 
 /**
@@ -1079,20 +1067,17 @@ public void setEditable (boolean editable) {
  */
 public void setOrientation (int orientation) {
 	checkWidget();
-	if (OS.IsWinCE) return;
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
 	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
 	style &= ~flags;
 	style |= orientation & flags;
-	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+  ComponentOrientation o;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		bits |= OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR;
+    o = ComponentOrientation.RIGHT_TO_LEFT;
 	} else {
-		bits &= ~(OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR);
+    o = ComponentOrientation.LEFT_TO_RIGHT;
 	}
-	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
-	fixAlignment ();
+  ((CText)handle).setComponentOrientation(o);
 }
 
 /**
@@ -1286,7 +1271,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	OS.SendMessage (handle, OS.EM_SETLIMITTEXT, limit, 0);
+  ((CText)handle).setTextLimit(limit);
 }
 
 /**
@@ -1304,10 +1289,8 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
-	index = Math.min (Math.max (index, 0), count - 1);
-	int topIndex = OS.SendMessage (handle, OS.EM_GETFIRSTVISIBLELINE, 0, 0);
-	OS.SendMessage (handle, OS.EM_LINESCROLL, 0, index - topIndex);
+  CText cText = (CText)handle;
+  cText.setViewPosition(new java.awt.Point(cText.getViewPosition().x, index / getLineHeight()));
 }
 
 /**
@@ -1699,7 +1682,20 @@ public void processEvent(AWTEvent e) {
       filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getEnd(), null));
       break;
     case ActionEvent.ACTION_PERFORMED:
-      postEvent(SWT.DefaultSelection);
+      Event event = new Event();
+      event.detail = SWT.TRAVERSE_RETURN;
+      sendEvent(SWT.Traverse, event);
+      boolean isPosting = true;
+      if(event.doit) {
+        JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+        if(defaultButton != null) {
+          isPosting = false;
+          defaultButton.doClick();
+        }
+      }
+      if(isPosting) {
+        postEvent(SWT.DefaultSelection);
+      }
       break;
     }
     super.processEvent(e);

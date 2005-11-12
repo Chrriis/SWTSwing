@@ -14,13 +14,14 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
+import java.awt.event.PaintEvent;
 
 import javax.swing.JComponent;
 import javax.swing.RootPaneContainer;
@@ -1120,7 +1121,7 @@ public boolean getVisible () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public Graphics internal_new_GC (GCData data) {
+public Graphics2D internal_new_GC (GCData data) {
 	checkWidget();
   if(data != null) {
     int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1138,7 +1139,7 @@ public Graphics internal_new_GC (GCData data) {
     data.background = handle.getBackground();
     data.hFont = handle.getFont();
   }
-  return ((CComponent)handle).getClientArea().getGraphics();
+  return (Graphics2D)((CComponent)handle).getClientArea().getGraphics();
 //	int hwnd = handle;
 //	if (data != null && data.hwnd != 0) {
 //		hwnd = data.hwnd;
@@ -1187,7 +1188,7 @@ public Graphics internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (Graphics hDC, GCData data) {
+public void internal_dispose_GC (Graphics2D hDC, GCData data) {
 	checkWidget ();
 //	Component hwnd = handle;
 //	if (data != null && data.hwnd != null) {
@@ -2409,40 +2410,7 @@ boolean setRadioSelection (boolean value) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget ();
-  // TODO: Support it?
-//	/*
-//	 * Feature in Windows.  When WM_SETREDRAW is used to turn
-//	 * off drawing in a widget, it clears the WS_VISIBLE bits
-//	 * and then sets them when redraw is turned back on.  This
-//	 * means that WM_SETREDRAW will make a widget unexpectedly
-//	 * visible.  The fix is to track the visibility state while
-//	 * drawing is turned off and restore it when drawing is
-//	 * turned back on.
-//	 */
-//	if (drawCount == 0) {
-//		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//		if ((bits & OS.WS_VISIBLE) == 0) state |= HIDDEN;
-//	}
-//	if (redraw) {
-//		if (--drawCount == 0) {
-//			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-//			if ((state & HIDDEN) != 0) {
-//				state &= ~HIDDEN;
-//				OS.ShowWindow (handle, OS.SW_HIDE);
-//			} else {
-//				if (OS.IsWinCE) {
-//					OS.InvalidateRect (handle, null, true);
-//				} else {
-//					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-//					OS.RedrawWindow (handle, null, 0, flags);
-//				}
-//			}
-//		}
-//	} else {
-//		if (drawCount++ == 0) {
-//			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-//		}
-//	}
+  handle.setIgnoreRepaint(!redraw);
 }
 
 //boolean setSavedFocus () {
@@ -3009,6 +2977,9 @@ boolean traverseReturn () {
  */
 public void update () {
 	checkWidget ();
+  if(SwingUtilities.isEventDispatchThread()) {
+    return;
+  }
   try {
     SwingUtilities.invokeAndWait(new Runnable() {
       public void run() {
@@ -3977,6 +3948,7 @@ public void processEvent(AWTEvent e) {
       return;
     }
   }
+  case java.awt.event.PaintEvent.PAINT:
   case java.awt.event.MouseEvent.MOUSE_DRAGGED:
   case java.awt.event.MouseEvent.MOUSE_MOVED:
   case java.awt.event.MouseEvent.MOUSE_PRESSED:
@@ -4007,6 +3979,13 @@ public void processEvent(AWTEvent e) {
       return;
     }
     switch(id) {
+    // TODO: only send some of the events if they are hooked
+    case java.awt.event.PaintEvent.PAINT: {
+      Event event = new Event();
+      event.gc = new GC(this);
+      sendEvent(SWT.Paint, event);
+      break;
+    }
     case java.awt.event.MouseEvent.MOUSE_DRAGGED:
     case java.awt.event.MouseEvent.MOUSE_MOVED: {
       java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;

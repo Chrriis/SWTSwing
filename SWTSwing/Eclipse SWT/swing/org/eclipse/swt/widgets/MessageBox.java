@@ -11,8 +11,14 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 
 /**
  * Instances of this class are used used to inform or warn the user.
@@ -118,114 +124,81 @@ public String getMessage () {
  */
 public int open () {
 
-	/* Compute the MessageBox style */
-	int buttonBits = 0;
-	if ((style & SWT.OK) == SWT.OK) buttonBits = OS.MB_OK;
-	if ((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) buttonBits = OS.MB_OKCANCEL;
-	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) buttonBits = OS.MB_YESNO;
-	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) buttonBits = OS.MB_YESNOCANCEL;
-	if ((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) buttonBits = OS.MB_RETRYCANCEL;
-	if ((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) buttonBits = OS.MB_ABORTRETRYIGNORE;
-	if (buttonBits == 0) buttonBits = OS.MB_OK;
+  if(!SwingUtilities.isEventDispatchThread()) {
+    final int[] result = new int[1];
+    try {
+      class PopEventQueue extends EventQueue {
+        public void pop() {
+          super.pop();
+        }
+      }
+      PopEventQueue eq = new PopEventQueue();
+      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
+      SwingUtilities.invokeAndWait(new Runnable() {
+        public void run() {
+          result[0] = open();
+        }
+      });
+      eq.pop();
+    } catch(Exception e) {
+    }
+    return result[0];
+  }
 
-	int iconBits = 0;
-	if ((style & SWT.ICON_ERROR) != 0) iconBits = OS.MB_ICONERROR;
-	if ((style & SWT.ICON_INFORMATION) != 0) iconBits = OS.MB_ICONINFORMATION;
-	if ((style & SWT.ICON_QUESTION) != 0) iconBits = OS.MB_ICONQUESTION;
-	if ((style & SWT.ICON_WARNING) != 0) iconBits = OS.MB_ICONWARNING;
-	if ((style & SWT.ICON_WORKING) != 0) iconBits = OS.MB_ICONINFORMATION;
+	int messageType = JOptionPane.PLAIN_MESSAGE;
+	if ((style & SWT.ICON_ERROR) != 0) messageType = JOptionPane.ERROR_MESSAGE;
+	if ((style & SWT.ICON_INFORMATION) != 0) messageType = JOptionPane.INFORMATION_MESSAGE;
+	if ((style & SWT.ICON_QUESTION) != 0) messageType = JOptionPane.QUESTION_MESSAGE;
+	if ((style & SWT.ICON_WARNING) != 0) messageType = JOptionPane.WARNING_MESSAGE;
+	if ((style & SWT.ICON_WORKING) != 0) messageType = JOptionPane.INFORMATION_MESSAGE;
 
-	/* Only MB_APPLMODAL is supported on WinCE */
-	int modalBits = 0;
-	if (OS.IsWinCE) {
-		if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-			modalBits = OS.MB_APPLMODAL;
-		}
-	} else {
-		if ((style & SWT.PRIMARY_MODAL) != 0) modalBits = OS.MB_APPLMODAL;
-		if ((style & SWT.APPLICATION_MODAL) != 0) modalBits = OS.MB_TASKMODAL;
-		if ((style & SWT.SYSTEM_MODAL) != 0) modalBits = OS.MB_SYSTEMMODAL;
-	}
-
-	int bits = buttonBits | iconBits | modalBits;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.MB_RTLREADING;
-	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
-		if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
-			bits |= OS.MB_RTLREADING;
-		}
-	}
-	
-	/*
-	* Feature in Windows.  System modal is not supported
-	* on Windows 95 and NT.  The fix is to convert system
-	* modal to task modal.
-	*/
-	if ((bits & OS.MB_SYSTEMMODAL) != 0) {
-		bits |= OS.MB_TASKMODAL;
-		bits &= ~OS.MB_SYSTEMMODAL;
-	}
-
-	/*
-	* Feature in Windows.  In order for MB_TASKMODAL to work,
-	* the parent HWND of the MessageBox () call must be NULL.
-	* If the parent is not NULL, MB_TASKMODAL behaves the
-	* same as MB_APPLMODAL.  The fix to set the parent HWND
-	* anyway and not rely on MB_MODAL to work by making the
-	* parent be temporarily modal. 
-	*/
-	int hwndOwner = parent != null ? parent.handle : 0;
-	Shell oldModal = null;
-	Display display = null;
-	if ((bits & OS.MB_TASKMODAL) != 0) {
-		display = parent.getDisplay ();
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
-	}
-
-	/* Open the message box */
-	/* Use the character encoding for the default locale */
-	TCHAR buffer1 = new TCHAR (0, message, true);
-	TCHAR buffer2 = new TCHAR (0, title, true);
-	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
-	
-	/* Clear the temporarily dialog modal parent */
-	if ((bits & OS.MB_TASKMODAL) != 0) {
-		display.setModalDialogShell (oldModal);
-	}
-	
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
-	/* Compute and return the result */
-	if (code != 0) {
-		int type = bits & 0x0F;
-		if (type == OS.MB_OK) return SWT.OK;
-		if (type == OS.MB_OKCANCEL) {
-			return (code == OS.IDOK) ? SWT.OK : SWT.CANCEL;
-		}
-		if (type == OS.MB_YESNO) {
-			return (code == OS.IDYES) ? SWT.YES : SWT.NO;
-		}
-		if (type == OS.MB_YESNOCANCEL) {
-			if (code == OS.IDYES) return SWT.YES;
-			if (code == OS.IDNO) return SWT.NO;
-			return SWT.CANCEL;
-		}
-		if (type == OS.MB_RETRYCANCEL) {
-			return (code == OS.IDRETRY) ? SWT.RETRY : SWT.CANCEL;
-		}
-		if (type == OS.MB_ABORTRETRYIGNORE) {
-			if (code == OS.IDRETRY) return SWT.RETRY;
-			if (code == OS.IDABORT) return SWT.ABORT;
-			return SWT.IGNORE;
-		}
-	}
-	return SWT.CANCEL;
+  if((style & SWT.OK) == SWT.OK) {
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return SWT.OK;
+  }
+  if((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) {
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK", "Cancel"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return result == 0? SWT.OK: SWT.CANCEL;
+  }
+  if((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return result == 0? SWT.YES: SWT.NO;
+  }
+  if((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No", "Cancel"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return result == 0? SWT.YES: result == 1? SWT.NO: SWT.CANCEL;
+  }
+  if((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) {
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Retry", "Cancel"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return result == 0? SWT.RETRY: SWT.CANCEL;
+  }
+  if((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) {
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Abort", "Retry", "Ignore"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return result == 0? SWT.ABORT: result == 1? SWT.RETRY: SWT.IGNORE;
+  }
+  int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
+  if(result == JOptionPane.CLOSED_OPTION) {
+    return SWT.CANCEL; 
+  }
+  return SWT.OK;
 }
 
 /**

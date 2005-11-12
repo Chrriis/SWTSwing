@@ -14,6 +14,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.*;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -1341,7 +1342,7 @@ void init(Device device, ImageData i) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public Graphics internal_new_GC (GCData data) {
+public Graphics2D internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if(data != null) {
     int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1354,7 +1355,7 @@ public Graphics internal_new_GC (GCData data) {
     data.image = this;
     data.hFont = device.systemFont;
   }
-  return handle.getGraphics();
+  return (Graphics2D)handle.getGraphics();
 }
 
 /**	 
@@ -1370,7 +1371,7 @@ public Graphics internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (Graphics handle, GCData data) {
+public void internal_dispose_GC (Graphics2D handle, GCData data) {
 	handle.dispose();
 }
 

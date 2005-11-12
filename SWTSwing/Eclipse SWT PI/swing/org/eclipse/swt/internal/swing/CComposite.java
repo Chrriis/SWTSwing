@@ -11,6 +11,8 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.event.PaintEvent;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -31,7 +33,12 @@ class CCompositeImplementation extends JPanel implements CComposite {
     this.handle = composite;
     init(style);
   }
-  
+
+  public void paint(Graphics g) {
+    super.paint(g);
+    handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+  }
+
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));

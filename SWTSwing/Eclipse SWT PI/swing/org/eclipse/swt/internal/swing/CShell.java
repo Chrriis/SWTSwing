@@ -45,6 +45,7 @@ class CShellFrame extends JFrame implements CShell {
   }
   
   protected void init(int style) {
+    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
     if((style & SWT.RESIZE) == 0) {
@@ -196,6 +197,7 @@ class CShellDialog extends JDialog implements CShell {
   }
 
   protected void init(int style) {
+    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     if((style & SWT.APPLICATION_MODAL) != 0) {
       setModal(true);
     }

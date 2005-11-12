@@ -16,6 +16,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -1889,7 +1890,7 @@ public Thread getThread () {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
-public Graphics internal_new_GC (GCData data) {
+public Graphics2D internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
   if (data != null) {
     data.device = this;
@@ -2030,7 +2031,7 @@ protected void init () {
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (Graphics handle, GCData data) {
+public void internal_dispose_GC (Graphics2D handle, GCData data) {
 	handle.dispose();
 }
 

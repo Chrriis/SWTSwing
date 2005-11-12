@@ -13,6 +13,7 @@ import java.awt.AWTEvent;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -41,8 +42,9 @@ class CTextMulti extends JScrollPane implements CText {
     getViewport().setView(textArea);
     init(style);
   }
-  
+
   protected void init(int style) {
+    setFont(textArea.getFont());
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
       textArea.setBorder(null);
@@ -83,6 +85,13 @@ class CTextMulti extends JScrollPane implements CText {
 //      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
 //      }
     });
+  }
+
+  public void setFont(Font font) {
+    super.setFont(font);
+    if(textArea != null) {
+      textArea.setFont(font);
+    }
   }
 
   public Container getClientArea() {
@@ -248,6 +257,7 @@ class CTextField extends JScrollPane implements CText {
   }
   
   protected void init(int style) {
+    setFont(passwordField.getFont());
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
       passwordField.setBorder(null);
@@ -287,6 +297,13 @@ class CTextField extends JScrollPane implements CText {
 //      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
 //      }
     });
+  }
+
+  public void setFont(Font font) {
+    super.setFont(font);
+    if(passwordField != null) {
+      passwordField.setFont(font);
+    }
   }
 
   public Container getClientArea() {

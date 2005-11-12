@@ -40,6 +40,8 @@ import org.eclipse.swt.*;
 
 public final class FontData {
 	
+  java.awt.Font handle;
+  
 	/**
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)
@@ -72,7 +74,7 @@ public FontData() {
 }
 
 /**
- * Constructs a new font data given the Windows <code>LOGFONT</code>
+ * Constructs a new font data given the Swing <code>Font</code>
  * that it should represent.
  * 
  * @param font the <code>Font</code> for the result

@@ -11,7 +11,7 @@
 package org.eclipse.swt.graphics;
 
  
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
@@ -708,7 +708,7 @@ protected void init () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public abstract Graphics internal_new_GC (GCData data);
+public abstract Graphics2D internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -723,7 +723,7 @@ public abstract Graphics internal_new_GC (GCData data);
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public abstract void internal_dispose_GC (Graphics handle, GCData data);
+public abstract void internal_dispose_GC (Graphics2D handle, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,

@@ -16,7 +16,7 @@ public class Test {
     }}, new Object[] {"Clipboard", new String[][] {
 //      {"94", "copy and paste data with the clipboard"},
     }}, new Object[] {"Combo", new String[][] {
-//      {"26", "create a combo box (non-editable)"},
+      {"26", "create a combo box (non-editable)"},
     }}, new Object[] {"Composite", new String[][] {
       {"9", "scroll a child control automatically"},
 //      {"75", "set the tab traversal order of children"},
@@ -51,7 +51,7 @@ public class Test {
     }}, new Object[] {"FileDialog", new String[][] {
 //      {"72", "prompt for a file name (to save)"},
     }}, new Object[] {"Font", new String[][] {
-//      {"100", "create a large font for use by a text widget"},
+      {"100", "create a large font for use by a text widget"},
     }}, new Object[] {"FormLayout", new String[][] {
 //      {"65", "create a simple dialog using form layout"},
       {"69", "display a label and single line text using a form layout"},
@@ -95,7 +95,7 @@ public class Test {
       {"50", "create a dialog shell"},
       {"63", "create a dialog shell (prompt for a value)"},
 //      {"104", "create a splash screen"},
-//      {"99", "prevent a shell from closing (prompt the user)"},
+      {"99", "prevent a shell from closing (prompt the user)"},
 //      {"4", "prevent escape from closing a dialog"},
       {"27", "open a shell minimized (iconified)"},
       {"28", "open a shell maximized (full screen)"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "72";
+  static String snippetNumber = "24";
 
   public static void main(String[] args) {
     String number = null;

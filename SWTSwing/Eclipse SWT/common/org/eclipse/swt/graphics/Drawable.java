@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 
 /**
@@ -45,7 +45,7 @@ public interface Drawable {
  * @return the platform specific GC handle
  */
  
-public Graphics /*long*/ internal_new_GC (GCData data);
+public Graphics2D /*long*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -60,6 +60,6 @@ public Graphics /*long*/ internal_new_GC (GCData data);
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (Graphics handle, GCData data);
+public void internal_dispose_GC (Graphics2D handle, GCData data);
 
 }

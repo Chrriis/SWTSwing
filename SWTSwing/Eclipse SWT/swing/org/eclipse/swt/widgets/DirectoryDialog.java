@@ -11,9 +11,15 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 
 /**
  * Instances of this class allow the user to navigate
@@ -80,33 +86,6 @@ public DirectoryDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
-	switch (uMsg) {
-		case OS.BFFM_INITIALIZED:
-			if (filterPath != null && filterPath.length () != 0) {
-				/* Use the character encoding for the default locale */
-				TCHAR buffer = new TCHAR (0, filterPath.replace ('/', '\\'), true);
-				OS.SendMessage (hwnd, OS.BFFM_SETSELECTION, 1, buffer);
-			}
-			if (title != null && title.length () != 0) {
-				/* Use the character encoding for the default locale */
-				TCHAR buffer = new TCHAR (0, title, true);
-				OS.SetWindowText (hwnd, buffer);
-			}
-			break;
-		case OS.BFFM_VALIDATEFAILEDA:
-		case OS.BFFM_VALIDATEFAILEDW:
-			/* Use the character encoding for the default locale */
-			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
-			TCHAR buffer = new TCHAR (0, length);
-			int byteCount = buffer.length () * TCHAR.sizeof;
-			OS.MoveMemory (buffer, lParam, byteCount);
-			directoryPath = buffer.toString (0, length);
-			break;
-	}
-	return 0;
-}
-
 /**
  * Returns the path which the dialog will use to filter
  * the directories it shows.
@@ -141,129 +120,43 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-	
-	int hHeap = OS.GetProcessHeap ();
-	
-	/* Get the owner HWND for the dialog */
-	int hwndOwner = 0;
-	if (parent != null) hwndOwner = parent.handle;
-
-	/* Copy the message to OS memory */
-	int lpszTitle = 0;
-	if (message.length () != 0) {
-		String string = message;
-		if (string.indexOf ('&') != -1) {
-			int length = string.length ();
-			char [] buffer = new char [length * 2];
-			int index = 0;
-			for (int i=0; i<length; i++) {
-				char ch = string.charAt (i);
-				if (ch == '&') buffer [index++] = '&';
-				buffer [index++] = ch;
-			}
-			string = new String (buffer, 0, index);
-		}
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, string, true);
-		int byteCount = buffer.length () * TCHAR.sizeof;
-		lpszTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (lpszTitle, buffer, byteCount);
-	}
-
-	/* Create the BrowseCallbackProc */
-	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
-	int address = callback.getAddress ();
-
-	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
-	Display display = parent.getDisplay ();
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
-	}
-	
-	directoryPath = null;
-	BROWSEINFO lpbi = new BROWSEINFO ();
-	lpbi.hwndOwner = hwndOwner;
-	lpbi.lpszTitle = lpszTitle;
-	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
-	lpbi.lpfn = address;
-	/*
-	* Bug in Windows.  On some hardware configurations, SHBrowseForFolder()
-	* causes warning dialogs with the message "There is no disk in the drive
-	* Please insert a disk into \Device\Harddisk0\DR0".  This is possibly
-	* caused by SHBrowseForFolder() calling internally GetVolumeInformation().
-	* MSDN for GetVolumeInformation() says:
-	* 
-	* "If you are attempting to obtain information about a floppy drive
-	* that does not have a floppy disk or a CD-ROM drive that does not 
-	* have a compact disc, the system displays a message box asking the 
-	* user to insert a floppy disk or a compact disc, respectively. 
-	* To prevent the system from displaying this message box, call the 
-	* SetErrorMode function with SEM_FAILCRITICALERRORS."
-	* 
-	* The fix is to save and restore the error mode using SetErrorMode()
-	* with the SEM_FAILCRITICALERRORS flag around SHBrowseForFolder().
-	*/
-	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
-	
-	/*
-	* Bug in Windows.  When a WH_MSGFILTER hook is used to run code
-	* during the message loop for SHBrowseForFolder(), running code
-	* in the hook can cause a GP.  Specifically, SetWindowText()
-	* for static controls seemed to make the problem happen.
-	* The fix is to ignore the hook while the directory dialog
-	* is open.
-	* 
-	* NOTE:  This only happens in versions of the comctl32.dll
-	* earlier than 6.0.
-	*/
-	boolean oldIgnore = display.ignoreMsgFilter;
-	if (OS.COMCTL32_MAJOR < 6) display.ignoreMsgFilter = true;
-	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
-	if (OS.COMCTL32_MAJOR < 6) display.ignoreMsgFilter = oldIgnore;
-	OS.SetErrorMode(oldErrorMode);
-	
-	/* Clear the temporary dialog modal parent */
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
-	}
-	
-	boolean success = lpItemIdList != 0;
-	if (success) {
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
-		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
-			directoryPath = buffer.toString (0, buffer.strlen ());
-			filterPath = directoryPath;
-		}
-	}
-
-	/* Free the BrowseCallbackProc */
-	callback.dispose ();
-	
-	/* Free the OS memory */
-	if (lpszTitle != 0) OS.HeapFree (hHeap, 0, lpszTitle);
-
-	/* Free the pointer to the ITEMIDLIST */
-	int [] ppMalloc = new int [1];
-	if (OS.SHGetMalloc (ppMalloc) == OS.S_OK) {
-		/* void Free (struct IMalloc *this, void *pv); */
-		OS.VtblCall (5, ppMalloc [0], lpItemIdList);
-	}
-	
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
-	/* Return the directory path */
-	if (!success) return null;
-	return directoryPath;
+  if(!SwingUtilities.isEventDispatchThread()) {
+    final String[] result = new String[1];
+    try {
+      class PopEventQueue extends EventQueue {
+        public void pop() {
+          super.pop();
+        }
+      }
+      PopEventQueue eq = new PopEventQueue();
+      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
+      SwingUtilities.invokeAndWait(new Runnable() {
+        public void run() {
+          result[0] = open();
+        }
+      });
+      eq.pop();
+    } catch(Exception e) {
+    }
+    return result[0];
+  }
+  final JFileChooser fileChooser = new JFileChooser();
+  String fullPath = null;
+  // TODO: file filters
+  // TODO: custom message
+  fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+  int returnValue = 0;
+  if((style & SWT.SAVE) != 0) {
+    returnValue = fileChooser.showSaveDialog(getParent().handle);
+  } else {
+    returnValue = fileChooser.showOpenDialog(getParent().handle);
+  }
+  if(returnValue == JFileChooser.APPROVE_OPTION) {
+    File directory = fileChooser.getSelectedFile();
+    fullPath = directory.getAbsolutePath();
+    filterPath = new String(fullPath);
+  }
+  return fullPath;
 }
 
 /**

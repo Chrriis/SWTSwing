@@ -66,7 +66,7 @@ public final class GC {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public Graphics handle;
+	public Graphics2D handle;
 
 	Drawable drawable;
 	GCData data;
@@ -132,7 +132,7 @@ public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData ();
 	data.style = checkStyle(style);
-	Graphics handle = drawable.internal_new_GC(data);
+	Graphics2D handle = drawable.internal_new_GC(data);
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -167,25 +167,22 @@ public void copyArea(Image image, int x, int y) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   
-  if(handle instanceof Graphics2D) {
-    // TODO: check that it works
-    Graphics2D g2D = ((Graphics2D)handle);
-    java.awt.Composite oldComposite = g2D.getComposite();
-    java.awt.Composite newComposite = new java.awt.Composite() {
-      public java.awt.CompositeContext createContext(java.awt.image.ColorModel srcColorModel, java.awt.image.ColorModel dstColorModel, java.awt.RenderingHints hints) {
-        return new java.awt.CompositeContext() {
-          public void compose(java.awt.image.Raster src, java.awt.image.Raster dstIn, java.awt.image.WritableRaster dstOut) {
-            // TODO: do the composition
-          }
-          public void dispose() {
-          }
-        };
-      }
-    };
-    g2D.setComposite(newComposite);
-    // TODO: find how to flush
-    g2D.setComposite(oldComposite);
-  }  
+  // TODO: check that it works
+  java.awt.Composite oldComposite = handle.getComposite();
+  java.awt.Composite newComposite = new java.awt.Composite() {
+    public java.awt.CompositeContext createContext(java.awt.image.ColorModel srcColorModel, java.awt.image.ColorModel dstColorModel, java.awt.RenderingHints hints) {
+      return new java.awt.CompositeContext() {
+        public void compose(java.awt.image.Raster src, java.awt.image.Raster dstIn, java.awt.image.WritableRaster dstOut) {
+          // TODO: do the composition
+        }
+        public void dispose() {
+        }
+      };
+    }
+  };
+  handle.setComposite(newComposite);
+  // TODO: find how to flush
+  handle.setComposite(oldComposite);
 //  
 //  
 //	/* Get the HDC for the device */
@@ -548,13 +545,25 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+  if(srcWidth == -1) {
+    srcWidth = srcImage.handle.getWidth();
+  }
+  if(srcHeight == -1) {
+    srcHeight = srcImage.handle.getHeight();
+  }
+  if(destWidth == -1) {
+    destWidth = srcWidth;
+  }
+  if(destHeight == -1) {
+    destHeight = srcHeight;
+  }
   // Simple == no stretch
   if(!simple) {
-    handle.drawImage(srcImage.handle, destX, destY, destWidth - destX, destHeight - destY, srcX, srcY, srcWidth - srcX, srcHeight - srcY, null);
+    handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
   } else {
     Shape oldClip = handle.getClip();
     handle.setClip(destX, destY, destWidth, destHeight);
-    handle.drawImage(srcImage.handle, destX, destY, destWidth - destX, destHeight - destY, srcX, srcY, srcWidth - srcX, srcHeight - srcY, null);
+    handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
     handle.setClip(oldClip);
   }
 //	switch (srcImage.type) {
@@ -1457,11 +1466,8 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string.length() == 0) return;
   // TODO: find how to really implement this method (for now, just do not handle delimiters...
   if((flags & SWT.DRAW_TRANSPARENT) == 0) {
-    java.awt.Color oldColor = handle.getColor();
-    handle.setColor(data.background);
     Point extent = stringExtent(string);
     fillRectangle(x, y, extent.x, extent.y);
-    handle.setColor(oldColor);
   }
   drawString(string, x, y);
 //	TCHAR buffer = new TCHAR(getCodePage(), string, false);
@@ -1581,10 +1587,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
   handle.fillArc(x, y, width, height, startAngle, arcAngle < 0? arcAngle + startAngle: arcAngle - startAngle);
-  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillPie(data.gdipGraphics, data.gdipBrush, x, y, width, height, -startAngle, -arcAngle);
@@ -1676,29 +1679,17 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
   java.awt.Color fromColor = handle.getColor();
-  java.awt.Color toColor = data.background;
-
-  // Should always be true with swing components
-  if(handle instanceof Graphics2D) {
-    // TODO: check that it works
-    Graphics2D g2D = ((Graphics2D)handle);
-    Paint oldPaint = g2D.getPaint();
-    java.awt.Point p1 = null;
-    java.awt.Point p2 = null;
-    if(vertical) {
-      p1 = new java.awt.Point(x + width/2, y);
-      p2 = new java.awt.Point(x + width/2, y + height);
-    }
-    g2D.setPaint(new GradientPaint(p1, fromColor, p2, toColor));
-    g2D.fillRect(x, y, width, height);
-    g2D.setPaint(oldPaint);
-  } else {
-    // TODO: determine if do nothing, or paint something. Perhaps an intermediate between from and to colors...
-    java.awt.Color oldColor = handle.getColor();
-    handle.setColor(toColor);
-    handle.fillRect(x, y, width, height);
-    handle.setColor(oldColor);
+  java.awt.Color toColor = handle.getBackground();
+  Paint oldPaint = handle.getPaint();
+  java.awt.Point p1 = null;
+  java.awt.Point p2 = null;
+  if(vertical) {
+    p1 = new java.awt.Point(x + width/2, y);
+    p2 = new java.awt.Point(x + width/2, y + height);
   }
+  handle.setPaint(new GradientPaint(p1, fromColor, p2, toColor));
+  handle.fillRect(x, y, width, height);
+  handle.setPaint(oldPaint);
 //	int fromColor = OS.GetTextColor(handle);
 //	if (fromColor == OS.CLR_INVALID) {
 //		fromColor = OS.GetSysColor(OS.COLOR_WINDOWTEXT);
@@ -1828,10 +1819,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  */	 
 public void fillOval (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
   handle.fillOval(x, y, width, height);
-  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillEllipse(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -1884,10 +1872,7 @@ public void fillPolygon(int[] pointArray) {
     xPoints[i] = pointArray[i++];
     yPoints[i] = pointArray[i];
   }
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
   handle.fillPolygon(xPoints, yPoints, xPoints.length);
-  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
@@ -1917,10 +1902,7 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
   handle.fillRect(x, y, width, height);
-  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -1976,10 +1958,7 @@ public void fillRectangle (Rectangle rect) {
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
   handle.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
-  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		fillRoundRectangleGdip(data.gdipGraphics, data.gdipBrush, x, y, width, height, arcWidth, arcHeight);
@@ -2092,7 +2071,7 @@ public int getAlpha() {
  */
 public Color getBackground() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return Color.swing_new(data.device, data.background);
+  return Color.swing_new(data.device, handle.getBackground());
 //	int color = OS.GetBkColor(handle);
 //	if (color == OS.CLR_INVALID) {
 //		color = OS.GetSysColor(OS.COLOR_WINDOW);
@@ -2498,7 +2477,7 @@ public boolean getXORMode() {
 //	if (fill && data.gdipBrush == 0) data.gdipBrush = createGdipBrush();
 //}
 
-void init(Drawable drawable, GCData data, Graphics handle) {
+void init(Drawable drawable, GCData data, Graphics2D handle) {
   handle.setColor(data.foreground);
   handle.setFont(data.hFont);
 //	int foreground = data.foreground;
@@ -2638,6 +2617,7 @@ public void setBackground (Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   data.background = color.handle;
+  handle.setBackground(color.handle);
 //	if (OS.GetBkColor(handle) == color.handle) return;
 //	data.background = color.handle;
 //	OS.SetBkColor (handle, color.handle);
@@ -2840,25 +2820,22 @@ public void setForeground (Color color) {
  */
 public void setLineCap(int cap) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(handle instanceof Graphics2D) {
-    Graphics2D g2D = ((Graphics2D)handle);
-    BasicStroke stroke = getCurrentBasicStroke();
-  	int capStyle = 0;
-  	switch (cap) {
-  		case SWT.CAP_ROUND:
-  			capStyle = BasicStroke.CAP_ROUND;
-  			break;
-  		case SWT.CAP_FLAT:
-  			capStyle = BasicStroke.CAP_BUTT;
-  			break;
-  		case SWT.CAP_SQUARE:
-  			capStyle = BasicStroke.CAP_SQUARE;
-  			break;
-  		default:
-  			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  	}
-    g2D.setStroke(new BasicStroke(stroke.getLineWidth(), capStyle, stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), 0));
-  }
+  BasicStroke stroke = getCurrentBasicStroke();
+	int capStyle = 0;
+	switch (cap) {
+		case SWT.CAP_ROUND:
+			capStyle = BasicStroke.CAP_ROUND;
+			break;
+		case SWT.CAP_FLAT:
+			capStyle = BasicStroke.CAP_BUTT;
+			break;
+		case SWT.CAP_SQUARE:
+			capStyle = BasicStroke.CAP_SQUARE;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+  handle.setStroke(new BasicStroke(stroke.getLineWidth(), capStyle, stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), 0));
 }
 
 /** 
@@ -2877,16 +2854,13 @@ public void setLineCap(int cap) {
  */
 public void setLineDash(int[] dashes) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(handle instanceof Graphics2D) {
-    Graphics2D g2D = ((Graphics2D)handle);
-    BasicStroke stroke = getCurrentBasicStroke();
-    if(dashes == null) dashes = new int[0];
-    data.dashes = new float[dashes.length];
-    for(int i=0; i<dashes.length; i++) {
-      data.dashes[i] = dashes[i];
-    }
-    g2D.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), data.dashes, 0));
+  BasicStroke stroke = getCurrentBasicStroke();
+  if(dashes == null) dashes = new int[0];
+  data.dashes = new float[dashes.length];
+  for(int i=0; i<dashes.length; i++) {
+    data.dashes[i] = dashes[i];
   }
+  handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), data.dashes, 0));
 }
 
 /** 
@@ -2907,25 +2881,22 @@ public void setLineDash(int[] dashes) {
  */
 public void setLineJoin(int join) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(handle instanceof Graphics2D) {
-    Graphics2D g2D = ((Graphics2D)handle);
-    BasicStroke stroke = getCurrentBasicStroke();
-    int joinStyle = 0;
-    switch (join) {
-      case SWT.JOIN_MITER:
-        joinStyle = BasicStroke.JOIN_MITER;
-        break;
-      case SWT.JOIN_ROUND:
-        joinStyle = BasicStroke.JOIN_ROUND;
-        break;
-      case SWT.JOIN_BEVEL:
-        joinStyle = BasicStroke.JOIN_BEVEL;
-        break;
-      default:
-        SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-    }
-    g2D.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), joinStyle, stroke.getMiterLimit(), stroke.getDashArray(), 0));
+  BasicStroke stroke = getCurrentBasicStroke();
+  int joinStyle = 0;
+  switch (join) {
+    case SWT.JOIN_MITER:
+      joinStyle = BasicStroke.JOIN_MITER;
+      break;
+    case SWT.JOIN_ROUND:
+      joinStyle = BasicStroke.JOIN_ROUND;
+      break;
+    case SWT.JOIN_BEVEL:
+      joinStyle = BasicStroke.JOIN_BEVEL;
+      break;
+    default:
+      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   }
+  handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), joinStyle, stroke.getMiterLimit(), stroke.getDashArray(), 0));
 }
 
 /** 
@@ -2945,33 +2916,30 @@ public void setLineJoin(int join) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(handle instanceof Graphics2D) {
-    Graphics2D g2D = ((Graphics2D)handle);
-    BasicStroke stroke = getCurrentBasicStroke();
-    float[] array = null;
-    switch(lineStyle) {
-      case SWT.LINE_SOLID:
-        break;
-      case SWT.LINE_DASH:
-        array = lineDashArray;
-        break;
-      case SWT.LINE_DOT:
-        array = lineDotArray;
-        break;
-      case SWT.LINE_DASHDOT:
-        array = lineDashDotArray;
-        break;
-      case SWT.LINE_DASHDOTDOT:
-        array = lineDashDotDotArray;
-        break;
-      case SWT.LINE_CUSTOM:
-        array = data.dashes;
-        break;
-      default:
-        SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-    }
-    g2D.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), array, 0));
+  BasicStroke stroke = getCurrentBasicStroke();
+  float[] array = null;
+  switch(lineStyle) {
+    case SWT.LINE_SOLID:
+      break;
+    case SWT.LINE_DASH:
+      array = lineDashArray;
+      break;
+    case SWT.LINE_DOT:
+      array = lineDotArray;
+      break;
+    case SWT.LINE_DASHDOT:
+      array = lineDashDotArray;
+      break;
+    case SWT.LINE_DASHDOTDOT:
+      array = lineDashDotDotArray;
+      break;
+    case SWT.LINE_CUSTOM:
+      array = data.dashes;
+      break;
+    default:
+      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   }
+  handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), array, 0));
 }
 
 /** 
@@ -2988,11 +2956,8 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int lineWidth) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(handle instanceof Graphics2D) {
-    Graphics2D g2D = ((Graphics2D)handle);
-    BasicStroke stroke = getCurrentBasicStroke();
-    g2D.setStroke(new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
-  }
+  BasicStroke stroke = getCurrentBasicStroke();
+  handle.setStroke(new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
 }
 
 //void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinStyle, int[] dashes) {

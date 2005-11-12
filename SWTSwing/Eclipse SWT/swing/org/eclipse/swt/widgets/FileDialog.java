@@ -41,7 +41,6 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";
 	static final String FILTER = "*.*";
-	static int BUFFER_SIZE = 1024 * 32;
 
 /**
  * Constructs a new instance of this class given only its parent.

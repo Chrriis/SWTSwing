@@ -11,10 +11,19 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.JColorChooser;
+import javax.swing.SwingUtilities;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
 
 /**
  * Instances of this class allow the user to select a color
@@ -88,19 +97,6 @@ public ColorDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-int CCHookProc (int hdlg, int uiMsg, int lParam, int lpData) {
-	switch (uiMsg) {
-		case OS.WM_INITDIALOG:
-			if (title != null && title.length () != 0) {
-				/* Use the character encoding for the default locale */
-				TCHAR buffer = new TCHAR (0, title, true);
-				OS.SetWindowText (hdlg, buffer);
-			}
-			break;
-	}
-	return 0;
-}
-
 /**
  * Returns the currently selected color in the receiver.
  *
@@ -126,80 +122,42 @@ public RGB getRGB () {
  * </ul>
  */
 public RGB open () {
-	
-	/* Get the owner HWND for the dialog */
-	int hwndOwner = parent.handle;
+  
+  if(!SwingUtilities.isEventDispatchThread()) {
+    final RGB[] result = new RGB[1];
+    try {
+      class PopEventQueue extends EventQueue {
+        public void pop() {
+          super.pop();
+        }
+      }
+      PopEventQueue eq = new PopEventQueue();
+      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
+      SwingUtilities.invokeAndWait(new Runnable() {
+        public void run() {
+          result[0] = open();
+        }
+      });
+      eq.pop();
+    } catch(Exception e) {
+    }
+    return result[0];
+  }
 
-	/* Create the CCHookProc */
-	Callback callback = new Callback (this, "CCHookProc", 4);
-	int lpfnHook = callback.getAddress ();
-	
-	/* Allocate the Custom Colors */
-	Display display = parent.display;
-	if (display.lpCustColors == 0) {
-		int hHeap = OS.GetProcessHeap ();
-		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);
-	}
-	
-	/* Open the dialog */	
-	CHOOSECOLOR lpcc = new CHOOSECOLOR ();
-	lpcc.lStructSize = CHOOSECOLOR.sizeof;
-	lpcc.Flags = OS.CC_ANYCOLOR | OS.CC_ENABLEHOOK;
-	lpcc.lpfnHook = lpfnHook;
-	lpcc.hwndOwner = hwndOwner;
-	lpcc.lpCustColors = display.lpCustColors;
-	if (rgb != null) {
-		lpcc.Flags |= OS.CC_RGBINIT;
-		int red = rgb.red & 0xFF;
-		int green = (rgb.green << 8) & 0xFF00;
-		int blue = (rgb.blue << 16) & 0xFF0000;
-		lpcc.rgbResult = red | green | blue;
-	}
-	
-	/* Make the parent shell be temporary modal */
-	Shell oldModal = null;
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialogShell ();
-		display.setModalDialogShell (parent);
-	}
-	
-	/* Open the dialog */
-	boolean success = OS.ChooseColor (lpcc);
-	
-	/* Clear the temporary dialog modal parent */
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialogShell (oldModal);
-	}
-	
-	if (success) {
-		int red = lpcc.rgbResult & 0xFF;
-		int green = (lpcc.rgbResult >> 8) & 0xFF;
-		int blue = (lpcc.rgbResult >> 16) & 0xFF;
-		rgb = new RGB (red, green, blue);
-	}
-	
-	/* Free the CCHookProc */
-	callback.dispose ();
-	
-	/* Free the Custom Colors */
-	/*
-	* This code is intentionally commented.  Currently,
-	* there is exactly one set of custom colors per display.
-	* The memory associated with these colors is released
-	* when the display is disposed.
-	*/
-//	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
-	
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-	
-	if (!success) return null;
-	return rgb;
+  boolean isModal = (style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
+  JColorChooser cc = new JColorChooser();
+  cc.addPropertyChangeListener(new PropertyChangeListener() {
+    public void propertyChange(PropertyChangeEvent e) {
+      if("color".equals(e.getPropertyName())) {
+        Color color = (Color)e.getNewValue();
+        if(color != null) {
+          rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
+        }
+      }
+    }
+  });
+  JColorChooser.createDialog(getParent().handle, null, isModal, cc, null, null);
+  return rgb;
 }
 
 /**

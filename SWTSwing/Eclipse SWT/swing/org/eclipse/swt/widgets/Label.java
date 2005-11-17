@@ -240,7 +240,7 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return "";
-	return ((CLabel)handle).getText();
+	return ((CLabel)handle).getLabelText();
 }
 
 ///*
@@ -361,7 +361,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-  ((CLabel)handle).setText(string);
+  ((CLabel)handle).setLabelText(string);
 }
 
 ///*

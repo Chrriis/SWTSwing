@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -18,6 +19,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicHTML;
+import javax.swing.text.View;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
@@ -56,11 +59,11 @@ class CSeparator extends JPanel implements CLabel {
     return separator;
   }
 
-  public String getText() {
+  public String getLabelText() {
     return null;
   }
 
-  public void setText(String text) {
+  public void setLabelText(String text) {
   }
 
   public void setAlignment(int alignment) {
@@ -75,12 +78,21 @@ class CLabelImplementation extends JLabel implements CLabel {
 
   protected Label handle;
 
+  protected boolean isWrapping;
+
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
     init(style);
   }
 
+  public Dimension getPreferredSize() {
+    System.err.println(((View)getClientProperty(BasicHTML.propertyKey)).breakView(View.HORIZONTAL, 0, 0, super.getSize().width).getPreferredSpan(View.VERTICAL) + ", " + super.getPreferredSize());
+    // TODO Auto-generated method stub
+    return super.getPreferredSize();
+  }
+
   protected void init(int style) {
+    isWrapping = (style & SWT.WRAP) != 0;
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     }
@@ -96,6 +108,92 @@ class CLabelImplementation extends JLabel implements CLabel {
 
   public void setAlignment(int alignment) {
     setHorizontalAlignment(alignment);
+  }
+
+  public void setLabelText(String text) {
+    if(isWrapping) {
+      super.setText("<html>" + escapeXML(text) + "</html>");
+    } else {
+      super.setText(text);
+    }
+  }
+
+  public String getLabelText() {
+    if(isWrapping) {
+      String text = getText();
+      text = text.substring(6, text.length() - 7);
+      return unescapeXML(text);
+    }
+    return getText();
+  }
+
+  public static String escapeXML(String s) {
+    if(s == null || s.length() == 0) {
+      return s;
+    }
+    StringBuffer sb = new StringBuffer((int)(s.length() * 1.1));
+    for(int i=0; i<s.length(); i++) {
+      char c = s.charAt(i);
+      switch(c) {
+        case '<':
+          sb.append("&lt;");
+          break;
+        case '>':
+          sb.append("&gt;");
+          break;
+        case '&':
+          sb.append("&amp;");
+          break;
+        case '\'':
+          sb.append("&apos;");
+          break;
+        case '\"':
+          sb.append("&quot;");
+          break;
+        default:
+          sb.append(c);
+        break;
+      }
+    }
+    return sb.toString();
+  }
+
+  public static String unescapeXML(String s) {
+    if(s == null || s.length() < 3) {
+      return s;
+    }
+    char[] chars = new char[s.length()];
+    int pos = 0;
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if(c == '&') {
+        String right = s.substring(i + 1);
+        if(right.startsWith("lt;")) {
+          chars[pos] = '<';
+          i += 3;
+        } else if(right.startsWith("gt;")) {
+          chars[pos] = '>';
+          i += 3;
+        } else if(right.startsWith("amp;")) {
+          chars[pos] = '&';
+          i += 4;
+        } else if(right.startsWith("apos;")) {
+          chars[pos] = '\'';
+          i += 5;
+        } else if(right.startsWith("quot;")) {
+          chars[pos] = '\"';
+          i += 5;
+        } else {
+          chars[pos++] = c;
+        }
+      } else {
+        chars[pos++] = c;
+      }
+    }
+    if(pos == chars.length) {
+      return s;
+    }
+    return new String(chars, 0, pos);
   }
 
 }
@@ -119,9 +217,9 @@ public interface CLabel extends CComponent {
 
   }
 
-  public String getText();
+  public String getLabelText();
 
-  public void setText(String text);
+  public void setLabelText(String text);
 
   public void setAlignment(int alignment);
 

@@ -70,7 +70,7 @@ public class Test {
       {"34", "create a label (with an image)"},
       {"37", "create a label (a separator)"},
     }}, new Object[] {"List", new String[][] {
-//      {"59", "print selected items in a list"},
+      {"59", "print selected items in a list"},
     }}, new Object[] {"Menu", new String[][] {
 //      {"29", "create a bar and pull down menu (accelerators, mnemonics)"},
 //      {"40", "create a popup menu (set in multiple controls)"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "24";
+  static String snippetNumber = "59";
 
   public static void main(String[] args) {
     String number = null;

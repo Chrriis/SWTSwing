@@ -1685,16 +1685,16 @@ public void processEvent(AWTEvent e) {
       Event event = new Event();
       event.detail = SWT.TRAVERSE_RETURN;
       sendEvent(SWT.Traverse, event);
-      boolean isPosting = true;
+      boolean isSending = true;
       if(event.doit) {
         JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
         if(defaultButton != null) {
-          isPosting = false;
+          isSending = false;
           defaultButton.doClick();
         }
       }
-      if(isPosting) {
-        postEvent(SWT.DefaultSelection);
+      if(isSending) {
+        sendEvent(SWT.DefaultSelection);
       }
       break;
     }

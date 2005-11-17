@@ -22,6 +22,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.awt.event.PaintEvent;
+import java.util.EventObject;
 
 import javax.swing.JComponent;
 import javax.swing.RootPaneContainer;
@@ -2553,21 +2554,21 @@ public void setVisible (boolean visible) {
 //	if (fixFocus) fixFocus (control);
 }
 
-//void sort (int [] items) {
-//	/* Shell Sort from K&R, pg 108 */
-//	int length = items.length;
-//	for (int gap=length/2; gap>0; gap/=2) {
-//		for (int i=gap; i<length; i++) {
-//			for (int j=i-gap; j>=0; j-=gap) {
-//		   		if (items [j] <= items [j + gap]) {
-//					int swap = items [j];
-//					items [j] = items [j + gap];
-//					items [j + gap] = swap;
-//		   		}
-//	    	}
-//	    }
-//	}
-//}
+void sort (int [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+		   		if (items [j] <= items [j + gap]) {
+					int swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+		   		}
+	    	}
+	    }
+	}
+}
 
 //void subclass () {
 //	int oldProc = windowProc ();
@@ -3930,7 +3931,20 @@ private Thread mouseHoverThread;
 private java.awt.event.MouseEvent mouseHoverEvent;
 
 /**
- * the entry point for callbacks 
+ * The entry point for callbacks 
+ * (Warning: This method is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ */
+public void processEvent(EventObject e) {
+}
+
+/**
+ * The entry point for callbacks 
  * (Warning: This method is platform dependent)
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT

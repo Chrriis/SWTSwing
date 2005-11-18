@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.Container;
+import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
@@ -19,6 +20,7 @@ import javax.swing.SwingConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CLabel;
 
 /**
@@ -199,6 +201,18 @@ public int getAlignment () {
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+  checkWidget ();
+  if((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+    Dimension size = handle.getSize();
+    handle.setSize(wHint, 0);
+    Point point = super.computeSize (wHint, hHint, changed);
+    handle.setSize(size);
+    return point;
+  }
+  return super.computeSize (wHint, hHint, changed);
 }
 
 Container createHandle () {

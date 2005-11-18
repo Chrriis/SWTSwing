@@ -85,9 +85,33 @@ class CLabelImplementation extends JLabel implements CLabel {
     init(style);
   }
 
+//  public void reshape(int x, int y, int w, int h) {
+//    if(isWrapping) {
+//      View view = (View)getClientProperty(BasicHTML.propertyKey);
+//      Dimension size = super.getSize();
+//      view.setSize(size.width, Integer.MAX_VALUE);
+//      Dimension preferredSize = super.getPreferredSize();
+//      view.setSize(size.width, size.height);
+////      if(size.height != preferredSize.height) {
+//        super.reshape(x, y, w, preferredSize.height);
+//        revalidate();
+//        repaint();
+////      }
+//    }
+//  }
+
   public Dimension getPreferredSize() {
-    System.err.println(((View)getClientProperty(BasicHTML.propertyKey)).breakView(View.HORIZONTAL, 0, 0, super.getSize().width).getPreferredSpan(View.VERTICAL) + ", " + super.getPreferredSize());
-    // TODO Auto-generated method stub
+    if(isWrapping) {
+      Dimension preferredSize = super.getPreferredSize();
+      View view = ((View)getClientProperty(BasicHTML.propertyKey)).getView(0);
+      Dimension size = super.getSize();
+      view.setSize(size.width, 0);
+      preferredSize.height = super.getPreferredSize().height;
+//      view.setSize(size.width, size.height);
+//      System.err.println(preferredSize);
+      return preferredSize;
+    }
+//    System.err.println(super.getPreferredSize());
     return super.getPreferredSize();
   }
 

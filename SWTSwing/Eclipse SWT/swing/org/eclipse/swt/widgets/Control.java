@@ -621,6 +621,18 @@ Menu [] findMenus (Control control) {
 	return new Menu [0];
 }
 
+int findMnemonicIndex (String string) {
+  int index = 0;
+  int length = string.length ();
+  do {
+    while (index < length && string.charAt (index) != '&') index++;
+    if (++index >= length) return -1;
+    if (string.charAt (index) != '&') return index;
+    index++;
+  } while (index < length);
+  return -1;
+}
+
 char findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();

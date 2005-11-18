@@ -53,9 +53,9 @@ public class Test {
     }}, new Object[] {"Font", new String[][] {
       {"100", "create a large font for use by a text widget"},
     }}, new Object[] {"FormLayout", new String[][] {
-//      {"65", "create a simple dialog using form layout"},
+      {"65", "create a simple dialog using form layout"},
       {"69", "display a label and single line text using a form layout"},
-//      {"71", "create a simple OK/CANCEL dialog using form layout"},
+      {"71", "create a simple OK/CANCEL dialog using form layout"},
     }}, new Object[] {"GC", new String[][] {
       {"13", "draw a thick line"}, //<-- Works, but repaint in Swing is too fast and hides the result.
       {"93", "measure a string"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "65";
+  static String snippetNumber = "71";
 
   public static void main(String[] args) {
     String number = null;

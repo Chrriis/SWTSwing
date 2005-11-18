@@ -53,6 +53,7 @@ public class Button extends Control {
 	Image image;
 	ImageList imageList;
 	boolean ignoreMouse;
+  String text;
 //	static final int ButtonProc;
 //	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
 //	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
@@ -358,7 +359,7 @@ public boolean getSelection () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) return "";
-	return ((CButton)handle).getText();
+	return text;
 }
 
 boolean isTabItem () {
@@ -602,7 +603,11 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-    ((CButton)handle).setText(string);
+  this.text = string;
+  CButton cButton = (CButton)handle;
+  int index = findMnemonicIndex(string);
+  cButton.setMnemonic(string.charAt(index));
+  cButton.setText(string.substring(0, index - 1) + string.substring(index));
 }
 
 //int widgetStyle () {

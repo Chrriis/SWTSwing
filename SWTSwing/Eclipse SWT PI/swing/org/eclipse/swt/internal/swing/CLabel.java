@@ -85,21 +85,6 @@ class CLabelImplementation extends JLabel implements CLabel {
     init(style);
   }
 
-//  public void reshape(int x, int y, int w, int h) {
-//    if(isWrapping) {
-//      View view = (View)getClientProperty(BasicHTML.propertyKey);
-//      Dimension size = super.getSize();
-//      view.setSize(size.width, Integer.MAX_VALUE);
-//      Dimension preferredSize = super.getPreferredSize();
-//      view.setSize(size.width, size.height);
-////      if(size.height != preferredSize.height) {
-//        super.reshape(x, y, w, preferredSize.height);
-//        revalidate();
-//        repaint();
-////      }
-//    }
-//  }
-
   public Dimension getPreferredSize() {
     if(isWrapping) {
       Dimension preferredSize = super.getPreferredSize();
@@ -107,11 +92,8 @@ class CLabelImplementation extends JLabel implements CLabel {
       Dimension size = super.getSize();
       view.setSize(size.width, 0);
       preferredSize.height = super.getPreferredSize().height;
-//      view.setSize(size.width, size.height);
-//      System.err.println(preferredSize);
       return preferredSize;
     }
-//    System.err.println(super.getPreferredSize());
     return super.getPreferredSize();
   }
 

@@ -81,10 +81,10 @@ public class Test {
 //      Is it platform specific??
     }}, new Object[] {"ProgressBar", new String[][] {
 //      {"57", "update a progress bar (from the UI thread)"},
-//      {"56", "update a progress bar (another thread)"},
+      {"56", "update a progress bar (another thread)"},
     }}, new Object[] {"Sash", new String[][] {
-//      {"54", "create a sash (allow it to be moved)"},
-//      {"107", "implement a simple splitter (with a 20 pixel limit)"},
+      {"54", "create a sash (allow it to be moved)"},
+      {"107", "implement a simple splitter (with a 20 pixel limit)"},
     }}, new Object[] {"SashForm", new String[][] {
 //      {"109", "create a sash form with three children"},
     }}, new Object[] {"Scale", new String[][] {
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "71";
+  static String snippetNumber = "107";
 
   public static void main(String[] args) {
     String number = null;

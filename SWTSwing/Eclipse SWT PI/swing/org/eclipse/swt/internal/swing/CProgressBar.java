@@ -13,6 +13,7 @@ import java.awt.Container;
 
 import javax.swing.JProgressBar;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.ProgressBar;
 
 class CProgressBarImplementation extends JProgressBar implements CProgressBar {
@@ -25,7 +26,9 @@ class CProgressBarImplementation extends JProgressBar implements CProgressBar {
   }
 
   protected void init(int style) {
-    
+    setOrientation((style & SWT.HORIZONTAL) != 0? HORIZONTAL: VERTICAL);
+    setIndeterminate((style & SWT.INDETERMINATE) != 0);
+    // TODO: find if we have some style for non SMOOTH scrollbars.
   }
 
   public Container getClientArea() {

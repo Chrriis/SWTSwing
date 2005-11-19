@@ -11,10 +11,15 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import java.awt.AWTEvent;
+import java.awt.Container;
+import java.awt.event.MouseEvent;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.internal.swing.CSash;
 
 /**
  * Instances of the receiver represent a selectable user interface object
@@ -34,10 +39,8 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Sash extends Control {
-	boolean dragging;
-	int startX, startY, lastX, lastY;
-	final static int INCREMENT = 1;
-	final static int PAGE_INCREMENT = 9;
+//	final static int INCREMENT = 1;
+//	final static int PAGE_INCREMENT = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -105,42 +108,12 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
-	if (handle == 0) return 0;
-	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
-}
-
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	int border = getBorderWidth ();
-	int width = border * 2, height = border * 2;
-	if ((style & SWT.HORIZONTAL) != 0) {
-		width += DEFAULT_WIDTH;  height += 3;
-	} else {
-		width += 3; height += DEFAULT_HEIGHT;
-	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
-	return new Point (width, height);
-}
-
-void drawBand (int x, int y, int width, int height) {
-	if ((style & SWT.SMOOTH) != 0) return;
-	int hwndTrack = parent.handle;
-	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
-	int stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
-	int stippleBrush = OS.CreatePatternBrush (stippleBitmap);
-	int hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
-	int oldBrush = OS.SelectObject (hDC, stippleBrush);
-	OS.PatBlt (hDC, x, y, width, height, OS.PATINVERT);
-	OS.SelectObject (hDC, oldBrush);
-	OS.ReleaseDC (hwndTrack, hDC);
-	OS.DeleteObject (stippleBrush);
-	OS.DeleteObject (stippleBitmap);
+Container createHandle () {
+  return (Container)CSash.Instanciator.createInstance(this, style);
 }
 
 /**
@@ -168,243 +141,64 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-TCHAR windowClass () {
-	return display.windowClass;
-}
+java.awt.Point origin;
 
-int windowProc () {
-	return display.windowProc;
-}
-
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null) return result;
-	drawBackground (wParam);
-	return LRESULT.ONE;
-}
-
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
-	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
-	if (result != null) return result;
-	switch (wParam) {
-		case OS.VK_LEFT:
-		case OS.VK_RIGHT:
-		case OS.VK_UP:
-		case OS.VK_DOWN:
-			
-			/* Calculate the new x or y position */
-			if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return result;
-			int step = OS.GetKeyState (OS.VK_CONTROL) < 0 ? INCREMENT : PAGE_INCREMENT;
-			POINT pt = new POINT ();
-			if ((style & SWT.VERTICAL) != 0) {
-				if (wParam == OS.VK_UP || wParam == OS.VK_DOWN) break;
-				pt.x = wParam == OS.VK_LEFT ? -step : step;
-			} else {
-				if (wParam == OS.VK_LEFT || wParam == OS.VK_RIGHT) break;
-				pt.y = wParam == OS.VK_UP ? -step : step;
-			}
-			int hwndTrack = parent.handle;
-			OS.MapWindowPoints (handle, hwndTrack, pt, 1);
-			RECT rect = new RECT (), clientRect = new RECT ();
-			OS.GetWindowRect (handle, rect);
-			int width = rect.right - rect.left;
-			int height = rect.bottom - rect.top;
-			OS.GetClientRect (hwndTrack, clientRect);
-			int clientWidth = clientRect.right - clientRect.left;
-			int clientHeight = clientRect.bottom - clientRect.top;
-			int newX = lastX, newY = lastY;
-			if ((style & SWT.VERTICAL) != 0) {
-				newX = Math.min (Math.max (0, pt.x - startX), clientWidth - width);
-			} else {
-				newY = Math.min (Math.max (0, pt.y - startY), clientHeight - height);
-			}
-			if (newX == lastX && newY == lastY) return result;
-
-			/* Update the pointer position */
-			POINT cursorPt = new POINT ();
-			cursorPt.x = pt.x;  cursorPt.y = pt.y;
-			OS.ClientToScreen (hwndTrack, cursorPt);
-			if ((style & SWT.VERTICAL) != 0) {
-				cursorPt.y += height / 2;
-			}
-			else {
-				cursorPt.x += width / 2;
-			}
-			OS.SetCursorPos (cursorPt.x, cursorPt.y);
-
-			Event event = new Event ();
-			event.x = newX;
-			event.y = newY;
-			event.width = width;
-			event.height = height;
-			sendEvent (SWT.Selection, event);
-			if (isDisposed ()) return LRESULT.ZERO;
-			if (event.doit) {
-				if ((style & SWT.SMOOTH) != 0) {
-					setBounds (event.x, event.y, width, height);
-				}
-			}
-			return result;
-	}
-	return result;
-}
-
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
-	return new LRESULT (OS.DLGC_STATIC);
-}
-
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
-
-	/* Compute the banding rectangle */
-	int hwndTrack = parent.handle;
-	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16);
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	OS.MapWindowPoints (handle, 0, pt, 1);
-	startX = pt.x - rect.left;
-	startY = pt.y - rect.top;
-	OS.MapWindowPoints (0, hwndTrack, rect, 2);
-	lastX = rect.left;
-	lastY = rect.top;
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-
-	/* The event must be sent because doit flag is used */
-	Event event = new Event ();
-	event.x = lastX;
-	event.y = lastY;
-	event.width = width;
-	event.height = height;
-	if ((style & SWT.SMOOTH) == 0) {
-		event.detail = SWT.DRAG;
-	}
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return LRESULT.ZERO;
-	
-	/* Draw the banding rectangle */
-	if (event.doit) {
-		dragging = true;
-		lastX = event.x;
-		lastY = event.y;
-		menuShell ().bringToTop ();
-		if (OS.IsWinCE) {
-			OS.UpdateWindow (hwndTrack);
-		} else {
-			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (hwndTrack, null, 0, flags);
-		}
-		drawBand (event.x, event.y, width, height);
-		if ((style & SWT.SMOOTH) != 0) {
-			setBounds (event.x, event.y, width, height);
-			// widget could be disposed at this point
-		}
-	}
-	return result;
-}
-
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
-	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
-
-	/* Compute the banding rectangle */
-	if (!dragging) return result;
-	dragging = false;
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	
-	/* The event must be sent because doit flag is used */
-	Event event = new Event ();
-	event.x = lastX;
-	event.y = lastY;
-	event.width = width;
-	event.height = height;
-	drawBand (event.x, event.y, width, height);
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return result;
-	if (event.doit) {
-		if ((style & SWT.SMOOTH) != 0) {
-			setBounds (event.x, event.y, width, height);
-			// widget could be disposed at this point
-		}
-	}
-	return result;
-}
-
-LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
-	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
-	if (result != null) return result;
-	if (!dragging || (wParam & OS.MK_LBUTTON) == 0) return result;
-
-	/* Compute the banding rectangle */
-	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16);
-	int hwndTrack = parent.handle;
-	OS.MapWindowPoints (handle, hwndTrack, pt, 1);
-	RECT rect = new RECT (), clientRect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	OS.GetClientRect (hwndTrack, clientRect);
-	int newX = lastX, newY = lastY;
-	if ((style & SWT.VERTICAL) != 0) {
-		int clientWidth = clientRect.right - clientRect.left;
-		newX = Math.min (Math.max (0, pt.x - startX), clientWidth - width);
-	} else {
-		int clientHeight = clientRect.bottom - clientRect.top;
-		newY = Math.min (Math.max (0, pt.y - startY), clientHeight - height);
-	}
-	if (newX == lastX && newY == lastY) return result;
-	drawBand (lastX, lastY, width, height);
-
-	/* The event must be sent because doit flag is used */
-	Event event = new Event ();
-	event.x = newX;
-	event.y = newY;
-	event.width = width;
-	event.height = height;
-	if ((style & SWT.SMOOTH) == 0) {
-		event.detail = SWT.DRAG;
-	}
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return LRESULT.ZERO;
-	if (event.doit) {
-		lastX = event.x;
-		lastY = event.y;
-	}
-	if (OS.IsWinCE) {
-		OS.UpdateWindow (hwndTrack);
-	} else {
-		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (hwndTrack, null, 0, flags);
-	}
-	drawBand (lastX, lastY, width, height);
-	if ((style & SWT.SMOOTH) != 0) {
-		setBounds (lastX, lastY, width, height);
-		// widget could be disposed at this point
-	}
-	return result;
-}
-
-LRESULT WM_SETCURSOR (int wParam, int lParam) {
-	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
-	if (result != null) return result;
-	int hitTest = lParam & 0xFFFF;
- 	if (hitTest == OS.HTCLIENT) {
-	 	int hCursor = 0;
-	 	if ((style & SWT.HORIZONTAL) != 0) {
-			hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-	 	} else {
-			hCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-	 	}
-		OS.SetCursor (hCursor);
-		return LRESULT.ONE;
-	}
-	return result;
+public void processEvent(AWTEvent e) {
+  switch(e.getID()) {
+  case MouseEvent.MOUSE_PRESSED:
+  case MouseEvent.MOUSE_DRAGGED:
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    if(isDisposed()) {
+      display.stopExclusiveSection();
+      super.processEvent(e);
+      return;
+    }
+    switch(e.getID()) {
+    case MouseEvent.MOUSE_PRESSED: {
+      origin = ((MouseEvent)e).getPoint();
+      Event event = new Event();
+      java.awt.Rectangle bounds = handle.getBounds();
+      event.x = bounds.x;
+      event.y = bounds.y;
+      event.width = bounds.width;
+      event.height = bounds.height;
+      sendEvent(SWT.Selection, event);
+      break;
+    }
+    case MouseEvent.MOUSE_DRAGGED:
+      Event event = new Event();
+      MouseEvent me = (MouseEvent)e;
+      java.awt.Dimension size = handle.getParent().getSize();
+      java.awt.Rectangle bounds = handle.getBounds();
+      event.x = bounds.x;
+      event.y = bounds.y;
+      if((style & SWT.VERTICAL) != 0) {
+        event.x += me.getX() - origin.x;
+        if(event.x < 0) {
+          event.x = 0;
+        } else if(event.x >= size.width - bounds.width) {
+          event.x = size.width - bounds.width;
+        }
+      } else {
+        event.y += me.getY() - origin.y;
+        if(event.y < 0) {
+          event.y = 0;
+        } else if(event.y >= size.height - bounds.height) {
+          event.y = size.height - bounds.height;
+        }
+      }
+      event.width = bounds.width;
+      event.height = bounds.height;
+      event.detail = SWT.DRAG;
+      sendEvent(SWT.Selection, event);
+      break;
+    }
+    super.processEvent(e);
+    display.stopExclusiveSection();
+    return;
+  }
+  super.processEvent(e);
 }
 
 }

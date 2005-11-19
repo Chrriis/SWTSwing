@@ -1903,10 +1903,17 @@ public void processEvent(AWTEvent e) {
   case WindowEvent.WINDOW_CLOSING:
     Display display = getDisplay();
     display.startExclusiveSection();
+    if(isDisposed()) {
+      display.stopExclusiveSection();
+      super.processEvent(e);
+      return;
+    }
     if(isEnabled()) {
       closeWidget();
     }
+    super.processEvent(e);
     display.stopExclusiveSection();
+    return;
   }
   super.processEvent(e);
 //  switch(e.getID()) {

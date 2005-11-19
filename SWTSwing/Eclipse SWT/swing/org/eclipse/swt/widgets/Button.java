@@ -606,8 +606,15 @@ public void setText (String string) {
   this.text = string;
   CButton cButton = (CButton)handle;
   int index = findMnemonicIndex(string);
-  cButton.setMnemonic(string.charAt(index));
-  cButton.setText(string.substring(0, index - 1) + string.substring(index));
+  char mnemonic;
+  if(index < 0) {
+    mnemonic = '\0';
+    cButton.setText(string);
+  } else {
+    mnemonic = string.charAt(index);
+    cButton.setText(string.substring(0, index - 1) + string.substring(index));
+  }
+  cButton.setMnemonic(mnemonic);
 }
 
 //int widgetStyle () {
@@ -762,7 +769,12 @@ public void processEvent(AWTEvent e) {
   case ActionEvent.ACTION_PERFORMED:
     Display display = getDisplay();
     display.startExclusiveSection();
-    postEvent (SWT.Selection);
+    if(isDisposed()) {
+      display.stopExclusiveSection();
+      super.processEvent(e);
+      return;
+    }
+    sendEvent (SWT.Selection);
     super.processEvent(e);
     display.stopExclusiveSection();
     return;

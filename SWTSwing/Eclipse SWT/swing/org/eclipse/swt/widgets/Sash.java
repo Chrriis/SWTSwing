@@ -13,12 +13,14 @@ package org.eclipse.swt.widgets;
  
 import java.awt.AWTEvent;
 import java.awt.Container;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CSash;
 
 /**
@@ -141,12 +143,14 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-java.awt.Point origin;
+Point origin;
+Point targetPoint;
 
 public void processEvent(AWTEvent e) {
   switch(e.getID()) {
   case MouseEvent.MOUSE_PRESSED:
   case MouseEvent.MOUSE_DRAGGED:
+  case MouseEvent.MOUSE_RELEASED:
     Display display = getDisplay();
     display.startExclusiveSection();
     if(isDisposed()) {
@@ -158,19 +162,32 @@ public void processEvent(AWTEvent e) {
     case MouseEvent.MOUSE_PRESSED: {
       origin = ((MouseEvent)e).getPoint();
       Event event = new Event();
-      java.awt.Rectangle bounds = handle.getBounds();
+      Rectangle bounds = getBounds();
       event.x = bounds.x;
       event.y = bounds.y;
       event.width = bounds.width;
       event.height = bounds.height;
+      targetPoint = new Point(bounds.x, bounds.y);
       sendEvent(SWT.Selection, event);
+      break;
+    }
+    case MouseEvent.MOUSE_RELEASED: {
+      Event event = new Event();
+      Rectangle bounds = getBounds();
+      event.x = targetPoint.x;
+      event.y = targetPoint.y;
+      event.width = bounds.width;
+      event.height = bounds.height;
+      sendEvent(SWT.Selection, event);
+      origin = null;
+      targetPoint = null;
       break;
     }
     case MouseEvent.MOUSE_DRAGGED:
       Event event = new Event();
       MouseEvent me = (MouseEvent)e;
       java.awt.Dimension size = handle.getParent().getSize();
-      java.awt.Rectangle bounds = handle.getBounds();
+      Rectangle bounds = getBounds();
       event.x = bounds.x;
       event.y = bounds.y;
       if((style & SWT.VERTICAL) != 0) {
@@ -190,8 +207,17 @@ public void processEvent(AWTEvent e) {
       }
       event.width = bounds.width;
       event.height = bounds.height;
-      event.detail = SWT.DRAG;
+      if ((style & SWT.SMOOTH) == 0) {
+        event.detail = SWT.DRAG;
+      }
       sendEvent(SWT.Selection, event);
+      if (event.doit) {
+        targetPoint.x = event.x;
+        targetPoint.y = event.y;
+        if ((style & SWT.SMOOTH) != 0) {
+          setLocation(targetPoint.x, targetPoint.y);
+        }
+      }
       break;
     }
     super.processEvent(e);

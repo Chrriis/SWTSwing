@@ -107,6 +107,12 @@ class CButtonPush extends JButton implements CButton {
     handle.processEvent(e);
   }
 
+//  public void reshape(int x, int y, int w, int h) {
+//    System.err.println("Reshape CButton: " + new java.awt.Rectangle(x, y, w, h));
+//    Thread.dumpStack();
+//    super.reshape(x, y, w, h);
+//  }
+
 }
 
 class CButtonCheck extends JCheckBox implements CButton {

@@ -3493,6 +3493,15 @@ public void wake () {
   }
 }
 
+void wakeThread () {
+  SwingUtilities.invokeLater(new Runnable() {
+    public void run() {
+      startExclusiveSection();
+      stopExclusiveSection();
+    }
+  });
+}
+
 //void wakeThread () {
 //	if (OS.IsWinCE) {
 //		OS.PostMessage (hwndMessage, OS.WM_NULL, 0, 0);

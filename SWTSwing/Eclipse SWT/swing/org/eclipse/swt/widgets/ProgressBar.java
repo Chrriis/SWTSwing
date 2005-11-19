@@ -11,9 +11,13 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import java.awt.Container;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.swing.CProgressBar;
+import org.eclipse.swt.internal.win32.OS;
 
 /**
  * Instances of the receiver represent is an unselectable
@@ -33,44 +37,6 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ProgressBar extends Control {
-	static final int DELAY = 100;
-	static final int TIMER_ID = 100;
-	static final int MINIMUM_WIDTH = 100;
-	static final int ProgressBarProc;
-	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
-	static {
-		WNDCLASS lpWndClass = new WNDCLASS ();
-		OS.GetClassInfo (0, ProgressBarClass, lpWndClass);
-		ProgressBarProc = lpWndClass.lpfnWndProc;
-		/*
-		* Feature in Windows.  The progress bar window class
-		* does not include CS_DBLCLKS.  This mean that these
-		* controls will not get double click messages such as
-		* WM_LBUTTONDBLCLK.  The fix is to register a new 
-		* window class with CS_DBLCLKS.
-		* 
-		* NOTE:  Screen readers look for the exact class name
-		* of the control in order to provide the correct kind
-		* of assistance.  Therefore, it is critical that the
-		* new window class have the same name.  It is possible
-		* to register a local window class with the same name
-		* as a global class.  Since bits that affect the class
-		* are being changed, it is possible that other native
-		* code, other than SWT, could create a control with
-		* this class name, and fail unexpectedly.
-		*/
-		int hInstance = OS.GetModuleHandle (null);
-		int hHeap = OS.GetProcessHeap ();
-		lpWndClass.hInstance = hInstance;
-		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
-		lpWndClass.style |= OS.CS_DBLCLKS;
-		int byteCount = ProgressBarClass.length () * TCHAR.sizeof;
-		int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (lpszClassName, ProgressBarClass, byteCount);
-		lpWndClass.lpszClassName = lpszClassName;
-		OS.RegisterClass (lpWndClass);
-//		OS.HeapFree (hHeap, 0, lpszClassName);	
-	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -106,11 +72,6 @@ public ProgressBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
-	if (handle == 0) return 0;
-	return OS.CallWindowProc (ProgressBarProc, hwnd, msg, wParam, lParam);
-}
-
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
@@ -132,13 +93,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-void createHandle () {
-	super.createHandle ();
-	startTimer ();
-}
-
-int defaultForeground () {
-	return OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+Container createHandle () {
+  return (Container)CProgressBar.Instanciator.createInstance(this, style);
 }
 
 /**
@@ -153,7 +109,7 @@ int defaultForeground () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.PBM_GETRANGE, 0, 0);
+  return ((CProgressBar)handle).getMaximum();
 }
 
 /**
@@ -168,7 +124,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
+  return ((CProgressBar)handle).getMinimum();
 }
 
 /**
@@ -183,48 +139,7 @@ public int getMinimum () {
  */
 public int getSelection () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	stopTimer ();
-}
-
-void startTimer () {
-	if ((style & SWT.INDETERMINATE) != 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if (OS.COMCTL32_MAJOR < 6 || (bits & OS.PBS_MARQUEE) == 0) {
-			OS.SetTimer (handle, TIMER_ID, DELAY, 0);
-		} else {
-			OS.SendMessage (handle, OS.PBM_SETMARQUEE, 1, DELAY);
-		}
-	}
-}
-
-void stopTimer () {
-	if ((style & SWT.INDETERMINATE) != 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if (OS.COMCTL32_MAJOR < 6 || (bits & OS.PBS_MARQUEE) == 0) {
-			OS.KillTimer (handle, TIMER_ID);
-		} else {
-			OS.SendMessage (handle, OS.PBM_SETMARQUEE, 0, 0);
-		}
-	}
-}
-
-void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
-	background = pixel;
-	if (pixel == -1) pixel = OS.CLR_DEFAULT;
-	OS.SendMessage (handle, OS.PBM_SETBKCOLOR, 0, pixel);
-}
-
-void setForegroundPixel (int pixel) {
-	if (foreground == pixel) return;
-	foreground = pixel;
-	if (pixel == -1) pixel = OS.CLR_DEFAULT;
-	OS.SendMessage (handle, OS.PBM_SETBARCOLOR, 0, pixel);
+  return ((CProgressBar)handle).getValue();
 }
 
 /**
@@ -242,9 +157,9 @@ void setForegroundPixel (int pixel) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int minimum = OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
+	int minimum = getMinimum();
 	if (0 <= minimum && minimum < value) {
-		OS.SendMessage (handle, OS.PBM_SETRANGE32, minimum, value);
+    ((CProgressBar)handle).setMaximum(value);
 	}
 }
 
@@ -263,9 +178,9 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int maximum = OS.SendMessage (handle, OS.PBM_GETRANGE, 0, 0);
+	int maximum = getMaximum();
 	if (0 <= value && value < maximum) {
-		OS.SendMessage (handle, OS.PBM_SETRANGE32, value, maximum);
+    ((CProgressBar)handle).setMinimum(value);
 	}
 }
 
@@ -283,88 +198,7 @@ public void setMinimum (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
-}
-
-int widgetStyle () {
-	int bits = super.widgetStyle ();
-	if ((style & SWT.SMOOTH) != 0) bits |= OS.PBS_SMOOTH;
-	if ((style & SWT.VERTICAL) != 0) bits |= OS.PBS_VERTICAL;
-	if ((style & SWT.INDETERMINATE) != 0) bits |= OS.PBS_MARQUEE;
-	return bits;
-}
-
-TCHAR windowClass () {
-	return ProgressBarClass;
-}
-
-int windowProc () {
-	return ProgressBarProc;
-}
-
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
-	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Feature in Windows.  The progress bar does
-	* not implement WM_GETDLGCODE.  As a result,
-	* a progress bar takes focus and takes part
-	* in tab traversal.  This behavior, while
-	* unspecified, is unwanted.  The fix is to
-	* implement WM_GETDLGCODE to behave like a
-	* STATIC control.
-	*/
-	return new LRESULT (OS.DLGC_STATIC);
-}
-
-LRESULT WM_SIZE (int wParam, int lParam) {
-	LRESULT result = super.WM_SIZE (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Feature in Windows.  When a progress bar with the style
-	* PBS_MARQUEE becomes too small, the animation (currently
-	* a small bar moving from right to left) does not have
-	* enough space to draw.  The result is that the progress
-	* bar does not appear to be moving.  The fix is to detect
-	* this case, clear the PBS_MARQUEE style and emulate the
-	* animation using PBM_STEPIT.
-	* 
-	* NOTE:  This only happens on Window XP.
-	*/
-	if ((style & SWT.INDETERMINATE) != 0) {
-		if (OS.COMCTL32_MAJOR >= 6) {
-			forceResize ();
-			RECT rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			int newBits = oldBits;
-			if (rect.right - rect.left < MINIMUM_WIDTH) {
-				newBits &= ~OS.PBS_MARQUEE;
-			} else {
-				newBits |= OS.PBS_MARQUEE;
-			}
-			if (newBits != oldBits) {
-				stopTimer ();
-				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-				startTimer ();
-			}
-		}
-	}
-	return result;
-}
-
-LRESULT WM_TIMER (int wParam, int lParam) {
-	LRESULT result = super.WM_TIMER (wParam, lParam);
-	if (result != null) return result;
-	if ((style & SWT.INDETERMINATE) != 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if (OS.COMCTL32_MAJOR < 6 || (bits & OS.PBS_MARQUEE) == 0) {
-			if (wParam == TIMER_ID) {
-				OS.SendMessage (handle, OS.PBM_STEPIT, 0, 0);
-			}
-		}
-	}
-	return result;
+  ((CProgressBar)handle).setValue(value);
 }
 
 }

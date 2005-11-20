@@ -19,10 +19,12 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.ShellListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.internal.swing.CShell;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -1899,29 +1901,43 @@ boolean traverseEscape () {
 //}
 
 public void processEvent(AWTEvent e) {
-  switch(e.getID()) {
+  int id = e.getID();
+  switch(id) {
+  case WindowEvent.WINDOW_ACTIVATED: if(!hooks(SWT.Activate)) return; break;
+  case WindowEvent.WINDOW_DEACTIVATED: if(!hooks(SWT.Deactivate)) return; break;
+  case WindowEvent.WINDOW_CLOSED: if(!hooks(SWT.Close)) return; break;
+  case WindowEvent.WINDOW_ICONIFIED: if(!hooks(SWT.Iconify)) return; break;
+  case WindowEvent.WINDOW_DEICONIFIED: if(!hooks(SWT.Deiconify)) return; break;
+  case WindowEvent.WINDOW_CLOSING: if(!isEnabled()) return; break;
+  default:
+    super.processEvent(e);
+    return;
+  }
+  if(isDisposed()) {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  switch(id) {
+  case WindowEvent.WINDOW_ACTIVATED: sendEvent(SWT.Activate); break;
+  case WindowEvent.WINDOW_DEACTIVATED: sendEvent(SWT.Deactivate); break;
+  case WindowEvent.WINDOW_CLOSED: sendEvent(SWT.Close); break;
+  case WindowEvent.WINDOW_ICONIFIED: sendEvent(SWT.Iconify); break;
+  case WindowEvent.WINDOW_DEICONIFIED: sendEvent(SWT.Deiconify); break;
   case WindowEvent.WINDOW_CLOSING:
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
     if(isEnabled()) {
       closeWidget();
     }
-    super.processEvent(e);
-    display.stopExclusiveSection();
-    return;
+    break;
   }
   super.processEvent(e);
-//  switch(e.getID()) {
-//  case WindowEvent.WINDOW_ACTIVATED:
-//    // TODO: implement
-//    break;
-//    // TODO: implement other cases
-//  }
+  display.stopExclusiveSection();
 }
 
 }

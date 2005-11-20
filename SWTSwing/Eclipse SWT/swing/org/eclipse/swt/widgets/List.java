@@ -16,6 +16,7 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.util.EventObject;
 
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 
 import org.eclipse.swt.SWT;
@@ -961,43 +962,53 @@ public void showSelection () {
 
 public void processEvent(EventObject e) {
   if(e instanceof ListSelectionEvent) {
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
+    if(!hooks(SWT.Selection)) return;
+  } else {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  if(e instanceof ListSelectionEvent) {
     if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
       sendEvent(SWT.Selection);
     }
-    super.processEvent(e);
-    display.stopExclusiveSection();
-    return;
   }
   super.processEvent(e);
+  display.stopExclusiveSection();
 }
 
 public void processEvent(AWTEvent e) {
-  switch(e.getID()) {
-  case ActionEvent.ACTION_PERFORMED:
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
-    switch(e.getID()) {
-    case ActionEvent.ACTION_PERFORMED:
-      sendEvent(SWT.DefaultSelection);
-      break;
-    }
+  int id = e.getID();
+  switch(id) {
+  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) return; break;
+  default:
     super.processEvent(e);
-    display.stopExclusiveSection();
     return;
   }
+  if(isDisposed()) {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  switch(id) {
+  case ActionEvent.ACTION_PERFORMED:
+    sendEvent(SWT.DefaultSelection);
+    break;
+  }
   super.processEvent(e);
+  display.stopExclusiveSection();
 }
 
 }

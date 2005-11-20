@@ -3972,150 +3972,146 @@ public void processEvent(AWTEvent e) {
     if(me.getClickCount() != 2) {
       return;
     }
+    if(!hooks(SWT.MouseDoubleClick)) return;
+    break;
   }
-  case java.awt.event.PaintEvent.PAINT:
+  case java.awt.event.PaintEvent.PAINT: if(!hooks(SWT.Paint)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.MouseMove)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_MOVED: if(!hooks(SWT.MouseMove)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_PRESSED: {
+    if(!hooks(SWT.MouseDown) && (!hooks(SWT.MenuDetect) || ((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_RELEASED: {
+    if(!hooks(SWT.MouseUp) && (!hooks(SWT.MenuDetect) || ((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+  }
+  case java.awt.event.MouseEvent.MOUSE_WHEEL: if(!hooks(SWT.MouseWheel)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_ENTERED: if(!hooks(SWT.MouseEnter)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_EXITED: if(!hooks(SWT.MouseExit)) return; break;
+  case java.awt.event.KeyEvent.KEY_PRESSED: if(!hooks(SWT.KeyUp)) return; break;
+  case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyDown)) return; break;
+  case ComponentEvent.COMPONENT_RESIZED: if(!hooks(SWT.Resize)) return; break;
+  case ComponentEvent.COMPONENT_MOVED: if(!hooks(SWT.Move)) return; break;
+  case ComponentEvent.COMPONENT_SHOWN: if(!hooks(SWT.Show)) return; break;
+  case ComponentEvent.COMPONENT_HIDDEN: if(!hooks(SWT.Hide)) return; break;
+  case java.awt.event.FocusEvent.FOCUS_GAINED: if(!hooks(SWT.FocusIn)) return; break;
+  case java.awt.event.FocusEvent.FOCUS_LOST: if(!hooks(SWT.FocusOut)) return; break;
+  default: return;
+  }
+  if(isDisposed()) {
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    return;
+  }
+  switch(id) {
+  // TODO: only send some of the events if they are hooked
+  case java.awt.event.PaintEvent.PAINT: {
+    Event event = new Event();
+    event.gc = new GC(this);
+    sendEvent(SWT.Paint, event);
+    break;
+  }
   case java.awt.event.MouseEvent.MOUSE_DRAGGED:
-  case java.awt.event.MouseEvent.MOUSE_MOVED:
-  case java.awt.event.MouseEvent.MOUSE_PRESSED:
-  case java.awt.event.MouseEvent.MOUSE_RELEASED:
-  case java.awt.event.MouseEvent.MOUSE_WHEEL:
-  case java.awt.event.MouseEvent.MOUSE_ENTERED:
-  case java.awt.event.MouseEvent.MOUSE_EXITED:
-  case java.awt.event.KeyEvent.KEY_PRESSED:
-  case java.awt.event.KeyEvent.KEY_RELEASED:
-  case ComponentEvent.COMPONENT_RESIZED:
-  case ComponentEvent.COMPONENT_MOVED:
-  case ComponentEvent.COMPONENT_SHOWN:
-  case ComponentEvent.COMPONENT_HIDDEN:
-  case java.awt.event.WindowEvent.WINDOW_ACTIVATED:
-  case java.awt.event.WindowEvent.WINDOW_DEACTIVATED:
-  case java.awt.event.WindowEvent.WINDOW_CLOSED:
-  case java.awt.event.WindowEvent.WINDOW_ICONIFIED:
-  case java.awt.event.WindowEvent.WINDOW_DEICONIFIED:
-  case java.awt.event.FocusEvent.FOCUS_GAINED:
-  case java.awt.event.FocusEvent.FOCUS_LOST: {
-    if(isDisposed()) {
-      return;
-    }
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      return;
-    }
-    switch(id) {
-    // TODO: only send some of the events if they are hooked
-    case java.awt.event.PaintEvent.PAINT: {
-      Event event = new Event();
-      event.gc = new GC(this);
-      sendEvent(SWT.Paint, event);
-      break;
-    }
-    case java.awt.event.MouseEvent.MOUSE_DRAGGED:
-    case java.awt.event.MouseEvent.MOUSE_MOVED: {
-      java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-      sendEvent(SWT.MouseMove, createMouseEvent(me, false));
-      long now = System.currentTimeMillis();
-      mouseHoverTimeStamp = now + 500;
-      mouseHoverEvent = me;
-      if(mouseHoverThread == null) {
-        mouseHoverThread = new Thread("Mouse Hover Thread") {
-          public void run() {
-            while(mouseHoverThread == this) {
-              try {
-                sleep(mouseHoverTimeStamp - System.currentTimeMillis());
-              } catch(Exception e) {}
-              if(mouseHoverThread != this) {
-                return;
-              }
-              if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
-                final Thread t = this;
-                SwingUtilities.invokeLater(new Runnable() {
-                  public void run() {
-                    if(mouseHoverThread != t) {
-                      return;
-                    }
-                    if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
-                      mouseHoverThread = null;
-                      java.awt.event.MouseEvent me = mouseHoverEvent;
-                      mouseHoverEvent = null;
-                      if(!isDisposed() && me.getComponent().contains(me.getPoint())) {
-                        Display display = getDisplay();
-                        display.startExclusiveSection();
-                        if(isDisposed()) {
-                          display.stopExclusiveSection();
-                          return;
-                        }
-                        sendEvent(SWT.MouseHover, createMouseEvent(me, false));
+  case java.awt.event.MouseEvent.MOUSE_MOVED: {
+    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+    sendEvent(SWT.MouseMove, createMouseEvent(me, false));
+    long now = System.currentTimeMillis();
+    mouseHoverTimeStamp = now + 500;
+    mouseHoverEvent = me;
+    if(mouseHoverThread == null) {
+      mouseHoverThread = new Thread("Mouse Hover Thread") {
+        public void run() {
+          while(mouseHoverThread == this) {
+            try {
+              sleep(mouseHoverTimeStamp - System.currentTimeMillis());
+            } catch(Exception e) {}
+            if(mouseHoverThread != this) {
+              return;
+            }
+            if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
+              final Thread t = this;
+              SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  if(mouseHoverThread != t) {
+                    return;
+                  }
+                  if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
+                    mouseHoverThread = null;
+                    java.awt.event.MouseEvent me = mouseHoverEvent;
+                    mouseHoverEvent = null;
+                    if(!isDisposed() && me.getComponent().contains(me.getPoint())) {
+                      Display display = getDisplay();
+                      display.startExclusiveSection();
+                      if(isDisposed()) {
                         display.stopExclusiveSection();
+                        return;
                       }
+                      sendEvent(SWT.MouseHover, createMouseEvent(me, false));
+                      display.stopExclusiveSection();
                     }
                   }
-                });
-              }
+                }
+              });
             }
           }
-        };
-        mouseHoverThread.start();
-      }
-      break;
+        }
+      };
+      mouseHoverThread.start();
     }
-    case java.awt.event.MouseEvent.MOUSE_PRESSED: {
-      java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-      Event event = createMouseEvent(me, true);
-      sendEvent(SWT.MouseDown, event);
-      if(me.isPopupTrigger()) {
-        sendEvent(SWT.MenuDetect, event);
-      }
-      break;
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_PRESSED: {
+    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+    Event event = createMouseEvent(me, true);
+    sendEvent(SWT.MouseDown, event);
+    if(me.isPopupTrigger()) {
+      sendEvent(SWT.MenuDetect, event);
     }
-    case java.awt.event.MouseEvent.MOUSE_RELEASED:
-      java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-      Event event = createMouseEvent(me, true);
-      sendEvent(SWT.MouseUp, event);
-      if(me.isPopupTrigger()) {
-        sendEvent(SWT.MenuDetect, event);
-      }
-      break;
-    case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
-    case java.awt.event.MouseEvent.MOUSE_WHEEL: sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
-    case java.awt.event.MouseEvent.MOUSE_ENTERED: sendEvent(SWT.MouseEnter, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
-    case java.awt.event.MouseEvent.MOUSE_EXITED:
-      mouseHoverThread = null;
-      sendEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
-      break;
-    case java.awt.event.KeyEvent.KEY_PRESSED: sendEvent(SWT.KeyDown, createKeyEvent((java.awt.event.KeyEvent)e)); break;
-    case java.awt.event.KeyEvent.KEY_RELEASED: sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e)); break;
-    case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
-    case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;
-    case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;
-    case ComponentEvent.COMPONENT_HIDDEN: sendEvent(SWT.Hide); break;
-    case java.awt.event.WindowEvent.WINDOW_ACTIVATED: sendEvent(SWT.Activate); break;
-    case java.awt.event.WindowEvent.WINDOW_DEACTIVATED: sendEvent(SWT.Deactivate); break;
-    case java.awt.event.WindowEvent.WINDOW_CLOSED: sendEvent(SWT.Close); break;
-    case java.awt.event.WindowEvent.WINDOW_ICONIFIED: sendEvent(SWT.Iconify); break;
-    case java.awt.event.WindowEvent.WINDOW_DEICONIFIED: sendEvent(SWT.Deiconify); break;
-    case java.awt.event.FocusEvent.FOCUS_GAINED: {
-      Shell shell = getShell ();
-      if(!shell.isDisposed()) {
-        shell.setActiveControl(this);
-      }
-      sendEvent(SWT.FocusIn);
-      break;
+    break;
+  }
+  case java.awt.event.MouseEvent.MOUSE_RELEASED:
+    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+    Event event = createMouseEvent(me, true);
+    sendEvent(SWT.MouseUp, event);
+    if(me.isPopupTrigger()) {
+      sendEvent(SWT.MenuDetect, event);
     }
-    case java.awt.event.FocusEvent.FOCUS_LOST: {
-      Shell shell = getShell ();
-      if (shell != display.getActiveShell ()) {
-        shell.setActiveControl (null);
-      }
-      sendEvent(SWT.FocusOut);
-      break;
+    break;
+  case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
+  case java.awt.event.MouseEvent.MOUSE_WHEEL: sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
+  case java.awt.event.MouseEvent.MOUSE_ENTERED: sendEvent(SWT.MouseEnter, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
+  case java.awt.event.MouseEvent.MOUSE_EXITED:
+    mouseHoverThread = null;
+    sendEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
+    break;
+  case java.awt.event.KeyEvent.KEY_PRESSED: sendEvent(SWT.KeyDown, createKeyEvent((java.awt.event.KeyEvent)e)); break;
+  case java.awt.event.KeyEvent.KEY_RELEASED: sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e)); break;
+  case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
+  case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;
+  case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;
+  case ComponentEvent.COMPONENT_HIDDEN: sendEvent(SWT.Hide); break;
+  case java.awt.event.FocusEvent.FOCUS_GAINED: {
+    Shell shell = getShell ();
+    if(!shell.isDisposed()) {
+      shell.setActiveControl(this);
     }
+    sendEvent(SWT.FocusIn);
+    break;
+  }
+  case java.awt.event.FocusEvent.FOCUS_LOST: {
+    Shell shell = getShell ();
+    if (shell != display.getActiveShell ()) {
+      shell.setActiveControl (null);
     }
-    display.stopExclusiveSection();
+    sendEvent(SWT.FocusOut);
     break;
   }
   }
+  display.stopExclusiveSection();
 }
 
 private Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputState) {

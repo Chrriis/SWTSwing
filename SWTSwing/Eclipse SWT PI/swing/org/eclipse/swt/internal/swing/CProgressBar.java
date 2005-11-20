@@ -29,6 +29,10 @@ class CProgressBarImplementation extends JProgressBar implements CProgressBar {
     setOrientation((style & SWT.HORIZONTAL) != 0? HORIZONTAL: VERTICAL);
     setIndeterminate((style & SWT.INDETERMINATE) != 0);
     // TODO: find if we have some style for non SMOOTH scrollbars.
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {

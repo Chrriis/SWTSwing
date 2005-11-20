@@ -147,84 +147,93 @@ Point origin;
 Point targetPoint;
 
 public void processEvent(AWTEvent e) {
-  switch(e.getID()) {
-  case MouseEvent.MOUSE_PRESSED:
-  case MouseEvent.MOUSE_DRAGGED:
-  case MouseEvent.MOUSE_RELEASED:
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
-    switch(e.getID()) {
-    case MouseEvent.MOUSE_PRESSED: {
-      origin = ((MouseEvent)e).getPoint();
-      Event event = new Event();
-      Rectangle bounds = getBounds();
-      event.x = bounds.x;
-      event.y = bounds.y;
-      event.width = bounds.width;
-      event.height = bounds.height;
-      targetPoint = new Point(bounds.x, bounds.y);
-      sendEvent(SWT.Selection, event);
-      break;
-    }
-    case MouseEvent.MOUSE_RELEASED: {
-      Event event = new Event();
-      Rectangle bounds = getBounds();
-      event.x = targetPoint.x;
-      event.y = targetPoint.y;
-      event.width = bounds.width;
-      event.height = bounds.height;
-      sendEvent(SWT.Selection, event);
-      origin = null;
-      targetPoint = null;
-      break;
-    }
-    case MouseEvent.MOUSE_DRAGGED:
-      Event event = new Event();
-      MouseEvent me = (MouseEvent)e;
-      java.awt.Dimension size = handle.getParent().getSize();
-      Rectangle bounds = getBounds();
-      event.x = bounds.x;
-      event.y = bounds.y;
-      if((style & SWT.VERTICAL) != 0) {
-        event.x += me.getX() - origin.x;
-        if(event.x < 0) {
-          event.x = 0;
-        } else if(event.x >= size.width - bounds.width) {
-          event.x = size.width - bounds.width;
-        }
-      } else {
-        event.y += me.getY() - origin.y;
-        if(event.y < 0) {
-          event.y = 0;
-        } else if(event.y >= size.height - bounds.height) {
-          event.y = size.height - bounds.height;
-        }
-      }
-      event.width = bounds.width;
-      event.height = bounds.height;
-      if ((style & SWT.SMOOTH) == 0) {
-        event.detail = SWT.DRAG;
-      }
-      sendEvent(SWT.Selection, event);
-      if (event.doit) {
-        targetPoint.x = event.x;
-        targetPoint.y = event.y;
-        if ((style & SWT.SMOOTH) != 0) {
-          setLocation(targetPoint.x, targetPoint.y);
-        }
-      }
-      break;
-    }
+  int id = e.getID();
+  switch(id) {
+  case MouseEvent.MOUSE_PRESSED: if(!hooks(SWT.Selection)) return; break;
+  case MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.Selection)) return; break;
+  case MouseEvent.MOUSE_RELEASED: if(!hooks(SWT.Selection)) return; break;
+  default:
     super.processEvent(e);
-    display.stopExclusiveSection();
     return;
   }
+  if(isDisposed()) {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  switch(id) {
+  case MouseEvent.MOUSE_PRESSED: {
+    origin = ((MouseEvent)e).getPoint();
+    Event event = new Event();
+    Rectangle bounds = getBounds();
+    event.x = bounds.x;
+    event.y = bounds.y;
+    event.width = bounds.width;
+    event.height = bounds.height;
+    targetPoint = new Point(bounds.x, bounds.y);
+    sendEvent(SWT.Selection, event);
+    break;
+  }
+  case MouseEvent.MOUSE_RELEASED: {
+    Event event = new Event();
+    Rectangle bounds = getBounds();
+    event.x = targetPoint.x;
+    event.y = targetPoint.y;
+    event.width = bounds.width;
+    event.height = bounds.height;
+//      if ((style & SWT.SMOOTH) != 0) {
+//        event.detail = SWT.DRAG;
+//      }
+    sendEvent(SWT.Selection, event);
+    origin = null;
+    targetPoint = null;
+    break;
+  }
+  case MouseEvent.MOUSE_DRAGGED:
+    Event event = new Event();
+    MouseEvent me = (MouseEvent)e;
+    java.awt.Dimension size = handle.getParent().getSize();
+    Rectangle bounds = getBounds();
+    event.x = bounds.x;
+    event.y = bounds.y;
+    if((style & SWT.VERTICAL) != 0) {
+      event.x += me.getX() - origin.x;
+      if(event.x < 0) {
+        event.x = 0;
+      } else if(event.x >= size.width - bounds.width) {
+        event.x = size.width - bounds.width;
+      }
+    } else {
+      event.y += me.getY() - origin.y;
+      if(event.y < 0) {
+        event.y = 0;
+      } else if(event.y >= size.height - bounds.height) {
+        event.y = size.height - bounds.height;
+      }
+    }
+    event.width = bounds.width;
+    event.height = bounds.height;
+    if ((style & SWT.SMOOTH) == 0) {
+      event.detail = SWT.DRAG;
+    }
+    sendEvent(SWT.Selection, event);
+    if (event.doit) {
+      targetPoint.x = event.x;
+      targetPoint.y = event.y;
+//        if ((style & SWT.SMOOTH) != 0) {
+//          setLocation(targetPoint.x, targetPoint.y);
+//        }
+    }
+    break;
+  }
   super.processEvent(e);
+  display.stopExclusiveSection();
 }
 
 }

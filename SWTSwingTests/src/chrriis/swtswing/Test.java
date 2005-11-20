@@ -88,7 +88,7 @@ public class Test {
     }}, new Object[] {"SashForm", new String[][] {
 //      {"109", "create a sash form with three children"},
     }}, new Object[] {"Scale", new String[][] {
-//      {"45", "create a scale (maximum 40, page increment 5)"},
+      {"45", "create a scale (maximum 40, page increment 5)"},
     }}, new Object[] {"ScrolledComposite", new String[][] {
       {"5", "scroll a control in a scrolled composite"},
     }}, new Object[] {"Shell", new String[][] {
@@ -100,7 +100,7 @@ public class Test {
       {"27", "open a shell minimized (iconified)"},
       {"28", "open a shell maximized (full screen)"},
     }}, new Object[] {"Slider", new String[][] {
-//      {"17", "print scroll event details"},
+      {"17", "print scroll event details"},
     }}, new Object[] {"TabFolder", new String[][] {
 //      {"76", "create a tab folder (six pages)"},
     }}, new Object[] {"Table", new String[][] {

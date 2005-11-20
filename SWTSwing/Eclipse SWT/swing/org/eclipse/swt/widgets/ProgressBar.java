@@ -15,9 +15,7 @@ import java.awt.Container;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CProgressBar;
-import org.eclipse.swt.internal.win32.OS;
 
 /**
  * Instances of the receiver represent is an unselectable
@@ -75,22 +73,6 @@ public ProgressBar (Composite parent, int style) {
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
-}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	int border = getBorderWidth ();
-	int width = border * 2, height = border * 2;
-	if ((style & SWT.HORIZONTAL) != 0) {
-		width += OS.GetSystemMetrics (OS.SM_CXHSCROLL) * 10;
-		height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
-	} else {
-		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-		height += OS.GetSystemMetrics (OS.SM_CYVSCROLL) * 10;
-	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
-	return new Point (width, height);
 }
 
 Container createHandle () {

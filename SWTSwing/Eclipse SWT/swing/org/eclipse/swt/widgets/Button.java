@@ -765,21 +765,31 @@ public void setText (String string) {
 //}
 
 public void processEvent(AWTEvent e) {
-  switch(e.getID()) {
-  case ActionEvent.ACTION_PERFORMED:
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
-    sendEvent (SWT.Selection);
+  int id = e.getID();
+  switch(id) {
+  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) return; break;
+  default:
     super.processEvent(e);
-    display.stopExclusiveSection();
     return;
   }
+  if(isDisposed()) {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  switch(id) {
+  case ActionEvent.ACTION_PERFORMED:
+    sendEvent (SWT.Selection);
+    break;
+  }
   super.processEvent(e);
+  display.stopExclusiveSection();
 }
 
 }

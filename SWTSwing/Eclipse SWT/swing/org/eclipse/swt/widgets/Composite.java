@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
@@ -1276,24 +1277,34 @@ void updateLayout (boolean resize, boolean all) {
 //}
 
 public void processEvent(AWTEvent e) {
-  switch(e.getID()) {
+  int id = e.getID();
+  switch(id) {
+  case ActionEvent.ACTION_PERFORMED: if(((CComponent)handle).getClientArea().getComponentCount() == 0) return; break;
+  default:
+    super.processEvent(e);
+    return;
+  }
+  if(isDisposed()) {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  switch(id) {
   case ComponentEvent.COMPONENT_RESIZED:
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
     if(layout != null) {
       markLayout(false, false);
       updateLayout(false, false);
     }
-    super.processEvent(e);
-    display.stopExclusiveSection();
-    return;
+    break;
   }
   super.processEvent(e);
+  display.stopExclusiveSection();
 }
 
 }

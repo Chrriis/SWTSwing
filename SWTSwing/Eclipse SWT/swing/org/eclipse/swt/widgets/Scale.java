@@ -11,10 +11,15 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import java.awt.Container;
+import java.util.EventObject;
+
+import javax.swing.event.ChangeEvent;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.internal.swing.CScale;
 
 /**
  * Instances of the receiver represent a selectable user
@@ -36,41 +41,6 @@ import org.eclipse.swt.events.*;
  */
 
 public class Scale extends Control {
-	static final int TrackBarProc;
-	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
-	static {
-		WNDCLASS lpWndClass = new WNDCLASS ();
-		OS.GetClassInfo (0, TrackBarClass, lpWndClass);
-		TrackBarProc = lpWndClass.lpfnWndProc;
-		/*
-		* Feature in Windows.  The track bar window class
-		* does not include CS_DBLCLKS.  This mean that these
-		* controls will not get double click messages such as
-		* WM_LBUTTONDBLCLK.  The fix is to register a new 
-		* window class with CS_DBLCLKS.
-		* 
-		* NOTE:  Screen readers look for the exact class name
-		* of the control in order to provide the correct kind
-		* of assistance.  Therefore, it is critical that the
-		* new window class have the same name.  It is possible
-		* to register a local window class with the same name
-		* as a global class.  Since bits that affect the class
-		* are being changed, it is possible that other native
-		* code, other than SWT, could create a control with
-		* this class name, and fail unexpectedly.
-		*/
-		int hInstance = OS.GetModuleHandle (null);
-		int hHeap = OS.GetProcessHeap ();
-		lpWndClass.hInstance = hInstance;
-		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
-		lpWndClass.style |= OS.CS_DBLCLKS;
-		int byteCount = TrackBarClass.length () * TCHAR.sizeof;
-		int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (lpszClassName, TrackBarClass, byteCount);
-		lpWndClass.lpszClassName = lpszClassName;
-		OS.RegisterClass (lpWndClass);
-//		OS.HeapFree (hHeap, 0, lpszClassName);	
-	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -132,44 +102,12 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
-	if (handle == 0) return 0;
-	return OS.CallWindowProc (TrackBarProc, hwnd, msg, wParam, lParam);
-}
-
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	int border = getBorderWidth ();
-	int width = border * 2, height = border * 2;
-	RECT rect = new RECT ();
-	OS.SendMessage (handle, OS.TBM_GETTHUMBRECT, 0, rect);
-	if ((style & SWT.HORIZONTAL) != 0) {
-		width += OS.GetSystemMetrics (OS.SM_CXHSCROLL) * 10;
-		int scrollY = OS.GetSystemMetrics (OS.SM_CYHSCROLL);
-		height += (rect.top * 2) + scrollY + (scrollY / 3);
-	} else {
-		int scrollX = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-		width += (rect.left * 2) + scrollX + (scrollX / 3);
-		height += OS.GetSystemMetrics (OS.SM_CYVSCROLL) * 10;
-	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
-	return new Point (width, height);
-}
-
-void createHandle () {
-	super.createHandle ();
-	OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 0, 100);
-	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, 10);
-	OS.SendMessage (handle, OS.TBM_SETTICFREQ, 10, 0);
-}
-
-int defaultForeground () {
-	return OS.GetSysColor (OS.COLOR_BTNFACE);
+Container createHandle () {
+  return (Container)CScale.Instanciator.createInstance(this, style);
 }
 
 /**
@@ -186,7 +124,7 @@ int defaultForeground () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETLINESIZE, 0, 0);
+  return ((CScale)handle).getMinorTickSpacing();
 }
 
 /**
@@ -201,7 +139,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	return ((CScale)handle).getMaximum();
 }
 
 /**
@@ -216,7 +154,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+  return ((CScale)handle).getMinimum();
 }
 
 /**
@@ -233,7 +171,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETPAGESIZE, 0, 0);
+	return ((CScale)handle).getMajorTickSpacing();
 }
 
 /**
@@ -248,7 +186,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+  return ((CScale)handle).getValue();
 }
 
 /**
@@ -276,21 +214,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
-	super.setBackgroundPixel (pixel);
-	/*
-	* Bug in Windows.  Changing the background color of the Scale
-	* widget and calling InvalidateRect still draws with the old color.
-	* The fix is to post a fake WM_SETFOCUS event to cause it to redraw
-	* with the new background color.
-	* 
-	* Note.  This WM_SETFOCUS message causes recursion when
-	* setBackground is called from within the focus event listener.
-	*/
-	OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
-}
-
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -307,10 +230,10 @@ void setBackgroundPixel (int pixel) {
 public void setIncrement (int increment) {
 	checkWidget ();
 	if (increment < 1) return;
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = getMinimum();
+	int maximum = getMaximum();
 	if (increment > maximum - minimum) return;
-	OS.SendMessage (handle, OS.TBM_SETLINESIZE, 0, increment);
+  ((CScale)handle).setMinorTickSpacing(increment);
 }
 
 /**
@@ -328,9 +251,9 @@ public void setIncrement (int increment) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int minimum = getMinimum();
 	if (0 <= minimum && minimum < value) {
-		OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 1, value);
+    ((CScale)handle).setMaximum(value);
 	}
 }
 
@@ -349,9 +272,9 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int maximum = getMaximum();
 	if (0 <= value && value < maximum) {
-		OS.SendMessage (handle, OS.TBM_SETRANGEMIN, 1, value);
+		((CScale)handle).setMinimum(value);
 	}
 }
 
@@ -371,11 +294,10 @@ public void setMinimum (int value) {
 public void setPageIncrement (int pageIncrement) {
 	checkWidget ();
 	if (pageIncrement < 1) return;
-	int minimum = OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = getMinimum();
+	int maximum = getMaximum();
 	if (pageIncrement > maximum - minimum) return;
-	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, pageIncrement);
-	OS.SendMessage (handle, OS.TBM_SETTICFREQ, pageIncrement, 0);
+  ((CScale)handle).setMajorTickSpacing(pageIncrement);
 }
 
 /**
@@ -392,56 +314,30 @@ public void setPageIncrement (int pageIncrement) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	OS.SendMessage (handle, OS.TBM_SETPOS, 1, value);
+  ((CScale)handle).setValue(value);
 }
 
-int widgetStyle () {
-	int bits = super.widgetStyle () | OS.WS_TABSTOP | OS.TBS_BOTH | OS.TBS_AUTOTICKS;
-	if ((style & SWT.HORIZONTAL) != 0) return bits | OS.TBS_HORZ;
-	return bits | OS.TBS_VERT;
-}
-
-TCHAR windowClass () {
-	return TrackBarClass;
-}
-
-int windowProc () {
-	return TrackBarProc;
-}
-
-LRESULT wmScrollChild (int wParam, int lParam) {
-	
-	/* Do nothing when scrolling is ending */
-	int code = wParam & 0xFFFF;
-	switch (code) {
-		case OS.TB_ENDTRACK:
-		case OS.TB_THUMBPOSITION:
-			return null;
-	}
-
-	Event event = new Event ();
-	/*
-	* This code is intentionally commented.  The event
-	* detail field is not currently supported on all
-	* platforms.
-	*/
-//	switch (code) {
-//		case OS.TB_TOP: 		event.detail = SWT.HOME;  break;
-//		case OS.TB_BOTTOM:		event.detail = SWT.END;  break;
-//		case OS.TB_LINEDOWN:	event.detail = SWT.ARROW_DOWN;  break;
-//		case OS.TB_LINEUP: 		event.detail = SWT.ARROW_UP;  break;
-//		case OS.TB_PAGEDOWN: 	event.detail = SWT.PAGE_DOWN;  break;
-//		case OS.TB_PAGEUP: 		event.detail = SWT.PAGE_UP;  break;
-//	}
-	
-	/*
-	* Send the event because WM_HSCROLL and WM_VSCROLL
-	* are sent from a modal message loop in windows that
-	* is active when the user is scrolling.
-	*/
-	sendEvent (SWT.Selection, event);
-	// widget could be disposed at this point
-	return null;
+public void processEvent(EventObject e) {
+  if(e instanceof ChangeEvent) {
+    if(!hooks(SWT.Selection)) return;
+  } else {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  if(e instanceof ChangeEvent) {
+//    if(!((ChangeEvent)e).getValueIsAdjusting()) {
+      sendEvent(SWT.Selection);
+//    }
+  }
+  super.processEvent(e);
+  display.stopExclusiveSection();
 }
 
 }

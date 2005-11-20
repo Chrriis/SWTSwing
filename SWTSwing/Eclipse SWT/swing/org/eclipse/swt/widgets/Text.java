@@ -48,7 +48,7 @@ import org.eclipse.swt.internal.swing.CText.FilterEvent;
  */
 public class Text extends Scrollable {
 	int tabs, oldStart, oldEnd;
-	boolean doubleClick, ignoreModify, ignoreVerify, ignoreCharacter;
+	boolean doubleClick, ignoreModify, ignoreCharacter;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -1312,7 +1312,6 @@ public void showSelection () {
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
-	if (ignoreVerify) return string;
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;
@@ -1666,43 +1665,48 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 //}
 
 public void processEvent(AWTEvent e) {
-  switch(e.getID()) {
-  case FilterEvent.ID:
-  case ActionEvent.ACTION_PERFORMED:
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
-    switch(e.getID()) {
-    case FilterEvent.ID:
-      FilterEvent filterEvent = (FilterEvent)e;
-      filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getEnd(), null));
-      break;
-    case ActionEvent.ACTION_PERFORMED:
-      Event event = new Event();
-      event.detail = SWT.TRAVERSE_RETURN;
-      sendEvent(SWT.Traverse, event);
-      boolean isSending = true;
-      if(event.doit) {
-        JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
-        if(defaultButton != null) {
-          isSending = false;
-          defaultButton.doClick();
-        }
-      }
-      if(isSending) {
-        sendEvent(SWT.DefaultSelection);
-      }
-      break;
-    }
+  int id = e.getID();
+  switch(id) {
+  case FilterEvent.ID: if(!hooks(SWT.Verify)) return; break;
+  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) return; break;
+  default:
     super.processEvent(e);
+    return;
+  }
+  if(isDisposed()) {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
     display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  switch(id) {
+  case FilterEvent.ID:
+    FilterEvent filterEvent = (FilterEvent)e;
+    filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getEnd(), null));
+  case ActionEvent.ACTION_PERFORMED:
+    Event event = new Event();
+    event.detail = SWT.TRAVERSE_RETURN;
+    sendEvent(SWT.Traverse, event);
+    boolean isSending = true;
+    if(event.doit) {
+      JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+      if(defaultButton != null) {
+        isSending = false;
+        defaultButton.doClick();
+      }
+    }
+    if(isSending) {
+      sendEvent(SWT.DefaultSelection);
+    }
     return;
   }
   super.processEvent(e);
+  display.stopExclusiveSection();
 }
 
 }

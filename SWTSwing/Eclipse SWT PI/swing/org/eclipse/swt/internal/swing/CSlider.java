@@ -30,6 +30,8 @@ class CSliderImplementation extends JScrollBar implements CSlider {
   }
 
   protected void init(int style) {
+    setMaximum(100);
+    setValue(0);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);

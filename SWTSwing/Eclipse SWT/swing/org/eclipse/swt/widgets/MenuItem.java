@@ -11,6 +11,9 @@
 package org.eclipse.swt.widgets;
 
  
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
@@ -764,13 +767,19 @@ public void setText (String string) {
 	if (text.equals (string)) return;
 	super.setText (string);
   AbstractButton button = (AbstractButton)handle;
-  string = fixMnemonic (string);
+  int index = findMnemonicIndex(string);
+  if(index != -1) {
+    button.setMnemonic(string.charAt(index));
+    string = string.substring(0, index - 1) + string.substring(index);
+  } else {
+    button.setMnemonic('\0');
+  }
+//  string = fixMnemonic (string);
   // TODO: check what to do for cascade (CHECK, CASCADE, PUSH, RADIO and SEPARATOR)
-  int index = string.lastIndexOf('\t');
+  index = string.lastIndexOf('\t');
   if(index != -1) {
     string = string.substring(0, index);
   }
-  // Set the text
   button.setText(string);
   java.awt.Component comp = button.getParent();
   if(comp instanceof javax.swing.JPopupMenu) {
@@ -888,11 +897,24 @@ public void setText (String string) {
 void createHandle() {
   if((style & SWT.SEPARATOR) != 0) {
     handle = new JSeparator();
-  }
-  if((style & SWT.CASCADE) != 0) {
+  } else if((style & SWT.CASCADE) != 0) {
     handle = new JMenu();
   } else if((style & SWT.PUSH) != 0) {
-    handle = new JMenuItem();
+    JMenuItem menuItem = new JMenuItem();
+    handle = menuItem;
+    menuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if(!hooks(SWT.Selection)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+        sendEvent(SWT.Selection);
+        display.stopExclusiveSection();
+      }
+    });
   } else if((style & SWT.CHECK) != 0) {
     handle = new JCheckBoxMenuItem();
   } else if((style & SWT.RADIO) != 0) {

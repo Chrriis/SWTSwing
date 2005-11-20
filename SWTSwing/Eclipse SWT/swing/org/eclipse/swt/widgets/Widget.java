@@ -421,6 +421,18 @@ boolean filters (int eventType) {
 //	return buffer;
 //}
 
+int findMnemonicIndex (String string) {
+  int index = 0;
+  int length = string.length ();
+  do {
+    while (index < length && string.charAt (index) != '&') index++;
+    if (++index >= length) return -1;
+    if (string.charAt (index) != '&') return index;
+    index++;
+  } while (index < length);
+  return -1;
+}
+
 String fixMnemonic (String string) {
   char [] buffer = new char [string.length ()];
   string.getChars (0, string.length (), buffer, 0);
@@ -1029,7 +1041,7 @@ boolean sendFocusEvent (int type) {
 }
 
 boolean setInputState (Event event, int type) {
-  event.stateMask |= display.getInputState();
+  event.stateMask |= Display.getInputState();
 	switch (type) {
 		case SWT.MouseDown:
 		case SWT.MouseDoubleClick:

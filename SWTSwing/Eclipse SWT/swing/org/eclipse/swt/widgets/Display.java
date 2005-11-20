@@ -167,7 +167,7 @@ public class Display extends Device {
 	
 	/* Menus */
 	Menu [] bars, popups;
-	ArrayList menuItemsList;
+	ArrayList menuItemsList = new ArrayList();
 	
 //	/*
 //	* The start value for WM_COMMAND id's.

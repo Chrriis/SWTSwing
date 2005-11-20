@@ -309,7 +309,7 @@ void createHandle () {
 void createItem (MenuItem item, int index) {
   int count = handle.getComponentCount();
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-//	display.addMenuItem (item);
+	display.addMenuItem (item);
   handle.add(item.handle, index);
 //	if (!success) {
 //		display.removeMenuItem (item);

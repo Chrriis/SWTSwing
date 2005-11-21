@@ -191,7 +191,7 @@ protected void checkSubclass () {
 //}
 
 Container createHandle () {
-  return (Container)CGroup.Instanciator.createInstance(this, ((CComponent)parent.handle), style);
+  return (Container)CGroup.Instanciator.createInstance(this, style);
 //	super.createHandle ();
 //	state &= ~CANVAS;
 }

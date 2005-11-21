@@ -86,7 +86,7 @@ public interface CGroup extends CScrollable {
   public static class Instanciator {
     private Instanciator() {}
 
-    public static CGroup createInstance(Group group, CComponent parent, int style) {
+    public static CGroup createInstance(Group group, int style) {
       return new CGroupImplementation(group, style);
     }
 

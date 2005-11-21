@@ -558,7 +558,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
     destHeight = srcHeight;
   }
   // Simple == no stretch
-  if(!simple) {
+  if(!simple || srcWidth == destWidth && srcHeight == destHeight) {
     handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
   } else {
     Shape oldClip = handle.getClip();

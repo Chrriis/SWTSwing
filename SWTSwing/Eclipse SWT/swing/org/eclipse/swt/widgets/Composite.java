@@ -14,7 +14,6 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
@@ -1279,7 +1278,7 @@ void updateLayout (boolean resize, boolean all) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(((CComponent)handle).getClientArea().getComponentCount() == 0) return; break;
+  case ComponentEvent.COMPONENT_RESIZED: break;
   default:
     super.processEvent(e);
     return;

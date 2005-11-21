@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.AWTEvent;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -1151,7 +1152,12 @@ public Graphics2D internal_new_GC (GCData data) {
     data.background = handle.getBackground();
     data.hFont = handle.getFont();
   }
-  return (Graphics2D)((CComponent)handle).getClientArea().getGraphics();
+  Component component = ((CComponent)handle).getClientArea();
+  Graphics2D g2D = (Graphics2D)component.getGraphics();
+//  java.awt.Point point = new java.awt.Point(0, 0);
+//  point = SwingUtilities.convertPoint(component, point, handle);
+//  g2D.translate(-point.x, -point.y);
+  return g2D;
 //	int hwnd = handle;
 //	if (data != null && data.hwnd != 0) {
 //		hwnd = data.hwnd;

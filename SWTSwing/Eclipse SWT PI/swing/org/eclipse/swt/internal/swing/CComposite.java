@@ -12,11 +12,13 @@ package org.eclipse.swt.internal.swing;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.PaintEvent;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
@@ -34,9 +36,25 @@ class CCompositeImplementation extends JPanel implements CComposite {
     init(style);
   }
 
+  protected Graphics graphics;
+
+  public Graphics getGraphics() {
+    if(graphics != null) {
+      java.awt.Point point = new java.awt.Point(0, 0);
+      point = SwingUtilities.convertPoint(getParent(), point, this);
+      Graphics g = graphics.create();
+      g.translate(point.x, point.y);
+      g.setClip(new Rectangle(getSize()));
+      return g;
+    }
+    return super.getGraphics();
+  }
+
   public void paint(Graphics g) {
+    graphics = g;
     super.paint(g);
     handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+    graphics = null;
   }
 
   protected void init(int style) {

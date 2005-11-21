@@ -47,6 +47,7 @@ class CGroupImplementation extends JPanel implements CGroup {
     } else {
       contentPane = new JPanel(null);
       add(contentPane, BorderLayout.CENTER);
+//      contentPane.setBackground(java.awt.Color.red);
     }
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);

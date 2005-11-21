@@ -1366,14 +1366,11 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   if(!isTransparent) {
+    java.awt.Color oldColor = handle.getColor();
+    handle.setColor(data.background);
     Point extent = stringExtent(string);
     fillRectangle(x, y, extent.x, extent.y);
-//    java.awt.Color oldColor = handle.getColor();
-////    handle.setColor(java.awt.Color.red);
-//    handle.setColor(background.handle);
-//    Point extent = stringExtent(string);
-//    handle.fillRect(x, y, extent.x, extent.y);
-//    handle.setColor(oldColor);
+    handle.setColor(oldColor);
   }
   handle.drawString(string, x, y + handle.getFontMetrics().getMaxAscent());
 }
@@ -1587,7 +1584,10 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
+  java.awt.Color oldColor = handle.getColor();
+  handle.setColor(data.background);
   handle.fillArc(x, y, width, height, startAngle, arcAngle < 0? arcAngle + startAngle: arcAngle - startAngle);
+  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillPie(data.gdipGraphics, data.gdipBrush, x, y, width, height, -startAngle, -arcAngle);
@@ -1688,7 +1688,10 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
     p2 = new java.awt.Point(x + width/2, y + height);
   }
   handle.setPaint(new GradientPaint(p1, fromColor, p2, toColor));
+  java.awt.Color oldColor = handle.getColor();
+  handle.setColor(data.background);
   handle.fillRect(x, y, width, height);
+  handle.setColor(oldColor);
   handle.setPaint(oldPaint);
 //	int fromColor = OS.GetTextColor(handle);
 //	if (fromColor == OS.CLR_INVALID) {
@@ -1819,7 +1822,10 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  */	 
 public void fillOval (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  java.awt.Color oldColor = handle.getColor();
+  handle.setColor(data.background);
   handle.fillOval(x, y, width, height);
+  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillEllipse(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -1872,7 +1878,10 @@ public void fillPolygon(int[] pointArray) {
     xPoints[i] = pointArray[i++];
     yPoints[i] = pointArray[i];
   }
+  java.awt.Color oldColor = handle.getColor();
+  handle.setColor(data.background);
   handle.fillPolygon(xPoints, yPoints, xPoints.length);
+  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
@@ -1902,7 +1911,10 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  java.awt.Color oldColor = handle.getColor();
+  handle.setColor(data.background);
   handle.fillRect(x, y, width, height);
+  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -1936,7 +1948,10 @@ public void fillRectangle (int x, int y, int width, int height) {
  */
 public void fillRectangle (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	fillRectangle (rect.x, rect.y, rect.width, rect.height);
+  java.awt.Color oldColor = handle.getColor();
+  handle.setColor(data.background);
+  fillRectangle (rect.x, rect.y, rect.width, rect.height);
+  handle.setColor(oldColor);
 }
 
 /** 
@@ -1958,7 +1973,10 @@ public void fillRectangle (Rectangle rect) {
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  java.awt.Color oldColor = handle.getColor();
+  handle.setColor(data.background);
   handle.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+  handle.setColor(oldColor);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		fillRoundRectangleGdip(data.gdipGraphics, data.gdipBrush, x, y, width, height, arcWidth, arcHeight);

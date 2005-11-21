@@ -15,6 +15,7 @@ import java.awt.AWTEvent;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.util.EventObject;
 
 import javax.swing.JButton;
 import javax.swing.RootPaneContainer;
@@ -1664,10 +1665,31 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 //	return super.wmCommandChild (wParam, lParam);
 //}
 
+public void processEvent(EventObject e) {
+  if(e instanceof FilterEvent) {
+    if(!hooks(SWT.Verify)) return;
+  } else {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  if(e instanceof FilterEvent) {
+    FilterEvent filterEvent = (FilterEvent)e;
+    filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getEnd(), null));
+  }
+  super.processEvent(e);
+  display.stopExclusiveSection();
+}
+
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case FilterEvent.ID: if(!hooks(SWT.Verify)) return; break;
   case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) return; break;
   default:
     super.processEvent(e);
@@ -1685,9 +1707,6 @@ public void processEvent(AWTEvent e) {
     return;
   }
   switch(id) {
-  case FilterEvent.ID:
-    FilterEvent filterEvent = (FilterEvent)e;
-    filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getEnd(), null));
   case ActionEvent.ACTION_PERFORMED:
     Event event = new Event();
     event.detail = SWT.TRAVERSE_RETURN;

@@ -13,6 +13,8 @@ package org.eclipse.swt.widgets;
  
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
@@ -698,7 +700,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendEvent (SWT.Selection);
 	}
 	return true;
 }
@@ -911,14 +913,51 @@ void createHandle() {
           display.stopExclusiveSection();
           return;
         }
-        sendEvent(SWT.Selection);
+        Event event = new Event();
+        event.stateMask = Display.getInputState();
+        sendEvent(SWT.Selection, event);
         display.stopExclusiveSection();
       }
     });
   } else if((style & SWT.CHECK) != 0) {
     handle = new JCheckBoxMenuItem();
   } else if((style & SWT.RADIO) != 0) {
-    handle = new JRadioButtonMenuItem();
+    JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem();
+    handle = menuItem;
+    menuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if(!hooks(SWT.Selection)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+        Event event = new Event();
+        event.stateMask = Display.getInputState();
+        sendEvent(SWT.Selection, event);
+        display.stopExclusiveSection();
+      }
+    });
+    menuItem.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if(e.getStateChange() == ItemEvent.SELECTED) {
+          selectRadio();
+        }
+        if(!hooks(SWT.Arm)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+//        Event event = new Event();
+//        event.stateMask = Display.getInputState();
+//        sendEvent(SWT.Arm, event);
+        sendEvent(SWT.Arm);
+        display.stopExclusiveSection();
+      }
+    });
   }
 }
 

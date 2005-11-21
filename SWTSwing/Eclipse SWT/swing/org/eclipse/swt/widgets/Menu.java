@@ -11,14 +11,22 @@
 package org.eclipse.swt.widgets;
 
  
+import java.awt.Component;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.MenuListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -300,6 +308,34 @@ void createHandle () {
     handle = menuBar;
 	} else if((style & SWT.POP_UP) != 0) {
     JPopupMenu popup = new JPopupMenu();
+    popup.addComponentListener(new ComponentAdapter() {
+      public void componentHidden(ComponentEvent e) {
+        if(!hooks(SWT.Hide)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+        Event event = new Event();
+        event.widget = Menu.this;
+        sendEvent(SWT.Hide, event);
+        display.stopExclusiveSection();
+      }
+      public void componentShown(ComponentEvent e) {
+        if(!hooks(SWT.Show)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+        Event event = new Event();
+        event.widget = Menu.this;
+        sendEvent(SWT.Show, event);
+        display.stopExclusiveSection();
+      }
+    });
     handle = popup;
   } else if((style & SWT.DROP_DOWN) != 0) {
     handle = new JMenu();
@@ -345,8 +381,8 @@ void createWidget () {
 void destroyItem (MenuItem item) {
   java.awt.Component comp = item.handle.getParent();
   handle.remove(item.handle);
-  if(comp instanceof javax.swing.JPopupMenu) {
-    ((javax.swing.JPopupMenu)comp).pack();
+  if(comp instanceof JPopupMenu) {
+    ((JPopupMenu)comp).pack();
   }
 //	redraw ();
 }
@@ -968,9 +1004,10 @@ public void setVisible (boolean visible) {
   JPopupMenu popup = (JPopupMenu)handle;
 	if (visible) {
     display.addPopup (this);
-    // On win32 port, createHandle seems to show the menu automatically
-    java.awt.Point location = handle.getLocation();
-    popup.show(getShell().handle, location.x, location.y);
+    java.awt.Point location = new java.awt.Point(x, y);
+    Component shellHandle = getShell().handle;
+    SwingUtilities.convertPointFromScreen(location, shellHandle);
+    popup.show(shellHandle, location.x, location.y);
 	} else {
     display.removePopup (this);
     popup.setVisible(false);

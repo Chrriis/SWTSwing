@@ -9,7 +9,6 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.AWTEvent;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -18,6 +17,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.EventObject;
 
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -446,16 +446,14 @@ class CTextField extends JScrollPane implements CText {
  */
 public interface CText extends CScrollable {
 
-  public static class FilterEvent extends AWTEvent {
-
-    public static final int ID = AWTEvent.RESERVED_ID_MAX + 1;
+  public static class FilterEvent extends EventObject {
 
     protected String text;
     protected int start;
     protected int end;
 
     public FilterEvent(Object source, String text, int start, int end) {
-      super(source, ID);
+      super(source);
       this.text = text;
       this.start = start;
       this.end = end;

@@ -3979,11 +3979,12 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.MouseMove)) return; break;
   case java.awt.event.MouseEvent.MOUSE_MOVED: if(!hooks(SWT.MouseMove)) return; break;
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
-    if(!hooks(SWT.MouseDown) && (!hooks(SWT.MenuDetect) || ((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    if(!hooks(SWT.MouseDown) && (menu == null || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_RELEASED: {
-    if(!hooks(SWT.MouseUp) && (!hooks(SWT.MenuDetect) || ((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    if(!hooks(SWT.MouseUp) && (menu == null || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    break;
   }
   case java.awt.event.MouseEvent.MOUSE_WHEEL: if(!hooks(SWT.MouseWheel)) return; break;
   case java.awt.event.MouseEvent.MOUSE_ENTERED: if(!hooks(SWT.MouseEnter)) return; break;
@@ -4068,8 +4069,9 @@ public void processEvent(AWTEvent e) {
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
     Event event = createMouseEvent(me, true);
     sendEvent(SWT.MouseDown, event);
-    if(me.isPopupTrigger()) {
+    if(menu != null && me.isPopupTrigger()) {
       sendEvent(SWT.MenuDetect, event);
+      showPopup(me);
     }
     break;
   }
@@ -4077,8 +4079,9 @@ public void processEvent(AWTEvent e) {
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
     Event event = createMouseEvent(me, true);
     sendEvent(SWT.MouseUp, event);
-    if(me.isPopupTrigger()) {
+    if(menu != null && me.isPopupTrigger()) {
       sendEvent(SWT.MenuDetect, event);
+      showPopup(me);
     }
     break;
   case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
@@ -4112,6 +4115,15 @@ public void processEvent(AWTEvent e) {
   }
   }
   display.stopExclusiveSection();
+}
+
+private void showPopup(java.awt.event.MouseEvent e) {
+  if(menu != null) {
+    java.awt.Point p = new java.awt.Point(e.getPoint());
+    SwingUtilities.convertPointToScreen(p, e.getComponent());
+    menu.setLocation(new Point(p.x, p.y));
+    menu.setVisible(true);
+  }
 }
 
 private Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputState) {

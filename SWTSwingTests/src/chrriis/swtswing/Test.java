@@ -72,11 +72,11 @@ public class Test {
     }}, new Object[] {"List", new String[][] {
       {"59", "print selected items in a list"},
     }}, new Object[] {"Menu", new String[][] {
-//      {"29", "create a bar and pull down menu (accelerators, mnemonics)"},
-//      {"40", "create a popup menu (set in multiple controls)"},
+      {"29", "create a bar and pull down menu (accelerators, mnemonics)"},
+      {"40", "create a popup menu (set in multiple controls)"},
 //      {"73", "enable menu items dynamically (when menu shown)"},
 //      {"97", "fill a menu dynamically (when menu shown)"},
-//      {"89", "add radio items to a menu"},
+      {"89", "add radio items to a menu"},
     }}, new Object[] {"Program", new String[][] {
 //      Is it platform specific??
     }}, new Object[] {"ProgressBar", new String[][] {
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "29";
+  static String snippetNumber = "89";
 
   public static void main(String[] args) {
     String number = null;

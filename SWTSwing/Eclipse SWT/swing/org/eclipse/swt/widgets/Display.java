@@ -2602,7 +2602,7 @@ public boolean readAndDispatch () {
     }
   }
 //	drawMenuBars ();
-	runPopups ();
+//	runPopups ();
 //	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
 //		if (!filterMessage (msg)) {
 //			OS.TranslateMessage (msg);
@@ -2994,24 +2994,24 @@ boolean runDeferredEvents () {
 	return true;
 }
 
-boolean runPopups () {
-	if (popups == null) return false;
-	boolean result = false;
-	while (popups != null) {
-		Menu menu = popups [0];
-		if (menu == null) break;
-		int length = popups.length;
-		System.arraycopy (popups, 1, popups, 0, --length);
-		popups [length] = null;
-//    managedEventQueue.processPostedRunnableList();
-		runDeferredEvents ();
-    menu.setVisible (true);
-//		menu._setVisible (true);
-		result = true;
-	}
-	popups = null;
-	return result;
-}
+//boolean runPopups () {
+//	if (popups == null) return false;
+//	boolean result = false;
+//	while (popups != null) {
+//		Menu menu = popups [0];
+//		if (menu == null) break;
+//		int length = popups.length;
+//		System.arraycopy (popups, 1, popups, 0, --length);
+//		popups [length] = null;
+////    managedEventQueue.processPostedRunnableList();
+//		runDeferredEvents ();
+//    menu.setVisible (true);
+////		menu._setVisible (true);
+//		result = true;
+//	}
+//	popups = null;
+//	return result;
+//}
 
 //boolean runTimer (int id) {
 //	if (timerList != null && timerIds != null) {

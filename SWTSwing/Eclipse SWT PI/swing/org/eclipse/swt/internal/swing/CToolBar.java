@@ -1,0 +1,65 @@
+/*
+ * @(#)CToolBar.java
+ * 
+ * Christopher Deckers (chrriis@brainlex.com)
+ * http://chrriis.brainlex.com
+ * 
+ * See the file "LICENSE.txt" for information on usage and redistribution of
+ * this file, and for a DISCLAIMER OF ALL WARRANTIES.
+ */
+package org.eclipse.swt.internal.swing;
+
+import java.awt.Container;
+
+import javax.swing.JScrollBar;
+import javax.swing.JToolBar;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.ToolBar;
+
+class CToolBarImplementation extends JToolBar implements CToolBar {
+
+  protected ToolBar handle;
+
+  public CToolBarImplementation(ToolBar toolBar, int style) {
+    super((style & SWT.VERTICAL) != 0? JToolBar.VERTICAL: JToolBar.HORIZONTAL);
+    this.handle = toolBar;
+    init(style);
+  }
+
+  protected void init(int style) {
+    setFloatable(false);
+    if((style & SWT.BORDER) != 0) {
+      setBorder(javax.swing.BorderFactory.createEtchedBorder());
+    }
+    if((style & SWT.WRAP) != 0) {
+      setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
+    }
+  }
+
+  public Container getClientArea() {
+    return this;
+  }
+
+  public JScrollBar getHorizontalScrollBar() {
+    return null;
+  }
+
+  public JScrollBar getVerticalScrollBar() {
+    return null;
+  }
+
+}
+
+public interface CToolBar extends CScrollable {
+
+  public static class Instanciator {
+    private Instanciator() {}
+
+    public static CToolBar createInstance(ToolBar toolBar, int style) {
+      return new CToolBarImplementation(toolBar, style);
+    }
+
+  }
+
+}

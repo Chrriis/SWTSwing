@@ -13,9 +13,9 @@ package org.eclipse.swt.widgets;
 
 import java.awt.Container;
 
-import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGroup;
-import org.eclipse.swt.*;
 
 /**
  * Instances of this class provide an etched border

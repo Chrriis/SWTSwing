@@ -11,10 +11,27 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JToggleButton;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CComboButton;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.RECT;
+import org.eclipse.swt.internal.win32.TBBUTTONINFO;
+import org.eclipse.swt.internal.win32.TCHAR;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -38,7 +55,8 @@ public class ToolItem extends Item {
 	String toolTipText;
 	Image disabledImage, hotImage;
 	Image disabledImage2;
-	int id;
+//	int id;
+  JComponent handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -77,7 +95,8 @@ public class ToolItem extends Item {
 public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
+  createHandle();
+  parent.createItem (this, parent.getItemCount ());
 }
 
 /**
@@ -118,7 +137,8 @@ public ToolItem (ToolBar parent, int style) {
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	parent.createItem (this, index);
+  createHandle();
+  parent.createItem (this, index);
 }
 
 /**
@@ -162,62 +182,118 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-void click (boolean dropDown) {	
-	int hwnd = parent.handle;
-	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
-	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
-	int hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
-	
-	/*
-	* In order to emulate all the processing that
-	* happens when a mnemonic key is pressed, fake
-	* a mouse press and release.  This will ensure
-	* that radio and pull down items are handled
-	* properly.
-	*/
-	int y = rect.top + (rect.bottom - rect.top) / 2;
-	int lParam = (dropDown ? rect.right - 1 : rect.left) | (y << 16);
-	parent.ignoreMouse = true;
-	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
-	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);
-	parent.ignoreMouse = false;
-	
-	if (hotIndex != -1) {
-		OS.SendMessage (hwnd, OS.TB_SETHOTITEM, hotIndex, 0);
-	}
-}
+//void click (boolean dropDown) {	
+//	int hwnd = parent.handle;
+//	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
+//	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+//	RECT rect = new RECT ();
+//	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
+//	int hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
+//	
+//	/*
+//	* In order to emulate all the processing that
+//	* happens when a mnemonic key is pressed, fake
+//	* a mouse press and release.  This will ensure
+//	* that radio and pull down items are handled
+//	* properly.
+//	*/
+//	int y = rect.top + (rect.bottom - rect.top) / 2;
+//	int lParam = (dropDown ? rect.right - 1 : rect.left) | (y << 16);
+//	parent.ignoreMouse = true;
+//	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
+//	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);
+//	parent.ignoreMouse = false;
+//	
+//	if (hotIndex != -1) {
+//		OS.SendMessage (hwnd, OS.TB_SETHOTITEM, hotIndex, 0);
+//	}
+//}
 
-Image createDisabledImage (Image image, Color color) {
-  	/*
-  	* In order to be consistent with the way that disabled
-	* images appear in other places in the user interface,
-	* use the SWT Graphics to create a disabled image instead
-    * of calling DrawState().
-	*/
-	return new Image (display, image, SWT.IMAGE_DISABLE);
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (OS.IsWinCE) {
-//		return new Image (display, image, SWT.IMAGE_DISABLE);
-//	}
-//	Rectangle rect = image.getBounds ();
-//	Image disabled = new Image (display, rect);
-//	GC gc = new GC (disabled);
-//	gc.setBackground (color);
-//	gc.fillRectangle (rect);
-//	int hDC = gc.handle;
-//	int hImage = image.handle;
-//	int fuFlags = OS.DSS_DISABLED;
-//	switch (image.type) {
-//		case SWT.BITMAP: fuFlags |= OS.DST_BITMAP; break;
-//		case SWT.ICON: fuFlags |= OS.DST_ICON; break;
-//	}
-//	OS.DrawState (hDC, 0, 0, hImage, 0, 0, 0, rect.width, rect.height, fuFlags);
-//	gc.dispose ();
-//	return disabled;
+//Image createDisabledImage (Image image, Color color) {
+//  	/*
+//  	* In order to be consistent with the way that disabled
+//	* images appear in other places in the user interface,
+//	* use the SWT Graphics to create a disabled image instead
+//    * of calling DrawState().
+//	*/
+//	return new Image (display, image, SWT.IMAGE_DISABLE);
+//	/*
+//	* This code is intentionally commented.
+//	*/
+////	if (OS.IsWinCE) {
+////		return new Image (display, image, SWT.IMAGE_DISABLE);
+////	}
+////	Rectangle rect = image.getBounds ();
+////	Image disabled = new Image (display, rect);
+////	GC gc = new GC (disabled);
+////	gc.setBackground (color);
+////	gc.fillRectangle (rect);
+////	int hDC = gc.handle;
+////	int hImage = image.handle;
+////	int fuFlags = OS.DSS_DISABLED;
+////	switch (image.type) {
+////		case SWT.BITMAP: fuFlags |= OS.DST_BITMAP; break;
+////		case SWT.ICON: fuFlags |= OS.DST_ICON; break;
+////	}
+////	OS.DrawState (hDC, 0, 0, hImage, 0, 0, 0, rect.width, rect.height, fuFlags);
+////	gc.dispose ();
+////	return disabled;
+//}
+
+void createHandle() {
+  if((style & SWT.PUSH) != 0) {
+    JButton button = new JButton();
+    button.setMargin(new java.awt.Insets(0, 1, 0, 1));
+    handle = button;
+  } else if((style & SWT.CHECK) != 0) {
+    AbstractButton button = new JToggleButton();
+    button.setMargin(new java.awt.Insets(0, 1, 0, 1));
+    handle = button;
+  } else if((style & SWT.RADIO) != 0) {
+    final AbstractButton button = new JToggleButton();
+    button.setMargin(new java.awt.Insets(0, 1, 0, 1));
+    button.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if((style & SWT.RADIO) != 0) {
+          if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+            if(e.getStateChange() == ItemEvent.SELECTED) {
+              selectRadio();
+            }
+          }
+        }
+      }
+    });
+    handle = button;
+  } else if((style & SWT.DROP_DOWN) != 0) {
+    CComboButton cComboButton = new CComboButton((style & SWT.FLAT) != 0);
+    cComboButton.getPushButton().addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        ToolItem.this.sendEvent(SWT.Selection);
+      }
+    });
+    cComboButton.getDropButton().addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Event event = new Event();
+        event.detail = SWT.ARROW;
+        ToolItem.this.sendEvent(SWT.Selection, event);
+      }
+    });
+    handle = cComboButton;
+  } else if((style & SWT.SEPARATOR) != 0) {
+    handle = new javax.swing.JToolBar.Separator();
+  }
+  if(((parent.getStyle() & SWT.FLAT) != 0) && (style & (SWT.PUSH | SWT.CHECK | SWT.RADIO)) != 0) {
+    final AbstractButton button = (AbstractButton)handle;
+    button.setBorderPainted(false);
+    button.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseEntered(java.awt.event.MouseEvent e) {
+        button.setBorderPainted(button.isEnabled());
+      }
+      public void mouseExited(java.awt.event.MouseEvent e) {
+        button.setBorderPainted(button.isSelected());
+      }
+    });
+  }
 }
 
 /**
@@ -233,13 +309,8 @@ Image createDisabledImage (Image image, Color color) {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	int hwnd = parent.handle;
-	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+  java.awt.Rectangle bounds = handle.getBounds();
+  return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /**
@@ -294,12 +365,7 @@ public Image getDisabledImage () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	if ((style & SWT.SEPARATOR) != 0) {
-		return (state & DISABLED) == 0;
-	}
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
-	return (fsState & OS.TBSTATE_ENABLED) != 0;
+  return handle.isEnabled();
 }
 
 /**
@@ -426,35 +492,35 @@ void releaseWidget () {
 	control = null;
 	toolTipText = null;
 	disabledImage = hotImage = null;
-	if (disabledImage2 != null) disabledImage2.dispose ();
-	disabledImage2 = null;
+//	if (disabledImage2 != null) disabledImage2.dispose ();
+//	disabledImage2 = null;
 }
 
-void releaseImages () {
-	TBBUTTONINFO info = new TBBUTTONINFO ();
-	info.cbSize = TBBUTTONINFO.sizeof;
-	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
-	int hwnd = parent.handle;
-	OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
-	/*
-	* Feature in Windows.  For some reason, a tool item that has
-	* the style BTNS_SEP does not return I_IMAGENONE when queried
-	* for an image index, despite the fact that no attempt has been
-	* made to assign an image to the item.  As a result, operations
-	* on an image list that use the wrong index cause random results.	
-	* The fix is to ensure that the tool item is not a separator
-	* before using the image index.  Since separators cannot have
-	* an image and one is never assigned, this is not a problem.
-	*/
-	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
-		ImageList imageList = parent.getImageList ();
-		ImageList hotImageList = parent.getHotImageList ();
-		ImageList disabledImageList = parent.getDisabledImageList();
-		if (imageList != null) imageList.put (info.iImage, null);
-		if (hotImageList != null) hotImageList.put (info.iImage, null);
-		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
-	}
-}
+//void releaseImages () {
+//	TBBUTTONINFO info = new TBBUTTONINFO ();
+//	info.cbSize = TBBUTTONINFO.sizeof;
+//	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
+//	int hwnd = parent.handle;
+//	OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
+//	/*
+//	* Feature in Windows.  For some reason, a tool item that has
+//	* the style BTNS_SEP does not return I_IMAGENONE when queried
+//	* for an image index, despite the fact that no attempt has been
+//	* made to assign an image to the item.  As a result, operations
+//	* on an image list that use the wrong index cause random results.	
+//	* The fix is to ensure that the tool item is not a separator
+//	* before using the image index.  Since separators cannot have
+//	* an image and one is never assigned, this is not a problem.
+//	*/
+//	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
+//		ImageList imageList = parent.getImageList ();
+//		ImageList hotImageList = parent.getHotImageList ();
+//		ImageList disabledImageList = parent.getDisabledImageList();
+//		if (imageList != null) imageList.put (info.iImage, null);
+//		if (hotImageList != null) hotImageList.put (info.iImage, null);
+//		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
+//	}
+//}
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -534,61 +600,6 @@ public void setControl (Control control) {
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	this.control = control;
-	/*
-	* Feature in Windows.  When a tool bar wraps, tool items
-	* with the style BTNS_SEP are used as wrap points.  This
-	* means that controls that are placed on top of separator
-	* items are not positioned properly.  The fix is to change
-	* the tool item style from BTNS_SEP to BTNS_BUTTON, causing
-	* the item to wrap like a tool item button.  The new tool
-	* item button is disabled to avoid key traversal and the
-	* image is set to I_IMAGENONE to avoid getting the first
-	* image from the image list.
-	*/
-	if ((parent.style & SWT.WRAP) != 0) {
-		boolean changed = false;
-		int hwnd = parent.handle;
-		TBBUTTONINFO info = new TBBUTTONINFO ();
-		info.cbSize = TBBUTTONINFO.sizeof;
-		info.dwMask = OS.TBIF_STYLE | OS.TBIF_STATE;
-		OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
-		if (control == null) {
-			if ((info.fsStyle & OS.BTNS_SEP) == 0) {
-				changed = true;
-				info.fsStyle &= ~OS.BTNS_BUTTON;
-				info.fsStyle |= OS.BTNS_SEP;
-				if ((state & DISABLED) != 0) {
-					info.fsState &= ~OS.TBSTATE_ENABLED;
-				} else {
-					info.fsState |= OS.TBSTATE_ENABLED;
-				}
-			}
-		} else {
-			if ((info.fsStyle & OS.BTNS_SEP) != 0) {
-				changed = true;
-				info.fsStyle &= ~OS.BTNS_SEP;
-				info.fsStyle |= OS.BTNS_BUTTON;
-				info.fsState &= ~OS.TBSTATE_ENABLED;
-				info.dwMask |= OS.TBIF_IMAGE;
-				info.iImage = OS.I_IMAGENONE;
-			}
-		}
-		if (changed) {
-			OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
-			/*
-			* Bug in Windows.  When TB_SETBUTTONINFO changes the
-			* style of a tool item from BTNS_SEP to BTNS_BUTTON
-			* and the tool bar is wrapped, the tool bar does not
-			* redraw properly.  Windows uses separator items as
-			* wrap points and sometimes draws etching above or
-			* below and entire row.  The fix is to redraw the
-			* tool bar.
-			*/
-			if (OS.SendMessage (hwnd, OS.TB_GETROWS, 0, 0) > 1) {
-				OS.InvalidateRect (hwnd, null, true);
-			}
-		}
-	}
 	resizeControl ();
 }
 
@@ -610,24 +621,8 @@ public void setControl (Control control) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
-	/*
-	* Feature in Windows.  When TB_SETSTATE is used to set the
-	* state of a tool item, the item redraws even when the state
-	* has not changed.  The fix is to detect this case and avoid
-	* setting the state. 
-	*/
-	if (((fsState & OS.TBSTATE_ENABLED) != 0) == enabled) return;
-	if (enabled) {
-		fsState |= OS.TBSTATE_ENABLED;
-		state &= ~DISABLED;
-	} else {
-		fsState &= ~OS.TBSTATE_ENABLED;
-		state |= DISABLED;
-	}
-	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
-	if (image != null) updateImages ();
+  handle.setEnabled(enabled);
+  // TODO: save the disabled image that is used
 }
 
 /**
@@ -677,6 +672,7 @@ public void setHotImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	hotImage = image;
+//  hotImage = Image.swing_new(getDisplay(), SWT.BITMAP, );
 	updateImages ();
 }
 
@@ -829,102 +825,102 @@ public void setWidth (int width) {
 	parent.layoutItems ();
 }
 
-void updateImages () {
-	int hwnd = parent.handle;
-	TBBUTTONINFO info = new TBBUTTONINFO ();
-	info.cbSize = TBBUTTONINFO.sizeof;
-	info.dwMask = OS.TBIF_IMAGE;
-	OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
-	if (info.iImage == OS.I_IMAGENONE && image == null) return;
-	ImageList imageList = parent.getImageList ();
-	ImageList hotImageList = parent.getHotImageList ();
-	ImageList disabledImageList = parent.getDisabledImageList();
-	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = image.getBounds ();
-		Point size = new Point (bounds.width, bounds.height);
-		if (imageList == null) imageList = display.getToolImageList (size);
-		info.iImage = imageList.add (image);
-		parent.setImageList (imageList);
-		if (disabledImageList == null) disabledImageList = display.getToolDisabledImageList (size);
-		Image disabled = disabledImage;
-		if (disabledImage == null) {
-			if (disabledImage2 != null) disabledImage2.dispose ();
-			disabledImage2 = null;
-			disabled = image;
-			if (!getEnabled ()) {
-				Color color = parent.getBackground ();
-				disabled = disabledImage2 = createDisabledImage (image, color);
-			}
-		}
-		disabledImageList.add (disabled);
-		parent.setDisabledImageList (disabledImageList);
-//		if ((parent.style & SWT.FLAT) != 0) {
-			if (hotImageList == null) hotImageList = display.getToolHotImageList (size);
-			hotImageList.add (hotImage != null ? hotImage : image);
-			parent.setHotImageList (hotImageList);
+//void updateImages () {
+//	int hwnd = parent.handle;
+//	TBBUTTONINFO info = new TBBUTTONINFO ();
+//	info.cbSize = TBBUTTONINFO.sizeof;
+//	info.dwMask = OS.TBIF_IMAGE;
+//	OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
+//	if (info.iImage == OS.I_IMAGENONE && image == null) return;
+//	ImageList imageList = parent.getImageList ();
+//	ImageList hotImageList = parent.getHotImageList ();
+//	ImageList disabledImageList = parent.getDisabledImageList();
+//	if (info.iImage == OS.I_IMAGENONE) {
+//		Rectangle bounds = image.getBounds ();
+//		Point size = new Point (bounds.width, bounds.height);
+//		if (imageList == null) imageList = display.getToolImageList (size);
+//		info.iImage = imageList.add (image);
+//		parent.setImageList (imageList);
+//		if (disabledImageList == null) disabledImageList = display.getToolDisabledImageList (size);
+//		Image disabled = disabledImage;
+//		if (disabledImage == null) {
+//			if (disabledImage2 != null) disabledImage2.dispose ();
+//			disabledImage2 = null;
+//			disabled = image;
+//			if (!getEnabled ()) {
+//				Color color = parent.getBackground ();
+//				disabled = disabledImage2 = createDisabledImage (image, color);
+//			}
 //		}
-	} else {
-		if (imageList != null) imageList.put (info.iImage, image);
-		if (disabledImageList != null) {
-			Image disabled = null;
-			if (image != null) {
-				if (disabledImage2 != null) disabledImage2.dispose ();
-				disabledImage2 = null;
-				disabled = disabledImage;
-				if (disabledImage == null) {
-					disabled = image;
-					if (!getEnabled ()) {
-						Color color = parent.getBackground ();
-						disabled = disabledImage2 = createDisabledImage (image, color);
-					}
-				}
-			}
-			disabledImageList.put (info.iImage, disabled);
-		}
-		if (hotImageList != null) {
-			Image hot = null;
-			if (image != null) hot = hotImage != null ? hotImage : image;
-			hotImageList.put (info.iImage, hot);
-		}
-		if (image == null) info.iImage = OS.I_IMAGENONE;
-	}
+//		disabledImageList.add (disabled);
+//		parent.setDisabledImageList (disabledImageList);
+////		if ((parent.style & SWT.FLAT) != 0) {
+//			if (hotImageList == null) hotImageList = display.getToolHotImageList (size);
+//			hotImageList.add (hotImage != null ? hotImage : image);
+//			parent.setHotImageList (hotImageList);
+////		}
+//	} else {
+//		if (imageList != null) imageList.put (info.iImage, image);
+//		if (disabledImageList != null) {
+//			Image disabled = null;
+//			if (image != null) {
+//				if (disabledImage2 != null) disabledImage2.dispose ();
+//				disabledImage2 = null;
+//				disabled = disabledImage;
+//				if (disabledImage == null) {
+//					disabled = image;
+//					if (!getEnabled ()) {
+//						Color color = parent.getBackground ();
+//						disabled = disabledImage2 = createDisabledImage (image, color);
+//					}
+//				}
+//			}
+//			disabledImageList.put (info.iImage, disabled);
+//		}
+//		if (hotImageList != null) {
+//			Image hot = null;
+//			if (image != null) hot = hotImage != null ? hotImage : image;
+//			hotImageList.put (info.iImage, hot);
+//		}
+//		if (image == null) info.iImage = OS.I_IMAGENONE;
+//	}
+//
+//	/*
+//	* Bug in Windows.  If the width of an item has already been
+//	* calculated, the tool bar control will not recalculate it to 
+//	* include the space for the image.  The fix is to set the width
+//	* to zero, forcing the control recalculate the width for the item.
+//	*/
+//	info.dwMask |= OS.TBIF_SIZE;
+//	info.cx = 0;	
+//	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
+//	
+//	parent.layoutItems ();
+//}
 
-	/*
-	* Bug in Windows.  If the width of an item has already been
-	* calculated, the tool bar control will not recalculate it to 
-	* include the space for the image.  The fix is to set the width
-	* to zero, forcing the control recalculate the width for the item.
-	*/
-	info.dwMask |= OS.TBIF_SIZE;
-	info.cx = 0;	
-	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
-	
-	parent.layoutItems ();
-}
+//int widgetStyle () {
+//	if ((style & SWT.DROP_DOWN) != 0) return OS.BTNS_DROPDOWN;
+//	if ((style & SWT.PUSH) != 0) return OS.BTNS_BUTTON;
+//	if ((style & SWT.CHECK) != 0) return OS.BTNS_CHECK;
+//	/*
+//	* This code is intentionally commented.  In order to
+//	* consistently support radio tool items across platforms,
+//	* the platform radio behavior is not used.
+//	*/
+////	if ((style & SWT.RADIO) != 0) return OS.BTNS_CHECKGROUP;
+//	if ((style & SWT.RADIO) != 0) return OS.BTNS_CHECK;
+//	if ((style & SWT.SEPARATOR) != 0) return OS.BTNS_SEP;
+//	return OS.BTNS_BUTTON;
+//}
 
-int widgetStyle () {
-	if ((style & SWT.DROP_DOWN) != 0) return OS.BTNS_DROPDOWN;
-	if ((style & SWT.PUSH) != 0) return OS.BTNS_BUTTON;
-	if ((style & SWT.CHECK) != 0) return OS.BTNS_CHECK;
-	/*
-	* This code is intentionally commented.  In order to
-	* consistently support radio tool items across platforms,
-	* the platform radio behavior is not used.
-	*/
-//	if ((style & SWT.RADIO) != 0) return OS.BTNS_CHECKGROUP;
-	if ((style & SWT.RADIO) != 0) return OS.BTNS_CHECK;
-	if ((style & SWT.SEPARATOR) != 0) return OS.BTNS_SEP;
-	return OS.BTNS_BUTTON;
-}
-
-LRESULT wmCommandChild (int wParam, int lParam) {
-	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
-		}
-	}
-	postEvent (SWT.Selection);
-	return null;
-}
+//LRESULT wmCommandChild (int wParam, int lParam) {
+//	if ((style & SWT.RADIO) != 0) {
+//		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+//			selectRadio ();
+//		}
+//	}
+//	postEvent (SWT.Selection);
+//	return null;
+//}
 
 }

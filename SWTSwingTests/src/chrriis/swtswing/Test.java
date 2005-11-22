@@ -65,7 +65,7 @@ public class Test {
     }}, new Object[] {"GridLayout", new String[][] {
       {"6", "insert widgets into a grid layout"},
     }}, new Object[] {"Image", new String[][] {
-//      {"112", "display an image in a group"},
+      {"112", "display an image in a group"},
     }}, new Object[] {"Label", new String[][] {
       {"34", "create a label (with an image)"},
       {"37", "create a label (a separator)"},
@@ -131,7 +131,7 @@ public class Test {
 //      {"24", "detect CR in a text control (default selelection)"},
       {"55", "resize a text control (show about 10 characters)"},
       {"116", "stop CR from going to the default button"},
-//      {"117", "add a select all menu item to the control"},
+      {"117", "add a select all menu item to the control"},
     }}, new Object[] {"ToolBar", new String[][] {
 //      {"18", "create a tool bar (text)"},
 //      {"36", "create a flat tool bar (images)"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "112";
+  static String snippetNumber = "18";
 
   public static void main(String[] args) {
     String number = null;

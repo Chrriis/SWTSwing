@@ -17,6 +17,8 @@ import java.awt.Container;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
+import javax.swing.JComponent;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Point;
@@ -1299,6 +1301,13 @@ public void processEvent(AWTEvent e) {
     if(layout != null) {
       markLayout(false, false);
       updateLayout(false, false);
+      if(handle instanceof JComponent) {
+        ((JComponent)handle).revalidate();
+      } else {
+        handle.invalidate();
+        handle.validate();
+      }
+      handle.repaint();
     }
     break;
   }

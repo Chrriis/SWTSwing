@@ -510,12 +510,7 @@ void createWidget () {
     Container clientArea = ((CComponent)parent.handle).getClientArea();
     clientArea.setLayout(null);
     clientArea.add(handle);
-    if(clientArea instanceof JComponent) {
-      ((JComponent)clientArea).revalidate();
-    } else {
-      clientArea.invalidate();
-      clientArea.validate();
-    }
+    ((JComponent)clientArea).revalidate();
     clientArea.repaint();
   }
     // TODO: should have a fixInitSize like in old implementation
@@ -2017,19 +2012,22 @@ public void setBounds (int x, int y, int width, int height) {
 	checkWidget ();
   if(width < 0) width = 0;
   if(height < 0) height = 0;
-  java.awt.Point location = new java.awt.Point(x, y);
-  Container parent = handle.getParent();
-  if(parent != null) {
-    location = SwingUtilities.convertPoint(this.parent.handle, location, parent);
-  }  
+//  java.awt.Point location = new java.awt.Point(x, y);
+//  Container parent = handle.getParent();
+//  if(parent != null) {
+//    location = SwingUtilities.convertPoint(this.parent.handle, location, parent);
+//  }
   handle.setBounds(x, y, width, height);
-  if(handle instanceof JComponent) {
-    ((JComponent)handle).revalidate();
-  } else {
-    handle.validate();
-  }
-//	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-//	setBounds (x, y, Math.max (0, width), Math.max (0, height), flags);
+//  Container parent = handle.getParent();
+//  if(parent != null) {
+//    if(parent instanceof JComponent) {
+//      ((JComponent)parent).revalidate();
+//    } else {
+//      parent.invalidate();
+//      parent.validate();
+//    }
+//    parent.repaint();
+//  }
 }
 
 //void setBounds (int x, int y, int width, int height, int flags) {
@@ -2330,15 +2328,16 @@ public void setLayoutData (Object layoutData) {
 public void setLocation (int x, int y) {
 	checkWidget ();
   handle.setLocation(x, y);
-//	int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-//	/*
-//	* Feature in WinCE.  The SWP_DRAWFRAME flag for SetWindowPos()
-//	* causes a WM_SIZE message to be sent even when the SWP_NOSIZE
-//	* flag is specified.  The fix is to set SWP_DRAWFRAME only when
-//	* not running on WinCE.
-//	*/
-//	if (!OS.IsWinCE) flags |= OS.SWP_DRAWFRAME;
-//	setBounds (x, y, 0, 0, flags);
+//  Container parent = handle.getParent();
+//  if(parent != null) {
+//    if(parent instanceof JComponent) {
+//      ((JComponent)parent).revalidate();
+//    } else {
+//      parent.invalidate();
+//      parent.validate();
+//    }
+//    parent.repaint();
+//  }
 }
 
 /**
@@ -2456,11 +2455,16 @@ public void setSize (int width, int height) {
   if(width < 0) width = 0;
   if(height < 0) height = 0;
   handle.setSize(width, height);
-  if(handle instanceof JComponent) {
-    ((JComponent)handle).revalidate();
-  } else {
-    handle.validate();
-  }
+//  Container parent = handle.getParent();
+//  if(parent != null) {
+//    if(parent instanceof JComponent) {
+//      ((JComponent)parent).revalidate();
+//    } else {
+//      parent.invalidate();
+//      parent.validate();
+//    }
+//    parent.repaint();
+//  }
 }
 
 /**

@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.Container;
+import java.awt.Insets;
 import java.awt.Window;
 
 import javax.swing.SwingUtilities;
@@ -161,7 +162,11 @@ public Rectangle getClientArea () {
     if(handle instanceof Window) {
       return new Rectangle(0, 0, bounds.width, bounds.height);
     }
-    bounds = SwingUtilities.convertRectangle(clientArea.getParent(), bounds, handle);
+    Container parent = clientArea.getParent();
+    bounds = SwingUtilities.convertRectangle(parent, bounds, handle);
+    Insets insets = parent.getInsets();
+    bounds.x -= insets.left;
+    bounds.y -= insets.top;
     return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 //    forceResize ();
 //	RECT rect = new RECT ();

@@ -1667,11 +1667,8 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 public void processEvent(EventObject e) {
   if(e instanceof FilterEvent) {
-    if(!hooks(SWT.Verify)) return;
-  } else {
-    super.processEvent(e);
-    return;
-  }
+    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+  } else { super.processEvent(e); return; }
   Display display = getDisplay();
   display.startExclusiveSection();
   if(isDisposed()) {
@@ -1690,10 +1687,8 @@ public void processEvent(EventObject e) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) return; break;
-  default:
-    super.processEvent(e);
-    return;
+  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; } break;
+  default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
     super.processEvent(e);

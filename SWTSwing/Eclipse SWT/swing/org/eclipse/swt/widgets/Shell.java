@@ -1903,15 +1903,13 @@ boolean traverseEscape () {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case WindowEvent.WINDOW_ACTIVATED: if(!hooks(SWT.Activate)) return; break;
-  case WindowEvent.WINDOW_DEACTIVATED: if(!hooks(SWT.Deactivate)) return; break;
-  case WindowEvent.WINDOW_CLOSED: if(!hooks(SWT.Close)) return; break;
-  case WindowEvent.WINDOW_ICONIFIED: if(!hooks(SWT.Iconify)) return; break;
-  case WindowEvent.WINDOW_DEICONIFIED: if(!hooks(SWT.Deiconify)) return; break;
-  case WindowEvent.WINDOW_CLOSING: if(!isEnabled()) return; break;
-  default:
-    super.processEvent(e);
-    return;
+  case WindowEvent.WINDOW_ACTIVATED: if(!hooks(SWT.Activate)) { super.processEvent(e); return; } break;
+  case WindowEvent.WINDOW_DEACTIVATED: if(!hooks(SWT.Deactivate)) { super.processEvent(e); return; } break;
+  case WindowEvent.WINDOW_CLOSED: if(!hooks(SWT.Close)) { super.processEvent(e); return; } break;
+  case WindowEvent.WINDOW_ICONIFIED: if(!hooks(SWT.Iconify)) { super.processEvent(e); return; } break;
+  case WindowEvent.WINDOW_DEICONIFIED: if(!hooks(SWT.Deiconify)) { super.processEvent(e); return; } break;
+  case WindowEvent.WINDOW_CLOSING: if(!isEnabled()) { super.processEvent(e); return; } break;
+  default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
     super.processEvent(e);

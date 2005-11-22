@@ -11,15 +11,11 @@
 package org.eclipse.swt.widgets;
 
  
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.AWTEvent;
+import java.awt.Container;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JToggleButton;
+import javax.swing.ImageIcon;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -27,11 +23,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.CComboButton;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.RECT;
-import org.eclipse.swt.internal.win32.TBBUTTONINFO;
-import org.eclipse.swt.internal.win32.TCHAR;
+import org.eclipse.swt.internal.swing.CToolItem;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -52,11 +44,10 @@ import org.eclipse.swt.internal.win32.TCHAR;
 public class ToolItem extends Item {
 	ToolBar parent;
 	Control control;
-	String toolTipText;
 	Image disabledImage, hotImage;
-	Image disabledImage2;
+//	Image disabledImage2;
 //	int id;
-  JComponent handle;
+  Container handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -95,7 +86,7 @@ public class ToolItem extends Item {
 public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-  createHandle();
+  handle = createHandle();
   parent.createItem (this, parent.getItemCount ());
 }
 
@@ -137,7 +128,7 @@ public ToolItem (ToolBar parent, int style) {
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-  createHandle();
+  handle = createHandle();
   parent.createItem (this, index);
 }
 
@@ -240,60 +231,8 @@ protected void checkSubclass () {
 ////	return disabled;
 //}
 
-void createHandle() {
-  if((style & SWT.PUSH) != 0) {
-    JButton button = new JButton();
-    button.setMargin(new java.awt.Insets(0, 1, 0, 1));
-    handle = button;
-  } else if((style & SWT.CHECK) != 0) {
-    AbstractButton button = new JToggleButton();
-    button.setMargin(new java.awt.Insets(0, 1, 0, 1));
-    handle = button;
-  } else if((style & SWT.RADIO) != 0) {
-    final AbstractButton button = new JToggleButton();
-    button.setMargin(new java.awt.Insets(0, 1, 0, 1));
-    button.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        if((style & SWT.RADIO) != 0) {
-          if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-            if(e.getStateChange() == ItemEvent.SELECTED) {
-              selectRadio();
-            }
-          }
-        }
-      }
-    });
-    handle = button;
-  } else if((style & SWT.DROP_DOWN) != 0) {
-    CComboButton cComboButton = new CComboButton((style & SWT.FLAT) != 0);
-    cComboButton.getPushButton().addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        ToolItem.this.sendEvent(SWT.Selection);
-      }
-    });
-    cComboButton.getDropButton().addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Event event = new Event();
-        event.detail = SWT.ARROW;
-        ToolItem.this.sendEvent(SWT.Selection, event);
-      }
-    });
-    handle = cComboButton;
-  } else if((style & SWT.SEPARATOR) != 0) {
-    handle = new javax.swing.JToolBar.Separator();
-  }
-  if(((parent.getStyle() & SWT.FLAT) != 0) && (style & (SWT.PUSH | SWT.CHECK | SWT.RADIO)) != 0) {
-    final AbstractButton button = (AbstractButton)handle;
-    button.setBorderPainted(false);
-    button.addMouseListener(new java.awt.event.MouseAdapter() {
-      public void mouseEntered(java.awt.event.MouseEvent e) {
-        button.setBorderPainted(button.isEnabled());
-      }
-      public void mouseExited(java.awt.event.MouseEvent e) {
-        button.setBorderPainted(button.isSelected());
-      }
-    });
-  }
+Container createHandle () {
+  return (Container)CToolItem.Instanciator.createInstance(this, style);
 }
 
 /**
@@ -422,9 +361,7 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
-	return (fsState & OS.TBSTATE_CHECKED) != 0;
+  return ((CToolItem)handle).isSelected();
 }
 
 /**
@@ -439,7 +376,7 @@ public boolean getSelection () {
  */
 public String getToolTipText () {
 	checkWidget();
-	return toolTipText;
+	return ((CToolItem)handle).getToolTipText();
 }
 
 /**
@@ -454,11 +391,12 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	int hwnd = parent.handle;
-	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
-	return rect.right - rect.left;
+  return handle.getWidth();
+//	int hwnd = parent.handle;
+//	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+//	RECT rect = new RECT ();
+//	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
+//	return rect.right - rect.left;
 }
 
 /**
@@ -490,7 +428,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 	control = null;
-	toolTipText = null;
 	disabledImage = hotImage = null;
 //	if (disabledImage2 != null) disabledImage2.dispose ();
 //	disabledImage2 = null;
@@ -647,7 +584,8 @@ public void setDisabledImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	disabledImage = image;
-	updateImages ();
+  ((CToolItem)handle).setDisabledIcon(image == null? null: new ImageIcon(image.handle));
+//	updateImages ();
 }
 
 /**
@@ -673,7 +611,8 @@ public void setHotImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	hotImage = image;
 //  hotImage = Image.swing_new(getDisplay(), SWT.BITMAP, );
-	updateImages ();
+  ((CToolItem)handle).setRolloverIcon(image == null? null: new ImageIcon(image.handle));
+//	updateImages ();
 }
 
 public void setImage (Image image) {
@@ -681,7 +620,8 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
-	updateImages ();
+  ((CToolItem)handle).setIcon(image == null? null: new ImageIcon(image.handle));
+//	updateImages ();
 }
 
 boolean setRadioSelection (boolean value) {
@@ -711,21 +651,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	int hwnd = parent.handle;
-	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
-	/*
-	* Feature in Windows.  When TB_SETSTATE is used to set the
-	* state of a tool item, the item redraws even when the state
-	* has not changed.  The fix is to detect this case and avoid
-	* setting the state. 
-	*/
-	if (((fsState & OS.TBSTATE_CHECKED) != 0) == selected) return;
-	if (selected) {
-		fsState |= OS.TBSTATE_CHECKED;
-	} else {
-		fsState &= ~OS.TBSTATE_CHECKED;
-	}
-	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
+  ((CToolItem)handle).setSelected(selected);
 }
 /**
  * Sets the receiver's text. The string may include
@@ -757,32 +683,17 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	int hwnd = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
-	TBBUTTONINFO info = new TBBUTTONINFO ();
-	info.cbSize = TBBUTTONINFO.sizeof;
-	info.dwMask = OS.TBIF_TEXT | OS.TBIF_STYLE;
-	info.pszText = pszText;
-	info.fsStyle = (byte) (widgetStyle () | OS.BTNS_AUTOSIZE);
-	if (string.length () != 0) info.fsStyle |= OS.BTNS_SHOWTEXT;
-	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
-	OS.HeapFree (hHeap, 0, pszText);
-	
-	/*
-	* Bug in Windows.  For some reason, when the font is set
-	* before any tool item has text, the tool items resize to
-	* a very small size.  Also, a tool item will only show text
-	* when text has already been set on one item and then a new
-	* item is created.  The fix is to use WM_SETFONT to force
-	* the tool bar to redraw and layout.
-	*/
-	int hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
-	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
-	
+  CToolItem cToolItem = (CToolItem)handle;
+  int index = findMnemonicIndex(string);
+  char mnemonic;
+  if(index < 0) {
+    mnemonic = '\0';
+    cToolItem.setText(string);
+  } else {
+    mnemonic = string.charAt(index);
+    cToolItem.setText(string.substring(0, index - 1) + string.substring(index));
+  }
+  cToolItem.setMnemonic(mnemonic);
 	parent.layoutItems ();
 }
 
@@ -799,7 +710,7 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;
+  ((CToolItem)handle).setToolTipText(string);
 }
 
 /**
@@ -816,12 +727,7 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	int hwnd = parent.handle;
-	TBBUTTONINFO info = new TBBUTTONINFO ();
-	info.cbSize = TBBUTTONINFO.sizeof;
-	info.dwMask = OS.TBIF_SIZE;
-	info.cx = (short) width;
-	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
+	handle.setPreferredSize(new java.awt.Dimension(handle.getHeight(), width));
 	parent.layoutItems ();
 }
 
@@ -922,5 +828,44 @@ public void setWidth (int width) {
 //	postEvent (SWT.Selection);
 //	return null;
 //}
+
+public void processEvent(AWTEvent e) {
+  int id = e.getID();
+  switch(id) {
+  case java.awt.event.ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) return; break;
+  case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
+    if((style & SWT.RADIO) != 0 && (parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+      // No event sending, so no need to be in an exclusive section
+      java.awt.event.ItemEvent ie = (java.awt.event.ItemEvent)e;
+      if(ie.getStateChange() == ItemEvent.SELECTED) {
+        selectRadio();
+      }
+    }
+    return;
+  }
+  default: return;
+  }
+  if(isDisposed()) {
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    return;
+  }
+  switch(id) {
+  case java.awt.event.ActionEvent.ACTION_PERFORMED: {
+    java.awt.event.ActionEvent ae = (java.awt.event.ActionEvent)e;
+    Event event = new Event();
+    if("Arrow".equals(ae.getActionCommand())) {
+      event.detail = SWT.ARROW;
+    }
+    sendEvent(SWT.Selection, event);
+    break;
+  }
+  }
+  display.stopExclusiveSection();
+}
 
 }

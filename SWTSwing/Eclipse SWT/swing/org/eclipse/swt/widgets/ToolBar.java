@@ -147,7 +147,7 @@ void createItem (ToolItem item, int index) {
 //	}
 //	items [item.id = id] = item;
   itemList.add(index, item);
-  ((CToolBar)handle).add(item.getHandle(), index);
+  handle.add(item.handle, index);
 //	if ((style & SWT.VERTICAL) != 0) setRows (count + 1);
 	layoutItems ();
 }
@@ -502,14 +502,15 @@ public boolean setParent (Composite parent) {
 
 boolean setTabItemFocus () {
 	int index = 0;
-	while (index < items.length) {
-		ToolItem item = items [index];
+  int count = itemList.size();
+	while (index < count) {
+		ToolItem item = (ToolItem)itemList.get(index);
 		if (item != null && (item.style & SWT.SEPARATOR) == 0) {
 			if (item.getEnabled ()) break;
 		}
 		index++;
 	}
-	if (index == items.length) return false;
+	if (index == count) return false;
 	return super.setTabItemFocus ();
 }
 

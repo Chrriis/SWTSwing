@@ -422,10 +422,8 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED: if(!hooks(SWT.Selection)) return; break;
-  default:
-    super.processEvent(e);
-    return;
+  case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
     super.processEvent(e);

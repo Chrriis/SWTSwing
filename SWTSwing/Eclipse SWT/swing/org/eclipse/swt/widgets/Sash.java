@@ -149,12 +149,10 @@ Point targetPoint;
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case MouseEvent.MOUSE_PRESSED: if(!hooks(SWT.Selection)) return; break;
-  case MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.Selection)) return; break;
-  case MouseEvent.MOUSE_RELEASED: if(!hooks(SWT.Selection)) return; break;
-  default:
-    super.processEvent(e);
-    return;
+  case MouseEvent.MOUSE_PRESSED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  case MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  case MouseEvent.MOUSE_RELEASED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
     super.processEvent(e);

@@ -1281,9 +1281,7 @@ public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
   case ComponentEvent.COMPONENT_RESIZED: break;
-  default:
-    super.processEvent(e);
-    return;
+  default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
     super.processEvent(e);

@@ -319,11 +319,8 @@ public void setSelection (int value) {
 
 public void processEvent(EventObject e) {
   if(e instanceof ChangeEvent) {
-    if(!hooks(SWT.Selection)) return;
-  } else {
-    super.processEvent(e);
-    return;
-  }
+    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+  } else { super.processEvent(e); return; }
   Display display = getDisplay();
   display.startExclusiveSection();
   if(isDisposed()) {

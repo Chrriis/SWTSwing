@@ -36,35 +36,54 @@ public class CComboButton extends JPanel {
       }
     }
   };
+
   JButton dropButton = new CArrowButton(CArrowButton.SOUTH);
+
   public JButton getPushButton() {
     return pushButton;
   }
+
   public JButton getDropButton() {
     return dropButton;
   }
+
   public void setIcon(Icon icon) {
     pushButton.setIcon(icon);
   }
+
   public void setDisabledIcon(Icon icon) {
     pushButton.setDisabledIcon(icon);
   }
+
   public void setSelectedIcon(Icon icon) {
     pushButton.setSelectedIcon(icon);
   }
+
   public void setRolloverIcon(Icon icon) {
     pushButton.setRolloverIcon(icon);
   }
+
   public void setPressedIcon(Icon icon) {
     pushButton.setPressedIcon(icon);
   }
+
   public String getToolTipText() {
     return pushButton.getToolTipText();
   }
+
   public void setToolTipText(String text) {
     pushButton.setToolTipText(text);
     dropButton.setToolTipText(text);
   }
+
+  public void setText(String text) {
+    pushButton.setText(text);
+  }
+
+  public void setMnemonic(char mnemonic) {
+    pushButton.setMnemonic(mnemonic);
+  }
+
   public CComboButton(boolean isFlat) {
     setLayout(new java.awt.BorderLayout(0, 0) {
       public java.awt.Dimension minimumLayoutSize(Container target) {

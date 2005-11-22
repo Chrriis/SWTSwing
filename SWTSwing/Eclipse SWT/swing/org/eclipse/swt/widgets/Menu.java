@@ -347,6 +347,10 @@ void createItem (MenuItem item, int index) {
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	display.addMenuItem (item);
   handle.add(item.handle, index);
+//  handle.invalidate();
+//  handle.validate();
+//  handle.repaint();
+
 //	if (!success) {
 //		display.removeMenuItem (item);
 //		error (SWT.ERROR_ITEM_NOT_ADDED);

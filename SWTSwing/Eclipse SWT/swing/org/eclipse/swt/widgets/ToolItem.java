@@ -500,7 +500,12 @@ void resizeControl () {
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
 		control.setLocation (rect.x, rect.y);
-	}
+//	} else {
+//    handle.setSize(handle.getPreferredSize());
+//    parent.handle.invalidate();
+//    parent.handle.validate();
+//    parent.handle.repaint();
+  }
 }
 
 void selectRadio () {
@@ -536,7 +541,12 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
+//  if(this.control != null) {
+//    handle.remove(this.control.handle);
+//  }
 	this.control = control;
+//  handle.add(control.handle);
+//  handle.setSize(new java.awt.Dimension(200, 200));
 	resizeControl ();
 }
 

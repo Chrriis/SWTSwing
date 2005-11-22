@@ -133,12 +133,12 @@ public class Test {
       {"116", "stop CR from going to the default button"},
       {"117", "add a select all menu item to the control"},
     }}, new Object[] {"ToolBar", new String[][] {
-//      {"18", "create a tool bar (text)"},
-//      {"36", "create a flat tool bar (images)"},
-//      {"47", "create tool bar (normal, hot and disabled images)"},
+      {"18", "create a tool bar (text)"},
+      {"36", "create a flat tool bar (images)"},
+      {"47", "create tool bar (normal, hot and disabled images)"},
 //      {"49", "create tool bar (wrap on resize)"},
 //      {"58", "place a combo box in a tool bar"},
-//      {"67", "place a drop down menu in a tool bar"},
+      {"67", "place a drop down menu in a tool bar"},
     }}, new Object[] {"Tool Tips", new String[][] {
 //      {"41", "create tool tips for a tab folder, tool bar and control"},
     }}, new Object[] {"Tracker", new String[][] {
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "18";
+  static String snippetNumber = "49";
 
   public static void main(String[] args) {
     String number = null;

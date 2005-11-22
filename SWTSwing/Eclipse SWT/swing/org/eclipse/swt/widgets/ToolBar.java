@@ -12,7 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.util.ArrayList;
+
+import javax.swing.JComponent;
 
 import org.eclipse.swt.internal.swing.CGroup;
 import org.eclipse.swt.internal.swing.CToolBar;
@@ -129,6 +132,14 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+  checkWidget ();
+  if((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+    // TODO: walk through all the components and compute the size for a fixed width.
+  }
+  return super.computeSize (wHint, hHint, changed);
+}
+
 Container createHandle () {
   return (Container)CToolBar.Instanciator.createInstance(this, style);
 //  super.createHandle ();
@@ -148,6 +159,8 @@ void createItem (ToolItem item, int index) {
 //	items [item.id = id] = item;
   itemList.add(index, item);
   handle.add(item.handle, index);
+  ((JComponent)handle).revalidate();
+  handle.repaint();
 //	if ((style & SWT.VERTICAL) != 0) setRows (count + 1);
 	layoutItems ();
 }
@@ -370,6 +383,11 @@ void layoutItems () {
 		((ToolItem)itemList.get(i)).resizeControl ();
 //		if (item != null) item.resizeControl ();
 	}
+}
+
+Point minimumSize (int wHint, int hHint, boolean changed) {
+  java.awt.Dimension size = handle.getPreferredSize();
+  return new Point(size.width, size.height);
 }
 
 //boolean mnemonicHit (char ch) {

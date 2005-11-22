@@ -9,6 +9,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Component;
 import java.awt.Container;
 
 import javax.swing.JScrollBar;
@@ -34,7 +35,13 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
     }
     if((style & SWT.WRAP) != 0) {
       setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
+//    } else {
+//      setLayout(null);
     }
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -47,6 +54,10 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
 
   public JScrollBar getVerticalScrollBar() {
     return null;
+  }
+
+  protected void addImpl(Component comp, Object constraints, int index) {
+    super.addImpl(comp, constraints, index);
   }
 
 }

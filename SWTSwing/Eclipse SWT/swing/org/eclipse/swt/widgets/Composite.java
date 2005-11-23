@@ -1280,7 +1280,7 @@ void updateLayout (boolean resize, boolean all) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case ComponentEvent.COMPONENT_RESIZED: break;
+  case ComponentEvent.COMPONENT_RESIZED: if(layout == null) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {

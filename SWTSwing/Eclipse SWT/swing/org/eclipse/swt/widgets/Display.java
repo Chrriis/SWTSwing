@@ -2593,6 +2593,7 @@ public boolean readAndDispatch () {
 	checkDevice ();
   synchronized(UI_LOCK) {
     if(exclusiveSectionCount == 0) {
+      runAsyncMessages (false);
       return false;
     }
     try {
@@ -3496,8 +3497,7 @@ public void wake () {
 void wakeThread () {
   SwingUtilities.invokeLater(new Runnable() {
     public void run() {
-      startExclusiveSection();
-      stopExclusiveSection();
+      wake();
     }
   });
 }

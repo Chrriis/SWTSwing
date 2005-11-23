@@ -11,19 +11,22 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.*;
-
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
-import java.io.*;
+import java.io.InputStream;
 
 import javax.swing.GrayFilter;
 import javax.swing.ImageIcon;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -651,8 +654,32 @@ public Rectangle getBounds() {
  * @see ImageData
  */
 public ImageData getImageData() {
+  ColorModel colorModel = handle.getColorModel();
+  PaletteData paletteData = new PaletteData(new RGB [] { new RGB (0, 0, 0), new RGB (0xFF, 0xFF, 0xFF) });
+  ImageData imageData = new ImageData(handle.getWidth(), handle.getHeight(), colorModel.getPixelSize(), paletteData);
+  for(int i=handle.getWidth()-1; i >= 0; i--) {
+    for(int j=handle.getHeight()-1; j >= 0; j--) {
+      int rgb = handle.getRGB(i, j);
+      int pixel = paletteData.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
+      imageData.setPixel(i, j, pixel);
+      // TODO: may need to set the transparency mask instead.
+      imageData.setAlpha(i, j, (rgb >> 24) & 0xFF);
+    }
+  }
+  
+//  // TODO: properly generate the data...
+//  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//  ImageWriter writer = (ImageWriter)ImageIO.getImageWritersBySuffix("jpg").next();
+//  try {
+//    writer.setOutput(ImageIO.createImageOutputStream(baos));
+//    writer.write(handle);
+//    return new ImageData(new ByteArrayInputStream(baos.toByteArray()));
+//  } catch(Exception e) {
+//    e.printStackTrace();
+//  }
+//  new ImageData();
   // TODO: implement
-  return null;
+  return imageData;
 //	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 //	BITMAP bm;
 //	int depth, width, height;
@@ -1021,7 +1048,21 @@ void init(Device device, int width, int height) {
 
 static int[] init(Device device, Image image, ImageData i) {
 	if (image != null) image.device = device;
-	// TODO: implement
+  image.handle = new BufferedImage(i.width, i.height, BufferedImage.TYPE_INT_ARGB);
+  ImageData transparencyMask = i.getTransparencyMask();
+  for(int x=image.handle.getWidth()-1; x >= 0; x--) {
+    for(int j=image.handle.getHeight()-1; j >= 0; j--) {
+      int alpha = i.getAlpha(x, j);
+      if(transparencyMask != null) {
+        if(transparencyMask.getPixel(x, j) == 0) {
+          alpha = 0;
+        }
+      }
+      int pixel = i.getPixel(x, j);
+      RGB rgb = i.palette.getRGB(pixel);
+      image.handle.setRGB(x, j, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
+    }
+  }
   return null;
 //	/*
 //	 * BUG in Windows 98:

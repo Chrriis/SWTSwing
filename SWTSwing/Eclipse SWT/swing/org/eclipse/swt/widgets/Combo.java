@@ -636,6 +636,12 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
+Point minimumSize(int wHint, int hHint, boolean changed) {
+  Point size = super.minimumSize(wHint, hHint, changed);
+  size.y = handle.getPreferredSize().height;
+  return size;
+}
+
 /**
  * Pastes text from clipboard.
  * <p>

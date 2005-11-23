@@ -35,7 +35,7 @@ public class Test {
       {"44", "set the hand cursor into a control"},
 //      {"92", "create a cursor from a source and a mask"},
 //      {"119", "create a color cursor from a source and a mask"}, <-- does not work in original!!
-//      {"118", "create a color cursor from an image file"}, <-- does not work in original!!
+      {"118", "create a color cursor from an image file"},
     }}, new Object[] {"DirectoryDialog", new String[][] {
 //      {"33", "prompt for a directory"},
     }}, new Object[] {"Display", new String[][] {
@@ -80,7 +80,7 @@ public class Test {
     }}, new Object[] {"Program", new String[][] {
 //      Is it platform specific??
     }}, new Object[] {"ProgressBar", new String[][] {
-//      {"57", "update a progress bar (from the UI thread)"},
+      {"57", "update a progress bar (from the UI thread)"},
       {"56", "update a progress bar (another thread)"},
     }}, new Object[] {"Sash", new String[][] {
       {"54", "create a sash (allow it to be moved)"},
@@ -94,7 +94,7 @@ public class Test {
     }}, new Object[] {"Shell", new String[][] {
       {"50", "create a dialog shell"},
       {"63", "create a dialog shell (prompt for a value)"},
-//      {"104", "create a splash screen"},
+      {"104", "create a splash screen"},
       {"99", "prevent a shell from closing (prompt the user)"},
 //      {"4", "prevent escape from closing a dialog"},
       {"27", "open a shell minimized (iconified)"},
@@ -128,7 +128,7 @@ public class Test {
       {"12", "set the selection (start, end)"},
       {"19", "verify input (only allow digits)"},
       {"22", "select all the text in the control"},
-//      {"24", "detect CR in a text control (default selelection)"},
+      {"24", "detect CR in a text control (default selelection)"},
       {"55", "resize a text control (show about 10 characters)"},
       {"116", "stop CR from going to the default button"},
       {"117", "add a select all menu item to the control"},
@@ -136,7 +136,7 @@ public class Test {
       {"18", "create a tool bar (text)"},
       {"36", "create a flat tool bar (images)"},
       {"47", "create tool bar (normal, hot and disabled images)"},
-//      {"49", "create tool bar (wrap on resize)"},
+      {"49", "create tool bar (wrap on resize)"},
 //      {"58", "place a combo box in a tool bar"},
       {"67", "place a drop down menu in a tool bar"},
     }}, new Object[] {"Tool Tips", new String[][] {
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "49";
+  static String snippetNumber = "48";
 
   public static void main(String[] args) {
     String number = null;

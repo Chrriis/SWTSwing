@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -134,10 +135,27 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
   checkWidget ();
+  Point cSize = super.computeSize (wHint, hHint, changed);
   if((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+    java.awt.Dimension size = handle.getSize();
+    handle.setSize(wHint, Integer.MAX_VALUE);
+    handle.validate();
+    Component[] components = handle.getComponents();
+    int maxHeight = 0;
+    for(int i=0; i<components.length; i++) {
+      java.awt.Rectangle bounds = components[i].getBounds();
+      maxHeight = Math.max(bounds.y + bounds.height, maxHeight);
+    }
+    handle.setSize(size);
+    handle.validate();
+    return new Point(cSize.x, hHint != SWT.DEFAULT? hHint: maxHeight);
     // TODO: walk through all the components and compute the size for a fixed width.
   }
-  return super.computeSize (wHint, hHint, changed);
+  return cSize;
+}
+
+boolean overrideLayout() {
+  return false;
 }
 
 Container createHandle () {

@@ -497,6 +497,10 @@ Container createHandle () {
   return null;
 }
 
+boolean overrideLayout() {
+  return true;
+}
+
 void createWidget () {
 	checkOrientation (parent);
 	handle = createHandle ();
@@ -508,7 +512,9 @@ void createWidget () {
   }
   if(parent != null && !(handle instanceof Window)) {
     Container clientArea = ((CComponent)parent.handle).getClientArea();
-    clientArea.setLayout(null);
+    if(parent.overrideLayout()) {
+      clientArea.setLayout(null);
+    }
     clientArea.add(handle);
     ((JComponent)clientArea).revalidate();
     clientArea.repaint();

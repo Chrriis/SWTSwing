@@ -19,6 +19,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -33,7 +34,7 @@ import org.eclipse.swt.widgets.Shell;
 
 class CShellFrame extends JFrame implements CShell {
 
-  protected Container contentPane;
+  protected JComponent contentPane;
   protected JScrollPane scrollPane;
 
   protected Shell handle;
@@ -53,7 +54,7 @@ class CShellFrame extends JFrame implements CShell {
     }
     setUndecorated((style & SWT.TITLE) == 0);
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
-    contentPane = getContentPane();
+    Container contentPane = getContentPane();
     JPanel panel = new JPanel(null);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -63,7 +64,7 @@ class CShellFrame extends JFrame implements CShell {
     } else {
       contentPane.add(panel, BorderLayout.CENTER);
     }
-    contentPane = panel;
+    this.contentPane = panel;
     setFocusable(false);
 //    contentPane.setFocusable(true);
     Utils.installMouseListener(contentPane, handle);
@@ -120,13 +121,12 @@ class CShellFrame extends JFrame implements CShell {
   }
 
   public String getToolTipText() {
-    // TODO: implement properly
-    return "Not yet implemented";
+    return contentPane.getToolTipText();
   }
 
   // TODO: implement so that it traverses the complete hierarchy
   public void setToolTipText(String string) {
-    // TODO: implement properly
+    contentPane.setToolTipText(string);
   }
 
   public JScrollBar getVerticalScrollBar() {

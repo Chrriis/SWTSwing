@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -349,8 +350,12 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 //	/* Make sure source and mask scanline pad is 2 */
 //	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
 //	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
-  handle = Toolkit.getDefaultToolkit().createCustomCursor(new Image(device, source, mask).handle, new java.awt.Point(hotspotX, hotspotY), "Custom Cursor");
+  createCursor(new Image(device, source, mask).handle, hotspotX, hotspotY);
 	if (device.tracking) device.new_Object(this);
+}
+
+protected void createCursor(BufferedImage image, int hotspotX, int hotspotY) {
+  handle = Toolkit.getDefaultToolkit().createCustomCursor(image, new java.awt.Point(hotspotX, hotspotY), "Custom Cursor");
 }
 
 /**	 
@@ -390,7 +395,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-  handle = Toolkit.getDefaultToolkit().createCustomCursor(new Image(device, source).handle, new java.awt.Point(hotspotX, hotspotY), "Custom Cursor");
+  createCursor(new Image(device, source).handle, hotspotX, hotspotY);
 	if (device.tracking) device.new_Object(this);
 }
 

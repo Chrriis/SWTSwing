@@ -112,4 +112,93 @@ public class Utils {
     });
   }
 
+  public static String escapeXML(String s) {
+    if(s == null || s.length() == 0) {
+      return s;
+    }
+    StringBuffer sb = new StringBuffer((int)(s.length() * 1.1));
+    for(int i=0; i<s.length(); i++) {
+      char c = s.charAt(i);
+      switch(c) {
+        case '<':
+          sb.append("&lt;");
+          break;
+        case '>':
+          sb.append("&gt;");
+          break;
+        case '&':
+          sb.append("&amp;");
+          break;
+        case '\'':
+          sb.append("&apos;");
+          break;
+        case '\"':
+          sb.append("&quot;");
+          break;
+        default:
+          sb.append(c);
+        break;
+      }
+    }
+    return sb.toString();
+  }
+
+  public static String unescapeXML(String s) {
+    if(s == null || s.length() < 3) {
+      return s;
+    }
+    char[] chars = new char[s.length()];
+    int pos = 0;
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if(c == '&') {
+        String right = s.substring(i + 1);
+        if(right.startsWith("lt;")) {
+          chars[pos] = '<';
+          i += 3;
+        } else if(right.startsWith("gt;")) {
+          chars[pos] = '>';
+          i += 3;
+        } else if(right.startsWith("amp;")) {
+          chars[pos] = '&';
+          i += 4;
+        } else if(right.startsWith("apos;")) {
+          chars[pos] = '\'';
+          i += 5;
+        } else if(right.startsWith("quot;")) {
+          chars[pos] = '\"';
+          i += 5;
+        } else {
+          chars[pos++] = c;
+        }
+      } else {
+        chars[pos++] = c;
+      }
+    }
+    if(pos == chars.length) {
+      return s;
+    }
+    return new String(chars, 0, pos);
+  }
+
+  public static String convertStringToHTML(String string) {
+    StringBuffer sb = new StringBuffer("<html>");
+    for(int i=0; i<string.length(); i++) {
+      char c = string.charAt(i);
+      switch(c) {
+      case '\r':
+        sb.append("<p>");
+        break;
+      case '\n':
+        sb.append("<p>");
+        break;
+      default:
+        sb.append(Utils.escapeXML(String.valueOf(c)));
+        break;
+      }
+    }
+    sb.append("</html>");
+    return sb.toString();
+  }
+
 }

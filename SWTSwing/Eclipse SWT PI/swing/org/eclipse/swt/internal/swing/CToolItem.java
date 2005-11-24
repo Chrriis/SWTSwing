@@ -9,6 +9,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -111,6 +112,11 @@ class CToolItemSeparator extends Separator implements CToolItem {
 
   public CToolItemSeparator(ToolItem toolItem, int style) {
     handle = toolItem;
+    init(style);
+  }
+
+  protected void init(int style) {
+    setLayout(new BorderLayout(0, 0));
   }
 
   public boolean isSelected() {

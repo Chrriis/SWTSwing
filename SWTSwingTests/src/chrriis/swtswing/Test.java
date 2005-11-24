@@ -102,7 +102,7 @@ public class Test {
     }}, new Object[] {"Slider", new String[][] {
       {"17", "print scroll event details"},
     }}, new Object[] {"TabFolder", new String[][] {
-//      {"76", "create a tab folder (six pages)"},
+      {"76", "create a tab folder (six pages)"},
     }}, new Object[] {"Table", new String[][] {
 //      {"35", "create a table (no columns, no headers)"},
 //      {"38", "create a table (columns, headers, lines)"},
@@ -140,7 +140,7 @@ public class Test {
 //      {"58", "place a combo box in a tool bar"},
       {"67", "place a drop down menu in a tool bar"},
     }}, new Object[] {"Tool Tips", new String[][] {
-//      {"41", "create tool tips for a tab folder, tool bar and control"},
+      {"41", "create tool tips for a tab folder, tool bar and control"},
     }}, new Object[] {"Tracker", new String[][] {
 //      {"23", "create a tracker (drag on mouse down)"},
 //      {"31", "create a tracker (drag when torn off)"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "48";
+  static String snippetNumber = "58";
 
   public static void main(String[] args) {
     String number = null;

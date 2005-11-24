@@ -1048,7 +1048,8 @@ static int[] init(Device device, Image image, ImageData i) {
     for(int j=image.handle.getHeight()-1; j >= 0; j--) {
       int alpha = i.getAlpha(x, j);
       if(transparencyMask != null) {
-        if(transparencyMask.getPixel(x, j) == 0) {
+        RGB alphaMask = i.palette.getRGB(transparencyMask.getPixel(x, j));
+        if(alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0) {
           alpha = 0;
         }
       }

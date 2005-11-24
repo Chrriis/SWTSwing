@@ -154,14 +154,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
   return cSize;
 }
 
-boolean overrideLayout() {
+boolean autoAddChildren() {
   return false;
 }
 
 Container createHandle () {
+  state &= ~CANVAS;
   return (Container)CToolBar.Instanciator.createInstance(this, style);
 //  super.createHandle ();
-//  state &= ~CANVAS;
 }
 
 void createItem (ToolItem item, int index) {
@@ -180,7 +180,7 @@ void createItem (ToolItem item, int index) {
   ((JComponent)handle).revalidate();
   handle.repaint();
 //	if ((style & SWT.VERTICAL) != 0) setRows (count + 1);
-	layoutItems ();
+//	layoutItems ();
 }
 
 void createWidget () {
@@ -236,7 +236,7 @@ void destroyItem (ToolItem item) {
   if(itemList.isEmpty()) {
     itemList = new ArrayList();
   }
-	layoutItems ();
+//	layoutItems ();
 }
 
 //ImageList getDisabledImageList () {
@@ -313,7 +313,7 @@ public ToolItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return handle.getComponentCount();
+	return itemList.size();
 }
 
 /**
@@ -392,16 +392,16 @@ public int indexOf (ToolItem item) {
 //	return OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, item.id, 0);
 }
 
-void layoutItems () {
-//	if ((style & SWT.WRAP) != 0) {
-//		OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
+//void layoutItems () {
+////	if ((style & SWT.WRAP) != 0) {
+////		OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
+////	}
+//  int count = itemList.size();
+//	for (int i=0; i<count; i++) {
+//		((ToolItem)itemList.get(i)).resizeControl ();
+////		if (item != null) item.resizeControl ();
 //	}
-  int count = itemList.size();
-	for (int i=0; i<count; i++) {
-		((ToolItem)itemList.get(i)).resizeControl ();
-//		if (item != null) item.resizeControl ();
-	}
-}
+//}
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
   java.awt.Dimension size = handle.getPreferredSize();

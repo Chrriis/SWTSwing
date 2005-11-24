@@ -9,7 +9,6 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.Component;
 import java.awt.Container;
 
 import javax.swing.JScrollBar;
@@ -54,10 +53,6 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
 
   public JScrollBar getVerticalScrollBar() {
     return null;
-  }
-
-  protected void addImpl(Component comp, Object constraints, int index) {
-    super.addImpl(comp, constraints, index);
   }
 
 }

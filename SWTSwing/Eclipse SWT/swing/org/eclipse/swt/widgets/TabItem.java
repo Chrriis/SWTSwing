@@ -11,9 +11,17 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+
+import javax.swing.ImageIcon;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.swing.CTabFolder;
+import org.eclipse.swt.internal.swing.CTabItem;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -33,6 +41,7 @@ public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;
+  Container handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -67,7 +76,8 @@ public class TabItem extends Item {
 public TabItem (TabFolder parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
+  handle = createHandle();
+  parent.createItem (this, parent.getItemCount ());
 }
 
 /**
@@ -105,7 +115,12 @@ public TabItem (TabFolder parent, int style) {
 public TabItem (TabFolder parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
+  handle = createHandle();
 	parent.createItem (this, index);
+}
+
+Container createHandle () {
+  return (Container)CTabItem.Instanciator.createInstance(this, style);
 }
 
 protected void checkSubclass () {
@@ -199,18 +214,25 @@ public void setControl (Control control) {
 	if (this.control != null && this.control.isDisposed ()) {
 		this.control = null;
 	}
-	Control oldControl = this.control, newControl = control;
-	this.control = control;
-	int index = parent.indexOf (this);
-	if (index != parent.getSelectionIndex ()) {
-		if (newControl != null) newControl.setVisible (false);
-		return;
-	}
-	if (newControl != null) {
-		newControl.setBounds (parent.getClientArea ());
-		newControl.setVisible (true);
-	}
-	if (oldControl != null) oldControl.setVisible (false);
+  handle.remove(control.handle);
+  this.control = control;
+  if(control != null) {
+    handle.add(control.handle, BorderLayout.CENTER);
+  }
+  handle.invalidate();
+  handle.validate();
+  handle.repaint();
+//	Control oldControl = this.control, newControl = control;
+//	int index = parent.indexOf (this);
+//	if (index != parent.getSelectionIndex ()) {
+//		if (newControl != null) newControl.setVisible (false);
+//		return;
+//	}
+//	if (newControl != null) {
+//		newControl.setBounds (parent.getClientArea ());
+//		newControl.setVisible (true);
+//	}
+//	if (oldControl != null) oldControl.setVisible (false);
 }
 
 public void setImage (Image image) {
@@ -218,22 +240,9 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-	/*
-	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
-	* items with an image and a label that includes '&' cause
-	* the tab to draw incorrectly (even when doubled '&&').
-	* The image overlaps the label.  The fix is to remove
-	* all '&' characters from the string. 
-	*/
-	if (OS.COMCTL32_MAJOR >= 6) {
-		if (text.indexOf ('&') != -1) setText (text);
-	}
-	int hwnd = parent.handle;
-	TCITEM tcItem = new TCITEM ();
-	tcItem.mask = OS.TCIF_IMAGE;
-	tcItem.iImage = parent.imageIndex (image);
-	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
+  ((CTabFolder)parent.handle).setIconAt(index, new ImageIcon(image.handle));  
 }
+
 /**
  * Sets the receiver's text.  The string may include
  * the mnemonic character.
@@ -266,36 +275,17 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	/*
-	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
-	* items with an image and a label that includes '&' cause
-	* the tab to draw incorrectly (even when doubled '&&').
-	* The image overlaps the label.  The fix is to remove
-	* all '&' characters from the string. 
-	*/
-	if (OS.COMCTL32_MAJOR >= 6 && image != null) {
-		if (text.indexOf ('&') != -1) {
-			int length = string.length ();
-			char[] text = new char [length];
-			string.getChars ( 0, length, text, 0);
-			int i = 0, j = 0;
-			for (i=0; i<length; i++) {
-				if (text[i] != '&') text [j++] = text [i];
-			}
-			if (j < i) string = new String (text, 0, j);
-		}
-	}
-	int hwnd = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
-	TCITEM tcItem = new TCITEM ();
-	tcItem.mask = OS.TCIF_TEXT;
-	tcItem.pszText = pszText;
-	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
-	OS.HeapFree (hHeap, 0, pszText);
+  int mnemonicIndex = findMnemonicIndex(string);
+  char mnemonic;
+  CTabFolder cTabFolder = (CTabFolder)parent.handle;
+  if(mnemonicIndex < 0) {
+    mnemonic = '\0';
+    cTabFolder.setTitleAt(index, string);
+  } else {
+    mnemonic = string.charAt(index);
+    cTabFolder.setTitleAt(index, string.substring(0, index - 1) + string.substring(index));
+  }
+  cTabFolder.setMnemonicAt(index, mnemonic);
 }
 
 /**
@@ -312,6 +302,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+  ((CTabFolder)parent.handle).setToolTipTextAt(parent.indexOf(this), Utils.convertStringToHTML(toolTipText));
 }
 
 }

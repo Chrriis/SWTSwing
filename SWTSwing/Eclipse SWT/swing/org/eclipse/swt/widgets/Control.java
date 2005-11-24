@@ -34,6 +34,7 @@ import javax.swing.UIManager;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.swing.CComponent;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -497,7 +498,7 @@ Container createHandle () {
   return null;
 }
 
-boolean overrideLayout() {
+boolean autoAddChildren() {
   return true;
 }
 
@@ -511,13 +512,13 @@ void createWidget () {
     handle.setSize(size);
   }
   if(parent != null && !(handle instanceof Window)) {
-    Container clientArea = ((CComponent)parent.handle).getClientArea();
-    if(parent.overrideLayout()) {
+    if(parent.autoAddChildren()) {
+      Container clientArea = ((CComponent)parent.handle).getClientArea();
       clientArea.setLayout(null);
+      clientArea.add(handle);
+      ((JComponent)clientArea).revalidate();
+      clientArea.repaint();
     }
-    clientArea.add(handle);
-    ((JComponent)clientArea).revalidate();
-    clientArea.repaint();
   }
     // TODO: should have a fixInitSize like in old implementation
 //    if(handle.getSize().equals(new java.awt.Dimension(0, 0))) {
@@ -1072,7 +1073,7 @@ public Point getSize () {
  */
 public String getToolTipText () {
 	checkWidget ();
-	return ((CComponent)handle).getToolTipText();
+	return toolTipText;
 }
 
 /**
@@ -2506,6 +2507,8 @@ boolean setTabItemFocus () {
 	return forceFocus ();
 }
 
+String toolTipText;
+
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that no tool tip text should be shown.
@@ -2519,7 +2522,8 @@ boolean setTabItemFocus () {
  */
 public void setToolTipText (String string) {
 	checkWidget ();
-  ((CComponent)handle).setToolTipText(string);
+  toolTipText = string;
+  ((CComponent)handle).setToolTipText(Utils.convertStringToHTML(string));
 }
 
 /**

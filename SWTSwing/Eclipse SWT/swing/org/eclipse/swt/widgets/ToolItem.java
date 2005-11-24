@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import java.awt.AWTEvent;
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ItemEvent;
 
@@ -24,6 +25,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CToolItem;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -376,7 +378,7 @@ public boolean getSelection () {
  */
 public String getToolTipText () {
 	checkWidget();
-	return ((CToolItem)handle).getToolTipText();
+	return toolTipText;
 }
 
 /**
@@ -484,29 +486,29 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void resizeControl () {
-	if (control != null && !control.isDisposed ()) {
-		/*
-		* Set the size and location of the control
-		* separately to minimize flashing in the
-		* case where the control does not resize
-		* to the size that was requested.  This
-		* case can occur when the control is a
-		* combo box.
-		*/
-		Rectangle itemRect = getBounds ();
-		control.setSize (itemRect.width, itemRect.height);
-		Rectangle rect = control.getBounds ();
-		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
-		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
-		control.setLocation (rect.x, rect.y);
-//	} else {
-//    handle.setSize(handle.getPreferredSize());
-//    parent.handle.invalidate();
-//    parent.handle.validate();
-//    parent.handle.repaint();
-  }
-}
+//void resizeControl () {
+//	if (control != null && !control.isDisposed ()) {
+//		/*
+//		* Set the size and location of the control
+//		* separately to minimize flashing in the
+//		* case where the control does not resize
+//		* to the size that was requested.  This
+//		* case can occur when the control is a
+//		* combo box.
+//		*/
+//		Rectangle itemRect = getBounds ();
+//		control.setSize (itemRect.width, itemRect.height);
+//		Rectangle rect = control.getBounds ();
+//		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
+//		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
+//		control.setLocation (rect.x, rect.y);
+////	} else {
+////    handle.setSize(handle.getPreferredSize());
+////    parent.handle.invalidate();
+////    parent.handle.validate();
+////    parent.handle.repaint();
+//  }
+//}
 
 void selectRadio () {
 	int index = 0;
@@ -541,13 +543,16 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
-//  if(this.control != null) {
-//    handle.remove(this.control.handle);
-//  }
+  if(this.control != null) {
+    handle.remove(this.control.handle);
+  }
 	this.control = control;
-//  handle.add(control.handle);
-//  handle.setSize(new java.awt.Dimension(200, 200));
-	resizeControl ();
+  handle.add(control.handle, BorderLayout.CENTER);
+  handle.invalidate();
+  handle.validate();
+  handle.repaint();
+  handle.setPreferredSize(control.handle.getPreferredSize());
+//	resizeControl ();
 }
 
 /**
@@ -704,8 +709,10 @@ public void setText (String string) {
     cToolItem.setText(string.substring(0, index - 1) + string.substring(index));
   }
   cToolItem.setMnemonic(mnemonic);
-	parent.layoutItems ();
+//	parent.layoutItems ();
 }
+
+String toolTipText;
 
 /**
  * Sets the receiver's tool tip text to the argument, which
@@ -720,7 +727,8 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-  ((CToolItem)handle).setToolTipText(string);
+  toolTipText = string;
+  ((CToolItem)handle).setToolTipText(Utils.convertStringToHTML(string));
 }
 
 /**
@@ -738,7 +746,7 @@ public void setWidth (int width) {
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	handle.setPreferredSize(new java.awt.Dimension(handle.getHeight(), width));
-	parent.layoutItems ();
+//	parent.layoutItems ();
 }
 
 //void updateImages () {

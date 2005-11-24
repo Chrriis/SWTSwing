@@ -60,7 +60,7 @@ public class Test {
       {"13", "draw a thick line"}, //<-- Works, but repaint in Swing is too fast and hides the result.
       {"93", "measure a string"},
       {"66", "implement a simple scribble program"},
-//      {"70", "create an icon (in memory)"},
+      {"70", "create an icon (in memory)"},
 //      {"95", "capture a widget image with a GC"},
     }}, new Object[] {"GridLayout", new String[][] {
       {"6", "insert widgets into a grid layout"},

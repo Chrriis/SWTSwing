@@ -655,19 +655,15 @@ public Rectangle getBounds() {
  */
 public ImageData getImageData() {
   ColorModel colorModel = handle.getColorModel();
-  PaletteData paletteData = new PaletteData(new RGB [] { new RGB (0, 0, 0), new RGB (0xFF, 0xFF, 0xFF) });
+  PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
   ImageData imageData = new ImageData(handle.getWidth(), handle.getHeight(), colorModel.getPixelSize(), paletteData);
   for(int i=handle.getWidth()-1; i >= 0; i--) {
     for(int j=handle.getHeight()-1; j >= 0; j--) {
       int rgb = handle.getRGB(i, j);
       int pixel = paletteData.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
       imageData.setPixel(i, j, pixel);
-      // TODO: may need to set the transparency mask instead.
-      imageData.setAlpha(i, j, (rgb >> 24) & 0xFF);
     }
   }
-  
-//  // TODO: properly generate the data...
 //  ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //  ImageWriter writer = (ImageWriter)ImageIO.getImageWritersBySuffix("jpg").next();
 //  try {
@@ -677,8 +673,6 @@ public ImageData getImageData() {
 //  } catch(Exception e) {
 //    e.printStackTrace();
 //  }
-//  new ImageData();
-  // TODO: implement
   return imageData;
 //	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 //	BITMAP bm;

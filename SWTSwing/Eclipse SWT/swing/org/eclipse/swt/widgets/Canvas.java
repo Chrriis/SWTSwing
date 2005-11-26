@@ -11,8 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.Container;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.swing.CComponent;
 
 /**
  * Instances of this class provide a surface for drawing
@@ -144,9 +147,23 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //	forceResize ();
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-  // TODO: scroll is not implemented properly. It should not repaint but copy the area!
-  handle.repaint();
-  // TODO: implement correctly, as something is missing here (see method definition)
+//  handle.repaint();
+  Container clientArea = ((CComponent)handle).getClientArea();
+  java.awt.Graphics g = clientArea.getGraphics();
+  int dx = destX - x;
+  int dy = destY - y;
+  g.copyArea(x, y, width, height, dx, dy);
+  java.awt.Dimension size = clientArea.getSize();
+  if(dx < 0) {
+    clientArea.repaint(size.width + dx, 0, -dx, size.height);
+  } else {
+    clientArea.repaint(0, 0, dx, size.height);
+  }
+  if(dy < 0) {
+    clientArea.repaint(0, size.height + dy, size.width, -dy);
+  } else {
+    clientArea.repaint(0, 0, size.width, dy);
+  }
 //	RECT sourceRect = new RECT ();
 //	OS.SetRect (sourceRect, x, y, x + width, y + height);
 //	RECT clientRect = new RECT ();

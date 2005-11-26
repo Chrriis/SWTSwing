@@ -206,7 +206,6 @@ public String open () {
   }
   if(returnValue == JFileChooser.APPROVE_OPTION) {
     currentDirectoryPath = fileChooser.getSelectedFile().getParent();
-    System.err.println(currentDirectoryPath);
     if((style & SWT.MULTI) != 0) {
       File[] selectedFiles = fileChooser.getSelectedFiles();
       fileNames = new String[selectedFiles.length];

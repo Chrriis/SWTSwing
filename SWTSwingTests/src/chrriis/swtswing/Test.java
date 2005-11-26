@@ -137,7 +137,7 @@ public class Test {
       {"36", "create a flat tool bar (images)"},
       {"47", "create tool bar (normal, hot and disabled images)"},
       {"49", "create tool bar (wrap on resize)"},
-//      {"58", "place a combo box in a tool bar"},
+      {"58", "place a combo box in a tool bar"},
       {"67", "place a drop down menu in a tool bar"},
     }}, new Object[] {"Tool Tips", new String[][] {
       {"41", "create tool tips for a tab folder, tool bar and control"},
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "58";
+  static String snippetNumber = "109";
 
   public static void main(String[] args) {
     String number = null;

@@ -9,7 +9,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +37,9 @@ class CToolItemPush extends JButton implements CToolItem {
     setMargin(new Insets(0, 1, 0, 1));
   }
 
+  public void setWidth(int width) {
+  }
+
 }
 
 class CToolItemCheck extends JToggleButton implements CToolItem {
@@ -50,6 +53,9 @@ class CToolItemCheck extends JToggleButton implements CToolItem {
 
   protected void init(int style) {
     setMargin(new Insets(0, 1, 0, 1));
+  }
+
+  public void setWidth(int width) {
   }
 
 }
@@ -70,6 +76,9 @@ class CToolItemRadio extends JToggleButton implements CToolItem {
         handle.processEvent(e);
       }
     });
+  }
+
+  public void setWidth(int width) {
   }
 
 }
@@ -104,6 +113,9 @@ class CToolItemDropDown extends CComboButton implements CToolItem {
   public void setSelected(boolean isSelected) {
   }
 
+  public void setWidth(int width) {
+  }
+
 }
 
 class CToolItemSeparator extends Separator implements CToolItem {
@@ -116,8 +128,46 @@ class CToolItemSeparator extends Separator implements CToolItem {
   }
 
   protected void init(int style) {
-    setLayout(new BorderLayout(0, 0));
+    setLayout(null);
   }
+
+  public Dimension getMaximumSize() {
+    Dimension size = super.getMaximumSize();
+    if(getComponentCount() == 1) {
+      return new Dimension(size.width, getComponent(0).getHeight());
+    }
+    return size;
+  }
+
+  public Dimension getMinimumSize() {
+    Dimension size = super.getMinimumSize();
+    if(getComponentCount() == 1) {
+      return new Dimension(size.width, getComponent(0).getHeight());
+    }
+    return size;
+  }
+
+  public Dimension getPreferredSize() {
+    Dimension size = super.getPreferredSize();
+    if(getComponentCount() == 1) {
+      return new Dimension(size.width, getComponent(0).getHeight());
+    }
+    return size;
+  }
+
+//  public Dimension getMinimumSize() {
+//    if(getComponentCount() == 1) {
+//      return getComponent(0).getSize();
+//    }
+//    return super.getMinimumSize();
+//  }
+
+//  public Dimension getPreferredSize() {
+//    if(getComponentCount() == 1) {
+//      return getComponent(0).getSize();
+//    }
+//    return super.getPreferredSize();
+//  }
 
   public boolean isSelected() {
     return false;
@@ -139,6 +189,10 @@ class CToolItemSeparator extends Separator implements CToolItem {
   }
 
   public void setMnemonic(char mnemonic) {
+  }
+
+  public void setWidth(int width) {
+    setSeparatorSize(new Dimension(width, getSize().height));
   }
 
 }
@@ -186,5 +240,7 @@ public interface CToolItem {
   public void setText(String text);
 
   public void setMnemonic(char mnemonic);
+
+  public void setWidth(int width);
 
 }

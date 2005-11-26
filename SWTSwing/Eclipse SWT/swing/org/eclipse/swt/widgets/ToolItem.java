@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
  
 import java.awt.AWTEvent;
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.ItemEvent;
 
@@ -547,11 +546,11 @@ public void setControl (Control control) {
     handle.remove(this.control.handle);
   }
 	this.control = control;
-  handle.add(control.handle, BorderLayout.CENTER);
+  handle.add(control.handle);
   handle.invalidate();
   handle.validate();
   handle.repaint();
-  handle.setPreferredSize(control.handle.getPreferredSize());
+//  handle.setPreferredSize(control.handle.getPreferredSize());
 //	resizeControl ();
 }
 
@@ -745,7 +744,10 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	handle.setPreferredSize(new java.awt.Dimension(handle.getHeight(), width));
+  ((CToolItem)handle).setWidth(width);
+  parent.handle.invalidate();
+  parent.handle.validate();
+  parent.handle.repaint();
 //	parent.layoutItems ();
 }
 

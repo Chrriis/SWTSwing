@@ -133,6 +133,10 @@ public interface CCombo extends CComposite {
       return ((JTextComponent)getEditor().getEditorComponent()).getSize();
     }
 
+    public void reshape(int x, int y, int w, int h) {
+      super.reshape(x, y, w, getPreferredSize().height);
+    }
+
   }
 
   public static class Instanciator {

@@ -2025,16 +2025,9 @@ public void setBounds (int x, int y, int width, int height) {
 //    location = SwingUtilities.convertPoint(this.parent.handle, location, parent);
 //  }
   handle.setBounds(x, y, width, height);
-//  Container parent = handle.getParent();
-//  if(parent != null) {
-//    if(parent instanceof JComponent) {
-//      ((JComponent)parent).revalidate();
-//    } else {
-//      parent.invalidate();
-//      parent.validate();
-//    }
-//    parent.repaint();
-//  }
+  handle.invalidate();
+  handle.validate();
+  handle.repaint();
 }
 
 //void setBounds (int x, int y, int width, int height, int flags) {
@@ -2335,6 +2328,9 @@ public void setLayoutData (Object layoutData) {
 public void setLocation (int x, int y) {
 	checkWidget ();
   handle.setLocation(x, y);
+  handle.invalidate();
+  handle.validate();
+  handle.repaint();
 //  Container parent = handle.getParent();
 //  if(parent != null) {
 //    if(parent instanceof JComponent) {
@@ -2462,16 +2458,9 @@ public void setSize (int width, int height) {
   if(width < 0) width = 0;
   if(height < 0) height = 0;
   handle.setSize(width, height);
-//  Container parent = handle.getParent();
-//  if(parent != null) {
-//    if(parent instanceof JComponent) {
-//      ((JComponent)parent).revalidate();
-//    } else {
-//      parent.invalidate();
-//      parent.validate();
-//    }
-//    parent.repaint();
-//  }
+  handle.invalidate();
+  handle.validate();
+  handle.repaint();
 }
 
 /**

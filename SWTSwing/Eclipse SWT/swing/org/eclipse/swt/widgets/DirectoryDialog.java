@@ -140,7 +140,11 @@ public String open () {
     }
     return result[0];
   }
-  final JFileChooser fileChooser = new JFileChooser();
+  final JFileChooser fileChooser = new JFileChooser(filterPath);
+  String title = getText();
+  if(title != null && title.length() > 0) {
+    fileChooser.setDialogTitle(title);
+  }
   String fullPath = null;
   // TODO: file filters
   // TODO: custom message

@@ -141,6 +141,8 @@ public String getFilterPath () {
 	return filterPath;
 }
 
+protected static String currentDirectoryPath;
+
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -174,7 +176,11 @@ public String open () {
     }
     return result[0];
   }
-  final JFileChooser fileChooser = new JFileChooser();
+  final JFileChooser fileChooser = new JFileChooser(currentDirectoryPath);
+  String title = getText();
+  if(title != null && title.length() > 0) {
+    fileChooser.setDialogTitle(title);
+  }
   fileName = "";
   fileNames = null;
   String fullPath = null;
@@ -199,6 +205,8 @@ public String open () {
     returnValue = fileChooser.showOpenDialog(getParent().handle);
   }
   if(returnValue == JFileChooser.APPROVE_OPTION) {
+    currentDirectoryPath = fileChooser.getSelectedFile().getParent();
+    System.err.println(currentDirectoryPath);
     if((style & SWT.MULTI) != 0) {
       File[] selectedFiles = fileChooser.getSelectedFiles();
       fileNames = new String[selectedFiles.length];

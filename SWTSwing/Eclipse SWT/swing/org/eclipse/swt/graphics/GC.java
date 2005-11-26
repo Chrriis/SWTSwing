@@ -138,7 +138,10 @@ public GC(Drawable drawable, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	data.device = device;
 	init (drawable, data, handle);
-	if (device.tracking) device.new_Object(this);	
+	if (device.tracking) device.new_Object(this);
+  // Default background should be white.
+  data.background = java.awt.Color.WHITE;
+  handle.setBackground(java.awt.Color.WHITE);
 }
 
 static int checkStyle(int style) {

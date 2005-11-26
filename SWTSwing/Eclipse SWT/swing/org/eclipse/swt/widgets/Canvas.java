@@ -144,6 +144,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //	forceResize ();
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
+  // TODO: scroll is not implemented properly. It should not repaint but copy the area!
+  handle.repaint();
   // TODO: implement correctly, as something is missing here (see method definition)
 //	RECT sourceRect = new RECT ();
 //	OS.SetRect (sourceRect, x, y, x + width, y + height);

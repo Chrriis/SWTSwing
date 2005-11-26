@@ -823,6 +823,7 @@ public boolean isEnabled () {
 public void open () {
 	checkWidget ();
 	bringToTop ();
+  layout(); // Added because the default size is not taken into account be layout managers. cf snippet 109
 //	/*
 //	* Feature on WinCE PPC.  A new application becomes
 //	* the foreground application only if it has at least

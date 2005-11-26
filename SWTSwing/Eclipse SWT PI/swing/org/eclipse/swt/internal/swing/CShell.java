@@ -11,10 +11,13 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.PaintEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -55,7 +58,26 @@ class CShellFrame extends JFrame implements CShell {
     setUndecorated((style & SWT.TITLE) == 0);
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
     Container contentPane = getContentPane();
-    JPanel panel = new JPanel(null);
+    JPanel panel = new JPanel(null) {
+      protected Graphics graphics;
+      public Graphics getGraphics() {
+        if(graphics != null) {
+          java.awt.Point point = new java.awt.Point(0, 0);
+          point = SwingUtilities.convertPoint(getParent(), point, this);
+          Graphics g = graphics.create();
+          g.translate(point.x, point.y);
+          g.setClip(new Rectangle(getSize()));
+          return g;
+        }
+        return super.getGraphics();
+      }
+      public void paint(Graphics g) {
+        graphics = g;
+        super.paint(g);
+        handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+        graphics = null;
+      }
+    };
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
@@ -208,7 +230,26 @@ class CShellDialog extends JDialog implements CShell {
     }
     setUndecorated((style & SWT.TITLE) == 0);
     contentPane = getContentPane();
-    JPanel panel = new JPanel(null);
+    JPanel panel = new JPanel(null) {
+      protected Graphics graphics;
+      public Graphics getGraphics() {
+        if(graphics != null) {
+          java.awt.Point point = new java.awt.Point(0, 0);
+          point = SwingUtilities.convertPoint(getParent(), point, this);
+          Graphics g = graphics.create();
+          g.translate(point.x, point.y);
+          g.setClip(new Rectangle(getSize()));
+          return g;
+        }
+        return super.getGraphics();
+      }
+      public void paint(Graphics g) {
+        graphics = g;
+        super.paint(g);
+        handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+        graphics = null;
+      }
+    };
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;

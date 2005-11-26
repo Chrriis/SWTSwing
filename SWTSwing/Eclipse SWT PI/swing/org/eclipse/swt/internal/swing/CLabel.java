@@ -98,6 +98,7 @@ class CLabelImplementation extends JLabel implements CLabel {
   }
 
   protected void init(int style) {
+    setVerticalAlignment(TOP);
     isWrapping = (style & SWT.WRAP) != 0;
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));

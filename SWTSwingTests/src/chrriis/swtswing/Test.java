@@ -8,7 +8,7 @@ public class Test {
     new Object[] {"Button", new String[][] {
       {"108", "set the default button"},
     }}, new Object[] {"Canvas", new String[][] {
-//      {"48", "scroll an image (flicker free, no double buffering)"},
+      {"48", "scroll an image (flicker free, no double buffering)"},
 //      {"21", "implement tab traversal (behave like a tab group)"},
     }}, new Object[] {"Caret", new String[][] {
 //      {"74", "create a caret"},
@@ -86,7 +86,7 @@ public class Test {
       {"54", "create a sash (allow it to be moved)"},
       {"107", "implement a simple splitter (with a 20 pixel limit)"},
     }}, new Object[] {"SashForm", new String[][] {
-//      {"109", "create a sash form with three children"},
+      {"109", "create a sash form with three children"},
     }}, new Object[] {"Scale", new String[][] {
       {"45", "create a scale (maximum 40, page increment 5)"},
     }}, new Object[] {"ScrolledComposite", new String[][] {
@@ -157,7 +157,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "109";
+  static String snippetNumber = "33";
 
   public static void main(String[] args) {
     String number = null;

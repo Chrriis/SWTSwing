@@ -192,6 +192,9 @@ void createWidget () {
 
 void destroyItem (ToolItem item) {
   itemList.remove(item);
+  handle.remove(item.handle);
+  ((JComponent)handle).revalidate();
+  handle.repaint();
 //	TBBUTTONINFO info = new TBBUTTONINFO ();
 //	info.cbSize = TBBUTTONINFO.sizeof;
 //	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;

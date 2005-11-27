@@ -156,12 +156,12 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
   java.awt.Dimension size = clientArea.getSize();
   if(dx < 0) {
     clientArea.repaint(size.width + dx, 0, -dx, size.height);
-  } else {
+  } else if(dx > 0) {
     clientArea.repaint(0, 0, dx, size.height);
   }
   if(dy < 0) {
     clientArea.repaint(0, size.height + dy, size.width, -dy);
-  } else {
+  } else if(dy > 0) {
     clientArea.repaint(0, 0, size.width, dy);
   }
 //	RECT sourceRect = new RECT ();

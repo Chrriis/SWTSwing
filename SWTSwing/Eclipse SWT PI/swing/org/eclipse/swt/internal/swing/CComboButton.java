@@ -37,7 +37,7 @@ public class CComboButton extends JPanel {
     }
   };
 
-  JButton dropButton = new CArrowButton(CArrowButton.SOUTH);
+  JButton dropButton = new ArrowButton(ArrowButton.SOUTH);
 
   public JButton getPushButton() {
     return pushButton;

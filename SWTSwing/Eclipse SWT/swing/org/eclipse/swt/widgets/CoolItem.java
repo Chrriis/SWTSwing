@@ -11,6 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.Container;
+
+import org.eclipse.swt.internal.swing.CCoolItem;
+import org.eclipse.swt.internal.swing.CToolItem;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -34,8 +38,10 @@ import org.eclipse.swt.events.*;
 public class CoolItem extends Item {
 	CoolBar parent;
 	Control control;
-	int id;
-	boolean ideal, minimum;
+  Container handle;
+  
+//	int id;
+//	boolean ideal, minimum;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -70,6 +76,7 @@ public class CoolItem extends Item {
 public CoolItem (CoolBar parent, int style) {
 	super (parent, style);
 	this.parent = parent;
+  handle = createHandle();
 	parent.createItem (this, parent.getItemCount ());
 }
 
@@ -107,7 +114,8 @@ public CoolItem (CoolBar parent, int style) {
 public CoolItem (CoolBar parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
-	parent.createItem (this, index);
+  handle = createHandle();
+  parent.createItem (this, index);
 }
 
 /**
@@ -186,8 +194,12 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 32;
 	if (hHint == SWT.DEFAULT) height = 32;
-	width += parent.getMargin (index);
+//	width += parent.getMargin (index);
 	return new Point (width, height);
+}
+
+Container createHandle () {
+  return (Container)CCoolItem.Instanciator.createInstance(this, style);
 }
 
 /**
@@ -222,36 +234,36 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-/*
-* Not currently used.
-*/
-Rectangle getClientArea () {
-	checkWidget ();
-	int index = parent.indexOf (this);
-	if (index == -1) return new Rectangle (0, 0, 0, 0);
-	int hwnd = parent.handle;
-	RECT insetRect = new RECT ();
-	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, insetRect);
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
-	int x = rect.left + insetRect.left;
-	int y = rect.top;
-	int width = rect.right - rect.left - insetRect.left;
-	int height = rect.bottom - rect.top;
-	if ((parent.style & SWT.FLAT) == 0) {
-		y += insetRect.top;
-		width -= insetRect.right;
-		height -= insetRect.top + insetRect.bottom; 
-	}
-	if (index == 0) {
-		REBARBANDINFO rbBand = new REBARBANDINFO ();
-		rbBand.cbSize = REBARBANDINFO.sizeof;
-		rbBand.fMask = OS.RBBIM_HEADERSIZE;
-		OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-		width = width - rbBand.cxHeader + 1;
-	}
-	return new Rectangle (x, y, width, height);
-}
+///*
+//* Not currently used.
+//*/
+//Rectangle getClientArea () {
+//	checkWidget ();
+//	int index = parent.indexOf (this);
+//	if (index == -1) return new Rectangle (0, 0, 0, 0);
+//	int hwnd = parent.handle;
+//	RECT insetRect = new RECT ();
+//	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, insetRect);
+//	RECT rect = new RECT ();
+//	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
+//	int x = rect.left + insetRect.left;
+//	int y = rect.top;
+//	int width = rect.right - rect.left - insetRect.left;
+//	int height = rect.bottom - rect.top;
+//	if ((parent.style & SWT.FLAT) == 0) {
+//		y += insetRect.top;
+//		width -= insetRect.right;
+//		height -= insetRect.top + insetRect.bottom; 
+//	}
+//	if (index == 0) {
+//		REBARBANDINFO rbBand = new REBARBANDINFO ();
+//		rbBand.cbSize = REBARBANDINFO.sizeof;
+//		rbBand.fMask = OS.RBBIM_HEADERSIZE;
+//		OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+//		width = width - rbBand.cxHeader + 1;
+//	}
+//	return new Rectangle (x, y, width, height);
+//}
 
 /**
  * Returns the control that is associated with the receiver.
@@ -315,39 +327,47 @@ public void setControl (Control control) {
 		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	if (this.control != null && this.control.isDisposed ()) {
-		this.control = null;
-	}
-	Control oldControl = this.control, newControl = control;
-	int hwnd = parent.handle;
-	int hwndChild = newControl != null ? control.topHandle () : 0;
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_CHILD;
-	rbBand.hwndChild = hwndChild;
-	this.control = newControl;
-
-	/*
-	* Feature in Windows.  When Windows sets the rebar band child,
-	* it makes the new child visible and hides the old child and
-	* moves the new child to the top of the Z-order.  The fix is
-	* to save and restore the visibility and Z-order.
-	*/	
-	int hwndAbove = 0;
-	if (newControl != null) {
-		hwndAbove = OS.GetWindow (hwndChild, OS.GW_HWNDPREV);
-	}		
-	boolean hideNew = newControl != null && !newControl.getVisible ();
-	boolean showOld = oldControl != null && oldControl.getVisible ();
-	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
-	if (hideNew) newControl.setVisible (false);
-	if (showOld) oldControl.setVisible (true);
-	if (hwndAbove != 0 && hwndAbove != hwndChild) {
-		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-		SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
-	}
+  if(this.control != null) {
+    ((CCoolItem)handle).removeToolBarComponent(this.control.handle);
+  }
+  this.control = control;
+  ((CCoolItem)handle).addToolBarComponent(control.handle);
+  handle.invalidate();
+  handle.validate();
+  handle.repaint();
+//  int index = parent.indexOf (this);
+//	if (index == -1) return;
+//	if (this.control != null && this.control.isDisposed ()) {
+//		this.control = null;
+//	}
+//	Control oldControl = this.control, newControl = control;
+//	int hwnd = parent.handle;
+//	int hwndChild = newControl != null ? control.topHandle () : 0;
+//	REBARBANDINFO rbBand = new REBARBANDINFO ();
+//	rbBand.cbSize = REBARBANDINFO.sizeof;
+//	rbBand.fMask = OS.RBBIM_CHILD;
+//	rbBand.hwndChild = hwndChild;
+//	this.control = newControl;
+//
+//	/*
+//	* Feature in Windows.  When Windows sets the rebar band child,
+//	* it makes the new child visible and hides the old child and
+//	* moves the new child to the top of the Z-order.  The fix is
+//	* to save and restore the visibility and Z-order.
+//	*/	
+//	int hwndAbove = 0;
+//	if (newControl != null) {
+//		hwndAbove = OS.GetWindow (hwndChild, OS.GW_HWNDPREV);
+//	}		
+//	boolean hideNew = newControl != null && !newControl.getVisible ();
+//	boolean showOld = oldControl != null && oldControl.getVisible ();
+//	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
+//	if (hideNew) newControl.setVisible (false);
+//	if (showOld) oldControl.setVisible (true);
+//	if (hwndAbove != 0 && hwndAbove != hwndChild) {
+//		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
+//		SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
+//	}
 }
 
 /**
@@ -388,25 +408,29 @@ public Point getPreferredSize () {
  */
 public void setPreferredSize (int width, int height) {
 	checkWidget ();
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	width = Math.max (0, width);
-	height = Math.max (0, height);
-	ideal = true;
-	int hwnd = parent.handle;
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	
-	/* Get the child size fields first so we don't overwrite them. */
-	rbBand.fMask = OS.RBBIM_CHILDSIZE;
-	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	
-	/* Set the size fields we are currently modifying. */
-	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-	rbBand.cxIdeal = Math.max (0, width - parent.getMargin (index));
-	rbBand.cyMaxChild = height;
-	if (!minimum) rbBand.cyMinChild = height;
-	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
+  ((CCoolItem)handle).setToolBarPreferredSize(new java.awt.Dimension(width, height));
+  handle.invalidate();
+  handle.validate();
+  handle.repaint();
+//	int index = parent.indexOf (this);
+//	if (index == -1) return;
+//	width = Math.max (0, width);
+//	height = Math.max (0, height);
+//	ideal = true;
+//	int hwnd = parent.handle;
+//	REBARBANDINFO rbBand = new REBARBANDINFO ();
+//	rbBand.cbSize = REBARBANDINFO.sizeof;
+//	
+//	/* Get the child size fields first so we don't overwrite them. */
+//	rbBand.fMask = OS.RBBIM_CHILDSIZE;
+//	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+//	
+//	/* Set the size fields we are currently modifying. */
+//	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
+//	rbBand.cxIdeal = Math.max (0, width - parent.getMargin (index));
+//	rbBand.cyMaxChild = height;
+//	if (!minimum) rbBand.cyMinChild = height;
+//	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
 /**
@@ -619,30 +643,30 @@ public void setMinimumSize (Point size) {
 	setMinimumSize (size.x, size.y);
 }
 
-boolean getWrap() {
-	int index = parent.indexOf (this);
-	int hwnd = parent.handle;
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	return (rbBand.fStyle & OS.RBBS_BREAK) != 0;
-}
+//boolean getWrap() {
+//	int index = parent.indexOf (this);
+//	int hwnd = parent.handle;
+//	REBARBANDINFO rbBand = new REBARBANDINFO ();
+//	rbBand.cbSize = REBARBANDINFO.sizeof;
+//	rbBand.fMask = OS.RBBIM_STYLE;
+//	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+//	return (rbBand.fStyle & OS.RBBS_BREAK) != 0;
+//}
 
-void setWrap(boolean wrap) {
-	int index = parent.indexOf (this);
-	int hwnd = parent.handle;
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	if (wrap) {
-		rbBand.fStyle |= OS.RBBS_BREAK;
-	} else {
-		rbBand.fStyle &= ~OS.RBBS_BREAK;
-	}
-	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
-}
+//void setWrap(boolean wrap) {
+//	int index = parent.indexOf (this);
+//	int hwnd = parent.handle;
+//	REBARBANDINFO rbBand = new REBARBANDINFO ();
+//	rbBand.cbSize = REBARBANDINFO.sizeof;
+//	rbBand.fMask = OS.RBBIM_STYLE;
+//	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+//	if (wrap) {
+//		rbBand.fStyle |= OS.RBBS_BREAK;
+//	} else {
+//		rbBand.fStyle &= ~OS.RBBS_BREAK;
+//	}
+//	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
+//}
 
 /**
  * Removes the listener from the collection of listeners that

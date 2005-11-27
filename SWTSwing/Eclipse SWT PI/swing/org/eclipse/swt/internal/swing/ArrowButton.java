@@ -1,8 +1,11 @@
 /*
- * @(#)CArrowButton.java
+ * @(#)ArrowButton.java
  * 
- * Swing port: Christopher Deckers (chrriis@brainlex.com)
- * http://chrriis.brainlex.com/swtswing
+ * Christopher Deckers (chrriis@brainlex.com)
+ * http://chrriis.brainlex.com
+ * 
+ * See the file "LICENSE.txt" for information on usage and redistribution of
+ * this file, and for a DISCLAIMER OF ALL WARRANTIES.
  */
 package org.eclipse.swt.internal.swing;
 
@@ -16,7 +19,7 @@ import javax.swing.UIManager;
  * @version 1.0 2003.08.03
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
-public class CArrowButton extends JButton {
+public class ArrowButton extends JButton {
 
   private int direction;
   Color background;
@@ -28,7 +31,7 @@ public class CArrowButton extends JButton {
    * Construct an arrow button using the current look and feel. 
    * @param direction the direction of the arrow.
    */
-  public CArrowButton(int direction) {
+  public ArrowButton(int direction) {
     this.direction = direction;
   }
   

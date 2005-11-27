@@ -30,20 +30,20 @@ class CButtonCommon {
 
 }
 
-class CButtonArrow extends CArrowButton implements CButton {
+class CButtonArrow extends ArrowButton implements CButton {
 
   protected Button handle;
 
   protected static int getDirection(int style) {
     int direction = 0;
     if((style & SWT.UP) != 0) {
-      direction = CArrowButton.NORTH;
+      direction = ArrowButton.NORTH;
     } else if((style & SWT.DOWN) != 0) {
-      direction = CArrowButton.SOUTH;
+      direction = ArrowButton.SOUTH;
     } else if((style & SWT.LEFT) != 0) {
-      direction = CArrowButton.WEST;
+      direction = ArrowButton.WEST;
     } else if((style & SWT.RIGHT) != 0) {
-      direction = CArrowButton.EAST;
+      direction = ArrowButton.EAST;
     }
     return direction;
   }

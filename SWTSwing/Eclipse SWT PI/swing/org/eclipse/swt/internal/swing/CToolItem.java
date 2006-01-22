@@ -35,6 +35,11 @@ class CToolItemPush extends JButton implements CToolItem {
 
   protected void init(int style) {
     setMargin(new Insets(0, 1, 0, 1));
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public void setWidth(int width) {

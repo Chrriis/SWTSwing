@@ -22,6 +22,8 @@ import java.util.EventObject;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -62,6 +64,17 @@ class CTextMulti extends JScrollPane implements CText {
     Utils.installKeyListener(textArea, handle);
     Utils.installFocusListener(textArea, handle);
     Utils.installComponentListener(this, handle);
+    textArea.getDocument().addDocumentListener(new DocumentListener() {
+    	public void changedUpdate(DocumentEvent e) {
+    		handle.processEvent(e);
+    	}
+    	public void insertUpdate(DocumentEvent e) {
+    		handle.processEvent(e);
+    	}
+    	public void removeUpdate(DocumentEvent e) {
+    		handle.processEvent(e);
+    	}
+    });
     // TODO: find out the expected behaviour for default selection event
 //    textArea.addActionListener(new ActionListener() {
 //      public void actionPerformed(ActionEvent e) {

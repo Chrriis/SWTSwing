@@ -19,6 +19,7 @@ import java.util.EventObject;
 
 import javax.swing.JButton;
 import javax.swing.RootPaneContainer;
+import javax.swing.event.DocumentEvent;
 import javax.swing.text.BadLocationException;
 
 import org.eclipse.swt.SWT;
@@ -1720,6 +1721,17 @@ public void processEvent(AWTEvent e) {
     return;
   }
   super.processEvent(e);
+  display.stopExclusiveSection();
+}
+
+public void processEvent(DocumentEvent e) {
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    return;
+  }
+  sendEvent(SWT.Modify, new Event());
   display.stopExclusiveSection();
 }
 

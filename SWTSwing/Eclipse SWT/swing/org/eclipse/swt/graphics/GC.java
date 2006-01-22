@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -18,6 +19,8 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -70,6 +73,12 @@ public final class GC {
 
 	Drawable drawable;
 	GCData data;
+
+	// Saved Affine Transform
+	private AffineTransform saveAT, gcAT;
+
+	// Fill Rule
+	private int fillRule = SWT.FILL_EVEN_ODD;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -1118,10 +1127,9 @@ public void drawOval (int x, int y, int width, int height) {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void drawPath (Path path) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	initGdip(true, false);
-	Gdip.Graphics_DrawPath(data.gdipGraphics, data.gdipPen, path.handle);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	handle.draw(path.handle);
 }
 
 /** 
@@ -1845,12 +1853,17 @@ public void fillOval (int x, int y, int width, int height) {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void fillPath (Path path) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	initGdip(false, true);
-	int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
-	Gdip.GraphicsPath_SetFillMode(path.handle, mode);
-	Gdip.Graphics_FillPath(data.gdipGraphics, data.gdipBrush, path.handle);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	// Set fill(winding) rule
+	int windingRule = fillRule == SWT.FILL_EVEN_ODD ? GeneralPath.WIND_EVEN_ODD
+			: GeneralPath.WIND_NON_ZERO;
+	path.handle.setWindingRule(windingRule);
+	// Use background color for paint.
+	Paint old = handle.getPaint();
+	handle.setPaint(handle.getBackground());
+	handle.fill(path.handle);
+	handle.setPaint(old);
 }
 
 /** 
@@ -2077,7 +2090,7 @@ public int getAdvanceWidth(char ch) {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public int getAlpha() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.alpha;
 }
 
@@ -2222,9 +2235,8 @@ public void getClipping (Region region) {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public int getFillRule() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) return SWT.FILL_EVEN_ODD;
-	return OS.GetPolyFillMode(handle) == OS.WINDING ? SWT.FILL_WINDING : SWT.FILL_EVEN_ODD;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return fillRule;
 }
 
 /** 
@@ -2445,18 +2457,10 @@ public int getStyle () {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void getTransform(Transform transform) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int gdipGraphics = data.gdipGraphics;
-	if (gdipGraphics != 0) {
-		Gdip.Graphics_GetTransform(gdipGraphics, transform.handle);
-	} else {
-		float[] xform = new float[6];
-		if (OS.GetWorldTransform(handle, xform)) {
-			transform.setElements(xform[0], xform[1], xform[2], xform[3], xform[4], xform[5]);
-		}
-	}
+	transform.handle = (AffineTransform) gcAT.clone();
 }
 
 boolean isXORMode = false;
@@ -2605,17 +2609,11 @@ public boolean isDisposed() {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void setAlpha(int alpha) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	initGdip(false, false);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
-	if (data.gdipPen != 0) {
-		Gdip.Pen_delete(data.gdipPen);
-		data.gdipPen = 0;
-	}
-	if (data.gdipBrush != 0) {
-		Gdip.SolidBrush_delete(data.gdipBrush);
-		data.gdipBrush = 0;
-	}
+	AlphaComposite comp = AlphaComposite.getInstance(
+				AlphaComposite.SRC_OVER, data.alpha / 255.0f);
+	handle.setComposite(comp);
 }
 
 /**
@@ -2709,15 +2707,9 @@ public void setClipping (int x, int y, int width, int height) {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void setClipping (Path path) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	initGdip(false, false);
-	setClipping(0);
-	if (path != null) {
-		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
-		Gdip.GraphicsPath_SetFillMode(path.handle, mode);
-		Gdip.Graphics_SetClip(data.gdipGraphics, path.handle);
-	}
+	handle.setClip(path.handle);
 }
 
 /**
@@ -2764,16 +2756,15 @@ public void setClipping (Region region) {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void setFillRule(int rule) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) return;
-	int mode = OS.ALTERNATE;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (rule) {
-		case SWT.FILL_WINDING: mode = OS.WINDING; break;
-		case SWT.FILL_EVEN_ODD: mode = OS.ALTERNATE; break;
+		case SWT.FILL_WINDING: 
+		case SWT.FILL_EVEN_ODD:
+			fillRule = rule;
+			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	OS.SetPolyFillMode(handle, mode);
 }
 
 /** 
@@ -3107,19 +3098,14 @@ public void setXORMode(boolean xor) {
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void setTransform(Transform transform) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (OS.IsWin95) initGdip(false, false);
-	int gdipGraphics = data.gdipGraphics;
-	if (gdipGraphics == 0) {
-		OS.SetGraphicsMode(handle, OS.GM_ADVANCED);
-		float[] elements = new float[6];
-		transform.getElements(elements);
-		OS.SetWorldTransform(handle, elements);
-	} else {
-		Gdip.Graphics_SetTransform(gdipGraphics, transform.handle);
+	if (saveAT != null) {
+		handle.setTransform(saveAT);
 	}
+	saveAT = handle.getTransform();
+	gcAT = transform.handle;
+	handle.transform(transform.handle);
 }
 
 /**
@@ -3238,7 +3224,7 @@ public String toString () {
 public static GC swing_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	Graphics handle = drawable.internal_new_GC(data);
-	gc.init(drawable, data, handle);
+	gc.init(drawable, data, (Graphics2D) handle);
 	return gc;
 }
 
@@ -3259,7 +3245,7 @@ public static GC swing_new(Drawable drawable, GCData data) {
  */
 public static GC swing_new(Graphics handle, GCData data) {
 	GC gc = new GC();
-	gc.init(null, data, handle);
+	gc.init(null, data, (Graphics2D) handle);
 	return gc;
 }
 
@@ -3269,12 +3255,10 @@ static final float[] lineDashDotArray = new float[] {9, 6, 3, 6};
 static final float[] lineDashDotDotArray = new float[] {9, 3, 3, 3, 3, 3};
 
 BasicStroke getCurrentBasicStroke() {
-  if(handle instanceof Graphics2D) {
-    Graphics2D g2d = (Graphics2D)handle;
-    Stroke stroke = g2d.getStroke();
-    if(stroke instanceof BasicStroke) {
-      return (BasicStroke)stroke;
-    }
+  Graphics2D g2d = handle;
+  Stroke stroke = g2d.getStroke();
+  if(stroke instanceof BasicStroke) {
+    return (BasicStroke)stroke;
   }
   return new BasicStroke();
 }

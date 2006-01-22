@@ -10,9 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.gdip.*;
-import org.eclipse.swt.internal.win32.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.font.LineMetrics;
+import java.awt.geom.Arc2D;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
+import org.eclipse.swt.SWT;
 
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
@@ -23,22 +29,19 @@ public class Path {
 	 * the handle to the OS path resource
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;
+	public GeneralPath handle;
 	
 	/**
 	 * the device where this font was created
 	 */
 	Device device;
 	
-	PointF currentPoint = new PointF();
-	
 public Path (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	device.checkGDIP();
-	handle = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	handle = new GeneralPath();
+	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -53,53 +56,33 @@ public void addArc(float x, float y, float width, float height, float startAngle
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	Gdip.GraphicsPath_AddArc(handle, x, y, width, height, -startAngle, -arcAngle);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	handle.append(new Arc2D.Float(x, y, width, height, startAngle,
+				arcAngle, Arc2D.OPEN), true);
 }
 
 public void addPath(Path path) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - expose connect?
-	Gdip.GraphicsPath_AddPath(handle, path.handle, false);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	handle.append(path.handle, true);
 }
 
 public void addRectangle(float x, float y, float width, float height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	RectF rect = new RectF();
-	rect.X = x;
-	rect.Y = y;
-	rect.Width = width;
-	rect.Height = height;
-	Gdip.GraphicsPath_AddRectangle(handle, rect);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	handle.append(new Rectangle2D.Float(x, y, width, height), true);
 }
 
-public void addString(String string, float x, float y, Font font) {
+public void addString(String string, float x, float y, org.eclipse.swt.graphics.Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int length = string.length();
-	char[] buffer = new char[length];
-	string.getChars(0, length, buffer, 0);
-	int hDC = device.internal_new_GC(null);
-	int gdipFont = Gdip.Font_new(hDC, font.handle);
-	PointF point = new PointF();
-	point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
-	point.Y = y;
-	int family = Gdip.FontFamily_new();
-	Gdip.Font_GetFamily(gdipFont, family);
-	int style = Gdip.Font_GetStyle(gdipFont);
-	float size = Gdip.Font_GetSize(gdipFont);
-	Gdip.GraphicsPath_AddString(handle, buffer, length, family, style, size, point, 0);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
-	Gdip.FontFamily_delete(family);
-	Gdip.Font_delete(gdipFont);
-	device.internal_dispose_GC(hDC, null);
+	FontRenderContext frc = new FontRenderContext(null, true, true);
+	GlyphVector glyph = font.handle.createGlyphVector(frc, string);
+	LineMetrics lm = font.handle.getLineMetrics(string, frc);
+	handle.append(glyph.getOutline(x, y + lm.getAscent()), true);
 }
 
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.GraphicsPath_CloseFigure(handle);
+	handle.closePath();
 }
 
 public boolean contains(float x, float y, GC gc, boolean outline) {
@@ -107,27 +90,19 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - should use GC transformation
-	gc.initGdip(outline, false);
-	int mode = OS.GetPolyFillMode(gc.handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
-	Gdip.GraphicsPath_SetFillMode(handle, mode);
-	if (outline) {
-		return Gdip.GraphicsPath_IsOutlineVisible(handle, x, y, gc.data.gdipPen, gc.data.gdipGraphics);
-	} else {
-		return Gdip.GraphicsPath_IsVisible(handle, x, y, gc.data.gdipGraphics);
-	}
+	// TODO support outline
+	return handle.contains(x, y);
 }
 
 public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx1, cy1, cx2, cy2, x, y);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	handle.curveTo(cx1, cy1, cx2, cy2, x, y);
 }
 
 public void dispose() {
-	if (handle == 0) return;
+	if (handle == null) return;
 	if (device.isDisposed()) return;
-	Gdip.GraphicsPath_delete(handle);
-	handle = 0;
+	handle = null;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
@@ -136,30 +111,28 @@ public void getCurrentPoint(float[] point) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	point[0] = currentPoint.X;
-	point[1] = currentPoint.Y;
+	Point2D p = handle.getCurrentPoint();
+	point[0] = (float) p.getX();
+	point[1] = (float) p.getY();
 }
 
 public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.GraphicsPath_AddLine(handle, currentPoint.X, currentPoint.Y, x, y);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	handle.lineTo(x, y);
 }
 
 public boolean isDisposed() {
-	return handle == 0;
+	return handle == null;
 }
 
 public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	currentPoint.X = x;
-	currentPoint.Y = y;
+	handle.moveTo(x, y);
 }
 
 public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx, cy, cx, cy, x, y);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	handle.quadTo(cx, cy, x, y);
 }
 public String toString() {
 	if (isDisposed()) return "Path {*DISPOSED*}";

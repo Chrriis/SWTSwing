@@ -10,8 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.gdip.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+
+import org.eclipse.swt.SWT;
 
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
@@ -21,7 +23,7 @@ public class Transform {
 	 * the handle to the OS path resource
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;
+	public AffineTransform handle;
 	
 	/**
 	 * the device where this font was created
@@ -40,9 +42,8 @@ public Transform (Device device, float m11, float m12, float m21, float m22, flo
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	device.checkGDIP();
-	handle = Gdip.Matrix_new(m11, m12, m21, m22, dx, dy);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	handle = new AffineTransform(m11, m12, m21, m22, dx, dy);
+	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -53,10 +54,9 @@ static float[] checkTransform(float[] elements) {
 }
 
 public void dispose() {
-	if (handle == 0) return;
+	if (handle == null) return;
 	if (device.isDisposed()) return;
-	Gdip.Matrix_delete(handle);
-	handle = 0;
+	handle = null;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
@@ -65,54 +65,62 @@ public void getElements(float[] elements) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Gdip.Matrix_GetElements(handle, elements);
+	double[] matrix = new double[6];
+	handle.getMatrix(matrix);
+	for (int i = 0; i < 6; i++) {
+		elements[i] = (float) matrix[i];
+	}
 }
 
 public void invert() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (Gdip.Matrix_Invert(handle) != 0) SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+	try {
+		handle = handle.createInverse();
+	} catch (NoninvertibleTransformException e) {
+		SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+	}
 }
 
 public boolean isDisposed() {
-	return handle == 0;
+	return handle == null;
 }
 
 public boolean isIdentity() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Gdip.Matrix_IsIdentity(handle);
+	return handle.isIdentity();
 }
 
 public void multiply(Transform matrix) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (matrix == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (matrix.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Gdip.Matrix_Multiply(handle, matrix.handle, Gdip.MatrixOrderPrepend);
+	handle.concatenate(matrix.handle);
 }
 
 public void rotate(float angle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_Rotate(handle, angle, Gdip.MatrixOrderPrepend);
+	handle.rotate(angle * Math.PI / 180);
 }
 
 public void scale(float scaleX, float scaleY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_Scale(handle, scaleX, scaleY, Gdip.MatrixOrderPrepend);
+	handle.scale(scaleX, scaleY);
 }
 
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, dx, dy);
+	handle.setTransform(m11, m12, m21, m22, dx, dy);
 }
 
 public void transform(float[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Gdip.Matrix_TransformPoints(handle, pointArray, pointArray.length / 2);
+	handle.transform(pointArray, 0, pointArray, 0, pointArray.length);
 }
 
 public void translate(float offsetX, float offsetY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Gdip.Matrix_Translate(handle, offsetX, offsetY, Gdip.MatrixOrderPrepend);
+	handle.translate(offsetX, offsetY);
 }
 
 public String toString() {

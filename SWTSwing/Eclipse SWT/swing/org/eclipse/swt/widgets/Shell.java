@@ -833,6 +833,7 @@ public void open () {
 //	*/
 //	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
 //	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+  if (!traverseGroup (true)) setFocus ();
 	setVisible (true);
 	if (isDisposed ()) return;
 //	/*
@@ -853,7 +854,6 @@ public void open () {
 //	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
 //	OS.PeekMessage (msg, 0, 0, 0, flags);
 //	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
-  if (!traverseGroup (true)) setFocus ();
 }
 
 void releaseChild () {

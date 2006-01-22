@@ -210,7 +210,11 @@ void init (Device device, FontData fd) {
 	this.device = device;
   fontData = new FontData(fd);
   int style = fd.getStyle();
-  handle = new java.awt.Font(fd.getName(), 0 | (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0)), fd.getHeight());
+  int height = Math.round(fd.getHeight() * device.getDPI().x / 72.0f);
+  handle = new java.awt.Font(fd.getName(), 0
+        | (((style & SWT.ITALIC) != 0 ? java.awt.Font.ITALIC : 0))
+        | (((style & SWT.BOLD) != 0 ? java.awt.Font.BOLD : 0)), height);
+//  handle = new java.awt.Font(fd.getName(), 0 | (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0)), fd.getHeight());
 }
 
 /**
@@ -248,7 +252,7 @@ public String toString () {
  * application code.
  * </p>
  *
- * @param device the device on which to allocate the color
+ * @param device the device on which to allocate the font
  * @param handle the handle for the font
  * @return a new font object containing the specified device and handle
  */
@@ -258,7 +262,8 @@ public static Font swing_new(Device device, java.awt.Font handle) {
 	font.handle = handle;
 	font.device = device;
   int style = handle.getStyle();
-  font.fontData = new FontData(handle.getName(), handle.getSize(), 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
+  int height = Math.round(handle.getSize() * 72.0f / device.getDPI().x);
+  font.fontData = new FontData(handle.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
 	return font;
 }
 

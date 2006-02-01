@@ -12,7 +12,9 @@ package org.eclipse.swt.internal.swing;
 import java.awt.Container;
 
 import javax.swing.JScrollBar;
+import javax.swing.UIManager;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.CoolBar;
 
 class CCoolBarImplementation extends JCoolBar implements CCoolBar {
@@ -25,6 +27,9 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
   }
 
   protected void init(int style) {
+    if((style & SWT.BORDER) != 0) {
+      setBorder(UIManager.getBorder("TextField.border"));
+    }
   }
 
   public Container getClientArea() {

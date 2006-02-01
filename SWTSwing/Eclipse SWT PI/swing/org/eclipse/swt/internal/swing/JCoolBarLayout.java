@@ -12,180 +12,86 @@ package org.eclipse.swt.internal.swing;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Insets;
 import java.awt.LayoutManager;
 
-
-/**
- * Te layout used by the cool bar
- * @version 1.0 2003.08.21
- * @author Christopher Deckers (chrriis@brainlex.com)
- */
-class JCoolBarLayout implements LayoutManager {
-
-  int hgap;
-  int vgap;
-
-  public JCoolBarLayout() {
-    this.hgap = 0;
-    this.vgap = 0;
-  }
+public class JCoolBarLayout implements LayoutManager {
 
   public void addLayoutComponent(String name, Component comp) {}
 
   public void removeLayoutComponent(Component comp) {}
 
-  public Dimension preferredLayoutSize(Container target) {
-    synchronized (target.getTreeLock()) {
-      Dimension dim = new Dimension(0, 0);
-      int nmembers = target.getComponentCount();
-      boolean firstVisibleComponent = true;
-      int h = 0;
-      int w = 0;
-      boolean isWrapped = false;
-      for (int i = 0; i < nmembers; i++) {
-        JCoolBarItem m = (JCoolBarItem)target.getComponent(i);
-//        Component m = target.getComponent(i);
-        if(m.isWrapped()) {
-          isWrapped = true;
-        }
-        if (m.isVisible()) {
-          if(isWrapped) {
-            h += dim.height;
-            dim.height = 0;
-            w = Math.max(dim.width, w);
-            dim.width = 0;
-            isWrapped = false;
-          }
-          Dimension d = m.getPreferredSize();
-          dim.height = Math.max(dim.height, d.height);
-          if (firstVisibleComponent) {
-            firstVisibleComponent = false;
-          } else {
-            dim.width += hgap;
-          }
-          dim.width += d.width;
-        }
+  public void layoutContainer(Container parent) {
+    boolean isLeftToRight = parent.getComponentOrientation().isLeftToRight(); 
+    synchronized (parent.getTreeLock()) {
+      Component[] components = parent.getComponents();
+      if(components.length == 0) {
+        return;
       }
-      dim.height += h;
-      dim.width = Math.max(dim.width, w);
-      Insets insets = target.getInsets();
-      dim.width += insets.left + insets.right + hgap * 2;
-      dim.height += insets.top + insets.bottom + vgap * 2;
-      return dim;
-    }
-  }
-
-  public Dimension minimumLayoutSize(Container target) {
-    synchronized (target.getTreeLock()) {
-      Dimension dim = new Dimension(0, 0);
-      int nmembers = target.getComponentCount();
-      int h = 0;
-      int w = 0;
-      boolean isWrapped = false;
-      for (int i = 0; i < nmembers; i++) {
-        Component m = target.getComponent(i);
-//        CCoolBarItem m = (CCoolBarItem)target.getComponent(i);
-        if (m.isVisible()) {
-          if(isWrapped) {
-            h += dim.height;
-            dim.height = 0;
-            w = Math.max(dim.width, w);
-            dim.width = 0;
-            isWrapped = false;
+      Dimension size = parent.getSize();
+      int i=0;
+      int lineY = 0;
+      while(i != components.length) {
+        int lineHeight = 0;
+        int j=i;
+        for(; j<components.length; j++) {
+          JCoolBarItem coolBarItem = (JCoolBarItem)components[j];
+          if(j != i && coolBarItem.isWrapped()) {
+            break;
           }
-          Dimension d = m.getMinimumSize();
-          dim.height = Math.max(dim.height, d.height);
-          if (i > 0) {
-            dim.width += hgap;
-          }
-          dim.width += d.width;
+          lineHeight = Math.max(lineHeight, coolBarItem.getPreferredSize().height);
         }
-      }
-      dim.height += h;
-      dim.width = Math.max(dim.width, w);
-      Insets insets = target.getInsets();
-      dim.width += insets.left + insets.right + hgap * 2;
-      dim.height += insets.top + insets.bottom + vgap * 2;
-      return dim;
-    }
-  }
-
-  private void moveComponents(Container target, int x, int y, int width, int height, int rowStart, int rowEnd, boolean ltr) {
-    synchronized (target.getTreeLock()) {
-      for (int i = rowStart; i < rowEnd; i++) {
-        Component m = target.getComponent(i);
-        if (m.isVisible()) {
-          if (ltr) {
-            m.setLocation(x, y + (height - m.getHeight()) / 2);
+        int lineX = 0;
+        boolean isFirst = true;
+        for(; i<components.length; i++) {
+          JCoolBarItem coolBarItem = (JCoolBarItem)components[i];
+          if(!isFirst && coolBarItem.isWrapped()) {
+            break;
+          }
+          isFirst = false;
+          int x = lineX + Math.max(0, coolBarItem.getXSpacing());
+          int nextXSpacing = i < j-1? Math.max(0, ((JCoolBarItem)components[i+1]).getXSpacing()): 0;
+          int nextPositionX = i < j-1? Math.max(0, ((JCoolBarItem)components[i+1]).getXSpacing()) + x + coolBarItem.getMinimumSize().width: size.width;
+          if(isLeftToRight) {
+            coolBarItem.setBounds(x, lineY, nextPositionX - x, lineHeight);
           } else {
-            m.setLocation(
-              target.getWidth() - x - m.getWidth(),
-              y + (height - m.getHeight()) / 2);
+            coolBarItem.setBounds(size.width - nextPositionX, lineY, nextPositionX - x, lineHeight);
           }
-          x += m.getWidth() + hgap;
+          lineX = nextPositionX - nextXSpacing;
         }
+        lineY += lineHeight;
+//            coolBarItem.setBounds(r)
       }
     }
   }
 
-  public void layoutContainer(Container target) {
-    synchronized (target.getTreeLock()) {
-      Insets insets = target.getInsets();
-      int maxwidth = target.getWidth() - (insets.left + insets.right + hgap * 2);
-      int nmembers = target.getComponentCount();
-      int x = 0, y = insets.top + vgap;
-      int rowh = 0, start = 0;
-      boolean ltr = target.getComponentOrientation().isLeftToRight();
-      boolean isWrapped = false;
-      int[] heights = new int[nmembers];
-      int cursor = 0;
-      for (int i = 0; i < nmembers; i++) {
-        JCoolBarItem coolItem = (JCoolBarItem)target.getComponent(i);
-        if(!isWrapped && i != 0) {
-          isWrapped = coolItem.isWrapped();
-        }
-        if (coolItem.isVisible()) {
-          if(isWrapped) {
-            cursor++;
-          }
-          heights[cursor] = Math.max(heights[cursor], coolItem.getPreferredRowHeight());
-          isWrapped = false;
-        }
-      }
-      cursor = 0;
+  public Dimension minimumLayoutSize(Container parent) {
+    return new Dimension(0, 0);
+  }
 
-      isWrapped = false;
-      for (int i = 0; i < nmembers; i++) {
-        Component m = target.getComponent(i);
-        if(!isWrapped && m instanceof JCoolBarItem && i != 0) {
-          JCoolBarItem coolItem = (JCoolBarItem)m;
-          isWrapped = coolItem.isWrapped();
-        }
-        if (m.isVisible()) {
-          Dimension d = m.getPreferredSize();
-          if(isWrapped) {
-            cursor++;
-          }
-          m.setSize(d.width, heights[cursor]);
-          if (!isWrapped && ((x == 0) || ((x + d.width) <= maxwidth))) {
-            if (x > 0) {
-              x += hgap;
-            }
-            x += d.width;
-            rowh = Math.max(rowh, d.height);
-          } else {
-            isWrapped = false;
-            moveComponents(target, insets.left + hgap, y, maxwidth - x, rowh, start, i, ltr);
-            x = d.width;
-            y += vgap + rowh;
-            rowh = d.height;
-            start = i;
-          }
-        }
-      }
-      moveComponents( target, insets.left + hgap, y, maxwidth - x, rowh, start, nmembers, ltr);
+  public Dimension preferredLayoutSize(Container parent) {
+    Component[] components = parent.getComponents();
+    if(components.length == 0) {
+      return new Dimension(0, 0);
     }
+    boolean isNewLine = true;
+    int maxWidth = 0;
+    int maxHeight = 0;
+    int lineHeight = 0;
+    int width = 0;
+    for(int i=0; i<components.length; i++) {
+      JCoolBarItem coolBarItem = (JCoolBarItem)components[i];
+      if(!isNewLine && coolBarItem.isWrapped()) {
+        isNewLine = true;
+        maxHeight += lineHeight;
+        maxWidth = Math.max(maxWidth, width);
+        width = 0;
+      }
+      isNewLine = false;
+      Dimension preferredSize = coolBarItem.getPreferredSize();
+      width = width + Math.max(0, coolBarItem.getXSpacing()) + preferredSize.width;
+      lineHeight = Math.max(lineHeight, preferredSize.height);
+    }
+    return new Dimension(Math.max(maxWidth, width), maxHeight + lineHeight);
   }
 
 }

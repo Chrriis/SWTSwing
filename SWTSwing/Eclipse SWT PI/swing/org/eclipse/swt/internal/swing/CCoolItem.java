@@ -9,8 +9,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.BorderLayout;
 
 import org.eclipse.swt.widgets.CoolItem;
 
@@ -19,28 +18,13 @@ class CCoolItemImplementation extends JCoolBarItem implements CCoolItem {
   protected CoolItem handle;
 
   public CCoolItemImplementation(CoolItem coolItem, int style) {
+    setLayout(new BorderLayout(0, 0));
     handle = coolItem;
     init(style);
   }
 
   protected void init(int style) {
 //    getToolBar().setLayout(null);
-  }
-
-  public void setToolBarPreferredSize(Dimension preferredSize) {
-    getToolBar().setPreferredSize(preferredSize);
-  }
-
-  public Dimension getToolBarPreferredSize() {
-    return getToolBar().getPreferredSize();
-  }
-
-  public void addToolBarComponent(Component component) {
-    getToolBar().add(component);
-  }
-
-  public void removeToolBarComponent(Component component) {
-    getToolBar().remove(component);
   }
 
 }
@@ -58,13 +42,5 @@ public interface CCoolItem {
   public boolean isWrapped();
 
   public void setWrapped(boolean isWrapped);
-
-  public void setToolBarPreferredSize(Dimension preferredSize);
-
-  public Dimension getToolBarPreferredSize();
-
-  public void addToolBarComponent(Component component);
-
-  public void removeToolBarComponent(Component component);
 
 }

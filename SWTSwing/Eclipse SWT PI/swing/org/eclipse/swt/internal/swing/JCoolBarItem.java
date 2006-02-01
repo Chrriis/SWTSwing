@@ -11,7 +11,6 @@
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -155,10 +154,6 @@ public class JCoolBarItem extends JToolBar {
 //  public void addSeparator() {
 //    
 //  }
-
-  public Dimension getMinimumSize() {
-    return getPreferredSize();
-  }
 
   protected boolean isFloating;
 

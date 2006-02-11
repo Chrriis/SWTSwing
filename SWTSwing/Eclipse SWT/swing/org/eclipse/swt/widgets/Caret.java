@@ -11,9 +11,17 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import javax.swing.UIManager;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -37,7 +45,6 @@ public class Caret extends Widget {
 	boolean isVisible;
 	Image image;
 	Font font;
-	LOGFONT oldFont;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -74,24 +81,61 @@ public Caret (Canvas parent, int style) {
 }
 
 void createWidget () {
-	isVisible = true;
-	if (parent.getCaret () == null) {
-		parent.setCaret (this);
-	}
+  isVisible = true;
+  if (parent.getCaret () == null) {
+    parent.setCaret (this);
+    parent.addPaintListener (new PaintListener () {
+      public void paintControl (PaintEvent e) {
+        paintCaret (e.gc);
+      }
+    });
+    final int delay = UIManager.getInt ("TextArea.caretBlinkRate");
+    display.timerExec (delay, new Runnable () {
+      public void run () {
+        Caret.this.blink = !Caret.this.blink;
+        if (Caret.this.parent != null) {
+          // XXX redraw rect is not correct. for now, redraw all.
+          // Rectangle r = Caret.this.getBounds();
+          // Caret.this.parent.redraw(x, r.y, r.width, r.height, true);
+          Caret.this.parent.redraw ();
+          display.timerExec (delay, this);
+        }
+      }
+    });
+  }
+//  isVisible = true;
+//  if (parent.getCaret () == null) {
+//    parent.setCaret (this);
+//  }
 }
 
-int defaultFont () {
-	int hwnd = parent.handle;
-	int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
-	int hFont = 0;
-	if (hwndIME != 0) {
-		hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
-	}
-	if (hFont == 0) {
-		hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
-	}
-	if (hFont == 0) return parent.defaultFont ();
-	return hFont;
+private boolean blink;
+
+private void paintCaret (GC gc) {
+  if (blink) {
+    gc.setXORMode (true);
+    gc.setBackground (display.getSystemColor (SWT.COLOR_BLACK));
+    if (image != null) {
+      gc.drawImage (image, x, y);
+    }
+    gc.fillRectangle (getBounds ());
+    gc.setXORMode (false);
+  }
+}
+
+java.awt.Font defaultFont () {
+  return parent.handle.getFont ();
+//  int hwnd = parent.handle;
+//  int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
+//  int hFont = 0;
+//  if (hwndIME != 0) {
+//    hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
+//  }
+//  if (hFont == 0) {
+//    hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+//  }
+//  if (hFont == 0) return parent.defaultFont ();
+//  return hFont;
 }
 
 /**
@@ -125,12 +169,17 @@ public Rectangle getBounds () {
  * </ul>
  */
 public Font getFont () {
-	checkWidget();
-	if (font == null) {
-		int hFont = defaultFont ();
-		return Font.win32_new (display, hFont);
-	}
-	return font;
+  checkWidget ();
+  if (font == null) {
+    return Font.swing_new (display, defaultFont ());
+  }
+  return font;
+//  checkWidget();
+//  if (font == null) {
+//    int hFont = defaultFont ();
+//    return Font.win32_new (display, hFont);
+//  }
+//  return font;
 }
 
 /**
@@ -221,7 +270,8 @@ public boolean getVisible () {
 }
 
 boolean hasFocus () {
-	return parent.handle == OS.GetFocus ();
+  return parent.handle.hasFocus();
+//  return parent.handle == OS.GetFocus ();
 }
 
 boolean isFocusCaret () {
@@ -248,34 +298,35 @@ public boolean isVisible () {
 }
 
 void killFocus () {
-	OS.DestroyCaret ();
-	if (font != null) restoreIMEFont ();
+//	OS.DestroyCaret ();
+//	if (font != null) restoreIMEFont ();
 }
 
 void move () {
-	moved = false;
-	if (!OS.SetCaretPos (x, y)) return;
-	resizeIME ();
+//	moved = false;
+//	if (!OS.SetCaretPos (x, y)) return;
+//	resizeIME ();
 }
 
 void resizeIME () {
-	if (!OS.IsDBLocale) return;
-	POINT ptCurrentPos = new POINT ();
-	if (!OS.GetCaretPos (ptCurrentPos)) return;
-	int hwnd = parent.handle;
-	RECT rect = new RECT ();
-	OS.GetClientRect (hwnd, rect);
-	COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
-	lpCompForm.dwStyle = OS.CFS_RECT;
-	lpCompForm.x = ptCurrentPos.x;
-	lpCompForm.y = ptCurrentPos.y;
-	lpCompForm.left = rect.left;
-	lpCompForm.right = rect.right;
-	lpCompForm.top = rect.top;
-	lpCompForm.bottom = rect.bottom;
-	int hIMC = OS.ImmGetContext (hwnd);
-	OS.ImmSetCompositionWindow (hIMC, lpCompForm);
-	OS.ImmReleaseContext (hwnd, hIMC);
+//TODO
+//	if (!OS.IsDBLocale) return;
+//	POINT ptCurrentPos = new POINT ();
+//	if (!OS.GetCaretPos (ptCurrentPos)) return;
+//	int hwnd = parent.handle;
+//	RECT rect = new RECT ();
+//	OS.GetClientRect (hwnd, rect);
+//	COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
+//	lpCompForm.dwStyle = OS.CFS_RECT;
+//	lpCompForm.x = ptCurrentPos.x;
+//	lpCompForm.y = ptCurrentPos.y;
+//	lpCompForm.left = rect.left;
+//	lpCompForm.right = rect.right;
+//	lpCompForm.top = rect.top;
+//	lpCompForm.bottom = rect.bottom;
+//	int hIMC = OS.ImmGetContext (hwnd);
+//	OS.ImmSetCompositionWindow (hIMC, lpCompForm);
+//	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
 void releaseChild () {
@@ -288,38 +339,41 @@ void releaseWidget () {
 	parent = null;
 	image = null;
 	font = null;
-	oldFont = null;
+//	oldFont = null;
 }
 
 void resize () {
-	resized = false;
-	int hwnd = parent.handle;
-	OS.DestroyCaret ();		
-	int hBitmap = image != null ? image.handle : 0;
-	OS.CreateCaret (hwnd, hBitmap, width, height);
-	OS.SetCaretPos (x, y);
-	OS.ShowCaret (hwnd);
-	move ();
+// TODO
+//	resized = false;
+//	int hwnd = parent.handle;
+//	OS.DestroyCaret ();		
+//	int hBitmap = image != null ? image.handle : 0;
+//	OS.CreateCaret (hwnd, hBitmap, width, height);
+//	OS.SetCaretPos (x, y);
+//	OS.ShowCaret (hwnd);
+//	move ();
 }
 
 void restoreIMEFont () {
-	if (!OS.IsDBLocale) return;
-	if (oldFont == null) return;
-	int hwnd = parent.handle;
-	int hIMC = OS.ImmGetContext (hwnd);
-	OS.ImmSetCompositionFont (hIMC, oldFont);
-	OS.ImmReleaseContext (hwnd, hIMC);
-	oldFont = null;
+//TODO
+//	if (!OS.IsDBLocale) return;
+//	if (oldFont == null) return;
+//	int hwnd = parent.handle;
+//	int hIMC = OS.ImmGetContext (hwnd);
+//	OS.ImmSetCompositionFont (hIMC, oldFont);
+//	OS.ImmReleaseContext (hwnd, hIMC);
+//	oldFont = null;
 }
 
 void saveIMEFont () {
-	if (!OS.IsDBLocale) return;
-	if (oldFont != null) return;
-	int hwnd = parent.handle;
-	int hIMC = OS.ImmGetContext (hwnd);
-	oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
-	if (!OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
-	OS.ImmReleaseContext (hwnd, hIMC);
+//TODO
+//	if (!OS.IsDBLocale) return;
+//	if (oldFont != null) return;
+//	int hwnd = parent.handle;
+//	int hIMC = OS.ImmGetContext (hwnd);
+//	oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
+//	if (!OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
+//	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
 /**
@@ -373,19 +427,20 @@ public void setBounds (Rectangle rect) {
 }
 
 void setFocus () {
-	int hwnd = parent.handle;
-	int hBitmap = 0;
-	if (image != null) hBitmap = image.handle;
-	OS.CreateCaret (hwnd, hBitmap, width, height);
-	move ();
-	if (OS.IsDBLocale) {
-		int hFont = 0;
-		if (font != null) hFont = font.handle;
-		if (hFont == 0) hFont = defaultFont ();
-		saveIMEFont ();
-		setIMEFont (hFont);
-	}
-	if (isVisible) OS.ShowCaret (hwnd);
+//TODO
+//	int hwnd = parent.handle;
+//	int hBitmap = 0;
+//	if (image != null) hBitmap = image.handle;
+//	OS.CreateCaret (hwnd, hBitmap, width, height);
+//	move ();
+//	if (OS.IsDBLocale) {
+//		int hFont = 0;
+//		if (font != null) hFont = font.handle;
+//		if (hFont == 0) hFont = defaultFont ();
+//		saveIMEFont ();
+//		setIMEFont (hFont);
+//	}
+//	if (isVisible) OS.ShowCaret (hwnd);
 }
 
 /**
@@ -404,18 +459,19 @@ void setFocus () {
  * </ul>
  */
 public void setFont (Font font) {
-	checkWidget();
-	if (font != null && font.isDisposed ()) {
-		error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	this.font = font;
-	if (isVisible && hasFocus ()) {
-		int hFont = 0;
-		if (font != null) hFont = font.handle;
-		if (hFont == 0) hFont = defaultFont ();
-		saveIMEFont ();
-		setIMEFont (hFont);
-	}
+//TODO
+//	checkWidget();
+//	if (font != null && font.isDisposed ()) {
+//		error (SWT.ERROR_INVALID_ARGUMENT);
+//	}
+//	this.font = font;
+//	if (isVisible && hasFocus ()) {
+//		int hFont = 0;
+//		if (font != null) hFont = font.handle;
+//		if (hFont == 0) hFont = defaultFont ();
+//		saveIMEFont ();
+//		setIMEFont (hFont);
+//	}
 }
 
 /**
@@ -443,14 +499,15 @@ public void setImage (Image image) {
 }
 
 void setIMEFont (int hFont) {
-	if (!OS.IsDBLocale) return;
-	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
-	if (OS.GetObject (hFont, LOGFONT.sizeof, logFont) != 0) {
-		int hwnd = parent.handle;
-		int hIMC = OS.ImmGetContext (hwnd);
-		OS.ImmSetCompositionFont (hIMC, logFont);
-		OS.ImmReleaseContext (hwnd, hIMC);
-	}
+//TODO
+//	if (!OS.IsDBLocale) return;
+//	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
+//	if (OS.GetObject (hFont, LOGFONT.sizeof, logFont) != 0) {
+//		int hwnd = parent.handle;
+//		int hIMC = OS.ImmGetContext (hwnd);
+//		OS.ImmSetCompositionFont (hIMC, logFont);
+//		OS.ImmReleaseContext (hwnd, hIMC);
+//	}
 }
 
 /**
@@ -547,21 +604,26 @@ public void setSize (Point size) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-	checkWidget();
-	if (visible == isVisible) return;
-	isVisible = visible;
-	int hwnd = parent.handle;
-	if (OS.GetFocus () != hwnd) return;
-	if (!isVisible) {
-		OS.HideCaret (hwnd);
-	} else {
-		if (resized) {
-			resize ();
-		} else {
-			if (moved) move ();
-		}
-		OS.ShowCaret (hwnd);
-	}
+  checkWidget ();
+  if (visible == isVisible) return;
+  isVisible = visible;
+//TODO
+//	checkWidget();
+//	if (visible == isVisible) return;
+//	isVisible = visible;
+//	int hwnd = parent.handle;
+//	if (OS.GetFocus () != hwnd) return;
+//	if (!isVisible) {
+//		OS.HideCaret (hwnd);
+//	} else {
+//		if (resized) {
+//			resize ();
+//		} else {
+//			if (moved) move ();
+//		}
+//		OS.ShowCaret (hwnd);
+//	}
+  // TODO activate or deactivate caret timer.
 }
 
 }

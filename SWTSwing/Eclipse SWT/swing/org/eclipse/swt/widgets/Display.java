@@ -434,6 +434,9 @@ class SwingEventQueue extends EventQueue {
       UI_LOCK.notify();
     }
   }
+  public void pop() {
+    super.pop();
+  }
 }
 
 SwingEventQueue swingEventQueue;
@@ -788,6 +791,9 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
+  if(isRealDispatch()) {
+    swingEventQueue.pop();
+  }
 //  managedEventQueue.detach();
 }
 

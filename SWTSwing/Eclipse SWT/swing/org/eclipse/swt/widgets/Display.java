@@ -794,7 +794,6 @@ void destroyDisplay () {
   if(isRealDispatch()) {
     swingEventQueue.pop();
   }
-//  managedEventQueue.detach();
 }
 
 /**

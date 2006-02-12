@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -38,13 +39,19 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-//import org.eclipse.swt.internal.*;
-//import org.eclipse.swt.internal.swing.CEventQueue;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.DeviceData;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GCData;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.Utils;
-//import org.eclipse.swt.internal.win32.OS;
-//import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are responsible for managing the
@@ -417,7 +424,23 @@ public Display () {
 
 static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
 
-//CEventQueue managedEventQueue;
+class SwingEventQueue extends EventQueue {
+  public void dispatchEvent(AWTEvent event) {
+    super.dispatchEvent(event);
+  }
+  public void postEvent(AWTEvent theEvent) {
+    super.postEvent(theEvent);
+    synchronized(UI_LOCK) {
+      UI_LOCK.notify();
+    }
+  }
+}
+
+SwingEventQueue swingEventQueue;
+
+boolean isRealDispatch() {
+  return swingEventQueue != null;
+}
 
 public Display (DeviceData data) {
 	super (data);
@@ -435,8 +458,11 @@ public Display (DeviceData data) {
       javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
     } catch(Exception e) {}
   }
-//  managedEventQueue = new CEventQueue();
-//  managedEventQueue.attach();
+  if(SwingUtilities.isEventDispatchThread()) {
+    exclusiveSectionCount++;
+    swingEventQueue = new SwingEventQueue();
+    Toolkit.getDefaultToolkit().getSystemEventQueue().push(swingEventQueue);
+  }
 }
 
 //Control _getFocusControl () {
@@ -2591,15 +2617,27 @@ void postEvent (final Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-  synchronized(UI_LOCK) {
-    if(exclusiveSectionCount == 0) {
-      runAsyncMessages (false);
-      return false;
+  if(isRealDispatch()) {
+    if(swingEventQueue.peekEvent() != null) {
+      try {
+        swingEventQueue.dispatchEvent(swingEventQueue.getNextEvent());
+      } catch(Exception e) {}
     }
-    try {
-      UI_LOCK.notify();
-      UI_LOCK.wait();
-    } catch(Exception e) {
+    if(exclusiveSectionCount == 1) {
+      runAsyncMessages (false);
+      return swingEventQueue.peekEvent() != null;
+    }
+  } else {
+    synchronized(UI_LOCK) {
+      if(exclusiveSectionCount == 0) {
+        runAsyncMessages (false);
+        return false;
+      }
+      try {
+        UI_LOCK.notify();
+        UI_LOCK.wait();
+      } catch(Exception e) {
+      }
     }
   }
 //	drawMenuBars ();
@@ -3283,6 +3321,18 @@ public void setSynchronizer (Synchronizer synchronizer) {
  */
 public boolean sleep () {
 	checkDevice ();
+  if(isRealDispatch()) {
+    if(swingEventQueue.peekEvent() != null) {
+      return true;
+    }
+    synchronized(UI_LOCK) {
+      try {
+        UI_LOCK.wait();
+      } catch(Exception e) {
+      }
+    }
+    return swingEventQueue.peekEvent() != null;
+  }
   synchronized(UI_LOCK) {
     if(exclusiveSectionCount == 0) {
       try {
@@ -3604,7 +3654,7 @@ void wakeThread () {
 protected int exclusiveSectionCount = 0;
 
 protected void startExclusiveSection() {
-  if(!SwingUtilities.isEventDispatchThread()) {
+  if(isRealDispatch() || !SwingUtilities.isEventDispatchThread()) {
     exclusiveSectionCount++;
     return;
 //    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");
@@ -3622,7 +3672,7 @@ protected void startExclusiveSection() {
 }
 
 protected void stopExclusiveSection() {
-  if(!SwingUtilities.isEventDispatchThread()) {
+  if(isRealDispatch() || !SwingUtilities.isEventDispatchThread()) {
     exclusiveSectionCount--;
     return;
 //    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");

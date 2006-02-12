@@ -2,6 +2,8 @@ package chrriis.swtswing;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.SwingUtilities;
+
 public class Test {
 
   static Object[] definitions = new Object[] {
@@ -11,7 +13,7 @@ public class Test {
       {"48", "scroll an image (flicker free, no double buffering)"},
 //      {"21", "implement tab traversal (behave like a tab group)"},
     }}, new Object[] {"Caret", new String[][] {
-//      {"74", "create a caret"},
+      {"74", "create a caret"},
 //      {"43", "create a caret (using an image)"},
     }}, new Object[] {"Clipboard", new String[][] {
 //      {"94", "copy and paste data with the clipboard"},
@@ -157,9 +159,23 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "48";
+  static String snippetNumber = "108";
 
-  public static void main(String[] args) {
+  static boolean isRealDispatch = true;
+
+  public static void main(final String[] args) {
+    if(isRealDispatch) {
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          snippetMain(args);
+        }
+      });
+    } else {
+      snippetMain(args);
+    }
+  }
+
+  public static void snippetMain(String[] args) {
     String number = null;
     boolean isDevelopment = System.getProperty("swt.swing.snippets") != null && !snippetNumber.equals("");
     if(isDevelopment) {

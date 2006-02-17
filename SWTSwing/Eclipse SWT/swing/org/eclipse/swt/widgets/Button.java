@@ -517,9 +517,14 @@ public void setAlignment (int alignment) {
  * </ul>
  */
 public void setImage (Image image) {
-	checkWidget ();
-	this.image = image;
-  ((CButton)handle).setIcon(new ImageIcon(image.handle));
+  checkWidget ();
+  if (image != null && image.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  this.image = image;
+  ImageIcon icon = null;
+  if (image != null && image.handle != null) {
+    icon = new ImageIcon (image.handle);
+  }
+  ((CButton) handle).setIcon (icon);
 }
 
 boolean setRadioFocus () {

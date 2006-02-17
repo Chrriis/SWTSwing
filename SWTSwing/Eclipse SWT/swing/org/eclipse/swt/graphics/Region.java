@@ -117,7 +117,7 @@ public void add (int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
-  for(int i=0; i<pointArray.length; i++) {
+  for (int i = 0; i < pointArray.length / 2; i++) {
     xPoints[i] = pointArray[i * 2];
     yPoints[i] = pointArray[i * 2 + 1];
   }
@@ -457,7 +457,7 @@ public void subtract (int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
-  for(int i=0; i<pointArray.length; i++) {
+  for (int i = 0; i < pointArray.length / 2; i++) {
     xPoints[i] = pointArray[i * 2];
     yPoints[i] = pointArray[i * 2 + 1];
   }

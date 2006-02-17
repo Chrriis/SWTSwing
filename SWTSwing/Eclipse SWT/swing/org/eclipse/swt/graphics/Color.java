@@ -78,9 +78,10 @@ Color() {
  * @see #dispose
  */
 public Color (Device device, int red, int green, int blue) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (device.tracking) device.new_Object(this);
+  if (device == null) device = Device.getDevice ();
+  if (device == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+  init (device, red, green, blue);
+  if (device.tracking) device.new_Object (this);
 }
 
 /**	 
@@ -109,7 +110,16 @@ public Color (Device device, RGB rgb) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+  init (device, rgb.red, rgb.green, rgb.blue);
 	if (device.tracking) device.new_Object(this);
+}
+
+private void init (Device device, int red, int green, int blue) {
+  if (!(0 <= red && red <= 255) || !(0 <= green && green <= 255)
+      || !(0 <= blue && blue <= 255))
+    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  this.device = device;
+  this.handle = new java.awt.Color (red, green, blue);
 }
 
 /**

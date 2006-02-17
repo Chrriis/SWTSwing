@@ -188,7 +188,6 @@ public boolean equals (Object object) {
 	FontData fd = (FontData)object;
 	return height == fd.height &&
     style == fd.style &&
-    name.equals(fd.name) &&
     (name == null && fd.name == null || name != null && name.equals(fd.name));
 }
 

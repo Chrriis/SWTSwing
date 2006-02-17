@@ -182,6 +182,9 @@ public class Utils {
   }
 
   public static String convertStringToHTML(String string) {
+    if (string == null) {
+      return null;
+    }
     StringBuffer sb = new StringBuffer("<html>");
     for(int i=0; i<string.length(); i++) {
       char c = string.charAt(i);

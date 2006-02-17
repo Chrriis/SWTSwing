@@ -339,9 +339,15 @@ public void setAlignment (int alignment) {
  * </ul>
  */
 public void setImage (Image image) {
-	checkWidget ();
-	if ((style & SWT.SEPARATOR) != 0) return;
-  ((CLabel)handle).setIcon(new ImageIcon(image.handle));
+  checkWidget ();
+  if ((style & SWT.SEPARATOR) != 0) return;
+  if (image != null && image.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  this.image = image;
+  ImageIcon icon = null;
+  if (image != null && image.handle != null) {
+    icon = new ImageIcon (image.handle);
+  }
+  ((CLabel) handle).setIcon (icon);
 }
 
 /**

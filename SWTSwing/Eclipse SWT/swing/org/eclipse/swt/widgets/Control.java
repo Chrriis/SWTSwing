@@ -1975,15 +1975,13 @@ public void removeTraverseListener(TraverseListener listener) {
  * </ul>
  */
 public void setBackground (Color color) {
-	checkWidget ();
-	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-    if(color == null) {
-      handle.setBackground(UIManager.getColor("control"));
-    } else {
-      handle.setBackground(color.handle);
-    }
-	}
+  checkWidget ();
+  if (color != null && color.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  if (color == null) {
+    handle.setBackground (UIManager.getColor ("control"));
+  } else {
+    handle.setBackground (color.handle);
+  }
 }
 
 //void setBackgroundPixel (int pixel) {
@@ -2149,8 +2147,12 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget ();
-	if (cursor != null && cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.setCursor(cursor.handle);
+	if (cursor != null) {
+    if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+    handle.setCursor(cursor.handle);
+  } else {
+    handle.setCursor (null);
+  }
 //	this.cursor = cursor;
 //	if (OS.IsWinCE) {
 //		int hCursor = cursor != null ? cursor.handle : 0;
@@ -2286,7 +2288,9 @@ public void setForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		handle.setForeground(color.handle);
-	}
+	} else {
+    handle.setForeground (null);
+  }
 }
 
 //void setForegroundPixel (int pixel) {
@@ -4022,7 +4026,16 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.PaintEvent.PAINT: {
     Event event = new Event();
     event.gc = new GC(this);
+    Rectangle r = this.getBounds ();
+    event.width = r.width;
+    event.height = r.height;
     sendEvent(SWT.Paint, event);
+    if (this instanceof Canvas) {
+      Canvas canvas = (Canvas) this;
+      if (canvas.caret != null) {
+        canvas.caret.paintCaret (event.gc);
+      }
+    }
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_DRAGGED:

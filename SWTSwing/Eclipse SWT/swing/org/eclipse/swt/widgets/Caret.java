@@ -11,6 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
@@ -90,18 +94,20 @@ void createWidget () {
       }
     });
     final int delay = UIManager.getInt ("TextArea.caretBlinkRate");
-    display.timerExec (delay, new Runnable () {
-      public void run () {
+    timer = new Timer (delay, new ActionListener () {
+      public void actionPerformed (ActionEvent e) {
         Caret.this.blink = !Caret.this.blink;
         if (Caret.this.parent != null) {
           // XXX redraw rect is not correct. for now, redraw all.
           // Rectangle r = Caret.this.getBounds();
           // Caret.this.parent.redraw(x, r.y, r.width, r.height, true);
           Caret.this.parent.redraw ();
-          display.timerExec (delay, this);
+        } else {
+          timer.stop();
         }
       }
     });
+    timer.start ();
   }
 //  isVisible = true;
 //  if (parent.getCaret () == null) {
@@ -109,16 +115,18 @@ void createWidget () {
 //  }
 }
 
+Timer timer;
+
 private boolean blink;
 
-private void paintCaret (GC gc) {
+void paintCaret (GC gc) {
   if (blink) {
     gc.setXORMode (true);
     gc.setBackground (display.getSystemColor (SWT.COLOR_BLACK));
     if (image != null) {
       gc.drawImage (image, x, y);
     }
-    gc.fillRectangle (getBounds ());
+    gc.fillRectangle (x, y, Math.max(1, width), height);
     gc.setXORMode (false);
   }
 }
@@ -306,6 +314,7 @@ void move () {
 //	moved = false;
 //	if (!OS.SetCaretPos (x, y)) return;
 //	resizeIME ();
+  blink = true;
 }
 
 void resizeIME () {

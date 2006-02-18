@@ -11,6 +11,17 @@
 package org.eclipse.swt.widgets;
 
  
+import java.awt.Container;
+import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import org.eclipse.swt.internal.swing.CToolItem;
+import org.eclipse.swt.internal.swing.CTree;
+import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -41,12 +52,14 @@ public class TreeItem extends Item {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */	
-	public int handle;
+  CTreeItem handle;
 	Tree parent;
-	String [] strings;
-	Image [] images;
-	int background = -1, foreground = -1, font = -1;
-	int [] cellBackground, cellForeground, cellFont;
+	TreeItem parentItem;
+  ArrayList itemList;
+//	String [] strings;
+//	Image [] images;
+//	int background = -1, foreground = -1, font = -1;
+//	int [] cellBackground, cellForeground, cellFont;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -81,7 +94,8 @@ public class TreeItem extends Item {
 public TreeItem (Tree parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-	parent.createItem (this, 0, OS.TVI_LAST);
+  handle = createHandle();
+	parent.createItem (this, ((CTree)parent.handle).getRoot().getChildCount());
 }
 
 /**
@@ -118,18 +132,8 @@ public TreeItem (Tree parent, int style) {
 public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	this.parent = parent;
-	int hItem = OS.TVI_FIRST;
-	if (index != 0) {
-		int count = 1, hwnd = parent.handle;
-		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		while (hItem != 0 && count < index) {
-			hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-			count++;
-		}
-		if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-	}
-	parent.createItem (this, 0, hItem);
+  handle = createHandle();
+	parent.createItem (this, index);
 }
 
 /**
@@ -165,8 +169,9 @@ public TreeItem (Tree parent, int style, int index) {
 public TreeItem (TreeItem parentItem, int style) {
 	super (checkNull (parentItem).parent, style);
 	parent = parentItem.parent;
-	int hItem = parentItem.handle;
-	parent.createItem (this, hItem, OS.TVI_LAST);
+  this.parentItem = parentItem;
+  handle = createHandle();
+	parent.createItem (this, parentItem, parentItem.handle.getChildCount());
 }
 
 /**
@@ -204,18 +209,9 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	super (checkNull (parentItem).parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	parent = parentItem.parent;
-	int hItem = OS.TVI_FIRST;
-	int hParent = parentItem.handle;
-	if (index != 0) {
-		int count = 1, hwnd = parent.handle;
-		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		while (hItem != 0 && count < index) {
-			hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-			count++;
-		}
-		if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-	}
-	parent.createItem (this, hParent, hItem);
+  this.parentItem = parentItem;
+  handle = createHandle();
+  parent.createItem (this, parentItem, index);
 }
 
 static TreeItem checkNull (TreeItem item) {
@@ -225,6 +221,10 @@ static TreeItem checkNull (TreeItem item) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+CTreeItem createHandle () {
+  return CTreeItem.Instanciator.createInstance(this, style);
 }
 
 /**
@@ -241,9 +241,7 @@ protected void checkSubclass () {
  * 
  */
 public Color getBackground () {
-	checkWidget ();
-	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
-	return Color.win32_new (display, pixel);
+  return getBackground(0);
 }
 
 /**
@@ -263,8 +261,14 @@ public Color getBackground (int index) {
 	checkWidget ();
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getBackground ();
-	int pixel = cellBackground != null ? cellBackground [index] : -1;
-	return pixel == -1 ? getBackground () : Color.win32_new (display, pixel);
+  java.awt.Color color = handle.getTreeItemObject(index).getBackground();
+  if(color == null) {
+    if(index != 0) {
+      return getBackground();
+    }
+    return Color.swing_new(display, parent.handle.getBackground());
+  }
+  return Color.swing_new(display, color);
 }
 
 /**
@@ -405,12 +409,7 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget ();
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.hItem = handle;
-	tvItem.mask = OS.TVIF_STATE;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return (tvItem.state & OS.TVIS_EXPANDED) != 0;
+  return ((CTree)parent.handle).isExpanded(new TreePath(handle.getPath()));
 }
 
 /**
@@ -426,8 +425,7 @@ public boolean getExpanded () {
  * @since 3.0
  */
 public Font getFont () {
-	checkWidget ();
-	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
+  return getFont(0);
 }
 
 /**
@@ -446,10 +444,16 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count -1) return getFont ();
-	int hFont = (cellFont != null) ? cellFont [index] : font;
-	return hFont == -1 ? getFont () : Font.win32_new (display, hFont);
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count -1) return getFont ();
+  java.awt.Font font = handle.getTreeItemObject(index).getFont();
+  if(font == null) {
+    if(index != 0) {
+      return getFont();
+    }
+    return Font.swing_new(display, parent.handle.getFont());
+  }
+  return Font.swing_new(display, font);
 }
 
 /**
@@ -466,9 +470,7 @@ public Font getFont (int index) {
  * 
  */
 public Color getForeground () {
-	checkWidget ();
-	int pixel = (foreground == -1) ? parent.getForegroundPixel() : foreground;
-	return Color.win32_new (display, pixel);
+  return getForeground (0);
 }
 
 /**
@@ -489,8 +491,14 @@ public Color getForeground (int index) {
 	checkWidget ();
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getForeground ();
-	int pixel = cellForeground != null ? cellForeground [index] : -1;
-	return pixel == -1 ? getForeground () : Color.win32_new (display, pixel);
+  java.awt.Color color = handle.getTreeItemObject(index).getForeground();
+  if(color == null) {
+    if(index != 0) {
+      return getBackground();
+    }
+    return Color.swing_new(display, parent.handle.getForeground());
+  }
+  return Color.swing_new(display, color);
 }
 
 /**
@@ -531,10 +539,7 @@ public boolean getGrayed () {
  */
 public int getItemCount () {
 	checkWidget ();
-	int hwnd = parent.handle;
-	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	if (hItem == 0) return 0;
-	return parent.getItemCount (hItem);
+  return itemList == null? 0: itemList.size();
 }
 
 /**
@@ -555,10 +560,7 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
-	int hwnd = parent.handle;
-	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	if (hItem == 0) return new TreeItem [0];
-	return parent.getItems (hItem);
+  return itemList == null? new TreeItem [0]: (TreeItem [])itemList.toArray(new TreeItem [0]);
 }
 
 /**
@@ -635,13 +637,7 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget ();
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, handle);
-	if (tvItem.hItem == 0) return null;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return parent.items [tvItem.lParam];
+  return parentItem;
 }
 
 /**
@@ -660,14 +656,9 @@ public TreeItem getParentItem () {
  */
 public String getText (int index) {
 	checkWidget();
-	if (index == 0) return getText ();
-	if (strings != null) {
-		if (0 <= index && index < strings.length) {
-			String string = strings [index];
-			return string != null ? string : "";
-		}
-	}
-	return "";
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return "";
+  return handle.getTreeItemObject(index).getText();
 }
 
 /**
@@ -768,18 +759,7 @@ void releaseWidget () {
  * 
  */
 public void setBackground (Color color) {
-	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (background == pixel) return;
-	background = pixel;
-	redraw ();
+  setBackground(0, color);
 }
 
 /**
@@ -808,20 +788,8 @@ public void setBackground (int index, Color color) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (cellBackground == null) {
-		cellBackground = new int [count];
-		for (int i = 0; i < count; i++) {
-			cellBackground [i] = -1;
-		}
-	}
-	if (cellBackground [index] == pixel) return;
-	cellBackground [index] = pixel;
-	redraw (index, true, true);
+  handle.getTreeItemObject(index).setBackground(color == null? null: color.handle);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
@@ -867,36 +835,13 @@ public void setChecked (boolean checked) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
-	/*
-	* Feature in Windows.  When the user collapses the root
-	* of a subtree that has the focus item, Windows moves
-	* the selection to the root of the subtree and issues
-	* a TVN_SELCHANGED to inform the programmer that the
-	* seletion has changed.  When the programmer collapses
-	* the same subtree using TVM_EXPAND, Windows does not
-	* send the selection changed notification.  This is not
-	* strictly wrong but is inconsistent.  The fix is to notice
-	* that the selection has changed and issue the event.
-	*/
-	int hwnd = parent.handle;
-	int hOldItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	parent.ignoreExpand = true;
-	OS.SendMessage (hwnd, OS.TVM_EXPAND, expanded ? OS.TVE_EXPAND : OS.TVE_COLLAPSE, handle);
-	parent.ignoreExpand = false;
-	int hNewItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	if (hNewItem != hOldItem) {
-		Event event = new Event ();
-		if (hNewItem != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-			tvItem.hItem = hNewItem;
-			if (OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem) != 0) {
-				event.item = parent.items [tvItem.lParam];	
-			}
-			parent.hAnchor = hNewItem;
-		}
-		parent.sendEvent (SWT.Selection, event);
-	}
+  
+  CTree tree = ((CTree)parent.handle);
+  if(expanded) {
+    tree.expandedPath(new TreePath(handle.getPath()));
+  } else {
+    tree.collapsePath(new TreePath(handle.getPath()));
+  }
 }
 
 /**
@@ -917,29 +862,7 @@ public void setExpanded (boolean expanded) {
  * @since 3.0
  */
 public void setFont (Font font){
-	checkWidget ();
-	if (font != null && font.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
-	if (this.font == hFont) return;
-	this.font = hFont;
-	/*
-	* Bug in Windows.  When the font is changed for an item,
-	* the bounds for the item are not updated, causing the text
-	* to be clipped.  The fix is to reset the text, causing
-	* Windows to compute the new bounds using the new font.
-	*/
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-	tvItem.hItem = handle;
-	tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+  setFont(0, font);
 }
 
 
@@ -967,37 +890,10 @@ public void setFont (int index, Font font) {
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return;
-	int hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
-	if (cellFont == null) {
-		cellFont = new int [count];
-		for (int i = 0; i < count; i++) {
-			cellFont [i] = -1;
-		}
-	}
-	if (cellFont [index] == hFont) return;
-	cellFont [index] = hFont;
-	/*
-	* Bug in Windows.  When the font is changed for an item,
-	* the bounds for the item are not updated, causing the text
-	* to be clipped.  The fix is to reset the text, causing
-	* Windows to compute the new bounds using the new font.
-	*/
-	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-	} else {
-		redraw (index, true, false);
-	}
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return;
+  handle.getTreeItemObject(index).setFont(font == null? null: font.handle);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
@@ -1021,18 +917,7 @@ public void setFont (int index, Font font) {
  * 
  */
 public void setForeground (Color color) {
-	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (foreground == pixel) return;
-	foreground = pixel;
-	redraw ();
+  setForeground(0, color);
 }
 
 /**
@@ -1061,20 +946,8 @@ public void setForeground (int index, Color color){
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (cellForeground == null) {
-		cellForeground = new int [count];
-		for (int i = 0; i < count; i++) {
-			cellForeground [i] = -1;
-		}
-	}
-	if (cellForeground [index] == pixel) return;
-	cellForeground [index] = pixel;
-	redraw (index, true, false);
+  handle.getTreeItemObject(index).setForeground(color == null? null: color.handle);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
@@ -1158,38 +1031,8 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return;
-	if (images == null && index != 0) images = new Image [count];
-	if (images != null) {
-		if (image != null && image.type == SWT.ICON) {
-			if (image.equals (images [index])) return;
-		}
-		images [index] = image;
-	}
-	
-	/* Ensure that the image list is created */
-	//TODO - items that are not in column zero don't need to be in the image list
-	parent.imageIndex (image);
-	
-	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
-		tvItem.hItem = handle;
-		tvItem.iImage = tvItem.iSelectedImage = OS.I_IMAGECALLBACK;
-		/*
-		* Bug in Windows.  When I_IMAGECALLBACK is used with TVM_SETITEM
-		* to indicate that an image has changed, Windows does not draw
-		* the new image.  The fix is to use LPSTR_TEXTCALLBACK to force
-		* Windows to ask for the text, causing Windows to ask for both.
-		*/
-		tvItem.mask |= OS.TVIF_TEXT;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-	} else {
-		redraw (index, false, true);
-	}
+	handle.getTreeItemObject(index).setIcon(new ImageIcon(image.handle));
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 public void setImage (Image image) {
@@ -1240,27 +1083,10 @@ public void setText (String [] strings) {
 public void setText (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (index == 0) {
-		if (string.equals (text)) return;
-		super.setText (string);
-	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	if (strings == null && index != 0) strings = new String [count];
-	if (strings != null) {
-		if (string.equals (strings [index])) return;
-		strings [index] = string;
-	}
-	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-	} else {
-		redraw (index, true, false);
-	}
+  handle.getTreeItemObject(index).setText(string);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 public void setText (String string) {

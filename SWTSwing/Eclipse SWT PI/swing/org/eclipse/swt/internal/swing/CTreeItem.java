@@ -24,7 +24,7 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
   protected TreeItem handle;
 
   public CTreeItemImplementation(TreeItem treeItem, int style) {
-    super(new Object[] {new TreeItemObject()});
+    setUserObjects(new Object[] {new TreeItemObject(this)});
     handle = treeItem;
     init(style);
   }
@@ -35,10 +35,39 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
   public TreeItemObject getTreeItemObject(int index) {
     TreeItemObject treeItemObject = (TreeItemObject)getUserObject(index);
     if(treeItemObject == null) {
-      treeItemObject = new TreeItemObject();
+      treeItemObject = new TreeItemObject(this);
       setUserObject(index, treeItemObject);
     }
     return treeItemObject;
+  }
+
+  protected boolean isChecked;
+
+  public void setChecked(boolean isChecked) {
+    this.isChecked = isChecked;
+  }
+
+  public boolean isChecked() {
+    return isChecked;
+  }
+
+  protected boolean isGrayed;
+
+  public void setGrayed(boolean isGrayed) {
+    this.isGrayed = isGrayed;
+  }
+
+  public boolean isGrayed() {
+    return isGrayed;
+  }
+
+  public void insertColumn(int index) {
+    Object[] objects = getUserObjects();
+    Object[] newObjects = new Object[objects.length + 1];
+    System.arraycopy(objects, 0, newObjects, 0, index);
+    System.arraycopy(objects, index, newObjects, index + 1, objects.length - index);
+    newObjects[index] = new TreeItemObject(this);
+    setUserObject(newObjects);
   }
 
 }
@@ -47,7 +76,13 @@ public interface CTreeItem {
 
   public static class TreeItemObject {
 
-    protected TreeItemObject() {
+    protected CTreeItem treeItem;
+
+    public CTreeItem getTreeItem() {
+      return treeItem;
+    }
+
+    protected TreeItemObject(CTreeItem treeItem) {
     }
 
     protected String text;
@@ -100,18 +135,16 @@ public interface CTreeItem {
       return font;
     }
 
-    protected boolean isChecked;
-
-    public void setChecked(boolean isChecked) {
-      this.isChecked = isChecked;
+    public String toString() {
+      return getText();
     }
 
     public boolean isChecked() {
-      return isChecked;
+      return treeItem.isChecked();
     }
 
-    public String toString() {
-      return getText();
+    public boolean isGrayed() {
+      return treeItem.isGrayed();
     }
 
   }
@@ -130,5 +163,15 @@ public interface CTreeItem {
   public TreeItemObject getTreeItemObject(int index);
 
   public int getChildCount();
+
+  public void setChecked(boolean isChecked);
+
+  public boolean isChecked();
+
+  public void setGrayed(boolean isGrayed);
+
+  public boolean isGrayed();
+
+  public void insertColumn(int index);
 
 }

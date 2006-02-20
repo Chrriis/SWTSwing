@@ -11,6 +11,12 @@
 package org.eclipse.swt.widgets;
 
  
+import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
+import javax.swing.table.TableColumn;
+
+import org.eclipse.swt.internal.swing.CTreeColumn;
+import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -34,7 +40,7 @@ import org.eclipse.swt.events.*;
  */
 public class TreeColumn extends Item {
 	Tree parent;
-	boolean resizable;
+  CTreeColumn handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -70,7 +76,7 @@ public class TreeColumn extends Item {
  */
 public TreeColumn (Tree parent, int style) {
 	super (parent, checkStyle (style));
-	resizable = true;
+  handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, parent.getColumnCount ());
 }
@@ -110,7 +116,7 @@ public TreeColumn (Tree parent, int style) {
  */
 public TreeColumn (Tree parent, int style, int index) {
 	super (parent, checkStyle (style));
-	resizable = true;
+  handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, index);
 }
@@ -182,6 +188,10 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+CTreeColumn createHandle () {
+  return CTreeColumn.Instanciator.createInstance(this, style);
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -235,7 +245,7 @@ public Tree getParent () {
  */
 public boolean getResizable () {
 	checkWidget ();
-	return resizable;
+  return ((TableColumn)handle).getResizable();
 }
 
 /**
@@ -250,14 +260,7 @@ public boolean getResizable () {
  */
 public int getWidth () {
 	checkWidget ();
-	int index = parent.indexOf (this);
-	if (index == -1) return 0;
-	int hwndHeader = parent.hwndHeader;
-	if (hwndHeader == 0) return 0;
-	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_WIDTH;
-	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-	return hdItem.cxy;
+  return ((TableColumn)handle).getWidth();
 }
 
 /**
@@ -273,8 +276,6 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget ();
-	int index = parent.indexOf (this);
-	if (index == -1) return;
 	int columnWidth = 0;
 	int hwnd = parent.handle;
 	int hDC = OS.GetDC (hwnd);
@@ -409,25 +410,10 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int hwndHeader = parent.hwndHeader;
-	if (hwndHeader == 0) return;
-	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-	hdItem.fmt &= ~OS.HDF_JUSTIFYMASK;
-	if ((style & SWT.LEFT) == SWT.LEFT) hdItem.fmt |= OS.HDF_LEFT;
-	if ((style & SWT.CENTER) == SWT.CENTER) hdItem.fmt |= OS.HDF_CENTER;
-	if ((style & SWT.RIGHT) == SWT.RIGHT) hdItem.fmt |= OS.HDF_RIGHT;
-	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-	if (index != 0) {
-		int hwnd = parent.handle;
-		RECT rect = new RECT (), itemRect = new RECT ();
-		OS.GetClientRect (hwnd, rect);
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-		rect.left = itemRect.left;
-		rect.right = itemRect.right;
-		OS.InvalidateRect (hwnd, rect, true);
-	}
+  if ((style & SWT.LEFT) == SWT.LEFT) handle.setAlignment(SwingConstants.LEFT);
+  if ((style & SWT.CENTER) == SWT.CENTER) handle.setAlignment(SwingConstants.CENTER);
+  if ((style & SWT.RIGHT) == SWT.RIGHT) handle.setAlignment(SwingConstants.RIGHT);
+  // TODO: notify change
 }
 
 public void setImage (Image image) {
@@ -438,18 +424,8 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-	int hwndHeader = parent.hwndHeader;
-	if (hwndHeader == 0) return;
-	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-	if (image != null) {
-		hdItem.fmt |= OS.LVCFMT_IMAGE;
-		hdItem.iImage = parent.imageIndex (image);
-	} else {
-		hdItem.fmt &= ~OS.LVCFMT_IMAGE;
-	}
-	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+  handle.setIcon(new ImageIcon(image.handle));
+  // TODO: notify repaint
 }
 
 /**
@@ -466,36 +442,15 @@ public void setImage (Image image) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget ();
-	this.resizable = resizable;
+  ((TableColumn)handle).setResizable(resizable);
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int index = parent.indexOf (this);
-	if (index == -1) return;
 	super.setText (string);
-	/*
-	* Bug in Windows.  When a column header contains a
-	* mnemonic character, Windows does not measure the
-	* text properly.  This causes '...' to always appear
-	* at the end of the text.  The fix is to remove
-	* mnemonic characters and replace doubled mnemonics
-	* with spaces.
-	*/
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount);
-	int hwndHeader = parent.hwndHeader;
-	if (hwndHeader == 0) return;
-	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_TEXT;
-	hdItem.pszText = pszText;
-	int result = OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	if (result == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+  // TODO: check what happens with mnemonics
+  ((TableColumn)handle).setHeaderValue(string);
 }
 
 /**
@@ -510,15 +465,7 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int hwndHeader = parent.hwndHeader;
-	if (hwndHeader == 0) return;
-	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_WIDTH;
-	hdItem.cxy = width;
-	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-	parent.setScrollWidth ();
+  ((TableColumn)handle).setWidth(width);
 }
 
 }

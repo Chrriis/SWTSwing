@@ -15,11 +15,14 @@ import java.awt.Container;
 import java.util.ArrayList;
 
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.eclipse.swt.internal.swing.CText;
 import org.eclipse.swt.internal.swing.CTree;
+import org.eclipse.swt.internal.swing.DefaultMutableTreeTableNode;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -224,104 +227,25 @@ Container createHandle () {
 //}
 
 void createItem (TreeColumn column, int index) {
-	if (hwndHeader == 0) createParent ();
 	int columnCount = getColumnCount();
-	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
-	if (columnCount == columns.length) {
-		TreeColumn [] newColumns = new TreeColumn [columns.length + 4];
-		System.arraycopy (columns, 0, newColumns, 0, columns.length);
-		columns = newColumns;
-	}
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			String [] strings = item.strings;
-			if (strings != null) {
-				String [] temp = new String [columnCount + 1];
-				System.arraycopy (strings, 0, temp, 0, index);
-				System.arraycopy (strings, index, temp, index + 1, columnCount - index);
-				item.strings = temp;
-			}
-			Image [] images = item.images;
-			if (images != null) {
-				Image [] temp = new Image [columnCount + 1];
-				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index, temp, index + 1, columnCount - index);
-				item.images = temp;
-			}
-			if (index == 0) {
-				if (columnCount != 0) {
-					if (strings == null) {
-						item.strings = new String [columnCount + 1];
-						item.strings [1] = item.text;
-					}
-					item.text = "";
-					if (images == null) {
-						item.images = new Image [columnCount + 1];
-						item.images [1] = item.image;
-					}
-					item.image = null;
-				}
-			}
-			if (item.cellBackground != null) {
-				int [] cellBackground = item.cellBackground;
-				int [] temp = new int [columnCount + 1];
-				System.arraycopy (cellBackground, 0, temp, 0, index);
-				System.arraycopy (cellBackground, index, temp, index + 1, columnCount - index);
-				temp [index] = -1;
-				item.cellBackground = temp;
-			}
-			if (item.cellForeground != null) {
-				int [] cellForeground = item.cellForeground;
-				int [] temp = new int [columnCount + 1];
-				System.arraycopy (cellForeground, 0, temp, 0, index);
-				System.arraycopy (cellForeground, index, temp, index + 1, columnCount - index);
-				temp [index] = -1;
-				item.cellForeground = temp;
-			}
-			if (item.cellFont != null) {
-				int [] cellFont = item.cellFont;
-				int [] temp = new int [columnCount + 1];
-				System.arraycopy (cellFont, 0, temp, 0, index);
-				System.arraycopy (cellFont, index, temp, index + 1, columnCount- index);
-				temp [index] = -1;
-				item.cellFont = temp;
-			}
+	for (int i=0; i<itemList.size(); i++) {
+		TreeItem item = (TreeItem)itemList.get(i);
+    item.handle.insertColumn(index);
+		if (index == 0) {
+      item.text = "";
+      item.image = null;
 		}
 	}
-	System.arraycopy (columns, index, columns, index + 1, columnCount - index);
-	columns [index] = column;
-	
-	/*
-	* Bug in Windows.  For some reason, when HDM_INSERTITEM
-	* is used to insert an item into a header without text,
-	* if is not possible to set the text at a later time.
-	* The fix is to insert the item with an empty string.
-	*/
-	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
-	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_TEXT | OS.HDI_FORMAT;
-	hdItem.pszText = pszText;
-	if ((column.style & SWT.LEFT) == SWT.LEFT) hdItem.fmt = OS.HDF_LEFT;
-	if ((column.style & SWT.CENTER) == SWT.CENTER) hdItem.fmt = OS.HDF_CENTER;
-	if ((column.style & SWT.RIGHT) == SWT.RIGHT) hdItem.fmt = OS.HDF_RIGHT;
-	OS.SendMessage (hwndHeader, OS.HDM_INSERTITEM, index, hdItem);
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	
-	/* When the first column is created, hide the horizontal scroll bar */
-	if (columnCount == 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		bits |= OS.TVS_NOHSCROLL;
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	}
-	setScrollWidth ();
-	updateScrollBar ();
-	
-	/* Redraw to hide the items when the first column is created */
-	if (columnCount == 0 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
-		OS.InvalidateRect (handle, null, true);
-	}
+  TableColumnModel columnModel = ((CTree)handle).getColumnModel();
+  if(columnList.isEmpty()) {
+    columnModel.removeColumn(columnModel.getColumn(0));
+  }
+  columnList.add(index, column);
+  TableColumn tableColumn = (TableColumn)column.handle;
+  columnModel.addColumn(tableColumn);
+  tableColumn.setModelIndex(index);
+  // TODO: check it is enough
+  handle.repaint();
 }
 
 void createItem (TreeItem item, int index) {
@@ -1206,43 +1130,41 @@ int indexOf (int hItem, int hChild) {
 //}
 
 void releaseWidget () {
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
+  for(int i=0; i<columnList.size(); i++) {
+    ((TreeColumn)columnList.get(i)).releaseResources();
+  }
+	columnList = null;
+	for (int i=0; i<itemList.size(); i++) {
+		TreeItem item = (TreeItem)itemList.get(i);
 		if (item != null && !item.isDisposed ()) {
 			item.releaseResources ();
 		}
 	}
-	items = null;
-	/*
-	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
-	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW
-	* messages.  This behavior is unwanted when the tree is being
-	* disposed.  The fix is to ingore NM_CUSTOMDRAW messages by
-	* clearing the custom draw flag.
-	* 
-	* NOTE: This only happens on Windows XP.
-	*/
-	customDraw = false;
-	if (imageList != null) {
-		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
-		display.releaseImageList (imageList);
-	} else {
-		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
-		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
-	}
-	imageList = null;
-	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
-	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+	itemList = null;
+//	/*
+//	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
+//	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW
+//	* messages.  This behavior is unwanted when the tree is being
+//	* disposed.  The fix is to ingore NM_CUSTOMDRAW messages by
+//	* clearing the custom draw flag.
+//	* 
+//	* NOTE: This only happens on Windows XP.
+//	*/
+//	customDraw = false;
+//	if (imageList != null) {
+//		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
+//		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
+//		display.releaseImageList (imageList);
+//	} else {
+//		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
+//		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
+//		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
+//		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+//	}
+//	imageList = null;
+//	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
+//	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
+//	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 	super.releaseWidget ();
 }
 

@@ -331,6 +331,9 @@ public class JTreeTable extends JPanel implements Scrollable {
     tree.setOpaque(false);
     tree.setCellRenderer(new TreeCellRenderer() {
       public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+        if(value instanceof DefaultMutableTreeNode) {
+          value = ((DefaultMutableTreeNode)value).getUserObject();
+        }
         return renderer.getTreeTableCellRendererComponent(JTreeTable.this, value, selected, expanded, leaf, row, 0, !isFullLineSelection() && hasFocus);
       }
     });
@@ -436,11 +439,11 @@ public class JTreeTable extends JPanel implements Scrollable {
   }
 
   public boolean getScrollableTracksViewportWidth() {
-    return table.getScrollableTracksViewportWidth();
+    return getPreferredSize().width < getParent().getWidth();
   }
 
   public boolean getScrollableTracksViewportHeight() {
-    return table.getScrollableTracksViewportHeight();
+    return getPreferredSize().height < getParent().getHeight();
   }
 
   public void addNotify() {
@@ -557,6 +560,39 @@ public class JTreeTable extends JPanel implements Scrollable {
    */
   protected boolean processMouseOnTreeRenderer(int row, MouseEvent e, Dimension cellSize) {
     return true;
+  }
+
+  public Dimension getPreferredSize() {
+    Dimension preferredSize = super.getPreferredSize();
+    TableColumnModel columnModel = getColumnModel();
+    if(columnModel.getColumnCount() > 0) {
+      return new Dimension(preferredSize.width - columnModel.getColumn(0).getPreferredWidth() + tree.getPreferredSize().width, preferredSize.height);
+    }
+    return preferredSize;
+  }
+
+  public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
+    return table.getCellRect(row, column, includeSpacing);
+  }
+
+  public int getRowForPath(TreePath path) {
+    return tree.getRowForPath(path);
+  }
+
+  public void setAutoResizeMode(int mode) {
+    table.setAutoResizeMode(mode);
+  }
+
+  public int getAutoResizeMode() {
+    return table.getAutoResizeMode();
+  }
+
+  public int convertColumnIndexToModel(int viewColumnIndex) {
+    return table.convertColumnIndexToModel(viewColumnIndex);
+  }
+
+  public int convertColumnIndexToView(int modelColumnIndex) {
+    return table.convertColumnIndexToView(modelColumnIndex);
   }
 
 }

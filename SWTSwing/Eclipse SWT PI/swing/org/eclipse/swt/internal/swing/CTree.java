@@ -14,12 +14,18 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.UIManager;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -73,11 +79,12 @@ class CTreeImplementation extends JScrollPane implements CTree {
           Point point = e.getPoint();
           Component component = checkBoxCellRenderer.getComponentAt(point);
           JStateCheckBox stateCheckBox = checkBoxCellRenderer.getStateCheckBox();
+          // TODO: find a way to rely on the Look&Feel for mouse events.
           if(component == stateCheckBox) {
             switch(e.getID()) {
             case MouseEvent.MOUSE_PRESSED:
               CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)node.getUserObject(0);
-              treeItemObject.setChecked(!treeItemObject.isChecked());
+              treeItemObject.getTreeItem().setChecked(!treeItemObject.isChecked());
               ((DefaultTreeModel)treeTable.getModel()).nodeChanged(node);
             case MouseEvent.MOUSE_DRAGGED:
             case MouseEvent.MOUSE_RELEASED:
@@ -95,10 +102,16 @@ class CTreeImplementation extends JScrollPane implements CTree {
         if(value == null) {
           return c;
         }
-        CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)((DefaultMutableTreeTableNode)value).getUserObject(column);
+        CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)value;
         if(treeItemObject != null) {
           if(c instanceof JLabel) {
-            ((JLabel)c).setIcon(treeItemObject.getIcon());
+            TableColumn tableColumn = treeTable.getColumnModel().getColumn(treeTable.convertColumnIndexToView(column));
+            JLabel label = (JLabel)c;
+            if(tableColumn instanceof CTreeColumn) {
+              CTreeColumn treeColumn = (CTreeColumn)tableColumn;
+              label.setHorizontalAlignment(treeColumn.getAlignment());
+            }
+            label.setIcon(treeItemObject.getIcon());
           }
           // TODO: Complete with other properties from treeItemObject
         }
@@ -112,7 +125,25 @@ class CTreeImplementation extends JScrollPane implements CTree {
         return checkBoxCellRenderer;
       }
     });
-
+    treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+    
+    JTableHeader tableHeader = treeTable.getTableHeader();
+    final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();
+    tableHeader.setDefaultRenderer(new TableCellRenderer() {
+      public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component c = headerRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        if(c instanceof JLabel) {
+          TableColumn tableColumn = treeTable.getColumnModel().getColumn(column);
+          if(tableColumn instanceof CTreeColumn) {
+            JLabel label = (JLabel)c;
+            CTreeColumn treeColumn = (CTreeColumn)tableColumn;
+            label.setHorizontalAlignment(treeColumn.getAlignment());
+            label.setIcon(treeColumn.getIcon());
+          }
+        }
+        return c;
+      }
+    });
     // TODO: add a first bogus column?
     javax.swing.table.TableColumnModel columnModel = treeTable.getColumnModel();
     javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
@@ -129,6 +160,19 @@ class CTreeImplementation extends JScrollPane implements CTree {
 
   protected void init(int style) {
     isCheckType = (style & SWT.CHECK) != 0;
+    if((style & SWT.BORDER) != 0) {
+      setBorder(UIManager.getBorder("TextField.border"));
+    } else {
+      setBorder(null);
+    }
+    if((style & SWT.MULTI) == 0) {
+      treeTable.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    }
+    if((style & SWT.FULL_SELECTION) != 0) {
+      treeTable.setFullLineSelection(true);
+    }
+    
+    
   }
 
   public Container getClientArea() {
@@ -179,6 +223,18 @@ class CTreeImplementation extends JScrollPane implements CTree {
     return (DefaultTreeModel)treeTable.getModel();
   }
 
+  public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
+    return treeTable.getCellRect(row, column, includeSpacing);
+  }
+
+  public int getRowForPath(TreePath path) {
+    return treeTable.getRowForPath(path);
+  }
+
+  public TableColumnModel getColumnModel() {
+    return treeTable.getColumnModel();
+  }
+
 }
 
 public interface CTree extends CComposite {
@@ -213,5 +269,11 @@ public interface CTree extends CComposite {
   public DefaultMutableTreeTableNode getRoot();
 
   public DefaultTreeModel getModel();
+
+  public Rectangle getCellRect(int row, int column, boolean includeSpacing);
+
+  public int getRowForPath(TreePath path);
+
+  public TableColumnModel getColumnModel();
 
 }

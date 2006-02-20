@@ -284,9 +284,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	RECT rect = getBounds (0, true, false, false);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+  return getBounds(0);
 }
 
 /**
@@ -305,69 +303,10 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
-	RECT rect = getBounds (index, true, true, true);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
-}
-
-RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
-//	TODO - take into account grid (add boolean arg) to damage less during redraw
-	if (!getText && !getImage) return new RECT ();
-	int count = 0, hwndHeader = parent.hwndHeader;
-	if (hwndHeader != 0) {
-		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	}
-	RECT rect = new RECT ();
-	if (index == 0) {
-		int hwnd = parent.handle; 
-		rect.left = handle;
-		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) == 0) {
-			return new RECT ();
-		}
-		if (getImage) {
-			Point size = parent.getImageSize ();
-			rect.left -= size.x + Tree.INSET;
-			if (!getText) rect.right = rect.left + size.x;
-		}
-		if (getText && full && hwndHeader != 0 && count != 0) {
-			RECT headerRect = new RECT ();
-			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) == 0) {
-				return new RECT ();
-			}
-			rect.right = headerRect.right;
-		}
-	} else {
-		if (!(0 <= index && index < count)) return new RECT ();
-		RECT headerRect = new RECT ();
-		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
-			return new RECT ();
-		}
-		int hwnd = parent.handle;
-		rect.left = handle;
-		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) == 0) {
-			return new RECT ();
-		}
-		rect.left = headerRect.left;
-		rect.right = headerRect.right;
-		if (!getText || !getImage) {
-			if (images != null && images [index] != null) {
-				Point size = parent.getImageSize ();
-				if (getImage) {
-					rect.right = Math.min (rect.left + size.x, rect.right);
-				} else {
-					rect.left = Math.min (rect.left + size.x, rect.right);
-				}
-			} else {
-				if (getImage) rect.right = rect.left;
-			}
-		}
-	}
-	int gridWidth = parent.getLinesVisible () ? Tree.GRID_WIDTH : 0;
-	if (getText || !getImage) {
-		rect.right = Math.max (rect.left, rect.right - gridWidth);
-	}
-	rect.bottom = Math.max (rect.top, rect.bottom - gridWidth);
-	return rect;
+  CTree tree = (CTree)parent.handle;
+  int row = tree.getRowForPath(new TreePath(handle.getPath()));
+  java.awt.Rectangle rect = tree.getCellRect(row, index, false);
+  return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -386,13 +325,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 public boolean getChecked () {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-	tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-	tvItem.hItem = handle;
-	int result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return (result != 0) && (((tvItem.state >> 12) & 1) == 0);
+  return handle.isChecked();
 }
 
 /**
@@ -517,13 +450,7 @@ public Color getForeground (int index) {
 public boolean getGrayed () {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-	tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-	tvItem.hItem = handle;
-	int result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return (result != 0) && ((tvItem.state >> 12) > 2);
+  return handle.isGrayed();
 }
 
 /**
@@ -691,37 +618,6 @@ public String getText (int index) {
 	return hItem == 0 ? -1 : parent.indexOf (hItem, item.handle);
 }
 
-void redraw () {
-	if (parent.drawCount > 0) return;
-	int hwnd = parent.handle;
-	if (!OS.IsWindowVisible (hwnd)) return;
-	RECT rect = new RECT ();
-	rect.left = handle;
-	/*
-	* When there are no columns and the tree is not
-	* full selection, redraw only the text.  This is
-	* an optimization to reduce flashing.
-	*/
-	boolean full = (parent.style & SWT.FULL_SELECTION) != 0;
-	if (!full) {
-		int hwndHeader = parent.hwndHeader;
-		if (hwndHeader != 0) {
-			full = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0;
-		}
-	}
-	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) != 0) {
-		OS.InvalidateRect (hwnd, rect, true);
-	}
-}
-
-void redraw (int column, boolean drawText, boolean drawImage) {
-	if (parent.drawCount > 0) return;
-	int hwnd = parent.handle;
-	if (!OS.IsWindowVisible (hwnd)) return;
-	RECT rect = getBounds (column, drawText, drawImage, true);
-	OS.InvalidateRect (hwnd, rect, true);
-}
-
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
@@ -729,15 +625,12 @@ void releaseChild () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	handle = 0;
+	handle = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
-	strings = null;
-	images = null;
-	cellBackground = cellForeground = cellFont = null;
 }
 
 /**
@@ -806,20 +699,8 @@ public void setBackground (int index, Color color) {
 public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-	tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-	tvItem.hItem = handle;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	int state = tvItem.state >> 12;
-	if (checked) {
-		if ((state & 0x1) != 0) state++;
-	} else {
-		if ((state & 0x1) == 0) --state;
-	}
-	tvItem.state = state << 12;
-	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+  handle.setChecked(checked);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
@@ -964,20 +845,8 @@ public void setForeground (int index, Color color){
 public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-	tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-	tvItem.hItem = handle;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	int state = tvItem.state >> 12;
-	if (grayed) {
-		if (state <= 2) state +=2;
-	} else {
-		if (state > 2) state -=2;
-	}
-	tvItem.state = state << 12;
-	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+  handle.setGrayed(grayed);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**

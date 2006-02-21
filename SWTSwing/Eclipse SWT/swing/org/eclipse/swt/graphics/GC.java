@@ -1177,8 +1177,8 @@ public void drawPolygon(int[] pointArray) {
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
   for(int i=0; i<xPoints.length; i++) {
-    xPoints[i] = pointArray[i++];
-    yPoints[i] = pointArray[i];
+    xPoints[i] = pointArray[i * 2];
+    yPoints[i] = pointArray[i * 2 + 1];
   }
   handle.drawPolygon(xPoints, yPoints, xPoints.length);
 }
@@ -1206,8 +1206,8 @@ public void drawPolyline(int[] pointArray) {
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
   for(int i=0; i<xPoints.length; i++) {
-    xPoints[i] = pointArray[i++];
-    yPoints[i] = pointArray[i];
+    xPoints[i] = pointArray[i * 2];
+    yPoints[i] = pointArray[i * 2 + 1];
   }
   handle.drawPolyline(xPoints, yPoints, xPoints.length);
 }
@@ -1891,8 +1891,8 @@ public void fillPolygon(int[] pointArray) {
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
   for(int i=0; i<xPoints.length; i++) {
-    xPoints[i] = pointArray[i++];
-    yPoints[i] = pointArray[i];
+    xPoints[i] = pointArray[i * 2];
+    yPoints[i] = pointArray[i * 2 + 1];
   }
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);

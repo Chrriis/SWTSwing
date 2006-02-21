@@ -22,7 +22,6 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
-import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
@@ -30,15 +29,30 @@ import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-//import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.accessibility.Accessible;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Drawable;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.GCData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CComponent;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.accessibility.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -4157,12 +4171,11 @@ private Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousI
   java.awt.Point point = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), container);
   event.x = point.x;
   event.y = point.y;
-  int modifiersEx = me.getModifiersEx();
-  if((modifiersEx & java.awt.event.MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+  if (SwingUtilities.isLeftMouseButton (me)) {
     event.button = 1;
-  } else if((modifiersEx & java.awt.event.MouseEvent.BUTTON2_DOWN_MASK) != 0) {
+  } else if (SwingUtilities.isRightMouseButton (me)) {
     event.button = 2;
-  } else if((modifiersEx & java.awt.event.MouseEvent.BUTTON3_DOWN_MASK) != 0) {
+  } else if (SwingUtilities.isMiddleMouseButton (me)) {
     event.button = 3;
   }
   event.stateMask = isPreviousInputState? Display.getPreviousInputState(): Display.getInputState();

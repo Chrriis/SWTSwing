@@ -1940,7 +1940,15 @@ public Graphics2D internal_new_GC (GCData data) {
 //	}
 //	return hDC;
   // TODO: implement
-  throw new IllegalStateException("Not implemented!");
+//  throw new IllegalStateException("Not implemented!");
+  Frame[] frames = Frame.getFrames ();
+  for (int i = 0; i < frames.length; i++) {
+    if (frames[i].isActive ()) {
+      // active frame
+      return (Graphics2D) frames[i].getGraphics ();
+    }
+  }
+  return (Graphics2D) frames[0].getGraphics ();
 }
 
 /**
@@ -2152,7 +2160,16 @@ public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-  java.awt.Point point = SwingUtilities.convertPoint(from == null? null: from.handle, x, y, to == null? null: to.handle);
+  java.awt.Point point = new java.awt.Point(x, y);
+  if (from != to) {
+    if (from == null) {
+      SwingUtilities.convertPointFromScreen (point, to.handle);
+    } else if (to == null) {
+      SwingUtilities.convertPointToScreen (point, from.handle);
+    } else {
+      SwingUtilities.convertPoint (from.handle, point, to.handle);
+    }
+  }
   return new Point(point.x, point.y);
 }
 

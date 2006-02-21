@@ -243,7 +243,12 @@ public class JTreeTable extends JPanel implements Scrollable {
 
     public void reshape(int x, int y, int w, int h) {
       super.reshape(x, y, w, h);
-      tree.reshape(x, y, w, h);
+      TableColumnModel columnModel = getColumnModel();
+      if(columnModel.getColumnCount() > 0) {
+        tree.setSize(columnModel.getColumn(0).getWidth(), h);
+      } else {
+        tree.setSize(w, h);
+      }
     }
 
     public int rowAtPoint(Point point) {
@@ -292,7 +297,7 @@ public class JTreeTable extends JPanel implements Scrollable {
           } else {
             if(processMouseOnTreeRenderer(row, new MouseEvent(tree, me.getID(), me.getWhen(), me.getModifiers(), x - rowBounds.x, y - rowBounds.y, me.getClickCount(), me.isPopupTrigger(), me.getButton()), new Dimension(rowBounds.width, rowBounds.height))) {
 //              System.err.println(me.getPoint() + ", " + xOffset + ", " + x + ", " + rowBounds);
-              super.processEvent(me);
+              super.processEvent(e);
             }
           }
         } else {
@@ -322,6 +327,7 @@ public class JTreeTable extends JPanel implements Scrollable {
   public JTreeTable() {
     super(new BorderLayout(0, 0));
     table = new CTable();
+    setBackground(table.getBackground());
     add(table, BorderLayout.CENTER);
     tree = new JTree() {
       public boolean hasFocus() {
@@ -461,7 +467,10 @@ public class JTreeTable extends JPanel implements Scrollable {
         if (viewport == null || viewport.getView() != this) {
           return;
         }
-        scrollPane.setColumnHeaderView(getTableHeader());
+        viewport.setBackground(getBackground());
+        JTableHeader tableHeader = getTableHeader();
+        scrollPane.setColumnHeaderView(tableHeader);
+        tableHeader.setVisible(false);
         Border border = scrollPane.getBorder();
         if (border == null || border instanceof UIResource) {
           scrollPane.setBorder(UIManager.getBorder("Table.scrollPaneBorder"));
@@ -564,6 +573,9 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public Dimension getPreferredSize() {
     Dimension preferredSize = super.getPreferredSize();
+    if(getTableHeader().isVisible()) {
+      return preferredSize;
+    }
     TableColumnModel columnModel = getColumnModel();
     if(columnModel.getColumnCount() > 0) {
       return new Dimension(preferredSize.width - columnModel.getColumn(0).getPreferredWidth() + tree.getPreferredSize().width, preferredSize.height);

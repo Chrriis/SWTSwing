@@ -237,13 +237,13 @@ void createItem (TreeColumn column, int index) {
 		}
 	}
   TableColumnModel columnModel = ((CTree)handle).getColumnModel();
+  TableColumn tableColumn = (TableColumn)column.handle;
   if(columnList.isEmpty()) {
     columnModel.removeColumn(columnModel.getColumn(0));
   }
-  columnList.add(index, column);
-  TableColumn tableColumn = (TableColumn)column.handle;
   columnModel.addColumn(tableColumn);
   tableColumn.setModelIndex(index);
+  columnList.add(index, column);
   // TODO: check it is enough
   handle.repaint();
 }

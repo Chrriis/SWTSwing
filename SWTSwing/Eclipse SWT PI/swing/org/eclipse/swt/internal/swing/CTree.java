@@ -66,6 +66,9 @@ class CTreeImplementation extends JScrollPane implements CTree {
       }
     };
     treeTable = new JTreeTable(new DefaultTreeModel(rootNode)) {
+      public boolean getScrollableTracksViewportWidth() {
+        return false;
+      }
       public boolean getScrollableTracksViewportHeight() {
         return getPreferredSize().height < getParent().getHeight();
       }
@@ -96,6 +99,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         return super.processMouseOnTreeRenderer(row, e, cellSize);
       }
     };
+    treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     treeTable.setCellRenderer(new DefaultTreeTableCellRenderer() {
       public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean selected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
         Component c = super.getTreeTableCellRendererComponent(treeTable, value, selected, expanded, leaf, row, column, hasFocus);
@@ -125,7 +129,6 @@ class CTreeImplementation extends JScrollPane implements CTree {
         return checkBoxCellRenderer;
       }
     });
-    treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     
     JTableHeader tableHeader = treeTable.getTableHeader();
     final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();

@@ -465,7 +465,8 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-  ((TableColumn)handle).setWidth(width);
+//	((TableColumn)handle).setWidth(width);
+	((TableColumn)handle).setPreferredWidth(width);
 }
 
 }

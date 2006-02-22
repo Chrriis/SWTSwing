@@ -793,6 +793,12 @@ protected void destroy () {
 void destroyDisplay () {
   if(isRealDispatch()) {
     swingEventQueue.pop();
+//    /*
+//    * When the session is ending, no SWT program can continue
+//    * to run.  In order to avoid running code after the display
+//    * has been disposed, exit from Java.
+//    */
+//    System.exit (0);
   }
 }
 

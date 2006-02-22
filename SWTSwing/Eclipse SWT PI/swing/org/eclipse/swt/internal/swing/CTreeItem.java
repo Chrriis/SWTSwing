@@ -29,6 +29,10 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
     init(style);
   }
 
+  public TreeItem getTreeItem() {
+    return handle;
+  }
+
   protected void init(int style) {
   }
 
@@ -70,6 +74,14 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
     setUserObject(newObjects);
   }
 
+  public void removeColumn(int index) {
+    Object[] objects = getUserObjects();
+    Object[] newObjects = new Object[objects.length - 1];
+    System.arraycopy(objects, 0, newObjects, 0, index);
+    System.arraycopy(objects, index + 1, newObjects, index, newObjects.length - index);
+    setUserObject(newObjects);
+  }
+
 }
 
 public interface CTreeItem {
@@ -83,6 +95,7 @@ public interface CTreeItem {
     }
 
     protected TreeItemObject(CTreeItem treeItem) {
+      this.treeItem = treeItem;
     }
 
     protected String text;
@@ -173,5 +186,9 @@ public interface CTreeItem {
   public boolean isGrayed();
 
   public void insertColumn(int index);
+
+  public void removeColumn(int index);
+
+  public TreeItem getTreeItem();
 
 }

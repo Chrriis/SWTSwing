@@ -1718,7 +1718,7 @@ public void processEvent(AWTEvent e) {
     if(isSending) {
       sendEvent(SWT.DefaultSelection);
     }
-    return;
+//    return;
   }
   super.processEvent(e);
   display.stopExclusiveSection();

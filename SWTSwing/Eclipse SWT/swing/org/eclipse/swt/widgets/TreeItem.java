@@ -132,6 +132,7 @@ public TreeItem (Tree parent, int style) {
 public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+  this.parent = parent;
   handle = createHandle();
 	parent.createItem (this, index);
 }
@@ -961,6 +962,7 @@ public void setText (int index, String string) {
 public void setText (String string) {
 	checkWidget();
 	setText (0, string);
+  super.setText(string);
 }
 
 }

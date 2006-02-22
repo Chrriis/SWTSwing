@@ -36,6 +36,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.plaf.UIResource;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -605,6 +607,30 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public int convertColumnIndexToView(int modelColumnIndex) {
     return table.convertColumnIndexToView(modelColumnIndex);
+  }
+
+  public void addTreeExpansionListener(TreeExpansionListener tel) {
+    tree.addTreeExpansionListener(tel);
+  }
+
+  public void addTreeSelectionListener(TreeSelectionListener tsl) {
+    tree.addTreeSelectionListener(tsl);
+  }
+
+  public void addTreeWillExpandListener(TreeWillExpandListener tel) {
+    tree.addTreeWillExpandListener(tel);
+  }
+
+  public void removeTreeExpansionListener(TreeExpansionListener tel) {
+    tree.removeTreeExpansionListener(tel);
+  }
+
+  public void removeTreeSelectionListener(TreeSelectionListener tsl) {
+    tree.removeTreeSelectionListener(tsl);
+  }
+
+  public void removeTreeWillExpandListener(TreeWillExpandListener tel) {
+    tree.removeTreeWillExpandListener(tel);
   }
 
 }

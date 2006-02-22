@@ -15,6 +15,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
@@ -22,6 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -76,7 +81,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         if(isCheckType) {
           TreePath treePath = treeTable.getPathForRow(row);
           DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode)treePath.getLastPathComponent();
-          CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)treeTable.getCellRenderer().getTreeTableCellRendererComponent(treeTable, node, treeTable.isRowSelected(row), treeTable.isExpanded(treePath), node.isLeaf(), row, 0, false);
+          CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)treeTable.getCellRenderer().getTreeTableCellRendererComponent(treeTable, node.getUserObject(), treeTable.isRowSelected(row), treeTable.isExpanded(treePath), node.isLeaf(), row, 0, false);
           checkBoxCellRenderer.setSize(cellSize);
           checkBoxCellRenderer.doLayout();
           Point point = e.getPoint();
@@ -87,8 +92,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
             switch(e.getID()) {
             case MouseEvent.MOUSE_PRESSED:
               CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)node.getUserObject(0);
-              treeItemObject.getTreeItem().setChecked(!treeItemObject.isChecked());
+              boolean ischecked = !treeItemObject.isChecked();
+              treeItemObject.getTreeItem().setChecked(ischecked);
               ((DefaultTreeModel)treeTable.getModel()).nodeChanged(node);
+              handle.processEvent(new ItemEvent(stateCheckBox, ItemEvent.ITEM_STATE_CHANGED, node, ischecked? ItemEvent.SELECTED: ItemEvent.DESELECTED));
             case MouseEvent.MOUSE_DRAGGED:
             case MouseEvent.MOUSE_RELEASED:
             case MouseEvent.MOUSE_CLICKED:
@@ -147,7 +154,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         return c;
       }
     });
-    // TODO: add a first bogus column?
+    // TODO: add a first bogus column? (1)
     javax.swing.table.TableColumnModel columnModel = treeTable.getColumnModel();
     javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
     columnModel.addColumn(tableColumn);
@@ -174,8 +181,19 @@ class CTreeImplementation extends JScrollPane implements CTree {
     if((style & SWT.FULL_SELECTION) != 0) {
       treeTable.setFullLineSelection(true);
     }
-    
-    
+    treeTable.addTreeExpansionListener(new TreeExpansionListener() {
+      public void treeCollapsed(TreeExpansionEvent e) {
+        handle.processEvent(e);
+      }
+      public void treeExpanded(TreeExpansionEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    treeTable.addTreeSelectionListener(new TreeSelectionListener() {
+      public void valueChanged(TreeSelectionEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {

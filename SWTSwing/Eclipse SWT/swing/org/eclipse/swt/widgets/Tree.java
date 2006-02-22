@@ -11,18 +11,29 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.AWTEvent;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 import java.util.ArrayList;
+import java.util.EventObject;
 
+import javax.swing.JButton;
+import javax.swing.RootPaneContainer;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.eclipse.swt.internal.swing.CText;
 import org.eclipse.swt.internal.swing.CTree;
+import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.swing.DefaultMutableTreeTableNode;
+import org.eclipse.swt.internal.swing.CTreeItem.TreeItemObject;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -227,7 +238,7 @@ Container createHandle () {
 //}
 
 void createItem (TreeColumn column, int index) {
-	int columnCount = getColumnCount();
+//	int columnCount = getColumnCount();
 	for (int i=0; i<itemList.size(); i++) {
 		TreeItem item = (TreeItem)itemList.get(i);
     item.handle.insertColumn(index);
@@ -239,6 +250,7 @@ void createItem (TreeColumn column, int index) {
   TableColumnModel columnModel = ((CTree)handle).getColumnModel();
   TableColumn tableColumn = (TableColumn)column.handle;
   if(columnList.isEmpty()) {
+    // TODO: remove a first bogus column? (3)
     columnModel.removeColumn(columnModel.getColumn(0));
   }
   columnModel.addColumn(tableColumn);
@@ -249,16 +261,19 @@ void createItem (TreeColumn column, int index) {
 }
 
 void createItem (TreeItem item, int index) {
-  ((CTree)handle).getRoot().insert((MutableTreeNode)item.handle, index);
   itemList.add(index, item);
+  ((CTree)handle).getRoot().insert((MutableTreeNode)item.handle, index);
+  // TODO: check how to notify addition and if it is needed, because this line causes snippet8 not to work
+//  ((CTree)handle).getModel().nodesWereInserted(((CTree)handle).getRoot(), new int[] {index});
 }
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {
-  ((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
   if(parentItem.itemList == null) {
     parentItem.itemList = new ArrayList();
   }
   parentItem.itemList.add(index, item);
+  ((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
+  ((CTree)handle).getModel().nodesWereInserted((MutableTreeNode)parentItem.handle, new int[] {index});
 }
 
 //void createParent () {
@@ -365,167 +380,30 @@ public void deselectAll () {
 }
 
 void destroyItem (TreeColumn column) {
-	if (hwndHeader == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	int index = 0;
-	while (index < columnCount) {
-		if (columns [index] == column) break;
-		index++;
-	}
-	if (OS.SendMessage (hwndHeader, OS.HDM_DELETEITEM, index, 0) == 0) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
-	}
-	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
-	columns [columnCount] = null;
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			if (columnCount == 0) {
-				item.strings = null;
-				item.images = null;
-				item.cellBackground = null;
-				item.cellForeground = null;
-				item.cellFont = null;
-			} else {
-				if (item.strings != null) {
-					String [] strings = item.strings;
-					if (index == 0) {
-						item.text = strings [1] != null ? strings [1] : "";
-					}
-					String [] temp = new String [columnCount];
-					System.arraycopy (strings, 0, temp, 0, index);
-					System.arraycopy (strings, index + 1, temp, index, columnCount - index);
-					item.strings = temp;
-				} else {
-					if (index == 0) item.text = "";
-				}
-				if (item.images != null) {
-					Image [] images = item.images;
-					if (index == 0) item.image = images [1];
-					Image [] temp = new Image [columnCount];
-					System.arraycopy (images, 0, temp, 0, index);
-					System.arraycopy (images, index + 1, temp, index, columnCount - index);
-					item.images = temp;
-				} else {
-					if (index == 0) item.image = null;
-				}
-				if (item.cellBackground != null) {
-					int [] cellBackground = item.cellBackground;
-					int [] temp = new int [columnCount];
-					System.arraycopy (cellBackground, 0, temp, 0, index);
-					System.arraycopy (cellBackground, index + 1, temp, index, columnCount - index);
-					item.cellBackground = temp;
-				}
-				if (item.cellForeground != null) {
-					int [] cellForeground = item.cellForeground;
-					int [] temp = new int [columnCount];
-					System.arraycopy (cellForeground, 0, temp, 0, index);
-					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
-					item.cellForeground = temp;
-				}
-				if (item.cellFont != null) {
-					int [] cellFont = item.cellFont;
-					int [] temp = new int [columnCount];
-					System.arraycopy (cellFont, 0, temp, 0, index);
-					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
-					item.cellFont = temp;
-				}
-			}
-		}
-	}
-
-	/*
-	* When the last column is deleted, show the horizontal
-	* scroll bar.   Otherwise, left align the first column
-	* and redraw the columns to the right.
-	*/
-	if (columnCount == 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		bits &= ~OS.TVS_NOHSCROLL;
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	    OS.InvalidateRect (handle, null, true);
-	} else {
-		if (index == 0) {
-			columns [0].style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-			columns [0].style |= SWT.LEFT;
-			HDITEM hdItem = new HDITEM ();
-			hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-			hdItem.fmt &= ~OS.HDF_JUSTIFYMASK;
-			hdItem.fmt |= OS.HDF_LEFT;
-			OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-		}
-		RECT rect = new RECT (), itemRect = new RECT ();
-		OS.GetClientRect (handle, rect);
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index - 1, itemRect);
-		rect.left = itemRect.right;
-	    OS.InvalidateRect (handle, rect, true);
-	}
-	setScrollWidth ();
+  int index = columnList.indexOf(column);
+  for (int i=0; i<itemList.size(); i++) {
+    TreeItem item = (TreeItem)itemList.get(i);
+    item.handle.removeColumn(index);
+  }
+  columnList.remove(index);
+  if(columnList.isEmpty()) {
+    // TODO: add a first bogus column? (2)
+    TableColumnModel columnModel = ((CTree)handle).getColumnModel();
+    javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
+    columnModel.addColumn(tableColumn);
+  }
+  handle.repaint();
 }
 
 void destroyItem (TreeItem item) {
-	/*
-	* Feature in Windows.  When an item is removed that is not
-	* visible in the tree because it belongs to a collapsed branch,
-	* Windows redraws the tree causing a flash for each item that
-	* is removed.  The fix is to detect whether the item is visible,
-	* force the widget to be fully painted, turn off redraw, remove
-	* the item and validate the damage caused by the removing of
-	* the item.
-	*/
-	int hItem = item.handle, hParent = 0;
-	boolean fixRedraw = false;
-	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
-		RECT rect = new RECT ();
-		rect.left = hItem;
-		fixRedraw = OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) == 0;
-	}
-	if (fixRedraw) {
-		hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
-		OS.UpdateWindow (handle);
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-	}
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	releaseItems (item.getItems (), tvItem);
-	releaseItem (item, tvItem);
-	if ((style & SWT.MULTI) != 0) {
-		ignoreDeselect = ignoreSelect = lockSelection = true;
-	}
-	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
-	if ((style & SWT.MULTI) != 0) {
-		ignoreDeselect = ignoreSelect = lockSelection = false;
-	}
-	if (fixRedraw) {
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-		OS.ValidateRect (handle, null);
-		/*
-		* If the item that was deleted was the last child of a tree item that
-		* is visible, redraw the parent item to force the +/- to be updated.
-		*/
-		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent) == 0) {
-			RECT rect = new RECT ();
-			rect.left = hParent;
-			if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-				OS.InvalidateRect (handle, rect, true);
-			}
-		}
-	}
-	int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
-	if (count == 0) {
-		if (imageList != null) {
-			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-			if (hwndHeader != 0) {
-				OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
-			}
-			display.releaseImageList (imageList);
-		}
-		imageList = null;
-		if (hwndParent == 0) customDraw = false;
-		items = new TreeItem [4];
-	}
-	updateScrollBar ();
+  TreeItem parentItem = item.getParentItem();
+  if(parentItem == null) {
+    ((CTree)handle).getRoot().remove((MutableTreeNode)item.handle);
+    itemList.remove(item);
+  } else {
+    ((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)item.handle);
+    parentItem.itemList.remove(item);
+  }
 }
 
 //void enableWidget (boolean enabled) {
@@ -890,55 +768,13 @@ public TreeItem getParentItem () {
  */
 public TreeItem [] getSelection () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) {
-		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem == 0) return new TreeItem [0];
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return new TreeItem [0];
-		return new TreeItem [] {items [tvItem.lParam]};
-	}
-	int count = 0;
-	TreeItem [] guess = new TreeItem [8];
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
-	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (count < guess.length) guess [count] = item;
-				count++;
-			}
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	if (count == 0) return new TreeItem [0];
-	if (count == guess.length) return guess;
-	TreeItem [] result = new TreeItem [count];
-	if (count < guess.length) {
-		System.arraycopy (guess, 0, result, 0, count);
-		return result;
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	int index = 0;
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				result [index++] = item;
-			}
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	return result;
+  TreePath[] paths = ((CTree)handle).getSelectionModel().getSelectionPaths();
+  if(paths == null || paths.length == 0) return new TreeItem[0];
+  TreeItem[] items = new TreeItem[paths.length];
+  for(int i=0; i<items.length; i++) {
+    items[i] = ((CTreeItem.TreeItemObject)((DefaultMutableTreeNode)paths[i].getLastPathComponent()).getUserObject()).getTreeItem().getTreeItem();
+  }
+  return items;
 }
 
 /**
@@ -953,32 +789,7 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-  
-	if ((style & SWT.SINGLE) != 0) {
-		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem == 0) return 0;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return 0;
-		return 1;
-	}
-	int count = 0;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
-	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) count++;
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	return count;
+  return ((CTree)handle).getSelectionModel().getSelectionCount();
 }
 
 /**
@@ -3171,5 +2982,76 @@ public void showSelection () {
 //	}
 //	return super.wmNotifyChild (wParam, lParam);
 //}
+
+public void processEvent(AWTEvent e) {
+  int id = e.getID();
+  switch(id) {
+  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  default: { super.processEvent(e); return; }
+  }
+  if(isDisposed()) {
+    super.processEvent(e);
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  switch(id) {
+  case ItemEvent.ITEM_STATE_CHANGED:
+    Event event = new Event();
+    event.detail = SWT.CHECK;
+    event.item = ((CTreeItem)((ItemEvent)e).getItem()).getTreeItem();
+    sendEvent(SWT.Selection, event);
+  }
+  super.processEvent(e);
+  display.stopExclusiveSection();
+}
+
+public void processEvent(EventObject e) {
+  if(e instanceof TreeExpansionEvent) {
+    TreePath path = ((TreeExpansionEvent)e).getPath();
+    boolean isExpanded = ((CTree)handle).isExpanded(path);
+    if(isExpanded) {
+      if(!hooks(SWT.Expand)) { super.processEvent(e); return; }
+    } else {
+      if(!hooks(SWT.Collapse)) { super.processEvent(e); return; }
+    }
+  } else if(e instanceof TreeSelectionEvent) {
+    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+  } else {
+    super.processEvent(e);
+    return;
+  }
+    if(isDisposed()) {
+      super.processEvent(e);
+      return;
+    }
+    Display display = getDisplay();
+    display.startExclusiveSection();
+    if(isDisposed()) {
+      display.stopExclusiveSection();
+      super.processEvent(e);
+      return;
+    }
+    if(e instanceof TreeExpansionEvent) {
+      TreePath path = ((TreeExpansionEvent)e).getPath();
+      boolean isExpanded = ((CTree)handle).isExpanded(path);
+      Event event = new Event();
+      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+      sendEvent(isExpanded? SWT.Expand: SWT.Collapse, event);
+    } else if(e instanceof TreeSelectionEvent) {
+      TreePath path = ((TreeSelectionEvent)e).getPath();
+      Event event = new Event();
+      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+      sendEvent(SWT.Selection, event);
+    }
+    super.processEvent(e);
+    display.stopExclusiveSection();
+    return;
+}
 
 }

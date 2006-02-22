@@ -38,32 +38,32 @@ class CCompositeImplementation extends JPanel implements CComposite {
 
   protected Graphics graphics;
 
-  public Graphics getGraphics() {
-    if(graphics != null) {
-      java.awt.Point point = new java.awt.Point(0, 0);
-      point = SwingUtilities.convertPoint(getParent(), point, this);
-      Graphics g = graphics.create();
-      g.translate(point.x, point.y);
-      g.setClip(new Rectangle(getSize()));
-      return g;
-    }
-    return super.getGraphics();
-  }
-
-  public void paint(Graphics g) {
-    graphics = g;
-    super.paint(g);
-    handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
-    graphics = null;
-  }
-
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     } else {
       setBorder(null);
     }
-    JPanel panel = new JPanel(null);
+    JPanel panel = new JPanel(null) {
+      public Graphics getGraphics() {
+        if(graphics != null) {
+          java.awt.Point point = new java.awt.Point(0, 0);
+          point = SwingUtilities.convertPoint(getParent (), point, this);
+          Graphics g = graphics.create();
+          g.translate(point.x, point.y);
+          g.setClip(new Rectangle(getSize()));
+          return g;
+        }
+        return super.getGraphics();
+      }
+
+      protected void paintComponent (Graphics g) {
+        graphics = g;
+        super.paintComponent(g);
+        handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+        graphics = null;
+      }
+    };
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
@@ -73,6 +73,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
       add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
+    contentPane.setFocusable (true);
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
     Utils.installFocusListener(contentPane, handle);

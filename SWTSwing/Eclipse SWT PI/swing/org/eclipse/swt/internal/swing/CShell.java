@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 
 class CShellFrame extends JFrame implements CShell {
 
-  protected JComponent contentPane;
+  protected Container contentPane;
   protected JScrollPane scrollPane;
 
   protected Shell handle;
@@ -57,7 +57,7 @@ class CShellFrame extends JFrame implements CShell {
     }
     setUndecorated((style & SWT.TITLE) == 0);
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
-    Container contentPane = getContentPane();
+    contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
       protected Graphics graphics;
       public Graphics getGraphics() {
@@ -86,9 +86,9 @@ class CShellFrame extends JFrame implements CShell {
     } else {
       contentPane.add(panel, BorderLayout.CENTER);
     }
-    this.contentPane = panel;
+    contentPane = panel;
+    contentPane.setFocusable(true);
     setFocusable(false);
-//    contentPane.setFocusable(true);
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
 //    Utils.installFocusListener(contentPane, handle);
@@ -143,12 +143,11 @@ class CShellFrame extends JFrame implements CShell {
   }
 
   public String getToolTipText() {
-    return contentPane.getToolTipText();
+    return ((JComponent)contentPane).getToolTipText();
   }
 
-  // TODO: implement so that it traverses the complete hierarchy
   public void setToolTipText(String string) {
-    contentPane.setToolTipText(string);
+    ((JComponent)contentPane).setToolTipText(string);
   }
 
   public JScrollBar getVerticalScrollBar() {
@@ -259,8 +258,8 @@ class CShellDialog extends JDialog implements CShell {
       contentPane.add(panel, BorderLayout.CENTER);
     }
     contentPane = panel;
+    contentPane.setFocusable(true);
     setFocusable(false);
-//    contentPane.setFocusable(true);
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
 //    Utils.installFocusListener(contentPane, handle);
@@ -315,13 +314,11 @@ class CShellDialog extends JDialog implements CShell {
   }
 
   public String getToolTipText() {
-    // TODO: implement properly
-    return "Not yet implemented";
+    return ((JComponent)contentPane).getToolTipText();
   }
 
-  // TODO: implement so that it traverses the complete hierarchy
   public void setToolTipText(String string) {
-    // TODO: implement properly
+    ((JComponent)contentPane).setToolTipText(string);
   }
 
   public JScrollBar getVerticalScrollBar() {

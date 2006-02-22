@@ -642,9 +642,11 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-  if (image != null) {
-    ((AbstractButton) handle).setIcon (new ImageIcon (image.handle));
+  ImageIcon icon = null;
+  if (image != null && image.handle != null) {
+    icon = new ImageIcon (image.handle);
   }
+  ((AbstractButton) handle).setIcon (icon);
 //	parent.redraw ();
 }
 

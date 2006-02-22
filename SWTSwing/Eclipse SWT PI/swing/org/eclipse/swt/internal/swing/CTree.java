@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
@@ -160,8 +161,8 @@ class CTreeImplementation extends JScrollPane implements CTree {
     columnModel.addColumn(tableColumn);
 
 //    treeTable.expandedPath(new TreePath(rootNode.getPath()));
-    treeTable.getTree().setRootVisible(false);
-    treeTable.getTree().setShowsRootHandles(true);
+    treeTable.getInnerTree().setRootVisible(false);
+    treeTable.getInnerTree().setShowsRootHandles(true);
     setFocusable(false);
     getViewport().setView(treeTable);
     setGridVisible(false);
@@ -194,6 +195,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         handle.processEvent(e);
       }
     });
+    Utils.installMouseListener(treeTable.getInnerTable(), handle);
   }
 
   public Container getClientArea() {
@@ -256,6 +258,13 @@ class CTreeImplementation extends JScrollPane implements CTree {
     return treeTable.getColumnModel();
   }
 
+  public TreePath getPathForLocation(int x, int y) {
+    Insets insets = getInsets();
+    x -= insets.left;
+    y -= insets.top;
+    return treeTable.getPathForLocation(x, y);
+  }
+
 }
 
 public interface CTree extends CComposite {
@@ -296,5 +305,7 @@ public interface CTree extends CComposite {
   public int getRowForPath(TreePath path);
 
   public TableColumnModel getColumnModel();
+
+  public TreePath getPathForLocation(int x, int y);
 
 }

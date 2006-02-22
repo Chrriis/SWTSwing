@@ -596,20 +596,12 @@ public TreeColumn [] getColumns () {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TVHITTESTINFO lpht = new TVHITTESTINFO ();
-	lpht.x = point.x;
-	lpht.y = point.y;
-	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-	if (lpht.hItem != 0) {
-		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & OS.TVHT_ONITEM) != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-			tvItem.hItem = lpht.hItem;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			return items [tvItem.lParam];
-		}
-	}
-	return null;
+  TreePath treePath = ((CTree)handle).getPathForLocation(point.x, point.y);
+  if(treePath == null) {
+    return null;
+  }
+  CTreeItem.TreeItemObject treeItemObject = ((CTreeItem.TreeItemObject)((DefaultMutableTreeNode)treePath.getLastPathComponent()).getUserObject());
+  return treeItemObject.getTreeItem().getTreeItem();
 }
 
 /**

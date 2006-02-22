@@ -12,14 +12,14 @@ package org.eclipse.swt.widgets;
 
  
 import java.awt.Component;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -308,8 +308,11 @@ void createHandle () {
     handle = menuBar;
 	} else if((style & SWT.POP_UP) != 0) {
     JPopupMenu popup = new JPopupMenu();
-    popup.addComponentListener(new ComponentAdapter() {
-      public void componentHidden(ComponentEvent e) {
+    // TODO: check if a component listener for visibility is needed
+    popup.addPopupMenuListener(new PopupMenuListener() {
+      public void popupMenuCanceled(PopupMenuEvent e) {
+      }
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
         if(!hooks(SWT.Hide)) return;
         Display display = getDisplay();
         display.startExclusiveSection();
@@ -322,7 +325,7 @@ void createHandle () {
         sendEvent(SWT.Hide, event);
         display.stopExclusiveSection();
       }
-      public void componentShown(ComponentEvent e) {
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         if(!hooks(SWT.Show)) return;
         Display display = getDisplay();
         display.startExclusiveSection();

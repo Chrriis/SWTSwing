@@ -59,7 +59,7 @@ public class Test {
       {"69", "display a label and single line text using a form layout"},
       {"71", "create a simple OK/CANCEL dialog using form layout"},
     }}, new Object[] {"GC", new String[][] {
-      {"13", "draw a thick line"}, //<-- Works, but repaint in Swing is too fast and hides the result.
+      {"13", "draw a thick line"},
       {"93", "measure a string"},
       {"66", "implement a simple scribble program"},
       {"70", "create an icon (in memory)"},
@@ -76,8 +76,8 @@ public class Test {
     }}, new Object[] {"Menu", new String[][] {
       {"29", "create a bar and pull down menu (accelerators, mnemonics)"},
       {"40", "create a popup menu (set in multiple controls)"},
-//      {"73", "enable menu items dynamically (when menu shown)"},
-//      {"97", "fill a menu dynamically (when menu shown)"},
+      {"73", "enable menu items dynamically (when menu shown)"},
+      {"97", "fill a menu dynamically (when menu shown)"},
       {"89", "add radio items to a menu"},
     }}, new Object[] {"Program", new String[][] {
 //      Is it platform specific??
@@ -159,7 +159,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "61";
+  static String snippetNumber = "97";
 
   static boolean isRealDispatch = false;
 

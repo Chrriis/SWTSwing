@@ -415,8 +415,12 @@ public class JTreeTable extends JPanel implements Scrollable {
     return renderer;
   }
 
-  protected JTree getTree() {
+  protected JTree getInnerTree() {
     return tree;
+  }
+
+  protected JTable getInnerTable() {
+    return table;
   }
 
   public void updateUI() {
@@ -631,6 +635,28 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public void removeTreeWillExpandListener(TreeWillExpandListener tel) {
     tree.removeTreeWillExpandListener(tel);
+  }
+
+  public int getRowForLocation(int x, int y) {
+    Point point = new Point(x, y);
+    int row = table.rowAtPoint(point);
+    if(row == -1) {
+      return -1;
+    }
+    int column = table.columnAtPoint(point);
+    if(column == 0) {
+      Rectangle bounds = tree.getRowBounds(row);
+      return bounds.x <= x && x < bounds.x + bounds.width? row: -1;
+    }
+    return row;
+  }
+
+  public TreePath getPathForLocation(int x, int y) {
+    int row = getRowForLocation(x, y);
+    if(row == -1) {
+      return null;
+    }
+    return getPathForRow(row);
   }
 
 }

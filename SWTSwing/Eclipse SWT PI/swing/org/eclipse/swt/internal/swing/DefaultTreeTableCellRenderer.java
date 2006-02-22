@@ -19,7 +19,7 @@ public class DefaultTreeTableCellRenderer implements TreeTableCellRenderer {
   protected DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 
   public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean selected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
-    Component component = renderer.getTreeCellRendererComponent(treeTable.getTree(), value, selected, expanded, leaf, row, hasFocus);
+    Component component = renderer.getTreeCellRendererComponent(treeTable.getInnerTree(), value, selected, expanded, leaf, row, hasFocus);
     if(column != 0 && component instanceof JLabel) {
       ((JLabel)component).setIcon(null);
     }

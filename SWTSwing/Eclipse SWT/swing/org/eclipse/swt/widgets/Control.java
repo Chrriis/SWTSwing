@@ -93,6 +93,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	Accessible accessible;
 //	int drawCount, foreground, background;
+  long lastPressed = 0;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -4016,8 +4017,9 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.MouseEvent.MOUSE_WHEEL: if(!hooks(SWT.MouseWheel)) return; break;
   case java.awt.event.MouseEvent.MOUSE_ENTERED: if(!hooks(SWT.MouseEnter)) return; break;
   case java.awt.event.MouseEvent.MOUSE_EXITED: if(!hooks(SWT.MouseExit)) return; break;
-  case java.awt.event.KeyEvent.KEY_PRESSED: if(!hooks(SWT.KeyUp)) return; break;
-  case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyDown)) return; break;
+  case java.awt.event.KeyEvent.KEY_PRESSED: if(!hooks(SWT.KeyDown)) return; break;
+  case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyUp)) return; break;
+  case java.awt.event.KeyEvent.KEY_TYPED: if(!hooks(SWT.KeyDown)) return; break;
   case ComponentEvent.COMPONENT_RESIZED: if(!hooks(SWT.Resize)) return; break;
   case ComponentEvent.COMPONENT_MOVED: if(!hooks(SWT.Move)) return; break;
   case ComponentEvent.COMPONENT_SHOWN: if(!hooks(SWT.Show)) return; break;
@@ -4127,8 +4129,17 @@ public void processEvent(AWTEvent e) {
     mouseHoverThread = null;
     sendEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
     break;
-  case java.awt.event.KeyEvent.KEY_PRESSED: sendEvent(SWT.KeyDown, createKeyEvent((java.awt.event.KeyEvent)e)); break;
+  case java.awt.event.KeyEvent.KEY_PRESSED:
+    sendEvent(SWT.KeyDown, createKeyEvent((java.awt.event.KeyEvent)e));
+    lastPressed = ((java.awt.event.KeyEvent) e).getWhen ();
+    break;
   case java.awt.event.KeyEvent.KEY_RELEASED: sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e)); break;
+  case java.awt.event.KeyEvent.KEY_TYPED:
+    if (((java.awt.event.KeyEvent) e).getWhen () > lastPressed) {
+      sendEvent (SWT.KeyDown, createKeyEvent ((java.awt.event.KeyEvent) e));
+      sendEvent (SWT.KeyUp, createKeyEvent ((java.awt.event.KeyEvent) e));
+    }
+    break;
   case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
   case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;
   case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;

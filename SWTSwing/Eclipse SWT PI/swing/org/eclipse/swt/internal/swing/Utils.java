@@ -74,11 +74,15 @@ public class Utils {
   }
 
   static void installKeyListener(Component component, final Control control) {
+    component.enableInputMethods (true);
     component.addKeyListener(new KeyAdapter() {
       public void keyPressed(KeyEvent e) {
         control.processEvent(e);
       }
       public void keyReleased(KeyEvent e) {
+        control.processEvent(e);
+      }
+      public void keyTyped(KeyEvent e) {
         control.processEvent(e);
       }
     });

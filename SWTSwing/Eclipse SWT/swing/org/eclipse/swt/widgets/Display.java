@@ -1700,13 +1700,13 @@ public Color getSystemColor (int id) {
     case SWT.COLOR_WIDGET_FOREGROUND:
       swingColor = UIManager.getColor("controlText"); break;
     case SWT.COLOR_LIST_FOREGROUND:
-      swingColor = UIManager.getColor("controlText"); break;
+      swingColor = UIManager.getColor("textText"); break;
     case SWT.COLOR_LIST_BACKGROUND:
-      swingColor = UIManager.getColor("control"); break;
+      swingColor = UIManager.getColor("text"); break;
     case SWT.COLOR_LIST_SELECTION:
-      swingColor = UIManager.getColor("control"); break;
+      swingColor = UIManager.getColor("textHighlight"); break;
     case SWT.COLOR_LIST_SELECTION_TEXT:
-      swingColor = UIManager.getColor("controlText"); break;
+      swingColor = UIManager.getColor("textHighlightText"); break;
     case SWT.COLOR_INFO_FOREGROUND:
       swingColor = UIManager.getColor("infoText"); break;
     case SWT.COLOR_INFO_BACKGROUND:

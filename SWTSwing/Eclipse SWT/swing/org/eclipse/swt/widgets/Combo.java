@@ -389,7 +389,7 @@ public void deselectAll () {
 public String getItem (int index) {
 	checkWidget ();
   int count = getItemCount();
-  if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
+  if (!(0 <= index && index < count)) error (SWT.ERROR_CANNOT_GET_ITEM);
   try {
     return (String)((CCombo)handle).getItemAt(index);
   } catch(Exception e) {
@@ -679,7 +679,7 @@ public void paste () {
 public void remove (int index) {
 	checkWidget ();
   int count = getItemCount();
-  if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+  if (!(0 <= index && index < count)) error (SWT.ERROR_ITEM_NOT_REMOVED);
   ((CCombo)handle).removeItemAt(index);
   sendEvent (SWT.Modify);
 }

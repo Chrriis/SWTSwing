@@ -411,6 +411,10 @@ public class JTreeTable extends JPanel implements Scrollable {
     this.renderer = renderer;
   }
 
+  public TreeTableCellRenderer getTreeTableCellRenderer() {
+    return renderer;
+  }
+
   public TreeTableCellRenderer getCellRenderer() {
     return renderer;
   }
@@ -439,7 +443,7 @@ public class JTreeTable extends JPanel implements Scrollable {
   }
 
   public Dimension getPreferredScrollableViewportSize() {
-    return table.getPreferredScrollableViewportSize();
+    return table.getPreferredSize();
   }
 
   public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {

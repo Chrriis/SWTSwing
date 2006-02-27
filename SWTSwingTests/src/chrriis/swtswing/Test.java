@@ -51,7 +51,7 @@ public class Test {
 //      {"79", "define my own data transfer type"}, <-- Not in the snippet package. No main class...
 //      {"84", "define a default operation (in this example, Copy)"},
     }}, new Object[] {"FileDialog", new String[][] {
-//      {"72", "prompt for a file name (to save)"},
+      {"72", "prompt for a file name (to save)"},
     }}, new Object[] {"Font", new String[][] {
       {"100", "create a large font for use by a text widget"},
     }}, new Object[] {"FormLayout", new String[][] {
@@ -148,7 +148,7 @@ public class Test {
 //      {"31", "create a tracker (drag when torn off)"},
     }}, new Object[] {"Tree", new String[][] {
       {"15", "create a tree"},
-//      {"8", "create a tree (lazy)"},
+      {"8", "create a tree (lazy)"},
       {"114", "detect a selection or check event in a tree (SWT.CHECK)"},
       {"102", "insert a tree item (at an index)"},
       {"61", "print selected items in a tree"},
@@ -159,7 +159,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "97";
+  static String snippetNumber = "72";
 
   static boolean isRealDispatch = false;
 

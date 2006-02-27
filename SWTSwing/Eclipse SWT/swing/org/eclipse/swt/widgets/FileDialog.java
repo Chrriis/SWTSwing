@@ -14,9 +14,12 @@ package org.eclipse.swt.widgets;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -181,22 +184,38 @@ public String open () {
   if(title != null && title.length() > 0) {
     fileChooser.setDialogTitle(title);
   }
+  if(filterPath != null && filterPath.length() > 0) {
+    fileChooser.setCurrentDirectory(new File(filterPath));
+  }
+  if(fileName != null && fileName.length() > 0) {
+    fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory().getAbsolutePath() + "/" + fileName));
+  }
   fileName = "";
   fileNames = null;
   String fullPath = null;
   fileChooser.setMultiSelectionEnabled((style & SWT.MULTI) != 0);
-  if(filterExtensions != null && filterExtensions.length > 1) {
-    // TODO: file filters
-//    fileChooser.setFileFilter(new FileFilter() {
-//      public String getDescription() {
-//        return null;
-//      }
-//      public boolean accept(File pathname) {
-//        return true;
-////        new FilenameFilter();
-////        pathname.
-//      }
-//    });
+  if(filterExtensions != null && filterExtensions.length > 0) {
+    fileChooser.setAcceptAllFileFilterUsed(false);
+    for(int i=0; i<filterExtensions.length; i++) {
+      String filterExtension = filterExtensions[i];
+      String regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
+      final Pattern pattern = Pattern.compile(regExp.toString());
+      final String description = filterNames[i];
+      fileChooser.addChoosableFileFilter(new FileFilter() {
+        public boolean accept(File f) {
+          if(f.isDirectory()) {
+            return true;
+          }
+          Matcher m = pattern.matcher(f.getName());
+          return m.matches();
+        }
+        public String getDescription() {
+          return description;
+        }
+      });
+      
+    }
+    fileChooser.setFileFilter(fileChooser.getChoosableFileFilters()[0]);
   }
   int returnValue;
   if((style & SWT.SAVE) != 0) {

@@ -500,8 +500,9 @@ public void dispose () {
 //	*/
 //	if (!isValidWidget ()) return;
 //	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-//	Display oldDisplay = display;
+	Display oldDisplay = display;
 	super.dispose ();
+  oldDisplay.wake();
 	// widget is disposed at this point
 //	if (oldDisplay != null) oldDisplay.update ();
 }

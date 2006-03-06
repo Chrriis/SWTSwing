@@ -430,8 +430,10 @@ class SwingEventQueue extends EventQueue {
   }
   public void postEvent(AWTEvent theEvent) {
     super.postEvent(theEvent);
-    synchronized(UI_LOCK) {
-      UI_LOCK.notify();
+    if(!SwingUtilities.isEventDispatchThread()) {
+      synchronized(UI_LOCK) {
+        UI_LOCK.notify();
+      }
     }
   }
   public void pop() {

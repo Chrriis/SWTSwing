@@ -1495,10 +1495,10 @@ MenuItem getMenuItem (JComponent component) {
   return null;
 }
 
-//int getMessageCount () {
-//	return synchronizer.getMessageCount ();
-//}
-//
+int getMessageCount () {
+	return synchronizer.getMessageCount ();
+}
+
 //
 //Shell getModalShell () {
 //	if (modalShells == null) return null;
@@ -2652,13 +2652,13 @@ public boolean readAndDispatch () {
       } catch(Exception e) {}
     }
     if(exclusiveSectionCount == 1) {
-      runAsyncMessages (false);
+//      runAsyncMessages (false);
+      // TODO: check whether we need to runDeferredEvents() before returning
       return swingEventQueue.peekEvent() != null;
     }
   } else {
     synchronized(UI_LOCK) {
       if(exclusiveSectionCount == 0) {
-        runAsyncMessages (false);
         return false;
       }
       try {
@@ -2668,17 +2668,11 @@ public boolean readAndDispatch () {
       }
     }
   }
-//	drawMenuBars ();
-//	runPopups ();
-//	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
-//		if (!filterMessage (msg)) {
-//			OS.TranslateMessage (msg);
-//			OS.DispatchMessage (msg);
-//		}
-		runDeferredEvents ();
+  runDeferredEvents ();
 //		return true;
 //	}
-	/*boolean result =*/ runAsyncMessages (false);
+//	/*boolean result =*/ runAsyncMessages (false);
+//  System.err.println(synchronizer.getMessageCount());
   return true;
 }
 
@@ -3575,7 +3569,9 @@ public void wake () {
 void wakeThread () {
   SwingUtilities.invokeLater(new Runnable() {
     public void run() {
-      wake();
+      startExclusiveSection();
+      runAsyncMessages (false);
+      stopExclusiveSection();
     }
   });
 }

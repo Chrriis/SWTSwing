@@ -863,12 +863,7 @@ int indexOf (int hItem, int hChild) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	if (hwndHeader == 0) return -1;
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
-		if (columns [i] == column) return i;
-	}
-	return -1;
+  return columnList.indexOf(column);
 }
 
 /**
@@ -934,14 +929,13 @@ int indexOf (int hItem, int hChild) {
 
 void releaseWidget () {
   for(int i=0; i<columnList.size(); i++) {
-    ((TreeColumn)columnList.get(i)).releaseResources();
+    TreeColumn column = (TreeColumn)columnList.get(i);
+    if (!column.isDisposed ()) column.releaseResources ();
   }
 	columnList = null;
 	for (int i=0; i<itemList.size(); i++) {
-		TreeItem item = (TreeItem)itemList.get(i);
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
-		}
+    TreeItem item = (TreeItem)itemList.get(i);
+    if (!item.isDisposed ()) item.releaseResources ();
 	}
 	itemList = null;
 //	/*

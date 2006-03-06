@@ -11,6 +11,14 @@
 package org.eclipse.swt.widgets;
 
  
+import javax.swing.ImageIcon;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import org.eclipse.swt.internal.swing.CTable;
+import org.eclipse.swt.internal.swing.CTableItem;
+import org.eclipse.swt.internal.swing.CTree;
+import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -30,12 +38,24 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class TableItem extends Item {
+  /**
+   * the handle to the OS resource 
+   * (Warning: This field is platform dependent)
+   * <p>
+   * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+   * public API. It is marked public only so that it can be shared
+   * within the packages provided by SWT. It is not available on all
+   * platforms and should never be accessed from application code.
+   * </p>
+   */ 
+  CTableItem handle;
 	Table parent;
-	String [] strings;
-	Image [] images;
-	boolean checked, grayed, cached;
-	int imageIndent, background = -1, foreground = -1, font = -1;
-	int [] cellBackground, cellForeground, cellFont;
+//	String [] strings;
+//	Image [] images;
+//	boolean checked, grayed
+  boolean cached;
+//	int imageIndent, background = -1, foreground = -1, font = -1;
+//	int [] cellBackground, cellForeground, cellFont;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -109,6 +129,7 @@ public TableItem (Table parent, int style, int index) {
 TableItem (Table parent, int style, int index, boolean create) {
 	super (parent, style);
 	this.parent = parent;
+  handle = createHandle();
 	if (create) parent.createItem (this, index);
 }
 
@@ -121,15 +142,19 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+CTableItem createHandle () {
+  return CTableItem.Instanciator.createInstance(this, style);
+}
+
 void clear () {
 	text = "";
 	image = null;
-	strings = null;
-	images = null;
-	imageIndent = 0;
-	checked = grayed = false;
-	background = foreground = font = -1;
-	cellBackground = cellForeground = cellFont = null;
+//	strings = null;
+//	images = null;
+//	imageIndent = 0;
+//	checked = grayed = false;
+//	background = foreground = font = -1;
+//	cellBackground = cellForeground = cellFont = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 }
 
@@ -147,10 +172,7 @@ void clear () {
  * 
  */
 public Color getBackground () {
-	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
-	return Color.win32_new (display, pixel);
+  return getBackground(0);
 }
 
 /**
@@ -167,36 +189,41 @@ public Color getBackground () {
  * @since 3.0
  */
 public Color getBackground (int index) {
-	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return getBackground ();
-	int pixel = cellBackground != null ? cellBackground [index] : -1;
-	return pixel == -1 ? getBackground () : Color.win32_new (display, pixel);
+  checkWidget ();
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return getBackground ();
+  java.awt.Color color = handle.getTableItemObject(index).getBackground();
+  if(color == null) {
+    if(index != 0) {
+      return getBackground();
+    }
+    return Color.swing_new(display, parent.handle.getBackground());
+  }
+  return Color.swing_new(display, color);
 }
 
-/**
- * Returns a rectangle describing the receiver's size and location
- * relative to its parent.
- *
- * @return the receiver's bounding rectangle
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.1
- */
-/*public*/ Rectangle getBounds () {
-	checkWidget();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	RECT rect = getBounds (itemIndex, 0, true, false);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
-}
+///**
+// * Returns a rectangle describing the receiver's size and location
+// * relative to its parent.
+// *
+// * @return the receiver's bounding rectangle
+// *
+// * @exception SWTException <ul>
+// *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+// *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+// * </ul>
+// * 
+// * @since 3.1
+// */
+///*public*/ Rectangle getBounds () {
+//	checkWidget();
+//	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+//	int itemIndex = parent.indexOf (this);
+//	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+//	RECT rect = getBounds (itemIndex, 0, true, false);
+//	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+//	return new Rectangle (rect.left, rect.top, width, height);
+//}
 
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -213,89 +240,9 @@ public Color getBackground (int index) {
 public Rectangle getBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	RECT rect = getBounds (itemIndex, index, true, true);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
-}
-
-RECT getBounds (int row, int column, boolean getText, boolean getImage) {
-	if (!getText && !getImage) return new RECT ();
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > column || column > count - 1) return new RECT ();
-	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
-	RECT rect = new RECT ();
-	int hwnd = parent.handle;
-	if (column == 0 && count == 1) {
-		if (getText && getImage) {
-			rect.left = OS.LVIR_SELECTBOUNDS;
-		} else {
-			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
-		}
-		if (OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect) == 0) {
-			rect.left = 0;
-		}
-	} else {
-		/*
-		* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
-		* and zero for the column number gives the bounds of the first item
-		* without including the bounds of the icon.  This is undocumented.
-		* When called with values greater than zero, the icon bounds are
-		* included and this behavior is documented.
-		*/
-		rect.top = column;
-		rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
-		if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) != 0) {
-			if (getText && getImage) {
-				if (column == 0) {
-					RECT iconRect = new RECT ();
-					iconRect.left = OS.LVIR_ICON;
-					iconRect.top = column;
-					if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-						rect.left = iconRect.left;
-						rect.right = Math.max (rect.right, iconRect.right);
-					}
-				}
-			} else {
-				if (column != 0) {
-					/*
-					* Feature in Windows.  LVM_GETSUBITEMRECT returns an image width
-					* even when the subitem does not contain an image.  The fix is to
-					* adjust the rectangle to represent the area the table is drawing.
-					*/
-					if (images != null && images [column] != null) {
-						if (getText) {
-							RECT iconRect = new RECT ();
-							iconRect.left = OS.LVIR_ICON;
-							iconRect.top = column;		
-							if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-								rect.left = iconRect.right + Table.INSET / 2;
-							}
-						}
-					} else {
-						if (getImage) rect.right = rect.left;
-					}
-				}
-			}
-		} else {
-			rect.left = rect.top = 0;
-		}
-	}
-	
-	/*
-	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
-	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
-	* the grid width when the grid is visible.  The fix is to
-	* move the top of the rectangle up by the grid width.
-	*/
-	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
-	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) rect.top -= gridWidth;
-	if (column != 0) rect.left += gridWidth;
-	rect.right = Math.max (rect.right, rect.left);
-	rect.top += gridWidth;
-	rect.bottom = Math.max (rect.bottom - gridWidth, rect.top);
-	return rect;
+  CTable table = (CTable)parent.handle;
+  java.awt.Rectangle rect = table.getCellRect(parent.indexOf(this), index, false);
+  return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -312,9 +259,8 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
  */
 public boolean getChecked () {
 	checkWidget();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if ((parent.style & SWT.CHECK) == 0) return false;
-	return checked;
+  if ((parent.style & SWT.CHECK) == 0) return false;
+  return handle.isGrayed();
 }
 
 /**
@@ -330,9 +276,7 @@ public boolean getChecked () {
  * @since 3.0
  */
 public Font getFont () {
-	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
+  return getFont(0);
 }
 
 /**
@@ -350,12 +294,17 @@ public Font getFont () {
  * @since 3.0
  */
 public Font getFont (int index) {
-	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count -1) return getFont ();
-	int hFont = (cellFont != null) ? cellFont [index] : font;
-	return hFont == -1 ? getFont () : Font.win32_new (display, hFont);
+  checkWidget ();
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count -1) return getFont ();
+  java.awt.Font font = handle.getTableItemObject(index).getFont();
+  if(font == null) {
+    if(index != 0) {
+      return getFont();
+    }
+    return Font.swing_new(display, parent.handle.getFont());
+  }
+  return Font.swing_new(display, font);
 }
 
 /**
@@ -372,10 +321,7 @@ public Font getFont (int index) {
  * 
  */
 public Color getForeground () {
-	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int pixel = (foreground == -1) ? parent.getForegroundPixel () : foreground;
-	return Color.win32_new (display, pixel);
+  return getForeground (0);
 }
 
 /**
@@ -393,12 +339,17 @@ public Color getForeground () {
  * @since 3.0
  */
 public Color getForeground (int index) {
-	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count -1) return getForeground ();
-	int pixel = cellForeground != null ? cellForeground [index] : -1;
-	return pixel == -1 ? getForeground () : Color.win32_new (display, pixel);
+  checkWidget ();
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count -1) return getForeground ();
+  java.awt.Color color = handle.getTableItemObject(index).getForeground();
+  if(color == null) {
+    if(index != 0) {
+      return getBackground();
+    }
+    return Color.swing_new(display, parent.handle.getForeground());
+  }
+  return Color.swing_new(display, color);
 }
 
 /**
@@ -414,10 +365,9 @@ public Color getForeground (int index) {
  * </ul>
  */
 public boolean getGrayed () {
-	checkWidget();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if ((parent.style & SWT.CHECK) == 0) return false;
-	return grayed;
+  checkWidget ();
+  if ((parent.style & SWT.CHECK) == 0) return false;
+  return handle.isGrayed();
 }
 
 public Image getImage () {
@@ -523,36 +473,31 @@ public String getText () {
 public String getText (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (index == 0) return getText ();
-	if (strings != null) {
-		if (0 <= index && index < strings.length) {
-			String string = strings [index];
-			return string != null ? string : "";
-		}
-	}
-	return "";
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return "";
+  return handle.getTableItemObject(index).getText();
 }
 
-void redraw () {
-	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (parent.currentItem == this || parent.drawCount != 0) return;
-	int hwnd = parent.handle;
-	if (!OS.IsWindowVisible (hwnd)) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
-}
+//void redraw () {
+//	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+//	if (parent.currentItem == this || parent.drawCount != 0) return;
+//	int hwnd = parent.handle;
+//	if (!OS.IsWindowVisible (hwnd)) return;
+//	int index = parent.indexOf (this);
+//	if (index == -1) return;
+//	OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
+//}
 
-void redraw (int column, boolean drawText, boolean drawImage) {
-	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (parent.currentItem == this || parent.drawCount != 0) return;
-	int hwnd = parent.handle;
-	if (!OS.IsWindowVisible (hwnd)) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	RECT rect = getBounds (index, column, drawText, drawImage);
-	OS.InvalidateRect (hwnd, rect, true);
-}
+//void redraw (int column, boolean drawText, boolean drawImage) {
+//	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+//	if (parent.currentItem == this || parent.drawCount != 0) return;
+//	int hwnd = parent.handle;
+//	if (!OS.IsWindowVisible (hwnd)) return;
+//	int index = parent.indexOf (this);
+//	if (index == -1) return;
+//	RECT rect = getBounds (index, column, drawText, drawImage);
+//	OS.InvalidateRect (hwnd, rect, true);
+//}
 
 void releaseChild () {
 	super.releaseChild ();
@@ -562,9 +507,9 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
-	strings = null;
-	images = null;
-	cellBackground = cellForeground = cellFont = null;
+//	strings = null;
+//	images = null;
+//	cellBackground = cellForeground = cellFont = null;
 }
 
 /**
@@ -586,18 +531,7 @@ void releaseWidget () {
  * 
  */
 public void setBackground (Color color) {
-	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (background == pixel) return;
-	background = pixel;
-	redraw ();
+  setBackground(0, color);
 }
 
 /**
@@ -621,25 +555,13 @@ public void setBackground (Color color) {
  */
 public void setBackground (int index, Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return;
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (cellBackground == null) {
-		cellBackground = new int [count];
-		for (int i = 0; i < count; i++) {
-			cellBackground [i] = -1;
-		}
-	}
-	if (cellBackground [index] == pixel) return;
-	cellBackground [index] = pixel;
-	redraw (index, true, true);
+  if (color != null && color.isDisposed ()) {
+    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  }
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return;
+  handle.getTableItemObject(index).setBackground(color == null? null: color.handle);
+  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
 }
 
 /**
@@ -655,21 +577,22 @@ public void setBackground (int index, Color color) {
  */
 public void setChecked (boolean checked) {
 	checkWidget();
-	if ((parent.style & SWT.CHECK) == 0) return;
-	if (this.checked == checked) return;
-	setChecked (checked, false);
+  if ((parent.style & SWT.CHECK) == 0) return;
+  handle.setChecked(checked);
+  // TODO: is it always 0 if columns are reordered?
+  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), 0);
 }
 
-void setChecked (boolean checked, boolean notify) {
-	this.checked = checked;
-	if (notify) {
-		Event event = new Event();
-		event.item = this;
-		event.detail = SWT.CHECK;
-		parent.postEvent (SWT.Selection, event);
-	}
-	redraw ();
-}
+//void setChecked (boolean checked, boolean notify) {
+//	this.checked = checked;
+//	if (notify) {
+//		Event event = new Event();
+//		event.item = this;
+//		event.detail = SWT.CHECK;
+//		parent.postEvent (SWT.Selection, event);
+//	}
+//	redraw ();
+//}
 
 /**
  * Sets the font that the receiver will use to paint textual information
@@ -689,42 +612,7 @@ void setChecked (boolean checked, boolean notify) {
  * @since 3.0
  */
 public void setFont (Font font){
-	checkWidget ();
-	if (font != null && font.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
-	if (this.font == hFont) return;
-	this.font = hFont;
-	/*
-	* Bug in Windows.  Despite the fact that every item in the
-	* table always has LPSTR_TEXTCALLBACK, Windows caches the
-	* bounds for the selected items.  This means that 
-	* when you change the string to be something else, Windows
-	* correctly asks you for the new string but when the item
-	* is selected, the selection draws using the bounds of the
-	* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-	* even though it has not changed, causing Windows to flush
-	* cached bounds.
-	*/
-	if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
-		int itemIndex = parent.indexOf (this);
-		if (itemIndex != -1) {
-			int hwnd = parent.handle;
-			LVITEM lvItem = new LVITEM ();
-			lvItem.mask = OS.LVIF_TEXT;
-			lvItem.iItem = itemIndex;
-			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-			OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-			cached = false;
-		}
-	}
-	parent.setScrollWidth (this, false);
-	redraw ();
+  setFont(0, font);
 }
 
 /**
@@ -748,51 +636,13 @@ public void setFont (Font font){
  */
 public void setFont (int index, Font font) {
 	checkWidget ();
-	if (font != null && font.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return;
-	int hFont = -1;
-	if (font != null) {
-		parent.customDraw = true;
-		hFont = font.handle;
-	}
-	if (cellFont == null) {
-		cellFont = new int [count];
-		for (int i = 0; i < count; i++) {
-			cellFont [i] = -1;
-		}
-	}
-	if (cellFont [index] == hFont) return;
-	cellFont [index] = hFont;
-	if (index == 0) {
-		/*
-		* Bug in Windows.  Despite the fact that every item in the
-		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
-		* when you change the string to be something else, Windows
-		* correctly asks you for the new string but when the item
-		* is selected, the selection draws using the bounds of the
-		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-		* even though it has not changed, causing Windows to flush
-		* cached bounds.
-		*/
-		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
-			int itemIndex = parent.indexOf (this);
-			if (itemIndex != -1) {
-				int hwnd = parent.handle;
-				LVITEM lvItem = new LVITEM ();
-				lvItem.mask = OS.LVIF_TEXT;
-				lvItem.iItem = itemIndex;
-				lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-				OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-				cached = false;
-			}
-		}
-		parent.setScrollWidth (this, false);
-	}	
-	redraw (index, true, false);
+  if (font != null && font.isDisposed ()) {
+    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  }
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return;
+  handle.getTableItemObject(index).setFont(font == null? null: font.handle);
+  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
 }
 
 /**
@@ -814,18 +664,7 @@ public void setFont (int index, Font font) {
  * 
  */
 public void setForeground (Color color){
-	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (foreground == pixel) return;
-	foreground = pixel;
-	redraw ();
+  setForeground(0, color);
 }
 
 /**
@@ -849,25 +688,13 @@ public void setForeground (Color color){
  */
 public void setForeground (int index, Color color){
 	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return;
-	int pixel = -1;
-	if (color != null) {
-		parent.customDraw = true;
-		pixel = color.handle;
-	}
-	if (cellForeground == null) {
-		cellForeground = new int [count];
-		for (int i = 0; i < count; i++) {
-			cellForeground [i] = -1;
-		}
-	}
-	if (cellForeground [index] == pixel) return;
-	cellForeground [index] = pixel;
-	redraw (index, true, false);
+  if (color != null && color.isDisposed ()) {
+    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  }
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return;
+  handle.getTableItemObject(index).setForeground(color == null? null: color.handle);
+  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
 }
 
 /**
@@ -882,11 +709,11 @@ public void setForeground (int index, Color color){
  * </ul>
  */
 public void setGrayed (boolean grayed) {
-	checkWidget();
-	if ((parent.style & SWT.CHECK) == 0) return;
-	if (this.grayed == grayed) return;
-	this.grayed = grayed;
-	redraw ();
+  checkWidget ();
+  if ((parent.style & SWT.CHECK) == 0) return;
+  handle.setGrayed(grayed);
+  // TODO: is it always 0 if columns are reordered?
+  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), 0);
 }
 
 /**
@@ -936,21 +763,25 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return;
-	if (images == null && index != 0) images = new Image [count];
-	if (images != null) {
-		if (image != null && image.type == SWT.ICON) {
-			if (image.equals (images [index])) return;
-		}
-		images [index] = image;
-	}
-	
-	/* Ensure that the image list is created */
-	parent.imageIndex (image);
-	
-	if (index == 0) parent.setScrollWidth (this, false);
-	redraw (index, false, true);
+  handle.getTableItemObject(index).setIcon(new ImageIcon(image.handle));
+  ((CTable)parent.handle).getModel().fireTableCellUpdated(index, index);
+//
+//  
+//  int count = Math.max (1, parent.getColumnCount ());
+//	if (0 > index || index > count - 1) return;
+//	if (images == null && index != 0) images = new Image [count];
+//	if (images != null) {
+//		if (image != null && image.type == SWT.ICON) {
+//			if (image.equals (images [index])) return;
+//		}
+//		images [index] = image;
+//	}
+//	
+//	/* Ensure that the image list is created */
+//	parent.imageIndex (image);
+//	
+//	if (index == 0) parent.setScrollWidth (this, false);
+//	redraw (index, false, true);
 }
 
 public void setImage (Image image) {
@@ -1028,51 +859,18 @@ public void setText (String [] strings) {
  * </ul>
  */
 public void setText (int index, String string) {
-	checkWidget();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (index == 0) {
-		if (string.equals (text)) return;
-		super.setText (string);
-	}
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return;
-	if (strings == null && index != 0) strings = new String [count];
-	if (strings != null) {
-		if (string.equals (strings [index])) return;
-		strings [index] = string;
-	}
-	if (index == 0) {
-		/*
-		* Bug in Windows.  Despite the fact that every item in the
-		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
-		* when you change the string to be something else, Windows
-		* correctly asks you for the new string but when the item
-		* is selected, the selection draws using the bounds of the
-		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-		* even though it has not changed, causing Windows to flush
-		* cached bounds.
-		*/
-		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
-			int itemIndex = parent.indexOf (this);
-			if (itemIndex != -1) {
-				int hwnd = parent.handle;
-				LVITEM lvItem = new LVITEM ();
-				lvItem.mask = OS.LVIF_TEXT;
-				lvItem.iItem = itemIndex;
-				lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-				OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-				cached = false;
-			}
-		}
-		parent.setScrollWidth (this, false);
-	}
-	redraw (index, true, false);
+  checkWidget();
+  if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return;
+  handle.getTableItemObject(index).setText(string);
+  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
 }
 
 public void setText (String string) {
-	checkWidget();
-	setText (0, string);
+  checkWidget();
+  setText (0, string);
+  super.setText(string);
 }
 
 }

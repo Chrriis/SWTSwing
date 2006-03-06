@@ -1,5 +1,5 @@
 /*
- * @(#)CTreeItem.java
+ * @(#)CTableItem.java
  * 
  * Christopher Deckers (chrriis@brainlex.com)
  * http://chrriis.brainlex.com
@@ -13,36 +13,33 @@ import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.Icon;
-import javax.swing.tree.TreeNode;
 
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.TableItem;
 
-class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTreeItem {
+class CTableItemImplementation implements CTableItem {
 
-  protected DefaultMutableTreeTableNode mutableTreeTableNode;
+  protected TableItem handle;
 
-  protected TreeItem handle;
-
-  public CTreeItemImplementation(TreeItem treeItem, int style) {
-    setUserObjects(new Object[] {new TreeItemObject(this)});
-    handle = treeItem;
+  public CTableItemImplementation(TableItem tableItem, int style) {
+    setUserObjects(new TableItemObject[] {new TableItemObject(this)});
+    handle = tableItem;
     init(style);
   }
 
-  public TreeItem getTreeItem() {
+  public TableItem getTableItem() {
     return handle;
   }
 
   protected void init(int style) {
   }
 
-  public TreeItemObject getTreeItemObject(int index) {
-    TreeItemObject treeItemObject = (TreeItemObject)getUserObject(index);
-    if(treeItemObject == null) {
-      treeItemObject = new TreeItemObject(this);
-      setUserObject(index, treeItemObject);
+  public TableItemObject getTableItemObject(int index) {
+    TableItemObject tableItemObject = getUserObject(index);
+    if(tableItemObject == null) {
+      tableItemObject = new TableItemObject(this);
+      setUserObject(index, tableItemObject);
     }
-    return treeItemObject;
+    return tableItemObject;
   }
 
   protected boolean isChecked;
@@ -66,36 +63,67 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
   }
 
   public void insertColumn(int index) {
-    Object[] objects = getUserObjects();
-    Object[] newObjects = new Object[objects.length + 1];
+    TableItemObject[] objects = getUserObjects();
+    TableItemObject[] newObjects = new TableItemObject[objects.length + 1];
     System.arraycopy(objects, 0, newObjects, 0, index);
     System.arraycopy(objects, index, newObjects, index + 1, objects.length - index);
-    newObjects[index] = new TreeItemObject(this);
+    newObjects[index] = new TableItemObject(this);
     setUserObjects(newObjects);
   }
 
   public void removeColumn(int index) {
-    Object[] objects = getUserObjects();
-    Object[] newObjects = new Object[objects.length - 1];
+    TableItemObject[] objects = getUserObjects();
+    TableItemObject[] newObjects = new TableItemObject[objects.length - 1];
     System.arraycopy(objects, 0, newObjects, 0, index);
     System.arraycopy(objects, index + 1, newObjects, index, newObjects.length - index);
     setUserObjects(newObjects);
   }
 
+  protected TableItemObject[] userObjects;
+
+  protected void setUserObjects(TableItemObject[] userObjects) {
+    this.userObjects = userObjects;
+  }
+
+  protected TableItemObject[] getUserObjects() {
+    return userObjects;
+  }
+
+  protected TableItemObject getUserObject(int index) {
+    if(userObjects == null) {
+      return null;
+    }
+    if(index < userObjects.length) {
+      return userObjects[index];
+    }
+    return null;
+  }
+
+  protected void setUserObject(int index, TableItemObject userObject) {
+    if(userObjects == null) {
+      userObjects = new TableItemObject[index + 1];
+    } else if(userObjects.length <= index) {
+      TableItemObject[] newUserObjects = new TableItemObject[index + 1];
+      System.arraycopy(userObjects, 0, newUserObjects, 0, userObjects.length);
+      userObjects = newUserObjects;
+    }
+    userObjects[index] = userObject;
+  }
+
 }
 
-public interface CTreeItem {
+public interface CTableItem {
 
-  public static class TreeItemObject {
+  public static class TableItemObject {
 
-    protected CTreeItem treeItem;
+    protected CTableItem tableItem;
 
-    public CTreeItem getTreeItem() {
-      return treeItem;
+    public CTableItem getTableItem() {
+      return tableItem;
     }
 
-    protected TreeItemObject(CTreeItem treeItem) {
-      this.treeItem = treeItem;
+    protected TableItemObject(CTableItem tableItem) {
+      this.tableItem = tableItem;
     }
 
     protected String text;
@@ -153,11 +181,11 @@ public interface CTreeItem {
     }
 
     public boolean isChecked() {
-      return treeItem.isChecked();
+      return tableItem.isChecked();
     }
 
     public boolean isGrayed() {
-      return treeItem.isGrayed();
+      return tableItem.isGrayed();
     }
 
   }
@@ -165,17 +193,13 @@ public interface CTreeItem {
   public static class Instanciator {
     private Instanciator() {}
 
-    public static CTreeItem createInstance(TreeItem treeItem, int style) {
-      return new CTreeItemImplementation(treeItem, style);
+    public static CTableItem createInstance(TableItem tableItem, int style) {
+      return new CTableItemImplementation(tableItem, style);
     }
 
   }
 
-  public TreeNode[] getPath();
-
-  public TreeItemObject getTreeItemObject(int index);
-
-  public int getChildCount();
+  public TableItemObject getTableItemObject(int index);
 
   public void setChecked(boolean isChecked);
 
@@ -188,7 +212,5 @@ public interface CTreeItem {
   public void insertColumn(int index);
 
   public void removeColumn(int index);
-
-  public TreeItem getTreeItem();
 
 }

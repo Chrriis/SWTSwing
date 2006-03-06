@@ -11,10 +11,22 @@
 package org.eclipse.swt.widgets;
 
  
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import javax.swing.ImageIcon;
+import javax.swing.SwingConstants;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CTable;
+import org.eclipse.swt.internal.swing.CTableColumn;
+import org.eclipse.swt.internal.win32.LVCOLUMN;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.RECT;
+import org.eclipse.swt.internal.win32.TCHAR;
 
 /**
  * Instances of this class represent a column in a table widget.
@@ -32,7 +44,7 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	boolean resizable, moveable;
+  CTableColumn handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -68,7 +80,7 @@ public class TableColumn extends Item {
  */
 public TableColumn (Table parent, int style) {
 	super (parent, checkStyle (style));
-	resizable = true;
+  handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, parent.getColumnCount ());
 }
@@ -108,7 +120,7 @@ public TableColumn (Table parent, int style) {
  */
 public TableColumn (Table parent, int style, int index) {
 	super (parent, checkStyle (style));
-	resizable = true;
+  handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, index);
 }
@@ -180,6 +192,10 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+CTableColumn createHandle () {
+  return CTableColumn.Instanciator.createInstance(this, style);
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -241,7 +257,9 @@ public Table getParent () {
  */
 public boolean getMoveable () {
 	checkWidget ();
-	return moveable;
+  return false;
+  // TODO: check how to change this per column
+//  return ((javax.swing.table.TableColumn)handle).getResizable();
 }
 
 /**
@@ -258,7 +276,7 @@ public boolean getMoveable () {
  */
 public boolean getResizable () {
 	checkWidget ();
-	return resizable;
+  return ((javax.swing.table.TableColumn)handle).getResizable();
 }
 
 /**
@@ -275,8 +293,7 @@ public int getWidth () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
-	int hwnd = parent.handle;
-	return OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+  return ((javax.swing.table.TableColumn)handle).getWidth();
 }
 
 /**
@@ -294,95 +311,101 @@ public void pack () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	int hwnd = parent.handle;
-	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
-	if (image != null) {
-		int margin = 0;
-		if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
-			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
-		} else {
-			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
-		}
-		Rectangle rect = image.getBounds ();
-		headerWidth += rect.width + margin * 2;
-	}
-	boolean oldIgnoreRezize = parent.ignoreResize;
-	parent.ignoreResize = true;
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
-	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-	if (index == 0) {
-		/*
-		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
-		* where each item has I_IMAGECALLBACK but there are no images in the
-		* table, the size computed by LVM_SETCOLUMNWIDTH is too small for the
-		* first column, causing long items to be clipped with '...'.  The fix
-		* is to increase the column width by a small amount.
-		*/
-		if (parent.imageList == null) columnWidth += 2;
-		/*
-		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
-		* for a table with a state image list, the column is width does not
-		* include space for the state icon.  The fix is to increase the column
-		* width by the width of the image list.
-		*/
-		if ((parent.style & SWT.CHECK) != 0) {
-			int hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-			if (hStateList != 0) {
-				int [] cx = new int [1], cy = new int [1];
-				OS.ImageList_GetIconSize (hStateList, cx, cy);
-				columnWidth += cx [0];
-			}
-		}
-	}
-	if (headerWidth > columnWidth) {
-		if (image == null) {
-			/*
-			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
-			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
-			* column is expanded to fill the client area.  The fix is to
-			* resize the table to be small, set the column width and then
-			* restore the table to its original size.
-			*/
-			RECT rect = null;
-			boolean fixWidth = index == parent.getColumnCount () - 1;
-			if (fixWidth) {
-				rect = new RECT ();
-				OS.GetWindowRect (hwnd, rect);
-				OS.UpdateWindow (hwnd);
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
-				SetWindowPos (hwnd, 0, 0, 0, 0, rect.bottom - rect.top, flags);
-			}
-			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
-			if (fixWidth) {
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
-				SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
-			}
-		} else {
-			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
-		}
-	} else {
-		if (index == 0) {
-			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
-		}
-	}
-	parent.ignoreResize = oldIgnoreRezize;
-	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+  int oldWidth = getWidth();
+  CTable cTable = (CTable)parent.handle;
+  int newWidth = cTable.getPreferredColumnWidth(index);
+  // TODO: check why in the old SWTSwing, +2 is added.
+  cTable.getColumnModel().getColumn(index).setPreferredWidth(newWidth + 2);
+
+//	int hwnd = parent.handle;
+//	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+//	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
+//	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
+//	if (image != null) {
+//		int margin = 0;
+//		if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
+//			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+//			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
+//		} else {
+//			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
+//		}
+//		Rectangle rect = image.getBounds ();
+//		headerWidth += rect.width + margin * 2;
+//	}
+//	boolean oldIgnoreRezize = parent.ignoreResize;
+//	parent.ignoreResize = true;
+//	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
+//	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+//	if (index == 0) {
+//		/*
+//		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+//		* where each item has I_IMAGECALLBACK but there are no images in the
+//		* table, the size computed by LVM_SETCOLUMNWIDTH is too small for the
+//		* first column, causing long items to be clipped with '...'.  The fix
+//		* is to increase the column width by a small amount.
+//		*/
+//		if (parent.imageList == null) columnWidth += 2;
+//		/*
+//		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+//		* for a table with a state image list, the column is width does not
+//		* include space for the state icon.  The fix is to increase the column
+//		* width by the width of the image list.
+//		*/
+//		if ((parent.style & SWT.CHECK) != 0) {
+//			int hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+//			if (hStateList != 0) {
+//				int [] cx = new int [1], cy = new int [1];
+//				OS.ImageList_GetIconSize (hStateList, cx, cy);
+//				columnWidth += cx [0];
+//			}
+//		}
+//	}
+//	if (headerWidth > columnWidth) {
+//		if (image == null) {
+//			/*
+//			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
+//			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
+//			* column is expanded to fill the client area.  The fix is to
+//			* resize the table to be small, set the column width and then
+//			* restore the table to its original size.
+//			*/
+//			RECT rect = null;
+//			boolean fixWidth = index == parent.getColumnCount () - 1;
+//			if (fixWidth) {
+//				rect = new RECT ();
+//				OS.GetWindowRect (hwnd, rect);
+//				OS.UpdateWindow (hwnd);
+//				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
+//				SetWindowPos (hwnd, 0, 0, 0, 0, rect.bottom - rect.top, flags);
+//			}
+//			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
+//			if (fixWidth) {
+//				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
+//				SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+//			}
+//		} else {
+//			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
+//		}
+//	} else {
+//		if (index == 0) {
+//			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
+//		}
+//	}
+//	parent.ignoreResize = oldIgnoreRezize;
+//	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
 		sendEvent (SWT.Resize);
-		if (isDisposed ()) return;
-		boolean moved = false;
-		int [] order = parent.getColumnOrder ();
-		TableColumn [] columns = parent.getColumns ();
-		for (int i=0; i<order.length; i++) {
-			TableColumn column = columns [order [i]];
-			if (moved && !column.isDisposed ()) {
-				column.sendEvent (SWT.Move);
-			}
-			if (column == this) moved = true;
-		}
+//		if (isDisposed ()) return;
+//		boolean moved = false;
+//		int [] order = parent.getColumnOrder ();
+//		TableColumn [] columns = parent.getColumns ();
+//		for (int i=0; i<order.length; i++) {
+//			TableColumn column = columns [order [i]];
+//			if (moved && !column.isDisposed ()) {
+//				column.sendEvent (SWT.Move);
+//			}
+//			if (column == this) moved = true;
+//		}
 	}
 }
 
@@ -465,17 +488,10 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int hwnd = parent.handle;
-	LVCOLUMN lvColumn = new LVCOLUMN ();
-	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
-	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
-	lvColumn.fmt &= ~OS.LVCFMT_JUSTIFYMASK;
-	int fmt = 0;
-	if ((style & SWT.LEFT) == SWT.LEFT) fmt = OS.LVCFMT_LEFT;
-	if ((style & SWT.CENTER) == SWT.CENTER) fmt = OS.LVCFMT_CENTER;
-	if ((style & SWT.RIGHT) == SWT.RIGHT) fmt = OS.LVCFMT_RIGHT;
-	lvColumn.fmt |= fmt;
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+  if ((style & SWT.LEFT) == SWT.LEFT) handle.setAlignment(SwingConstants.LEFT);
+  if ((style & SWT.CENTER) == SWT.CENTER) handle.setAlignment(SwingConstants.CENTER);
+  if ((style & SWT.RIGHT) == SWT.RIGHT) handle.setAlignment(SwingConstants.RIGHT);
+  // TODO: notify change
 }
 
 public void setImage (Image image) {
@@ -486,17 +502,7 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-	int hwnd = parent.handle;
-	LVCOLUMN lvColumn = new LVCOLUMN ();
-	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
-	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
-	if (image != null) {
-		lvColumn.fmt |= OS.LVCFMT_IMAGE;
-		lvColumn.iImage = parent.imageIndex (image);
-	} else {
-		lvColumn.fmt &= ~OS.LVCFMT_IMAGE;
-	}
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+  handle.setIcon(new ImageIcon(image.handle));
 }
 
 /**
@@ -541,7 +547,7 @@ public void setMoveable (boolean moveable) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget ();
-	this.resizable = resizable;
+  ((javax.swing.table.TableColumn)handle).setResizable(resizable);
 }
 
 public void setText (String string) {
@@ -549,38 +555,9 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	super.setText (string);
-
-	/*
-	* Bug in Windows.  For some reason, when the title
-	* of a column is changed after the column has been
-	* created, the alignment must also be reset or the
-	* text does not draw.  The fix is to query and then
-	* set the alignment.
-	*/
-	int hwnd = parent.handle;
-	LVCOLUMN lvColumn = new LVCOLUMN ();
-	lvColumn.mask = OS.LVCF_FMT;
-	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
-
-	/*
-	* Bug in Windows.  When a column header contains a
-	* mnemonic character, Windows does not measure the
-	* text properly.  This causes '...' to always appear
-	* at the end of the text.  The fix is to remove
-	* mnemonic characters and replace doubled mnemonics
-	* with spaces.
-	*/
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount);
-	lvColumn.mask |= OS.LVCF_TEXT;
-	lvColumn.pszText = pszText;
-	int result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	if (result == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+  super.setText (string);
+  // TODO: check what happens with mnemonics
+  ((javax.swing.table.TableColumn)handle).setHeaderValue(string);
 }
 
 /**
@@ -597,8 +574,7 @@ public void setWidth (int width) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	int hwnd = parent.handle;
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, width);
+  ((javax.swing.table.TableColumn)handle).setPreferredWidth(width);
 }
 
 }

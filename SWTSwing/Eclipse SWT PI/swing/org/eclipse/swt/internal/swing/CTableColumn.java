@@ -1,5 +1,5 @@
 /*
- * @(#)CTreeColumn.java
+ * @(#)CTableColumn.java
  * 
  * Christopher Deckers (chrriis@brainlex.com)
  * http://chrriis.brainlex.com
@@ -14,20 +14,20 @@ import javax.swing.SwingConstants;
 import javax.swing.table.TableColumn;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.TreeColumn;
 
-class CTreeColumnImplementation extends TableColumn implements CTreeColumn {
+class CTableColumnImplementation extends TableColumn implements CTableColumn {
 
   protected DefaultMutableTreeTableNode mutableTreeTableNode;
 
-  protected TreeColumn handle;
+  protected org.eclipse.swt.widgets.TableColumn handle;
 
-  public CTreeColumnImplementation(TreeColumn treeColumn, int style) {
-    handle = treeColumn;
+  public CTableColumnImplementation(org.eclipse.swt.widgets.TableColumn tableColumn, int style) {
+    handle = tableColumn;
     init(style);
   }
 
   protected void init(int style) {
+    setMinWidth(0);
     if ((style & SWT.LEFT) == SWT.LEFT) setAlignment(SwingConstants.LEFT);
     if ((style & SWT.CENTER) == SWT.CENTER) setAlignment(SwingConstants.CENTER);
     if ((style & SWT.RIGHT) == SWT.RIGHT) setAlignment(SwingConstants.RIGHT);
@@ -55,13 +55,13 @@ class CTreeColumnImplementation extends TableColumn implements CTreeColumn {
 
 }
 
-public interface CTreeColumn {
+public interface CTableColumn {
 
   public static class Instanciator {
     private Instanciator() {}
 
-    public static CTreeColumn createInstance(TreeColumn treeColumn, int style) {
-      return new CTreeColumnImplementation(treeColumn, style);
+    public static CTableColumn createInstance(org.eclipse.swt.widgets.TableColumn tableColumn, int style) {
+      return new CTableColumnImplementation(tableColumn, style);
     }
 
   }

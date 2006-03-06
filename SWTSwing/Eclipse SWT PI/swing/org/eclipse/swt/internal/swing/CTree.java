@@ -137,7 +137,6 @@ class CTreeImplementation extends JScrollPane implements CTree {
         return checkBoxCellRenderer;
       }
     });
-    
     JTableHeader tableHeader = treeTable.getTableHeader();
     final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();
     tableHeader.setDefaultRenderer(new TableCellRenderer() {
@@ -176,6 +175,15 @@ class CTreeImplementation extends JScrollPane implements CTree {
     } else {
       setBorder(null);
     }
+    if((style & SWT.H_SCROLL) == 0) {
+      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+    }
+    if((style & SWT.V_SCROLL) == 0) {
+      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
+    }
+//    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+//      setBorder(null);
+//    }
     if((style & SWT.MULTI) == 0) {
       treeTable.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     }

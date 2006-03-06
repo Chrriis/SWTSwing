@@ -106,13 +106,13 @@ public class Test {
     }}, new Object[] {"TabFolder", new String[][] {
       {"76", "create a tab folder (six pages)"},
     }}, new Object[] {"Table", new String[][] {
-//      {"35", "create a table (no columns, no headers)"},
-//      {"38", "create a table (columns, headers, lines)"},
-//      {"7", "create a table (lazy)"},
+      {"35", "create a table (no columns, no headers)"},
+      {"38", "create a table (columns, headers, lines)"},
+      {"7", "create a table (lazy)"},
 //      {"113", "detect a selection or check event in a table (SWT.CHECK)"},
 //      {"3", "find a table cell from mouse down (SWT.FULL_SELECTION)"},
 //      {"110", "find a table cell from mouse down (works for any table style)"},
-//      {"101", "insert a table item (at an index)"},
+      {"101", "insert a table item (at an index)"},
 //      {"106", "insert a table column (at an index)"},
 //      {"64", "print selected items in a table"},
 //      {"53", "remove selected items"},
@@ -120,7 +120,7 @@ public class Test {
 //      {"51", "scroll a table (set the top index)"},
 //      {"52", "select an index (select and scroll)"},
 //      {"2", "sort a table by column"},
-//      {"103", "update a table's contents dynamically"},
+      {"103", "update a table's contents dynamically"},
     }}, new Object[] {"TableCursor", new String[][] {
 //      {"96", "navigate a table cells with arrow keys"},
     }}, new Object[] {"TableEditor", new String[][] {
@@ -147,8 +147,8 @@ public class Test {
 //      {"23", "create a tracker (drag on mouse down)"},
 //      {"31", "create a tracker (drag when torn off)"},
     }}, new Object[] {"Tree", new String[][] {
-      {"15", "create a tree"},
-      {"8", "create a tree (lazy)"},
+//      {"15", "create a tree"},
+//      {"8", "create a tree (lazy)"},
       {"114", "detect a selection or check event in a tree (SWT.CHECK)"},
       {"102", "insert a tree item (at an index)"},
       {"61", "print selected items in a tree"},
@@ -159,9 +159,9 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "72";
+  static String snippetNumber = "35";
 
-  static boolean isRealDispatch = false;
+  static boolean isRealDispatch = true;
 
   public static void main(final String[] args) {
     if(isRealDispatch) {

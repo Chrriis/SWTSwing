@@ -383,7 +383,7 @@ public class JTreeTable extends JPanel implements Scrollable {
     setGridVisible(true);
   }
 
-  protected boolean isGridVisible = false;
+  protected boolean isGridVisible;
 
   public void setGridVisible(boolean isGridVisible) {
     this.isGridVisible = isGridVisible;

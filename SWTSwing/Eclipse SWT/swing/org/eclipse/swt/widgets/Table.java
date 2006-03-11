@@ -102,6 +102,14 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+void adjustColumnWidth() {
+  // Could be more efficient. Should post, with coalescing?
+  if(getColumnCount() == 0) {
+    CTable cTable = (CTable)handle;
+    cTable.getColumnModel().getColumn(0).setPreferredWidth(cTable.getPreferredColumnWidth(0));
+  }
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending

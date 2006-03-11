@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -240,8 +241,7 @@ public Color getBackground (int index) {
 public Rectangle getBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  CTable table = (CTable)parent.handle;
-  java.awt.Rectangle rect = table.getCellRect(parent.indexOf(this), index, false);
+  java.awt.Rectangle rect = ((CTable)parent.handle).getCellRect(parent.indexOf(this), index, false);
   return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
@@ -643,6 +643,7 @@ public void setFont (int index, Font font) {
   if (0 > index || index > count - 1) return;
   handle.getTableItemObject(index).setFont(font == null? null: font.handle);
   ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
+  parent.adjustColumnWidth();
 }
 
 /**
@@ -765,6 +766,7 @@ public void setImage (int index, Image image) {
 	}
   handle.getTableItemObject(index).setIcon(new ImageIcon(image.handle));
   ((CTable)parent.handle).getModel().fireTableCellUpdated(index, index);
+  parent.adjustColumnWidth();
 //
 //  
 //  int count = Math.max (1, parent.getColumnCount ());
@@ -863,14 +865,17 @@ public void setText (int index, String string) {
   if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
   int count = Math.max (1, parent.getColumnCount ());
   if (0 > index || index > count - 1) return;
+  if(index == 0) {
+    super.setText(string);
+  }
   handle.getTableItemObject(index).setText(string);
   ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
+  parent.adjustColumnWidth();
 }
 
 public void setText (String string) {
   checkWidget();
   setText (0, string);
-  super.setText(string);
 }
 
 }

@@ -368,6 +368,8 @@ public class JTreeTable extends JPanel implements Scrollable {
           tableModel.fireTableChanged(new TableModelEvent(tableModel, firstRow + 1, firstRow + collapsedCount, TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE));
         }
 //        tableModel.fireTableChanged(new TableModelEvent(tableModel));
+//        revalidate();
+//        repaint();
       }
       public void treeExpanded(TreeExpansionEvent event) {
         TreePath path = event.getPath();
@@ -377,6 +379,8 @@ public class JTreeTable extends JPanel implements Scrollable {
           tableModel.fireTableChanged(new TableModelEvent(tableModel, firstRow + 1, firstRow + expandedCount, TableModelEvent.ALL_COLUMNS, TableModelEvent.INSERT));
         }
 //        tableModel.fireTableChanged(new TableModelEvent(tableModel));
+//        revalidate();
+//        repaint();
       }
     });
     table.setModel(tableModel);
@@ -403,6 +407,10 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public TreeModel getModel() {
     return tree.getModel();
+  }
+
+  public int getRowCount() {
+    return tree.getRowCount();
   }
 
   protected TreeTableCellRenderer renderer = new DefaultTreeTableCellRenderer();
@@ -443,7 +451,7 @@ public class JTreeTable extends JPanel implements Scrollable {
   }
 
   public Dimension getPreferredScrollableViewportSize() {
-    return table.getPreferredSize();
+    return table.getPreferredScrollableViewportSize();
   }
 
   public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
@@ -582,13 +590,15 @@ public class JTreeTable extends JPanel implements Scrollable {
   }
 
   public Dimension getPreferredSize() {
+//    System.err.println(table.getPreferredSize());
+//    return table.getPreferredSize();
     Dimension preferredSize = super.getPreferredSize();
     if(getTableHeader().isVisible()) {
       return preferredSize;
     }
     TableColumnModel columnModel = getColumnModel();
     if(columnModel.getColumnCount() > 0) {
-      return new Dimension(preferredSize.width - columnModel.getColumn(0).getPreferredWidth() + tree.getPreferredSize().width, preferredSize.height);
+      return new Dimension(preferredSize.width - columnModel.getColumn(0).getPreferredWidth() + getPreferredColumnWidth(0), preferredSize.height);
     }
     return preferredSize;
   }
@@ -661,6 +671,24 @@ public class JTreeTable extends JPanel implements Scrollable {
       return null;
     }
     return getPathForRow(row);
+  }
+
+  public int getPreferredColumnWidth(int columnIndex) {
+    if(columnIndex == 0) {
+      return tree.getPreferredSize().width;
+    }
+    int count = getRowCount();
+    int newWidth = Math.max(getColumnModel().getColumn(columnIndex).getMinWidth(), 10);
+    TreeTableCellRenderer renderer = getCellRenderer();
+    // TODO: is there a better way than this hack?
+    for(int i=0; i<count; i++) {
+      TreePath treePath = getPathForRow(i);
+      DefaultMutableTreeTableNode treeTableNode = (DefaultMutableTreeTableNode)treePath.getLastPathComponent();
+      Object value = treeTableNode.getUserObject(columnIndex);
+      java.awt.Component component = renderer.getTreeTableCellRendererComponent(this, value, false, isExpanded(treePath), treeTableNode.isLeaf(), i, columnIndex, false);
+      newWidth = Math.max(newWidth, (int)component.getPreferredSize().getWidth());
+    }
+    return newWidth;
   }
 
 }

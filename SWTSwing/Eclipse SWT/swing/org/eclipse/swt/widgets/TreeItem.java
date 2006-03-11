@@ -955,14 +955,17 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
+  if(index == 0) {
+    super.setText(string);
+  }
   handle.getTreeItemObject(index).setText(string);
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  parent.adjustColumnWidth();
 }
 
 public void setText (String string) {
 	checkWidget();
 	setText (0, string);
-  super.setText(string);
 }
 
 }

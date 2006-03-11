@@ -15,12 +15,14 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableColumn;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeColumn;
-import org.eclipse.swt.internal.swing.CTreeItem;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
@@ -275,60 +277,68 @@ public int getWidth () {
  *
  */
 public void pack () {
-	checkWidget ();
-	int columnWidth = 0;
-	int hwnd = parent.handle;
-	int hDC = OS.GetDC (hwnd);
-	int oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
-	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	int cp = parent.getCodePage ();		
-	RECT rect = new RECT ();
-	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM;
-	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	while (hItem != 0) {
-		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
-		tvItem.hItem = hItem;
-		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = parent.items [tvItem.lParam];
-		if (index == 0) {
-			rect.left = item.handle;
-			if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
-				columnWidth = Math.max (columnWidth, rect.right);
-			}
-		} else {
-			int imageWidth = 0, textWidth = 0;
-			Image image = item.images != null ? item.images [index] : null;
-			if (image != null) {
-				Rectangle bounds = image.getBounds ();
-				imageWidth = bounds.width;
-			}
-			String string = item.strings != null ? item.strings [index] : null;
-			if (string != null) {
-				TCHAR buffer = new TCHAR (cp, string, false);
-				OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-				textWidth = rect.right - rect.left;
-			}
-			columnWidth = Math.max (columnWidth, imageWidth + textWidth + Tree.INSET * 3);
-		}
-	}
-	TCHAR buffer = new TCHAR (cp, text, true);
-	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
-	if (image != null) {
-		int margin = 0, hwndHeader = parent.hwndHeader;
-		if (hwndHeader != 0 && OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
-			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
-		} else {
-			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
-		}
-		Rectangle bounds = image.getBounds ();
-		headerWidth += bounds.width + margin * 2;
-	}
-	if (newFont != 0) OS.SelectObject (hDC, oldFont);
-	OS.ReleaseDC (hwnd, hDC);
-	setWidth (Math.max (headerWidth, columnWidth));
+  checkWidget ();
+  int index = parent.indexOf (this);
+  if (index == -1) return;
+//  int oldWidth = getWidth();
+  CTree cTree = (CTree)parent.handle;
+  int newWidth = cTree.getPreferredColumnWidth(index);
+  // TODO: check why in the old SWTSwing, +2 is added.
+  cTree.getColumnModel().getColumn(index).setPreferredWidth(newWidth + 2);
+//	checkWidget ();
+//	int columnWidth = 0;
+//	int hwnd = parent.handle;
+//	int hDC = OS.GetDC (hwnd);
+//	int oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+//	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+//	int cp = parent.getCodePage ();		
+//	RECT rect = new RECT ();
+//	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_PARAM;
+//	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//	while (hItem != 0) {
+//		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+//		tvItem.hItem = hItem;
+//		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+//		TreeItem item = parent.items [tvItem.lParam];
+//		if (index == 0) {
+//			rect.left = item.handle;
+//			if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+//				columnWidth = Math.max (columnWidth, rect.right);
+//			}
+//		} else {
+//			int imageWidth = 0, textWidth = 0;
+//			Image image = item.images != null ? item.images [index] : null;
+//			if (image != null) {
+//				Rectangle bounds = image.getBounds ();
+//				imageWidth = bounds.width;
+//			}
+//			String string = item.strings != null ? item.strings [index] : null;
+//			if (string != null) {
+//				TCHAR buffer = new TCHAR (cp, string, false);
+//				OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+//				textWidth = rect.right - rect.left;
+//			}
+//			columnWidth = Math.max (columnWidth, imageWidth + textWidth + Tree.INSET * 3);
+//		}
+//	}
+//	TCHAR buffer = new TCHAR (cp, text, true);
+//	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+//	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
+//	if (image != null) {
+//		int margin = 0, hwndHeader = parent.hwndHeader;
+//		if (hwndHeader != 0 && OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
+//			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
+//		} else {
+//			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
+//		}
+//		Rectangle bounds = image.getBounds ();
+//		headerWidth += bounds.width + margin * 2;
+//	}
+//	if (newFont != 0) OS.SelectObject (hDC, oldFont);
+//	OS.ReleaseDC (hwnd, hDC);
+//	setWidth (Math.max (headerWidth, columnWidth));
 }
 
 void releaseChild () {

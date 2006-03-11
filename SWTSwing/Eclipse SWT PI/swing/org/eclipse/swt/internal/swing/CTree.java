@@ -73,10 +73,27 @@ class CTreeImplementation extends JScrollPane implements CTree {
     };
     treeTable = new JTreeTable(new DefaultTreeModel(rootNode)) {
       public boolean getScrollableTracksViewportWidth() {
-        return false;
+        return handle.getColumnCount() == 0 && getPreferredSize().width < getParent().getWidth();
       }
       public boolean getScrollableTracksViewportHeight() {
         return getPreferredSize().height < getParent().getHeight();
+      }
+      public Dimension getPreferredSize() {
+        return super.getPreferredSize();
+      }
+      public Dimension getPreferredScrollableViewportSize() {
+        // TODO: use some caching mecanism?
+        int columnCount = treeTable.getColumnModel().getColumnCount();
+        int width = 0;
+        for(int i=0; i<columnCount; i++) {
+          width += getPreferredColumnWidth(i);
+        }
+//        if(isGridVisible()) {
+          width += columnCount - 1;
+//        }
+        // TODO: check why we need to add the columnCount again.
+        width += columnCount;
+        return new Dimension(width, getPreferredSize().height);
       }
       protected boolean processMouseOnTreeRenderer(int row, MouseEvent e, Dimension cellSize) {
         if(isCheckType) {
@@ -175,12 +192,12 @@ class CTreeImplementation extends JScrollPane implements CTree {
     } else {
       setBorder(null);
     }
-    if((style & SWT.H_SCROLL) == 0) {
-      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-    }
-    if((style & SWT.V_SCROLL) == 0) {
-      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
-    }
+//    if((style & SWT.H_SCROLL) == 0) {
+//      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+//    }
+//    if((style & SWT.V_SCROLL) == 0) {
+//      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
+//    }
 //    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 //      setBorder(null);
 //    }
@@ -273,6 +290,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
     return treeTable.getPathForLocation(x, y);
   }
 
+  public int getPreferredColumnWidth(int columnIndex) {
+    return treeTable.getPreferredColumnWidth(columnIndex);
+  }
+
 }
 
 public interface CTree extends CComposite {
@@ -315,5 +336,7 @@ public interface CTree extends CComposite {
   public TableColumnModel getColumnModel();
 
   public TreePath getPathForLocation(int x, int y);
+
+  public int getPreferredColumnWidth(int columnIndex);
 
 }

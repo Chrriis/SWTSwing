@@ -74,10 +74,10 @@ class CTableImplementation extends JScrollPane implements CTable {
     handle = table;
     this.table = new JTable(new CTableModel(table)) {
       public boolean getScrollableTracksViewportWidth() {
-        return handle.getColumnCount() == 0;
+        return handle.getColumnCount() == 0 && getPreferredSize().width < getParent().getWidth();
       }
       public boolean getScrollableTracksViewportHeight() {
-        return super.getPreferredSize().height < getParent().getHeight();
+        return getPreferredSize().height < getParent().getHeight();
       }
       public Dimension getPreferredScrollableViewportSize() {
         // TODO: use some caching mecanism?
@@ -91,7 +91,7 @@ class CTableImplementation extends JScrollPane implements CTable {
 //        }
         // TODO: check why we need to add the columnCount again.
         width += columnCount;
-        return new Dimension(width, super.getPreferredSize().height);
+        return new Dimension(width, getPreferredSize().height);
       }
       protected TableCellRenderer renderer = new DefaultTableCellRenderer() {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

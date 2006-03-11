@@ -147,8 +147,8 @@ public class Test {
 //      {"23", "create a tracker (drag on mouse down)"},
 //      {"31", "create a tracker (drag when torn off)"},
     }}, new Object[] {"Tree", new String[][] {
-//      {"15", "create a tree"},
-//      {"8", "create a tree (lazy)"},
+      {"15", "create a tree"},
+      {"8", "create a tree (lazy)"},
       {"114", "detect a selection or check event in a tree (SWT.CHECK)"},
       {"102", "insert a tree item (at an index)"},
       {"61", "print selected items in a tree"},
@@ -159,9 +159,9 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "72";
+  static String snippetNumber = "113";
 
-  static boolean isRealDispatch = true;
+  static boolean isRealDispatch = false;
 
   public static void main(final String[] args) {
     if(isRealDispatch) {

@@ -29,6 +29,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CText;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
@@ -125,6 +126,14 @@ static int checkStyle (int style) {
 //	*/
 //	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+
+void adjustColumnWidth() {
+  // Could be more efficient. Should post, with coalescing?
+  if(getColumnCount() == 0) {
+    CTree cTree = (CTree)handle;
+    cTree.getColumnModel().getColumn(0).setPreferredWidth(cTree.getPreferredColumnWidth(0));
+  }
 }
 
 /**
@@ -2968,6 +2977,11 @@ public void showSelection () {
 //	}
 //	return super.wmNotifyChild (wParam, lParam);
 //}
+
+Point minimumSize (int wHint, int hHint, boolean changed) {
+  java.awt.Dimension size = handle.getPreferredSize();
+  return new Point(size.width, size.height);
+}
 
 public void processEvent(AWTEvent e) {
   int id = e.getID();

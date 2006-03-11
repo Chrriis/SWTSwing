@@ -11,13 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import java.awt.EventQueue;
-import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JColorChooser;
-import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -122,28 +119,6 @@ public RGB getRGB () {
  * </ul>
  */
 public RGB open () {
-  
-  if(!SwingUtilities.isEventDispatchThread()) {
-    final RGB[] result = new RGB[1];
-    try {
-      class PopEventQueue extends EventQueue {
-        public void pop() {
-          super.pop();
-        }
-      }
-      PopEventQueue eq = new PopEventQueue();
-      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
-      SwingUtilities.invokeAndWait(new Runnable() {
-        public void run() {
-          result[0] = open();
-        }
-      });
-      eq.pop();
-    } catch(Exception e) {
-    }
-    return result[0];
-  }
-
   boolean isModal = (style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
   JColorChooser cc = new JColorChooser();
   cc.addPropertyChangeListener(new PropertyChangeListener() {

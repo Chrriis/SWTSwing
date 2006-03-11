@@ -2,7 +2,7 @@ package chrriis.swtswing;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.SwingUtilities;
+import org.eclipse.swt.widgets.Display;
 
 public class Test {
 
@@ -159,13 +159,13 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "35";
+  static String snippetNumber = "72";
 
   static boolean isRealDispatch = true;
 
   public static void main(final String[] args) {
     if(isRealDispatch) {
-      SwingUtilities.invokeLater(new Runnable() {
+      Display.swtExec(new Runnable() {
         public void run() {
           snippetMain(args);
         }

@@ -11,14 +11,11 @@
 package org.eclipse.swt.widgets;
 
 
-import java.awt.EventQueue;
-import java.awt.Toolkit;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import org.eclipse.swt.SWT;
@@ -159,26 +156,6 @@ protected static String currentDirectoryPath;
  * </ul>
  */
 public String open () {
-  if(!SwingUtilities.isEventDispatchThread()) {
-    final String[] result = new String[1];
-    try {
-      class PopEventQueue extends EventQueue {
-        public void pop() {
-          super.pop();
-        }
-      }
-      PopEventQueue eq = new PopEventQueue();
-      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
-      SwingUtilities.invokeAndWait(new Runnable() {
-        public void run() {
-          result[0] = open();
-        }
-      });
-      eq.pop();
-    } catch(Exception e) {
-    }
-    return result[0];
-  }
   final JFileChooser fileChooser = new JFileChooser(currentDirectoryPath);
   String title = getText();
   if(title != null && title.length() > 0) {

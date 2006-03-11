@@ -11,12 +11,9 @@
 package org.eclipse.swt.widgets;
 
 
-import java.awt.EventQueue;
-import java.awt.Toolkit;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -120,26 +117,6 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-  if(!SwingUtilities.isEventDispatchThread()) {
-    final String[] result = new String[1];
-    try {
-      class PopEventQueue extends EventQueue {
-        public void pop() {
-          super.pop();
-        }
-      }
-      PopEventQueue eq = new PopEventQueue();
-      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
-      SwingUtilities.invokeAndWait(new Runnable() {
-        public void run() {
-          result[0] = open();
-        }
-      });
-      eq.pop();
-    } catch(Exception e) {
-    }
-    return result[0];
-  }
   final JFileChooser fileChooser = new JFileChooser(filterPath);
   String title = getText();
   if(title != null && title.length() > 0) {

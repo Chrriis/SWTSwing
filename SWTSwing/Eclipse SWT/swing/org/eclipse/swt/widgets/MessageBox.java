@@ -11,11 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import java.awt.EventQueue;
-import java.awt.Toolkit;
-
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -123,28 +119,6 @@ public String getMessage () {
  * </ul>
  */
 public int open () {
-
-  if(!SwingUtilities.isEventDispatchThread()) {
-    final int[] result = new int[1];
-    try {
-      class PopEventQueue extends EventQueue {
-        public void pop() {
-          super.pop();
-        }
-      }
-      PopEventQueue eq = new PopEventQueue();
-      Toolkit.getDefaultToolkit().getSystemEventQueue().push(eq);
-      SwingUtilities.invokeAndWait(new Runnable() {
-        public void run() {
-          result[0] = open();
-        }
-      });
-      eq.pop();
-    } catch(Exception e) {
-    }
-    return result[0];
-  }
-
 	int messageType = JOptionPane.PLAIN_MESSAGE;
 	if ((style & SWT.ICON_ERROR) != 0) messageType = JOptionPane.ERROR_MESSAGE;
 	if ((style & SWT.ICON_INFORMATION) != 0) messageType = JOptionPane.INFORMATION_MESSAGE;
@@ -160,19 +134,19 @@ public int open () {
     return result == 0? SWT.OK: SWT.CANCEL;
   }
   if((style & SWT.OK) == SWT.OK) {
-	    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
-	    if(result == JOptionPane.CLOSED_OPTION) {
-	      return SWT.CANCEL; 
-	    }
-	    return SWT.OK;
-	  }
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return SWT.OK;
+  }
   if((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
-	    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No", "Cancel"}, null);
-	    if(result == JOptionPane.CLOSED_OPTION) {
-	      return SWT.CANCEL; 
-	    }
-	    return result == 0? SWT.YES: result == 1? SWT.NO: SWT.CANCEL;
-	  }
+    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No", "Cancel"}, null);
+    if(result == JOptionPane.CLOSED_OPTION) {
+      return SWT.CANCEL; 
+    }
+    return result == 0? SWT.YES: result == 1? SWT.NO: SWT.CANCEL;
+  }
   if((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
     int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No"}, null);
     if(result == JOptionPane.CLOSED_OPTION) {

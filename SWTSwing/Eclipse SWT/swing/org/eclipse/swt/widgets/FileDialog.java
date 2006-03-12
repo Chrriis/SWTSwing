@@ -177,7 +177,7 @@ public String open () {
       String filterExtension = filterExtensions[i];
       String regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
       final Pattern pattern = Pattern.compile(regExp.toString());
-      final String description = filterNames[i];
+      final String description = (filterNames == null || i >= filterNames.length)? filterExtension: filterNames[i];
       fileChooser.addChoosableFileFilter(new FileFilter() {
         public boolean accept(File f) {
           if(f.isDirectory()) {

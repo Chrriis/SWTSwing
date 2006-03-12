@@ -35,6 +35,7 @@ class CToolItemPush extends JButton implements CToolItem {
 
   protected void init(int style) {
     setMargin(new Insets(0, 1, 0, 1));
+    Utils.installMouseListener(this, handle.getParent());
     addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         handle.processEvent(e);
@@ -58,6 +59,7 @@ class CToolItemCheck extends JToggleButton implements CToolItem {
 
   protected void init(int style) {
     setMargin(new Insets(0, 1, 0, 1));
+    Utils.installMouseListener(this, handle.getParent());
   }
 
   public void setWidth(int width) {
@@ -76,6 +78,7 @@ class CToolItemRadio extends JToggleButton implements CToolItem {
 
   protected void init(int style) {
     setMargin(new Insets(0, 1, 0, 1));
+    Utils.installMouseListener(this, handle.getParent());
     addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         handle.processEvent(e);
@@ -134,6 +137,7 @@ class CToolItemSeparator extends Separator implements CToolItem {
 
   protected void init(int style) {
     setLayout(null);
+    Utils.installMouseListener(this, handle.getParent());
   }
 
   public Dimension getMaximumSize() {

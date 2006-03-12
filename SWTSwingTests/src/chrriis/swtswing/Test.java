@@ -198,9 +198,9 @@ public class Test {
 //      {"218", "use gradient background in StyledText"},        
     }}, new Object[] {"Swing/AWT", new String[][] {
 //      {"135", "embed Swing/AWT in SWT"},
-//      {"154", "embed a JTable in SWT (no flickering)"},
-//      {"155", "draw an X using AWT Graphics"},
-//      {"156", "convert between SWT Image and AWT BufferedImage"},
+      {"154", "embed a JTable in SWT (no flickering)"},
+      {"155", "draw an X using AWT Graphics"},
+      {"156", "convert between SWT Image and AWT BufferedImage"},
     }}, new Object[] {"TabFolder, TabItem", new String[][] {
       {"76", "create a tab folder (six pages)"},
     }}, new Object[] {"Table, TableItem, TableColumn", new String[][] {
@@ -258,7 +258,7 @@ public class Test {
       {"49", "create tool bar (wrap on resize)"},
       {"58", "place a combo box in a tool bar"},
       {"67", "place a drop down menu in a tool bar"},
-//      {"153", "update a status line when the pointer enters a ToolItem"},
+      {"153", "update a status line when the pointer enters a ToolItem"},
     }}, new Object[] {"Tool Tips", new String[][] {
       {"41", "create tool tips for a tab folder, tool bar and control"},
       {"216", "show a tool tip inside a rectangle"},
@@ -285,9 +285,9 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "184";
+  static String snippetNumber = "125";
 
-  static boolean isRealDispatch = true;
+  static boolean isRealDispatch = false;
 
   public static void main(final String[] args) {
     if(isRealDispatch) {
@@ -312,11 +312,14 @@ public class Test {
     if(isDevelopment) {
       number = snippetNumber;
     }
-    if(number == null && args.length != 1) {
+    if(number == null && args.length < 1) {
       printUsage();
     } else {
-      if(args.length == 1) {
+      if(args.length > 1) {
         number = args[0];
+        String[] newArgs = new String[args.length - 1];
+        System.arraycopy(args, 1, newArgs, 0, newArgs.length);
+        args = newArgs;
       }
       boolean isFound = isDevelopment;
       for(int i=0; i<definitions.length && !isFound; i++) {
@@ -330,7 +333,7 @@ public class Test {
       }
       if(isFound) {
         try {
-          Class.forName("org.eclipse.swt.snippets.Snippet" + number).getMethod("main", new Class[] {String[].class}).invoke(null, new Object[] {null});
+          Class.forName("org.eclipse.swt.snippets.Snippet" + number).getMethod("main", new Class[] {String[].class}).invoke(null, new Object[] {args});
         } catch(InvocationTargetException e) {
           e.getCause().printStackTrace();
         } catch(Exception e) {

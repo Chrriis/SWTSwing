@@ -1912,36 +1912,32 @@ public void setHeaderVisible (boolean show) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
-	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	int itemCount = getItemCount();
 	if (count == itemCount) return;
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
-	if (!isVirtual) setRedraw (false);
+//	if (!isVirtual) setRedraw (false);
 	int index = count;
 	while (index < itemCount) {
-		TableItem item = items [index];
+		TableItem item = (TableItem)itemList.get(index);
 		if (!isVirtual) {
-			ignoreSelect = ignoreShrink = true;
-			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);
-			ignoreSelect = ignoreShrink = false;
-			if (code == 0) break;
+      //TODO: notify item deleted?
 		}
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 		index++;
 	}
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	int length = Math.max (4, (count + 3) / 4 * 4);
-	TableItem [] newItems =  new TableItem [length];
-	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
-	items = newItems;
+  itemList.ensureCapacity(count);
+  for(int i=itemCount; i<count; i++) {
+    itemList.add(null);
+  }
 	if (isVirtual) {
-		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
-		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, flags);
+//  TODO: notify item deleted?
 	} else {
 		for (int i=itemCount; i<count; i++) {
-			items [i] = new TableItem (this, SWT.NONE, i, true);
+			itemList.set(i, new TableItem (this, SWT.NONE, i, true));
 		}
 	}
-	if (!isVirtual) setRedraw (true);
+//	if (!isVirtual) setRedraw (true);
 }
 
 /**

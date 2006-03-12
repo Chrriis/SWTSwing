@@ -82,6 +82,26 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
     setUserObjects(newObjects);
   }
 
+  protected Color foreground;
+
+  public void setForeground(Color foreground) {
+    this.foreground = foreground;
+  }
+
+  protected Color background;
+
+  public void setBackground(Color background) {
+    this.background = background;
+  }
+
+  public Color getForeground() {
+    return foreground;
+  }
+
+  public Color getBackground() {
+    return background;
+  }
+
 }
 
 public interface CTreeItem {
@@ -190,5 +210,13 @@ public interface CTreeItem {
   public void removeColumn(int index);
 
   public TreeItem getTreeItem();
+
+  public void setForeground(Color foreground);
+
+  public void setBackground(Color background);
+
+  public Color getForeground();
+
+  public Color getBackground();
 
 }

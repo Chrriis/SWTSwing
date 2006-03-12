@@ -472,7 +472,9 @@ public void clearAll () {
 //}
 
 public Rectangle computeTrim(int x, int y, int width, int height) {
-  width += ((CTable)handle).getVerticalScrollBar().getPreferredSize().width;
+  CTable cTable = (CTable)handle;
+  width += cTable.getVerticalScrollBar().getPreferredSize().width;
+  height += cTable.getHorizontalScrollBar().getPreferredSize().height;
   return super.computeTrim(x, y, width, height);
 }
 

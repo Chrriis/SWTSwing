@@ -19,6 +19,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CToolItem;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
@@ -242,7 +243,10 @@ CTreeItem createHandle () {
  * 
  */
 public Color getBackground () {
-  return getBackground(0);
+  checkWidget ();
+  java.awt.Color color = handle.getBackground();
+  if(color == null) return parent.getBackground();
+  return Color.swing_new(display, color);
 }
 
 /**
@@ -404,7 +408,10 @@ public Font getFont (int index) {
  * 
  */
 public Color getForeground () {
-  return getForeground (0);
+  checkWidget ();
+  java.awt.Color color = handle.getForeground();
+  if(color == null) return parent.getForeground();
+  return Color.swing_new(display, color);
 }
 
 /**
@@ -653,7 +660,12 @@ void releaseWidget () {
  * 
  */
 public void setBackground (Color color) {
-  setBackground(0, color);
+  checkWidget ();
+  if (color != null && color.isDisposed ()) {
+    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  }
+  handle.setBackground(color == null? null: color.handle);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
@@ -799,7 +811,12 @@ public void setFont (int index, Font font) {
  * 
  */
 public void setForeground (Color color) {
-  setForeground(0, color);
+  checkWidget ();
+  if (color != null && color.isDisposed ()) {
+    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  }
+  handle.setForeground(color == null? null: color.handle);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**

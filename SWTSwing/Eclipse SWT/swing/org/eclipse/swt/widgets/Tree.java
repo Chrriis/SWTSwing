@@ -203,7 +203,9 @@ protected void checkSubclass () {
 }
 
 public Rectangle computeTrim(int x, int y, int width, int height) {
-  width += ((CTree)handle).getVerticalScrollBar().getPreferredSize().width;
+  CTree cTree = (CTree)handle;
+  width += cTree.getVerticalScrollBar().getPreferredSize().width;
+  height += cTree.getHorizontalScrollBar().getPreferredSize().height;
   return super.computeTrim(x, y, width, height);
 }
 

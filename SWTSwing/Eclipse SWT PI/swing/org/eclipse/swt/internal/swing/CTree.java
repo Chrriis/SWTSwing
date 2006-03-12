@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -19,6 +20,7 @@ import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -126,10 +128,34 @@ class CTreeImplementation extends JScrollPane implements CTree {
     };
     treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     treeTable.setCellRenderer(new DefaultTreeTableCellRenderer() {
-      public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean selected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
-        Component c = super.getTreeTableCellRendererComponent(treeTable, value, selected, expanded, leaf, row, column, hasFocus);
+      protected boolean isInitialized;
+      protected boolean isOpaque;
+      protected Color defaultForeground;
+      protected Color defaultBackground;
+      protected Color selectionForeground;
+      protected Color selectionBackground;
+      public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean isSelected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
+        if(!isInitialized) {
+          Component c = super.getTreeTableCellRendererComponent(treeTable, "", isSelected, expanded, leaf, row, column, hasFocus);
+          if(c instanceof JComponent) {
+            isOpaque = ((JComponent)c).isOpaque();
+          }
+          selectionForeground = c.getForeground();
+          selectionBackground = c.getBackground();
+        }
+        Component c = super.getTreeTableCellRendererComponent(treeTable, value, isSelected, expanded, leaf, row, column, hasFocus);
+        if(!isInitialized) {
+          defaultForeground = c.getForeground();
+          defaultBackground = c.getBackground();
+          isInitialized = true;
+        }
         if(value == null) {
           return c;
+        }
+        c.setForeground(isSelected? selectionForeground: defaultForeground);
+        c.setBackground(isSelected? selectionBackground: defaultBackground);
+        if(c instanceof JComponent) {
+          ((JComponent)c).setOpaque(isOpaque);
         }
         CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)value;
         if(treeItemObject != null) {
@@ -141,6 +167,29 @@ class CTreeImplementation extends JScrollPane implements CTree {
               label.setHorizontalAlignment(treeColumn.getAlignment());
             }
             label.setIcon(treeItemObject.getIcon());
+          }
+          Color foreground = treeItemObject.getForeground();
+          if(foreground != null) {
+            c.setForeground(foreground);
+          } else {
+            foreground = treeItemObject.getTreeItem().getForeground();
+            if(foreground != null) {
+              c.setForeground(foreground);
+            }
+          }
+          if(!isSelected) {
+            Color background = treeItemObject.getBackground();
+            if(background != null) {
+              if(c instanceof JComponent) {
+                ((JComponent)c).setOpaque(true);
+              }
+              c.setBackground(background);
+            } else {
+              background = treeItemObject.getTreeItem().getBackground();
+              if(background != null) {
+                c.setBackground(background);
+              }
+            }
           }
           // TODO: Complete with other properties from treeItemObject
         }

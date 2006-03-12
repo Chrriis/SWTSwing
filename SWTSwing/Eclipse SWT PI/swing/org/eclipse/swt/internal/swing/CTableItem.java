@@ -110,6 +110,26 @@ class CTableItemImplementation implements CTableItem {
     userObjects[index] = userObject;
   }
 
+  protected Color foreground;
+
+  public void setForeground(Color foreground) {
+    this.foreground = foreground;
+  }
+
+  protected Color background;
+
+  public void setBackground(Color background) {
+    this.background = background;
+  }
+
+  public Color getForeground() {
+    return foreground;
+  }
+
+  public Color getBackground() {
+    return background;
+  }
+
 }
 
 public interface CTableItem {
@@ -148,8 +168,8 @@ public interface CTableItem {
 
     protected Color background;
 
-    public void setBackground(Color color) {
-      background = color;
+    public void setBackground(Color background) {
+      this.background = background;
     }
 
     public Color getBackground() {
@@ -158,8 +178,8 @@ public interface CTableItem {
 
     protected Color foreground;
 
-    public void setForeground(Color color) {
-      foreground = color;
+    public void setForeground(Color foreground) {
+      this.foreground = foreground;
     }
 
     public Color getForeground() {
@@ -212,5 +232,13 @@ public interface CTableItem {
   public void insertColumn(int index);
 
   public void removeColumn(int index);
+
+  public void setForeground(Color foreground);
+
+  public void setBackground(Color background);
+
+  public Color getForeground();
+
+  public Color getBackground();
 
 }

@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -17,10 +18,12 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
@@ -97,13 +100,37 @@ class CTableImplementation extends JScrollPane implements CTable {
         return new Dimension(width, getPreferredSize().height);
       }
       protected TableCellRenderer renderer = new DefaultTableCellRenderer() {
+        protected boolean isInitialized;
+        protected boolean isOpaque;
+        protected Color defaultForeground;
+        protected Color defaultBackground;
+        protected Color selectionForeground;
+        protected Color selectionBackground;
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+          if(!isInitialized) {
+            Component c = super.getTableCellRendererComponent(CTableImplementation.this.table, "", true, false, 0, 0);
+            if(c instanceof JComponent) {
+              isOpaque = ((JComponent)c).isOpaque();
+            }
+            selectionForeground = c.getForeground();
+            selectionBackground = c.getBackground();
+          }
           Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+          if(!isInitialized) {
+            defaultForeground = c.getForeground();
+            defaultBackground = c.getBackground();
+            isInitialized = true;
+          }
           if(value == null) {
             return c;
           }
           if(!(value instanceof CTableItem.TableItemObject)) {
             return c;
+          }
+          c.setForeground(isSelected? selectionForeground: defaultForeground);
+          c.setBackground(isSelected? selectionBackground: defaultBackground);
+          if(c instanceof JComponent) {
+            ((JComponent)c).setOpaque(isOpaque);
           }
           CTableItem.TableItemObject tableItemObject = (CTableItem.TableItemObject)value;
           if(tableItemObject != null) {
@@ -115,6 +142,29 @@ class CTableImplementation extends JScrollPane implements CTable {
                 label.setHorizontalAlignment(cTableColumn.getAlignment());
               }
               label.setIcon(tableItemObject.getIcon());
+            }
+            Color foreground = tableItemObject.getForeground();
+            if(foreground != null) {
+              c.setForeground(foreground);
+            } else {
+              foreground = tableItemObject.getTableItem().getForeground();
+              if(foreground != null) {
+                c.setForeground(foreground);
+              }
+            }
+            if(!isSelected) {
+              Color background = tableItemObject.getBackground();
+              if(background != null) {
+                if(c instanceof JComponent) {
+                  ((JComponent)c).setOpaque(true);
+                }
+                c.setBackground(background);
+              } else {
+                background = tableItemObject.getTableItem().getBackground();
+                if(background != null) {
+                  c.setBackground(background);
+                }
+              }
             }
             // TODO: Complete with other properties from tableItemObject
           }
@@ -155,7 +205,9 @@ class CTableImplementation extends JScrollPane implements CTable {
     javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
     columnModel.addColumn(tableColumn);
     setFocusable(false);
-    getViewport().setView(this.table);
+    JViewport viewport = getViewport();
+    viewport.setView(this.table);
+    viewport.setBackground(this.table.getBackground());
     init(style);
   }
 

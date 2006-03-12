@@ -1473,11 +1473,12 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
   // TODO: find how to really implement this method (for now, just do not handle delimiters...
-  if((flags & SWT.DRAW_TRANSPARENT) == 0) {
+  boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
+  if(!isTransparent) {
     Point extent = stringExtent(string);
     fillRectangle(x, y, extent.x, extent.y);
   }
-  drawString(string, x, y);
+  drawString(string, x, y, isTransparent);
 //	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 //	int length = buffer.length();
 //	if (length == 0) return;

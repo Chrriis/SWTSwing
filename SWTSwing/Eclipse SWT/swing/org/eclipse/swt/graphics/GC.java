@@ -1478,6 +1478,7 @@ public void drawText (String string, int x, int y, int flags) {
     Point extent = stringExtent(string);
     fillRectangle(x, y, extent.x, extent.y);
   }
+  // TODO: modify or draw the text according to the flags.
   drawString(string, x, y, isTransparent);
 //	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 //	int length = buffer.length();

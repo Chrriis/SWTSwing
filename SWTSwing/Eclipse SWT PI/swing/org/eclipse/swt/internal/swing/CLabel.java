@@ -94,7 +94,11 @@ class CLabelImplementation extends JLabel implements CLabel {
       preferredSize.height = super.getPreferredSize().height;
       return preferredSize;
     }
-    return super.getPreferredSize();
+    Dimension size = super.getPreferredSize();
+    if(getText().length() == 0) {
+      size.height += getFontMetrics(getFont()).getHeight();
+    }
+    return size;
   }
 
   protected void init(int style) {

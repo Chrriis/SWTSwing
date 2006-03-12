@@ -471,6 +471,9 @@ void releaseMenu () {
 }
 
 void releaseWidget () {
+  if(handle instanceof JRadioButtonMenuItem) {
+    parent.removeGroupedButton((JRadioButtonMenuItem)handle);
+  }
 	if (menu != null) menu.releaseResources ();
 	menu = null;
 	super.releaseWidget ();
@@ -927,6 +930,7 @@ void createHandle() {
     handle = new JCheckBoxMenuItem();
   } else if((style & SWT.RADIO) != 0) {
     JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem();
+    parent.addGroupedButton(menuItem);
     handle = menuItem;
     menuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {

@@ -26,7 +26,7 @@ public class Test {
     }}, new Object[] {"Button", new String[][] {
       {"108", "set the default button"},
       {"169", "make a toggle button have radio behavior"},
-//      {"224", "implement radio behavior for setSelection()"},
+      {"224", "implement radio behavior for setSelection()"},
     }}, new Object[] {"Canvas", new String[][] {
       {"48", "scroll an image (flicker free, no double buffering)"},
 //      {"21", "implement tab traversal (behave like a tab group)"},
@@ -125,7 +125,7 @@ public class Test {
     }}, new Object[] {"Menu", new String[][] {
       {"29", "create a bar and pull down menu (accelerators, mnemonics) "},
       {"40", "create a popup menu (set in multiple controls)"},
-//      {"89", "create a menu with radio items"},
+      {"89", "create a menu with radio items"},
       {"73", "enable menu items dynamically (when menu shown)"},
       {"97", "fill a menu dynamically (when menu shown)"},
 //      {"131", "show a popup menu (wait for it to close)"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "125";
+  static String snippetNumber = "89";
 
   static boolean isRealDispatch = false;
 

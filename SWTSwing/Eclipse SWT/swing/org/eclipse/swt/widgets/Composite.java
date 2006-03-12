@@ -17,6 +17,8 @@ import java.awt.Container;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 
 import org.eclipse.swt.SWT;
@@ -57,6 +59,8 @@ public class Composite extends Scrollable {
 	Control [] tabList;
 	int layoutCount = 0;
 	
+  ButtonGroup buttonGroup;
+  
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -128,6 +132,13 @@ Control [] _getTabList () {
 	}
 	tabList = newList;
 	return tabList;
+}
+
+void addGroupedButton(AbstractButton button) {
+  if(buttonGroup == null) {
+    buttonGroup = new ButtonGroup();
+  }
+  buttonGroup.add(button);
 }
 
 /**
@@ -672,6 +683,14 @@ void removeControl (Control control) {
 //	}
 //}
 
+void removeGroupedButton(AbstractButton button) {
+  if(buttonGroup == null) return;
+  buttonGroup.remove(button);
+  if(buttonGroup.getButtonCount() == 0) {
+    buttonGroup = null;
+  }
+}
+  
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();

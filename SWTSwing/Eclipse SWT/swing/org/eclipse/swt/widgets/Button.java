@@ -16,6 +16,7 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 
 import org.eclipse.swt.SWT;
@@ -252,6 +253,20 @@ void click () {
 
 Container createHandle () {
   return (Container)CButton.Instanciator.createInstance(this, style);
+}
+
+void createWidget () {
+  super.createWidget();
+  if((style & SWT.RADIO) != 0) {
+    parent.addGroupedButton((JRadioButton)handle);
+  }
+}
+
+void destroyWidget () {
+  if((style & SWT.RADIO) != 0) {
+    parent.removeGroupedButton((JRadioButton)handle);
+  }
+  super.destroyWidget();
 }
 
 //int defaultBackground () {

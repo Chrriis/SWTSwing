@@ -13,6 +13,8 @@ package org.eclipse.swt.widgets;
  
 import java.awt.Component;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -64,6 +66,7 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
+  ButtonGroup buttonGroup;
 //	ImageList imageList;
 	
 //	/* Resource ID for SHMENUBARINFO */
@@ -228,6 +231,13 @@ Menu (Decorations parent, int style, JMenuBar handle) {
 //		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
 //	}
 //}
+
+void addGroupedButton(AbstractButton button) {
+  if(buttonGroup == null) {
+    buttonGroup = new ButtonGroup();
+  }
+  buttonGroup.add(button);
+}
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -843,6 +853,14 @@ void releaseWidget () {
 	cascade = null;
 }
 
+void removeGroupedButton(AbstractButton button) {
+  if(buttonGroup == null) return;
+  buttonGroup.remove(button);
+  if(buttonGroup.getButtonCount() == 0) {
+    buttonGroup = null;
+  }
+}
+  
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the help events are generated for the control.

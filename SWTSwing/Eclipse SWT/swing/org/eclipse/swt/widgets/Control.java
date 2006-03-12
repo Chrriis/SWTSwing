@@ -4007,11 +4007,11 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.MouseMove)) return; break;
   case java.awt.event.MouseEvent.MOUSE_MOVED: if(!hooks(SWT.MouseMove)) return; break;
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
-    if(!hooks(SWT.MouseDown) && (menu == null || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    if(!hooks(SWT.MouseDown) && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_RELEASED: {
-    if(!hooks(SWT.MouseUp) && (menu == null || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    if(!hooks(SWT.MouseUp) && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_WHEEL: if(!hooks(SWT.MouseWheel)) return; break;
@@ -4107,7 +4107,7 @@ public void processEvent(AWTEvent e) {
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
     Event event = createMouseEvent(me, true);
     sendEvent(SWT.MouseDown, event);
-    if(menu != null && me.isPopupTrigger()) {
+    if(hooks(SWT.MenuDetect) && me.isPopupTrigger()) {
       sendEvent(SWT.MenuDetect, event);
       showPopup(me);
     }
@@ -4117,7 +4117,7 @@ public void processEvent(AWTEvent e) {
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
     Event event = createMouseEvent(me, true);
     sendEvent(SWT.MouseUp, event);
-    if(menu != null && me.isPopupTrigger()) {
+    if(hooks(SWT.MenuDetect) && me.isPopupTrigger()) {
       sendEvent(SWT.MenuDetect, event);
       showPopup(me);
     }

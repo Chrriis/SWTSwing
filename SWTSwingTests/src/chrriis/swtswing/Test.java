@@ -168,7 +168,7 @@ public class Test {
       {"45", "create a scale (maximum 40, page increment 5)"},
     }}, new Object[] {"ScrolledComposite", new String[][] {
       {"5", "scroll a control in a scrolled composite"},
-//      {"166", "create a ScrolledComposite with wrapping content"},
+      {"166", "create a ScrolledComposite with wrapping content"},
 //      {"167", "create two ScrolledComposites that scroll in tandem"},
 //      {"188", "Scroll widgets into view when they get focus"},
     }}, new Object[] {"Shell", new String[][] {
@@ -285,17 +285,22 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "101";
+  static String snippetNumber = "184";
 
-  static boolean isRealDispatch = false;
+  static boolean isRealDispatch = true;
 
   public static void main(final String[] args) {
     if(isRealDispatch) {
-      Display.swtExec(new Runnable() {
-        public void run() {
-          snippetMain(args);
-        }
-      });
+      try {
+        Display.swtExec(new Runnable() {
+          public void run() {
+            snippetMain(args);
+          }
+        });
+      } catch(Error e) {
+        System.err.println("Fail to use real dispatching. Now using fallback method.");
+        snippetMain(args);
+      }
     } else {
       snippetMain(args);
     }

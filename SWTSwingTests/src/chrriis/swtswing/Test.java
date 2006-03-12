@@ -103,7 +103,7 @@ public class Test {
 //      {"95", "capture a widget image with a GC"},
 //      {"215", "take a screen shot with a GC"},
       {"168", "draw lines with different cap and join styles"},
-//      {"10", "drawing with transformations, paths and alpha blending"},
+      {"10", "drawing with transformations, paths and alpha blending"},
 //      {"207", "reflect, shear and rotate images using matrix transformations"},
     }}, new Object[] {"GridLayout", new String[][] {
       {"172", "align widgets in rows and columns"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "89";
+  static String snippetNumber = "207";
 
   static boolean isRealDispatch = false;
 

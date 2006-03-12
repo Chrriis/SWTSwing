@@ -185,7 +185,7 @@ public class Test {
     }}, new Object[] {"Slider", new String[][] {
       {"17", "print scroll event details"},
     }}, new Object[] {"Spinner", new String[][] {
-//      {"184", "create and initialize a spinner widget"},
+      {"184", "create and initialize a spinner widget"},
 //      {"190", "use floats in a spinner widget"},
     }}, new Object[] {"StyledText", new String[][] {
 //      {"163", "change font style, foreground and background colors of StyledText"},

@@ -694,6 +694,9 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget ();
+  if(!handle.isVisible()) {
+    return false;
+  }
 	if ((style & SWT.BAR) != 0) {
 		return this == parent.menuShell ().menuBar;
 	}

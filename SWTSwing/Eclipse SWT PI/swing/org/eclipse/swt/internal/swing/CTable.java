@@ -80,6 +80,9 @@ class CTableImplementation extends JScrollPane implements CTable {
         return getPreferredSize().height < getParent().getHeight();
       }
       public Dimension getPreferredScrollableViewportSize() {
+        if(handle.getColumnCount() != 0) {
+          return getPreferredSize();
+        }
         // TODO: use some caching mecanism?
         int columnCount = getColumnCount();
         int width = 0;

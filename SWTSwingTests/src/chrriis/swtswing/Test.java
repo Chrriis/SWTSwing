@@ -277,7 +277,7 @@ public class Test {
       {"61", "print selected items in a tree"},
 //      {"80", "limit selection to items that match a pattern"},
 //      {"90", "detect mouse down in a tree item"},
-//      {"170", "create a tree with columns"},
+      {"170", "create a tree with columns"},
 //      {"193", "make columns reorderable by dragging"},
 //      {"202", "virtual tree - lazy creation of sub nodes"},
     }}, new Object[] {"TreeEditor", new String[][] {
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "170";
+  static String snippetNumber = "101";
 
   static boolean isRealDispatch = false;
 

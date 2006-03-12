@@ -24,6 +24,8 @@ class CTreeColumnImplementation extends TableColumn implements CTreeColumn {
 
   public CTreeColumnImplementation(TreeColumn treeColumn, int style) {
     handle = treeColumn;
+    setPreferredWidth(0);
+    setMinWidth(0);
     init(style);
   }
 

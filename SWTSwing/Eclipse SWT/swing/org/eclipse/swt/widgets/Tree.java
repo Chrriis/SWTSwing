@@ -202,6 +202,11 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+public Rectangle computeTrim(int x, int y, int width, int height) {
+  width += ((CTree)handle).getVerticalScrollBar().getPreferredSize().width;
+  return super.computeTrim(x, y, width, height);
+}
+
 Container createHandle () {
   state &= ~CANVAS;
   return (Container)CTree.Instanciator.createInstance(this, style);
@@ -2980,6 +2985,7 @@ public void showSelection () {
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
   java.awt.Dimension size = handle.getPreferredSize();
+  System.err.println(new Point(size.width, size.height));
   return new Point(size.width, size.height);
 }
 

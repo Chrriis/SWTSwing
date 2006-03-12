@@ -23,6 +23,8 @@ class CTableColumnImplementation extends TableColumn implements CTableColumn {
 
   public CTableColumnImplementation(org.eclipse.swt.widgets.TableColumn tableColumn, int style) {
     handle = tableColumn;
+    setPreferredWidth(0);
+    setMinWidth(0);
     init(style);
   }
 

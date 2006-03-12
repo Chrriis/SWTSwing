@@ -78,10 +78,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
       public boolean getScrollableTracksViewportHeight() {
         return getPreferredSize().height < getParent().getHeight();
       }
-      public Dimension getPreferredSize() {
-        return super.getPreferredSize();
-      }
       public Dimension getPreferredScrollableViewportSize() {
+        if(handle.getColumnCount() != 0) {
+          return getPreferredSize();
+        }
         // TODO: use some caching mecanism?
         int columnCount = treeTable.getColumnModel().getColumnCount();
         int width = 0;

@@ -1,10 +1,12 @@
 * Get SWTSwing from "cvs.sf.net:/cvsroot/swtswing" and check out the modules:
+
 - SWTSwing
 - SWTSwingTests
 
 
 * Get SWT from ":pserver:anonymous@dev.eclipse.org:/home/eclipse" and check out
 the Modules:
+
 - org.eclipse.swt
 - org.eclipse.swt.examples
 - org.eclipse.swt.examples.launcher
@@ -14,12 +16,17 @@ the Modules:
 --------------------------------------------------------------------------------
 
 In Eclipse, you can create 2 "Run" configurations to test SWT's snippets with
-and without SWTSwing:
+and without SWTSwing (thie example is for win32):
+
 - Without SWTSwing:
   Project: SWTSwingTests
   Main class: chrriis.swtswing.Test
-  VM Arguments: -Dswt.swing.snippets=defined -Djava.library.path=${workspace_loc:org.eclipse.swt.win32}/os/win32/x86
+  VM Arguments: -Dswt.swing.snippets=defined -Djava.library.path=${workspace_loc:org.eclipse.swt.win32}/bin/os/win32/x86
   ClassPath: add "org.eclipse.swt" and "org.eclipse.swt.win32"
+
+  Note: if the version of the DLL is not the correct one (an exception is
+  raised), you should add the VM argument "-Dswt.version=3125" where you replace
+  "3125" with the appropriate version number.
 
 - With SWTSwing:
   Project: SWTSwingTests

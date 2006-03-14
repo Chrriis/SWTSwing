@@ -45,6 +45,10 @@ class CTextMulti extends JScrollPane implements CText {
     init(style);
   }
 
+  public void requestFocus() {
+    textArea.requestFocus();
+  }
+  
   protected void init(int style) {
     setFont(textArea.getFont());
     if((style & SWT.BORDER) == 0) {
@@ -267,6 +271,10 @@ class CTextField extends JScrollPane implements CText {
     setFocusable(false);
     getViewport().setView(passwordField);
     init(style);
+  }
+  
+  public void requestFocus() {
+    passwordField.requestFocus();
   }
   
   protected void init(int style) {

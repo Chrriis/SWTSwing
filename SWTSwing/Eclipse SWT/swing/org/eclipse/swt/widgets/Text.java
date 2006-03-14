@@ -1134,6 +1134,7 @@ public void setOrientation (int orientation) {
 public void setSelection (int start) {
 	checkWidget ();
   ((CText)handle).setSelectionStart(start);
+  ((CText)handle).setSelectionEnd(start);
 }
 
 /**

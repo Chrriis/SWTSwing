@@ -88,7 +88,7 @@ class CShellFrame extends JFrame implements CShell {
     }
     contentPane = panel;
     contentPane.setFocusable(true);
-    setFocusable(false);
+//    setFocusable(false);
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
 //    Utils.installFocusListener(contentPane, handle);
@@ -259,7 +259,7 @@ class CShellDialog extends JDialog implements CShell {
     }
     contentPane = panel;
     contentPane.setFocusable(true);
-    setFocusable(false);
+//    setFocusable(false);
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
 //    Utils.installFocusListener(contentPane, handle);

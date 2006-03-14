@@ -536,6 +536,10 @@ void createWidget () {
       ((JComponent)clientArea).revalidate();
       clientArea.repaint();
     }
+    if(parent instanceof Shell && parent.getChildren().length == 0) {
+      System.err.println("in");
+      handle.requestFocus();
+    }
   }
     // TODO: should have a fixInitSize like in old implementation
 //    if(handle.getSize().equals(new java.awt.Dimension(0, 0))) {

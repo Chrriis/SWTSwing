@@ -100,10 +100,11 @@ public TreeColumn (Tree parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -194,6 +195,11 @@ CTreeColumn createHandle () {
   return CTreeColumn.Instanciator.createInstance(this, style);
 }
 
+void destroyWidget () {
+  parent.destroyItem (this);
+  releaseHandle ();
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -212,6 +218,31 @@ public int getAlignment () {
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
+}
+
+/**
+ * Gets the moveable attribute. A column that is
+ * not moveable cannot be reordered by the user 
+ * by dragging the header but may be reordered 
+ * by the programmer.
+ *
+ * @return the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+public boolean getMoveable () {
+  checkWidget ();
+  return moveable;
 }
 
 String getNameText () {
@@ -248,6 +279,24 @@ public Tree getParent () {
 public boolean getResizable () {
 	checkWidget ();
   return ((TableColumn)handle).getResizable();
+}
+
+/**
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public String getToolTipText () {
+  checkWidget();
+  return toolTipText;
 }
 
 /**
@@ -341,14 +390,9 @@ public void pack () {
 //	setWidth (Math.max (headerWidth, columnWidth));
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	parent = null;
+void releaseHandle () {
+  super.releaseHandle ();
+  parent = null;
 }
 
 /**
@@ -439,6 +483,32 @@ public void setImage (Image image) {
 }
 
 /**
+ * Sets the moveable attribute.  A column that is
+ * moveable can be reordered by the user by dragging
+ * the header. A column that is not moveable cannot be 
+ * dragged by the user but may be reordered 
+ * by the programmer.
+ *
+ * @param moveable the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#setColumnOrder(int[])
+ * @see Tree#getColumnOrder()
+ * @see TreeColumn#getMoveable()
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+public void setMoveable (boolean moveable) {
+  checkWidget ();
+  this.moveable = moveable;
+}
+
+/**
  * Sets the resizable attribute.  A column that is
  * not resizable cannot be dragged by the user but
  * may be resized by the programmer.
@@ -461,6 +531,29 @@ public void setText (String string) {
 	super.setText (string);
   // TODO: check what happens with mnemonics
   ((TableColumn)handle).setHeaderValue(string);
+}
+
+/**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setToolTipText (String string) {
+  checkWidget();
+  toolTipText = string;
+  int hwndHeaderToolTip = parent.headerToolTipHandle;
+  if (hwndHeaderToolTip == 0) {
+    parent.createHeaderToolTips ();
+    parent.updateHeaderToolTips ();
+  }
 }
 
 /**

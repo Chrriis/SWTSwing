@@ -42,7 +42,10 @@ public final class GCData {
 	public PAINTSTRUCT ps;
 	public boolean layout = true;
 	public int alpha = 0xFF;
-	public int gdipGraphics;
+  public boolean advanced;
+//	public int gdipGraphics;
 	public int gdipPen;
 	public int gdipBrush;
+  public Pattern foregroundPattern;
+  public Pattern backgroundPattern;
 }

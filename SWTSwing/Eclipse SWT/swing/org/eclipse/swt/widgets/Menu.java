@@ -13,8 +13,6 @@ package org.eclipse.swt.widgets;
  
 import java.awt.Component;
 
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -66,7 +64,6 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
-  ButtonGroup buttonGroup;
 //	ImageList imageList;
 	
 //	/* Resource ID for SHMENUBARINFO */
@@ -231,13 +228,6 @@ Menu (Decorations parent, int style, JMenuBar handle) {
 //		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
 //	}
 //}
-
-void addGroupedButton(AbstractButton button) {
-  if(buttonGroup == null) {
-    buttonGroup = new ButtonGroup();
-  }
-  buttonGroup.add(button);
-}
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -508,7 +498,7 @@ public MenuItem getDefaultItem () {
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
+ * <code>false</code> otherwise. A disabled menu is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
@@ -563,8 +553,8 @@ public int getItemCount () {
 }
 
 /**
- * Returns an array of <code>MenuItem</code>s which are the items
- * in the receiver. 
+ * Returns a (possibly empty) array of <code>MenuItem</code>s which
+ * are the items in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -717,7 +707,12 @@ public boolean getVisible () {
 			if (popups [i] == this) return true;
 		}
 	}
-	return this == getShell ().activeMenu;
+  Shell shell = getShell ();
+  Menu menu = shell.activeMenu;
+  while (menu != null && menu != this) {
+    menu = menu.getParentMenu ();
+  }
+  return this == menu;
 }
 
 //int imageIndex (Image image) {
@@ -772,7 +767,7 @@ public int indexOf (MenuItem item) {
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
+ * otherwise. A disabled menu is typically not selectable from the
  * user interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
@@ -811,6 +806,7 @@ public boolean isVisible () {
 }
 
 //void redraw () {
+//  if (!isVisible ()) return;
 //	if ((style & SWT.BAR) != 0) {
 //		display.addBar (this);
 //	} else {
@@ -818,8 +814,24 @@ public boolean isVisible () {
 //	}
 //}
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseHandle () {
+  super.releaseHandle ();
+  handle = null;
+}
+
+void releaseChildren (boolean destroy) {
+  MenuItem [] items = getItems ();
+  for (int i=0; i<items.length; i++) {
+    MenuItem item = items [i];
+    if (item != null && !item.isDisposed ()) {
+      item.release (false);
+    }
+  }
+  super.releaseChildren (destroy);
+}
+
+void releaseParent () {
+  super.releaseParent ();
 	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
 		display.removeBar (this);
@@ -833,34 +845,13 @@ void releaseChild () {
 	}
 }
 
-void releaseHandle () {
-	super.releaseHandle ();
-  handle = null;
-//	handle = hwndCB = 0;
-}
-
 void releaseWidget () {
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if (!item.isDisposed ()) {
-  		item.releaseResources ();
-		}
-	}
 	super.releaseWidget ();
 	if (parent != null) parent.removeMenu (this);
 	parent = null;
 	cascade = null;
 }
 
-void removeGroupedButton(AbstractButton button) {
-  if(buttonGroup == null) return;
-  buttonGroup.remove(button);
-  if(buttonGroup.getButtonCount() == 0) {
-    buttonGroup = null;
-  }
-}
-  
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the help events are generated for the control.
@@ -942,7 +933,7 @@ public void setDefaultItem (MenuItem item) {
 
 /**
  * Enables the receiver if the argument is <code>true</code>,
- * and disables it otherwise. A disabled control is typically
+ * and disables it otherwise. A disabled menu is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
@@ -956,16 +947,18 @@ public void setDefaultItem (MenuItem item) {
 public void setEnabled (boolean enabled) {
 	checkWidget ();
   handle.setEnabled(enabled);
-//	state &= ~DISABLED;
-//	if (!enabled) state |= DISABLED;
 }
 
 /**
- * Sets the receiver's location to the point specified by
- * the arguments which are relative to the display.
+ * Sets the location of the receiver, which must be a popup,
+ * to the point specified by the arguments which are relative
+ * to the display.
  * <p>
- * Note:  This is different from most widgets where the
+ * Note that this is different from most widgets where the
  * location of the widget is relative to the parent.
+ * </p><p>
+ * Note that the platform window manager ultimately has control
+ * over the location of popup menus.
  * </p>
  *
  * @param x the new x coordinate for the receiver
@@ -985,11 +978,15 @@ public void setLocation (int x, int y) {
 }
 
 /**
- * Sets the receiver's location to the point specified by
- * the arguments which are relative to the display.
+ * Sets the location of the receiver, which must be a popup,
+ * to the point specified by the argument which is relative
+ * to the display.
  * <p>
- * Note:  This is different from most widgets where the
+ * Note that this is different from most widgets where the
  * location of the widget is relative to the parent.
+ * </p><p>
+ * Note that the platform window manager ultimately has control
+ * over the location of popup menus.
  * </p>
  *
  * @param location the new location for the receiver

@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -132,8 +133,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
       protected boolean isOpaque;
       protected Color defaultForeground;
       protected Color defaultBackground;
+      protected Font defaultFont;
       protected Color selectionForeground;
       protected Color selectionBackground;
+      protected Font selectionFont;
       public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean isSelected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
         if(!isInitialized) {
           Component c = super.getTreeTableCellRendererComponent(treeTable, "", isSelected, expanded, leaf, row, column, hasFocus);
@@ -142,11 +145,13 @@ class CTreeImplementation extends JScrollPane implements CTree {
           }
           selectionForeground = c.getForeground();
           selectionBackground = c.getBackground();
+          selectionFont = c.getFont();
         }
         Component c = super.getTreeTableCellRendererComponent(treeTable, value, isSelected, expanded, leaf, row, column, hasFocus);
         if(!isInitialized) {
           defaultForeground = c.getForeground();
           defaultBackground = c.getBackground();
+          defaultFont = c.getFont();
           isInitialized = true;
         }
         if(value == null) {
@@ -154,6 +159,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         }
         c.setForeground(isSelected? selectionForeground: defaultForeground);
         c.setBackground(isSelected? selectionBackground: defaultBackground);
+        c.setFont(isSelected? selectionFont: defaultFont);
         if(c instanceof JComponent) {
           ((JComponent)c).setOpaque(isOpaque);
         }
@@ -189,6 +195,15 @@ class CTreeImplementation extends JScrollPane implements CTree {
               if(background != null) {
                 c.setBackground(background);
               }
+            }
+          }
+          Font font = treeItemObject.getFont();
+          if(font != null) {
+            c.setFont(font);
+          } else {
+            font = treeItemObject.getTreeItem().getFont();
+            if(font != null) {
+              c.setFont(font);
             }
           }
           // TODO: Complete with other properties from treeItemObject

@@ -80,6 +80,10 @@ public Scale (Composite parent, int style) {
  * be notified when the receiver's value changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the control's value changes.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -107,6 +111,7 @@ static int checkStyle (int style) {
 }
 
 Container createHandle () {
+  state |= THEME_BACKGROUND | DRAW_BACKGROUND;
   return (Container)CScale.Instanciator.createInstance(this, style);
 }
 
@@ -175,7 +180,7 @@ public int getPageIncrement () {
 }
 
 /**
- * Returns the <em>selection</em>, which is the receiver's position.
+ * Returns the 'selection', which is the receiver's position.
  *
  * @return the selection
  *
@@ -301,9 +306,8 @@ public void setPageIncrement (int pageIncrement) {
 }
 
 /**
- * Sets the <em>selection</em>, which is the receiver's
- * value, to the argument which must be greater than or equal
- * to zero.
+ * Sets the 'selection', which is the receiver's value,
+ * to the argument which must be greater than or equal to zero.
  *
  * @param value the new selection (must be zero or greater)
  *

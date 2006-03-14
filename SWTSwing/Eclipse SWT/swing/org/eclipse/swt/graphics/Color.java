@@ -28,7 +28,7 @@ import org.eclipse.swt.*;
  * @see Device#getSystemColor
  */
 
-public final class Color {
+public final class Color extends Resource {
 	
 	/**
 	 * the handle to the OS color resource 
@@ -42,11 +42,6 @@ public final class Color {
 	 */
 	public java.awt.Color handle;
 	
-	/**
-	 * the device where this color was created
-	 */
-	Device device;
-
 /**
  * Prevents uninitialized instances from being created outside the package.
  */

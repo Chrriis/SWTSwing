@@ -39,10 +39,13 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>FLAT</dd>
+ * <dd>FLAT, HORIZONTAL, VERTICAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
+ * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -175,7 +178,7 @@ boolean autoAddChildren() {
 }
 
 Container createHandle () {
-  state &= ~CANVAS;
+  state &= ~(CANVAS | THEME_BACKGROUND);
   return (Container)CCoolBar.Instanciator.createInstance(this, style);
 }
 
@@ -632,16 +635,18 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
   return new Point(size.width, size.height);
 }
 
-void releaseWidget () {
-	for (int i=itemList.size()-1; i>=0; i--) {
-		CoolItem item = (CoolItem)itemList.get(i);
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
-		}
-	}
-	itemList = null;
-  originalItemList = null;
-  super.releaseWidget();
+void releaseChildren (boolean destroy) {
+  if(itemList != null) {
+    for (int i=itemList.size()-1; i>=0; i--) {
+      CoolItem item = (CoolItem)itemList.get(i);
+      if (item != null && !item.isDisposed ()) {
+        item.release (false);
+      }
+    }
+    itemList = null;
+    originalItemList = null;
+  }
+  super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {

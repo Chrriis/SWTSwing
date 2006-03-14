@@ -12,10 +12,13 @@ package org.eclipse.swt.internal.swing;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JScrollBar;
+import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -38,6 +41,11 @@ public interface CCombo extends CComposite {
 
     protected void init(int style) {
       setEditable((style & SWT.READ_ONLY) == 0);
+      ((JTextField)getEditor().getEditorComponent()).addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          handle.processEvent(e);
+        }
+      });
       ((AbstractDocument)((JTextComponent)getEditor().getEditorComponent()).getDocument()).setDocumentFilter(new DocumentFilter() {
 //        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
 //        }

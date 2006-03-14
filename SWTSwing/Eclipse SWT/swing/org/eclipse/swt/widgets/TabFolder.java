@@ -162,7 +162,7 @@ boolean autoAddChildren() {
 }
 
 Container createHandle () {
-	state &= ~CANVAS;
+  state &= ~(CANVAS | THEME_BACKGROUND);
   return (Container)CTabFolder.Instanciator.createInstance(this, style);
 }
 
@@ -353,19 +353,21 @@ public int indexOf (TabItem item) {
 //	return new Point (width, height);
 //}
 
-void releaseWidget () {
-	int count = getItemCount();
-	for (int i=0; i<count; i++) {
-		TabItem item = (TabItem)itemList.get(i);
-		if (!item.isDisposed ()) item.releaseResources ();
-	}
-	itemList = null;
+void releaseChildren (boolean destroy) {
+  if(itemList != null) {
+    int count = getItemCount();
+    for (int i=0; i<count; i++) {
+      TabItem item = (TabItem)itemList.get(i);
+      if (!item.isDisposed ()) item.release (false);
+    }
+    itemList = null;
+  }
 //	if (imageList != null) {
 //		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
 //		display.releaseImageList (imageList);
 //	}
 //	imageList = null;
-	super.releaseWidget ();
+  super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {
@@ -400,6 +402,29 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+/**
+ * Sets the receiver's selection to the given item.
+ * The current selected is first cleared, then the new item is
+ * selected.
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSelection (TabItem item) {
+  checkWidget ();
+  if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+  setSelection (new TabItem [] {item});
 }
 
 /**

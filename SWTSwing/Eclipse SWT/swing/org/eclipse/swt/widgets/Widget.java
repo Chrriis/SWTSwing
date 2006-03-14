@@ -57,10 +57,26 @@ public abstract class Widget {
 	static final int KEYED_DATA		= 1<<2;
 //	static final int DISABLED		= 1<<3;
 //	static final int HIDDEN			= 1<<4;
+  
+  /* A layout was requested on this widget */
 	static final int LAYOUT_NEEDED	= 1<<5;
+  
+  /* The preferred size of a child has changed */
 	static final int LAYOUT_CHANGED = 1<<6;
 	
-	/* Default widths for widgets */
+  /* A layout was requested in this widget hierachy */
+  static final int LAYOUT_CHILD = 1<<7;
+
+  /* Background flags */
+  static final int THEME_BACKGROUND = 1<<8;
+  static final int DRAW_BACKGROUND = 1<<9;
+  static final int PARENT_BACKGROUND = 1<<10;
+  
+  /* Dispose and release flags */
+  static final int RELEASED   = 1<<11;
+  static final int DISPOSE_SENT = 1<<12;
+  
+  /* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 
@@ -100,6 +116,7 @@ Widget () {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -121,7 +138,8 @@ public Widget (Widget parent, int style) {
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs. When the
  * event does occur in the widget, the listener is notified by
- * sending it the <code>handleEvent()</code> message.
+ * sending it the <code>handleEvent()</code> message. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
@@ -135,7 +153,9 @@ public Widget (Widget parent, int style) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeListener
+ * @see #notifyListeners
  */
 public void addListener (int eventType, Listener listener) {
 	checkWidget();
@@ -232,6 +252,7 @@ void checkOpened () {
  */
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
+  if (parent.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	parent.checkWidget ();
 	parent.checkOpened ();
 }
@@ -309,12 +330,13 @@ protected void checkWidget () {
  * This means that it is only necessary to call <code>destroyWidget</code>
  * on the root of the widget tree.
  * </p><p>
- * This method is called after <code>releaseWidget</code>.
+ * This method is called after <code>releaseWidget()</code>.
+ * </p><p>
+ * See also <code>releaseChild()</code>, <code>releaseWidget()</code>
+ * and <code>releaseHandle()</code>.
  * </p>
+ * 
  * @see #dispose
- * @see #releaseChild
- * @see #releaseWidget
- * @see #releaseHandle
  */
 void destroyWidget () {
 	releaseHandle ();
@@ -377,9 +399,7 @@ public void dispose () {
 	*/
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	releaseChild ();
-	releaseWidget ();
-	destroyWidget ();
+  release (true);
 }
 
 /**
@@ -388,7 +408,7 @@ public void dispose () {
  *
  * @param code the descriptive error code
  *
- * @see SWTError#error
+ * @see SWT#error(int)
  */
 void error (int code) {
 	SWT.error(code);
@@ -472,7 +492,7 @@ String fixMnemonic (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
  *
- * @see #setData
+ * @see #setData(Object)
  */
 public Object getData () {
 	checkWidget();
@@ -501,7 +521,7 @@ public Object getData () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #setData
+ * @see #setData(String, Object)
  */
 public Object getData (String key) {
 	checkWidget();
@@ -528,7 +548,6 @@ public Object getData (String key) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public Display getDisplay () {
@@ -629,17 +648,20 @@ public boolean isDisposed () {
 /**
  * Returns <code>true</code> if there are any listeners
  * for the specified event type associated with the receiver,
- * and <code>false</code> otherwise.
+ * and <code>false</code> otherwise. The event type is one of
+ * the event constants defined in class <code>SWT</code>.
  *
- * @param	eventType the type of event
+ * @param eventType the type of event
  * @return true if the event is hooked
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see SWT
  */
-protected boolean isListening (int eventType) {
+public boolean isListening (int eventType) {
 	checkWidget();
 	return hooks (eventType);
 }
@@ -675,7 +697,9 @@ GC new_GC (GCData data) {
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
- * invoking their <code>handleEvent()</code> method.
+ * invoking their <code>handleEvent()</code> method.  The
+ * event type is one of the event constants defined in class
+ * <code>SWT</code>.
  *
  * @param eventType the type of event which has occurred
  * @param event the event data
@@ -684,6 +708,10 @@ GC new_GC (GCData data) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see SWT
+ * @see #addListener
+ * @see #removeListener
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
@@ -697,6 +725,73 @@ void postEvent (int eventType) {
 
 void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
+}
+
+/*
+ * Releases the widget hiearchy and optionally destroys
+ * the receiver.
+ * <p>
+ * Typically, a widget with children will broadcast this
+ * message to all children so that they too can release their
+ * resources.  The <code>releaseHandle</code> method is used
+ * as part of this broadcast to zero the handle fields of the
+ * children without calling <code>destroyWidget</code>.  In
+ * this scenario, the children are actually destroyed later,
+ * when the operating system destroys the widget tree.
+ * </p>
+ * 
+ * @param destroy indicates that the receiver should be destroyed
+ * 
+ * @see #dispose
+ * @see #releaseHandle
+ * @see #releaseParent
+ * @see #releaseWidget
+*/
+void release (boolean destroy) {
+  if ((state & DISPOSE_SENT) == 0) {
+    state |= DISPOSE_SENT;
+    sendEvent (SWT.Dispose);
+  }
+  if ((state & DISPOSED) == 0) {
+    releaseChildren (destroy);
+  }
+  if ((state & RELEASED) == 0) {
+    state |= RELEASED;
+    if (destroy) {
+      releaseParent ();
+      releaseWidget ();
+      destroyWidget ();
+    } else {
+      releaseWidget ();
+      releaseHandle ();
+    }
+  }
+}
+
+void releaseChildren (boolean destroy) {
+}
+
+/*
+ * Releases the widget's handle by zero'ing it out.
+ * Does not destroy or release any operating system
+ * resources.
+ * <p>
+ * This method is called after <code>releaseWidget</code>
+ * or from <code>destroyWidget</code> when a widget is being
+ * destroyed to ensure that the widget is marked as destroyed
+ * in case the act of destroying the widget in the operating
+ * system causes application code to run in callback that
+ * could access the widget.
+ * </p>
+ *
+ * @see #dispose
+ * @see #releaseChildren
+ * @see #releaseParent
+ * @see #releaseWidget
+ */
+void releaseHandle () {
+	state |= DISPOSED;
+	display = null;
 }
 
 /*
@@ -721,35 +816,7 @@ void postEvent (int eventType, Event event) {
  * @see #releaseWidget
  * @see #releaseHandle
  */
-void releaseChild () {
-}
-
-/*
- * Releases the widget's handle by zero'ing it out.
- * Does not destroy or release any operating system
- * resources.
- * <p>
- * This method is called after <code>releaseWidget</code>
- * or from <code>destroyWidget</code> when a widget is being
- * destroyed to ensure that the widget is marked as destroyed
- * in case the act of destroying the widget in the operating
- * system causes application code to run in callback that
- * could access the widget.
- * </p>
- *
- * @see #dispose
- * @see #releaseChild
- * @see #releaseWidget
- * @see #releaseHandle
- */
-void releaseHandle () {
-	state |= DISPOSED;
-	display = null;
-}
-
-void releaseResources () {
-	releaseWidget ();
-	releaseHandle ();
+void releaseParent () {
 }
 
 /*
@@ -766,31 +833,21 @@ void releaseResources () {
  * a reference to a disposed widget, all fields except the
  * handle are zero'd.  The handle is needed by <code>destroyWidget</code>.
  * </p>
- * <p>
- * Typically, a widget with children will broadcast this
- * message to all children so that they too can release their
- * resources.  The <code>releaseHandle</code> method is used
- * as part of this broadcast to zero the handle fields of the
- * children without calling <code>destroyWidget</code>.  In
- * this scenario, the children are actually destroyed later,
- * when the operating system destroys the widget tree.
- * </p>
- * This method is called after <code>releaseChild</code>.
  * 
  * @see #dispose
- * @see #releaseChild
- * @see #releaseWidget
+ * @see #releaseChildren
  * @see #releaseHandle
+ * @see #releaseParent
  */
 void releaseWidget () {
-	sendEvent (SWT.Dispose);
 	eventTable = null;
 	data = null;
 }
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notifed when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -804,7 +861,9 @@ void releaseWidget () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
+ * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener listener) {
 	checkWidget();
@@ -955,6 +1014,8 @@ void sendEvent (int eventType, Event event, boolean send) {
  *    <li>ERROR_WIDGET_DISPOSED - when the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
+ * 
+ * @see #getData()
  */
 public void setData (Object data) {
 	checkWidget();
@@ -987,7 +1048,7 @@ public void setData (Object data) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #getData
+ * @see #getData(String)
  */
 public void setData (String key, Object value) {
 	checkWidget();

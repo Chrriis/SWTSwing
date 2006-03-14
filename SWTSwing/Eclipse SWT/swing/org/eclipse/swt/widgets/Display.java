@@ -152,6 +152,9 @@ public class Display extends Device {
 //	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
 //	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
 	EventTable eventTable, filterTable;
+  Vector timerList = new Vector();
+  boolean runMessages = true, runMessagesInIdle = false;
+  static final String RUN_MESSAGES_IN_IDLE_KEY = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 //
 //	/* Widget Table */
 //	int freeSlot;
@@ -409,7 +412,7 @@ static void setDevice (Device device) {
  * </p>
  *
  * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if called from a thread that already created an existing display</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
@@ -455,6 +458,11 @@ static boolean isRealDispatch() {
   return swingEventQueue != null;
 }
 
+/**
+ * Constructs a new instance of this class using the parameter.
+ * 
+ * @param data the device data
+ */
 public Display (DeviceData data) {
 	super (data);
   boolean isLookAndFeelInstalled = false;
@@ -553,8 +561,10 @@ void addControl (Component handle, Control control) {
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs anywhere
- * in a widget. When the event does occur, the listener is
- * notified by sending it the <code>handleEvent()</code> message.
+ * in a widget. The event type is one of the event constants
+ * defined in class <code>SWT</code>. When the event does occur,
+ * the listener is notified by sending it the <code>handleEvent()</code>
+ * message.
  * <p>
  * Setting the type of an event to <code>SWT.None</code> from
  * within the <code>handleEvent()</code> method can be used to
@@ -578,6 +588,7 @@ void addControl (Component handle, Control control) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeFilter
  * @see #removeListener
  * 
@@ -592,8 +603,9 @@ public void addFilter (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
- * event does occur in the display, the listener is notified by
+ * be notifed when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
+ * When the event does occur in the display, the listener is notified by
  * sending it the <code>handleEvent()</code> message.
  *
  * @param eventType the type of event to listen for
@@ -608,6 +620,7 @@ public void addFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeListener
  * 
  * @since 2.0 
@@ -678,9 +691,16 @@ void addPopup (Menu menu) {
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The caller of this method continues 
  * to run in parallel, and is not notified when the
- * runnable has completed.
+ * runnable has completed.  Specifying <code>null</code> as the
+ * runnable simply wakes the user-interface thread when run.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
  *
- * @param runnable code to run on the user-interface thread.
+ * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -729,12 +749,13 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-static synchronized void checkDisplay (Thread thread) {
-	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] != null && Displays [i].thread == thread) {
-			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
-		}
-	}
+static synchronized void checkDisplay (Thread thread, boolean multiple) {
+  for (int i=0; i<Displays.length; i++) {
+    if (Displays [i] != null) {
+      if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+      if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+    }
+  }
 }
 
 //void clearModal (Shell shell) {
@@ -793,7 +814,7 @@ public void close () {
  */
 protected void create (DeviceData data) {
 	checkSubclass ();
-	checkDisplay (thread = Thread.currentThread ());
+  checkDisplay (thread = Thread.currentThread (), true);
 	createDisplay (data);
 	register (this);
 	if (Default == null) Default = this;
@@ -815,7 +836,7 @@ static synchronized void deregister (Display display) {
  * <p>
  * This method is called after <code>release</code>.
  * </p>
- * @see #dispose
+ * @see Device#dispose
  * @see #release
  */
 protected void destroy () {
@@ -839,7 +860,8 @@ void destroyDisplay () {
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread just before the
- * receiver is disposed.
+ * receiver is disposed.  Specifying a <code>null</code> runnable
+ * is ignored.
  *
  * @param runnable code to run at dispose time.
  * 
@@ -903,7 +925,7 @@ public void disposeExec (Runnable runnable) {
  *
  * @param code the descriptive error code
  *
- * @see SWTError#error
+ * @see SWT#error(int)
  */
 void error (int code) {
 	SWT.error (code);
@@ -1014,7 +1036,9 @@ Control findControl (Component handle) {
 /**
  * Returns the display which the given thread is the
  * user-interface thread for, or null if the given thread
- * is not a user-interface thread for any display.
+ * is not a user-interface thread for any display.  Specifying
+ * <code>null</code> as the thread will return <code>null</code>
+ * for the display. 
  *
  * @param thread the user-interface thread
  * @return the display for the given thread
@@ -1222,7 +1246,7 @@ static boolean isValidClass (Class clazz) {
  * Applications may have associated arbitrary objects with the
  * receiver in this fashion. If the objects stored in the
  * properties need to be notified when the display is disposed
- * of, it is the application's responsibility provide a
+ * of, it is the application's responsibility to provide a
  * <code>disposeExec()</code> handler which does so.
  * </p>
  *
@@ -1243,6 +1267,9 @@ static boolean isValidClass (Class clazz) {
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
+    return new Boolean (runMessagesInIdle);
+  }
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -1259,7 +1286,7 @@ public Object getData (String key) {
  * Applications may put arbitrary objects in this field. If
  * the object stored in the display specific data needs to
  * be notified when the display is disposed of, it is the
- * application's responsibility provide a
+ * application's responsibility to provide a
  * <code>disposeExec()</code> handler which does so.
  * </p>
  *
@@ -1364,9 +1391,8 @@ public boolean getHighContrast () {
 }
 
 /**
- * Returns the maximum allowed depth of icons on this display.
- * On some platforms, this may be different than the actual
- * depth of the display.
+ * Returns the maximum allowed depth of icons on this display, in bits per pixel.
+ * On some platforms, this may be different than the actual depth of the display.
  *
  * @return the maximum icon depth
  *
@@ -1374,10 +1400,12 @@ public boolean getHighContrast () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see Device#getDepth
  */
 public int getIconDepth () {
 	checkDevice ();
-  // TODO: is thsi correct?
+  // TODO: is this correct?
   int bitDepth = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getBitDepth();
   return bitDepth == -1? 32: bitDepth;
 }
@@ -1650,8 +1678,8 @@ public Monitor getPrimaryMonitor () {
 }
 
 /**
- * Returns an array containing all shells which have not been
- * disposed and have the receiver as their display.
+ * Returns a (possibly empty) array containing all shells which have
+ * not been disposed and have the receiver as their display.
  *
  * @return the receiver's shells
  *
@@ -2736,7 +2764,7 @@ static synchronized void register (Display display) {
  * </p>
  * This method is called before <code>destroy</code>.
  * 
- * @see #dispose
+ * @see Device#dispose
  * @see #destroy
  */
 protected void release () {
@@ -2942,7 +2970,8 @@ void releaseDisplay () {
 /**
  * Removes the listener from the collection of listeners who will
  * be notifed when an event of the given type occurs anywhere in
- * a widget.
+ * a widget. The event type is one of the event constants defined
+ * in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -2955,6 +2984,7 @@ void releaseDisplay () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addFilter
  * @see #addListener
  * 
@@ -2970,7 +3000,8 @@ public void removeFilter (int eventType, Listener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notifed when an event of the given type occurs. The event type
+ * is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -2984,6 +3015,7 @@ public void removeFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
  * 
  * @since 2.0 
@@ -3099,7 +3131,28 @@ boolean runDeferredEvents () {
 //	popups = null;
 //	return result;
 //}
-
+//
+//void runSettings () {
+//  Font oldFont = getSystemFont ();
+//  saveResources ();
+//  updateImages ();
+//  sendEvent (SWT.Settings, null);
+//  Font newFont = getSystemFont ();
+//  boolean sameFont = oldFont.equals (newFont);
+//  Shell [] shells = getShells ();
+//  for (int i=0; i<shells.length; i++) {
+//    Shell shell = shells [i];
+//    if (!shell.isDisposed ()) {
+//      if (!sameFont) {
+//        shell.updateFont (oldFont, newFont);
+//      }
+//      /* This code is intentionally commented */
+//      //shell.redraw (true);
+//      shell.layout (true, true);
+//    }
+//  }
+//}
+//
 //boolean runTimer (int id) {
 //	if (timerList != null && timerIds != null) {
 //		int index = 0;
@@ -3202,6 +3255,11 @@ public void setCursorLocation (Point point) {
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
+    Boolean data = (Boolean) value;
+    runMessagesInIdle = data != null && data.booleanValue ();
+    return;
+  }
 	
 	/* Remove the key/value pair */
 	if (value == null) {
@@ -3278,9 +3336,10 @@ public void setData (Object data) {
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
- * to set the name used for resource lookup.
+ * to set the name used for resource lookup.  Specifying
+ * <code>null</code> for the name clears it.
  *
- * @param name the new app name
+ * @param name the new app name or <code>null</code>
  */
 public static void setAppName (String name) {
 	/* Do nothing */
@@ -3387,9 +3446,16 @@ public boolean sleep () {
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The thread which calls this method
- * is suspended until the runnable completes.
- *
- * @param runnable code to run on the user-interface thread.
+ * is suspended until the runnable completes.  Specifying <code>null</code>
+ * as the runnable simply wakes the user-interface thread.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
+ * 
+ * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
@@ -3403,24 +3469,17 @@ public void syncExec (Runnable runnable) {
 	synchronizer.syncExec (runnable);
 }
 
-//int systemFont () {
-//	int hFont = 0;
-//	if (systemFonts != null) {
-//		int length = systemFonts.length;
-//		if (length != 0) hFont = systemFonts [length - 1];
-//	}
-//	if (hFont == 0) hFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-//	if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-//	return hFont;
-//}
-
-protected Vector timerList = new Vector();
-
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
  * number of milliseconds have elapsed. If milliseconds is less
  * than zero, the runnable is not executed.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
  *
  * @param milliseconds the delay before running the runnable
  * @param runnable code to run on the user-interface thread
@@ -3565,7 +3624,7 @@ public void update() {
 protected static final Object UI_LOCK = new Object();
 
 /**
- * If the receiver's user-interface thread was <code>sleep</code>'ing, 
+ * If the receiver's user-interface thread was <code>sleep</code>ing, 
  * causes it to be awakened and start running again. Note that this
  * method may be called from any thread.
  * 

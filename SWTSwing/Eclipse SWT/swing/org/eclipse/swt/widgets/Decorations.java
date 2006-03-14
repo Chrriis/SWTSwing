@@ -173,6 +173,7 @@ void addMenu (Menu menu) {
 
 void bringToTop () {
   ((CShell)handle).toFront();
+  // widget could be disposed at this point
 //	/*
 //	* This code is intentionally commented.  On some platforms,
 //	* the ON_TOP style creates a shell that will stay on top
@@ -525,9 +526,9 @@ public Image getImage () {
  * marked as iconified, and may also be displayed somewhere
  * in the trim when the instance is in normal or maximized
  * states. Depending where the icon is displayed, the platform
- * chooses the icon with the "best" size. It is expected that
- * the array will contain the same icon rendered at different
- * resolutions.
+ * chooses the icon with the "best" attributes.  It is expected
+ * that the array will contain the same icon rendered at different
+ * sizes, with different depth and transparency attributes.
  * 
  * <p>
  * Note: This method will return an empty array if called before
@@ -686,9 +687,12 @@ Decorations menuShell () {
 	return this;
 }
 
-void releaseWidget () {
-	if (menuBar != null) menuBar.releaseResources ();
-	menuBar = null;
+void releaseChildren (boolean destroy) {
+  if (menuBar != null) {
+    menuBar.release (false);
+    menuBar = null;
+  }
+  super.releaseChildren (destroy);
 	if (menus != null) {
 		do {
 			int index = 0;
@@ -705,8 +709,11 @@ void releaseWidget () {
 			}
 			if (index == menus.length) break;
 		} while (true);
+		menus = null;
 	}
-	menus = null;
+}
+
+void releaseWidget () {
 	super.releaseWidget ();
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
@@ -791,12 +798,17 @@ void removeMenu (Menu menu) {
  * <em>saved default button</em>). If no default button had
  * previously been set, or the saved default button was
  * disposed, the receiver's default button will be set to
- * null. 
+ * null.
+ * <p>
+ * The default button is the button that is selected when
+ * the receiver is active and the user presses ENTER.
+ * </p>
  *
  * @param button the new default button
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -805,6 +817,10 @@ void removeMenu (Menu menu) {
  */
 public void setDefaultButton (Button button) {
 	checkWidget ();
+  if (button != null) {
+    if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+    if (button.menuShell () != this) error(SWT.ERROR_INVALID_PARENT);
+  }
 	setDefaultButton (button, true);
 }
 
@@ -815,7 +831,6 @@ void setDefaultButton (Button button, boolean save) {
 			return;
 		}
 	} else {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((button.style & SWT.PUSH) == 0) return;
 		if (button == defaultButton) return;
 	}
@@ -945,8 +960,9 @@ public void setImage (Image image) {
  * and may also be displayed somewhere in the trim when the
  * instance is in normal or maximized states. Depending where
  * the icon is displayed, the platform chooses the icon with
- * the "best" size. It is expected that the array will contain
- * the same icon rendered at different resolutions.
+ * the "best" attributes. It is expected that the array will
+ * contain the same icon rendered at different sizes, with
+ * different depth and transparency attributes.
  * 
  * @param images the new image array
  *
@@ -983,7 +999,7 @@ public void setImages (Image [] images) {
  * causes the receiver to switch back to either the minimized
  * or normal states.
  * <p>
- * Note: The result of intermixing calls to<code>setMaximized(true)</code>
+ * Note: The result of intermixing calls to <code>setMaximized(true)</code>
  * and <code>setMinimized(true)</code> will vary by platform. Typically,
  * the behavior will match the platform user's expectations, but not
  * always. This should be avoided if possible.
@@ -1044,7 +1060,7 @@ public void setMenuBar (Menu menu) {
  * causes the receiver to switch back to either the maximized
  * or normal states.
  * <p>
- * Note: The result of intermixing calls to<code>setMaximized(true)</code>
+ * Note: The result of intermixing calls to <code>setMaximized(true)</code>
  * and <code>setMinimized(true)</code> will vary by platform. Typically,
  * the behavior will match the platform user's expectations, but not
  * always. This should be avoided if possible.
@@ -1189,7 +1205,7 @@ public void setMinimized (boolean minimized) {
 /**
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>, to the argument, which may not be null. 
+ * <em>title</em>, to the argument, which must not be null. 
  *
  * @param string the new text
  *
@@ -1273,6 +1289,26 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 	}
 }
+
+//void sort (Image [] images, ImageData [] datas, int width, int height, int depth) {
+//  /* Shell Sort from K&R, pg 108 */
+//  int length = images.length;
+//  if (length <= 1) return;
+//  for (int gap=length/2; gap>0; gap/=2) {
+//    for (int i=gap; i<length; i++) {
+//      for (int j=i-gap; j>=0; j-=gap) {
+//          if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
+//          Image swap = images [j];
+//          images [j] = images [j + gap];
+//          images [j + gap] = swap;
+//          ImageData swapData = datas [j];
+//          datas [j] = datas [j + gap];
+//          datas [j + gap] = swapData;
+//          }
+//        }
+//      }
+//  }
+//}
 
 //boolean translateAccelerator (MSG msg) {
 //	if (!isEnabled () || !isActive ()) return false;

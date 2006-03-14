@@ -18,7 +18,6 @@ import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 
 import org.eclipse.swt.SWT;
@@ -33,7 +32,7 @@ import org.eclipse.swt.internal.swing.CComposite;
  * of containing other controls.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE, NO_RADIO_GROUP, EMBEDDED</dd>
+ * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE, NO_RADIO_GROUP, EMBEDDED, DOUBLE_BUFFERED</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -43,6 +42,12 @@ import org.eclipse.swt.internal.swing.CComposite;
  * They can be used with <code>Composite</code> if you are drawing your own, but their
  * behavior is undefined if they are used with subclasses of <code>Composite</code> other
  * than <code>Canvas</code>.
+ * </p><p>
+ * Note: The <code>CENTER</code> style, although undefined for composites, has the
+ * same value as <code>EMBEDDED</code> (which is used to embed widgets from other
+ * widget toolkits into SWT).  On some operating systems (GTK, Motif), this may cause
+ * the children of this compostite to be obscured.  The <code>EMBEDDED</code> style
+ * is for used by other widget toolkits and should normally never be used.
  * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
@@ -59,8 +64,6 @@ public class Composite extends Scrollable {
 	Control [] tabList;
 	int layoutCount = 0;
 	
-  ButtonGroup buttonGroup;
-  
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -132,13 +135,6 @@ Control [] _getTabList () {
 	}
 	tabList = newList;
 	return tabList;
-}
-
-void addGroupedButton(AbstractButton button) {
-  if(buttonGroup == null) {
-    buttonGroup = new ButtonGroup();
-  }
-  buttonGroup.add(button);
 }
 
 /**
@@ -233,10 +229,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Container createHandle () {
   state |= CANVAS;
+  if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+    state |= THEME_BACKGROUND;
+  }
   return (Container)CComposite.Instanciator.createInstance(this, style);
 }
 
-
+Composite findDeferredControl () {
+  return layoutCount > 0 ? this : parent.findDeferredControl ();
+}
 
 //Menu [] findMenus (Control control) {
 //	if (control == this) return new Menu [0];
@@ -285,8 +286,33 @@ void fixTabList (Control control) {
 }
 
 /**
- * Returns an array containing the receiver's children.
- * Children are returned in the order that they are drawn.
+ * Returns the receiver's background drawing mode. This
+ * will be one of the following constants defined in class
+ * <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERTIT_FORCE</code>.
+ *
+ * @return the background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
+public int getBackgroundMode () {
+  checkWidget ();
+  return backgroundMode;
+}
+
+/**
+ * Returns a (possibly empty) array containing the receiver's children.
+ * Children are returned in the order that they are drawn.  The topmost
+ * control appears at the beginning of the array.  Subsequent controls
+ * draw beneath this control and appear later in the array.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
@@ -339,7 +365,7 @@ public Layout getLayout () {
 }
 
 /**
- * Gets the last specified tabbing order for the control.
+ * Gets the (possibly empty) tabbing order for the control.
  *
  * @return tabList the ordered list of controls representing the tab order
  *
@@ -392,7 +418,7 @@ boolean hooksKeys () {
  */
 public boolean getLayoutDeferred () {
 	checkWidget ();
-	return layoutCount > 0 ;
+  return layoutCount > 0 ;
 }
 
 /**
@@ -415,7 +441,7 @@ public boolean getLayoutDeferred () {
  */
 public boolean isLayoutDeferred () {
 	checkWidget ();
-	return layoutCount > 0 || parent.isLayoutDeferred ();
+	return findDeferredControl () != null;
 }
 
 /**
@@ -589,16 +615,18 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-void releaseChildren () {
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (!child.isDisposed ()) child.releaseResources ();
-	}
+void releaseChildren (boolean destroy) {
+  Control [] children = _getChildren ();
+  for (int i=0; i<children.length; i++) {
+    Control child = children [i];
+    if (child != null && !child.isDisposed ()) {
+      child.release (false);
+    }
+  }
+  super.releaseChildren (destroy);
 }
 
 void releaseWidget () {
-	releaseChildren ();
 	super.releaseWidget ();
 //	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 //		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
@@ -683,14 +711,32 @@ void removeControl (Control control) {
 //	}
 //}
 
-void removeGroupedButton(AbstractButton button) {
-  if(buttonGroup == null) return;
-  buttonGroup.remove(button);
-  if(buttonGroup.getButtonCount() == 0) {
-    buttonGroup = null;
+/**
+ * Sets the background drawing mode to the argument which should
+ * be one of the following constants defined in class <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERIT_FORCE</code>.
+ *
+ * @param mode the new background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
+public void setBackgroundMode (int mode) {
+  checkWidget ();
+  backgroundMode = mode;
+  Control [] children = _getChildren ();
+  for (int i = 0; i < children.length; i++) {
+    children [i].updateBackgroundMode ();   
   }
 }
-  
+
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
@@ -746,7 +792,9 @@ public void setLayout (Layout layout) {
 public void setLayoutDeferred (boolean defer) {
 	if (!defer) {
 		if (--layoutCount == 0) {
-			if (!isLayoutDeferred ()) updateLayout (true, true);
+      if ((state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0) {
+        updateLayout (true, true);
+      }
 		}
 	} else {
 		layoutCount++;

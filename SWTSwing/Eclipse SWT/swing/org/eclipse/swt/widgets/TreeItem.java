@@ -59,6 +59,7 @@ public class TreeItem extends Item {
   ArrayList itemList;
 //	String [] strings;
 //	Image [] images;
+  boolean cached;
 //	int background = -1, foreground = -1, font = -1;
 //	int [] cellBackground, cellForeground, cellFont;
 	
@@ -77,7 +78,7 @@ public class TreeItem extends Item {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -114,12 +115,13 @@ public TreeItem (Tree parent, int style) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -153,7 +155,7 @@ public TreeItem (Tree parent, int style, int index) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -191,12 +193,13 @@ public TreeItem (TreeItem parentItem, int style) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -230,6 +233,78 @@ CTreeItem createHandle () {
 }
 
 /**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the tree was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clear (int index, boolean all) {
+  checkWidget ();
+  int hwnd = parent.handle;
+  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  hItem = parent.findItem (hItem, index);
+  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  TVITEM tvItem = new TVITEM ();
+  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+  parent.clear (hItem, tvItem);
+  if (all) {
+    hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+    parent.clearAll (hItem, tvItem, all);
+  }
+}
+
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * tree was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ * 
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clearAll (boolean all) {
+  checkWidget ();
+  int hwnd = parent.handle;
+  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+  if (hItem == 0) return;
+  TVITEM tvItem = new TVITEM ();
+  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+  parent.clearAll (hItem, tvItem, all);
+}
+
+void destroyWidget () {
+  parent.releaseItem (this, false);
+  parent.destroyItem (this);
+  releaseHandle ();
+}
+
+/**
  * Returns the receiver's background color.
  *
  * @return the background color
@@ -244,6 +319,7 @@ CTreeItem createHandle () {
  */
 public Color getBackground () {
   checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   java.awt.Color color = handle.getBackground();
   if(color == null) return parent.getBackground();
   return Color.swing_new(display, color);
@@ -264,6 +340,7 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getBackground ();
   java.awt.Color color = handle.getTreeItemObject(index).getBackground();
@@ -289,6 +366,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   return getBounds(0);
 }
 
@@ -308,6 +386,7 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   CTree tree = (CTree)parent.handle;
   int row = tree.getRowForPath(new TreePath(handle.getPath()));
   java.awt.Rectangle rect = tree.getCellRect(row, index, false);
@@ -329,6 +408,7 @@ public Rectangle getBounds (int index) {
  */
 public boolean getChecked () {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
   return handle.isChecked();
 }
@@ -382,6 +462,7 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   int count = Math.max (1, parent.getColumnCount ());
   if (0 > index || index > count -1) return getFont ();
   java.awt.Font font = handle.getTreeItemObject(index).getFont();
@@ -409,6 +490,7 @@ public Font getFont (int index) {
  */
 public Color getForeground () {
   checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   java.awt.Color color = handle.getForeground();
   if(color == null) return parent.getForeground();
   return Color.swing_new(display, color);
@@ -430,6 +512,7 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getForeground ();
   java.awt.Color color = handle.getTreeItemObject(index).getForeground();
@@ -448,7 +531,7 @@ public Color getForeground (int index) {
  * the <code>CHECK style, return false.
  * <p>
  *
- * @return the grayed state
+ * @return the grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -457,8 +540,38 @@ public Color getForeground (int index) {
  */
 public boolean getGrayed () {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
   return handle.isGrayed();
+}
+
+/**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public TreeItem getItem (int index) {
+  checkWidget ();
+  if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+  int hwnd = parent.handle;
+  int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  int hItem = parent.findItem (hFirstItem, index);
+  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  return parent._getItem (hItem);
 }
 
 /**
@@ -474,12 +587,13 @@ public boolean getGrayed () {
  */
 public int getItemCount () {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   return itemList == null? 0: itemList.size();
 }
 
 /**
- * Returns an array of <code>TreeItem</code>s which are the
- * direct item children of the receiver.
+ * Returns a (possibly empty) array of <code>TreeItem</code>s which
+ * are the direct item children of the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -495,7 +609,14 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   return itemList == null? new TreeItem [0]: (TreeItem [])itemList.toArray(new TreeItem [0]);
+}
+
+public Image getImage () {
+  checkWidget();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+  return super.getImage ();
 }
 
 /**
@@ -513,7 +634,8 @@ public TreeItem [] getItems () {
  * @since 3.1
  */
 public Image getImage (int index) {
-	checkWidget();
+  checkWidget();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
 	if (images != null) {
 		if (0 <= index && index < images.length) return images [index];
@@ -524,7 +646,7 @@ public Image getImage (int index) {
 /**
  * Returns a rectangle describing the size and location
  * relative to its parent of an image at a column in the
- * table.
+ * tree.
  *
  * @param index the index that specifies the column
  * @return the receiver's bounding image rectangle
@@ -537,7 +659,8 @@ public Image getImage (int index) {
  * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
-	checkWidget();
+  checkWidget();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, false, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
@@ -575,6 +698,12 @@ public TreeItem getParentItem () {
   return parentItem;
 }
 
+public String getText () {
+  checkWidget();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+  return super.getText ();
+}
+
 /**
  * Returns the text stored at the given column index in the receiver,
  * or empty string if the text has not been set.
@@ -591,6 +720,7 @@ public TreeItem getParentItem () {
  */
 public String getText (int index) {
 	checkWidget();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   int count = Math.max (1, parent.getColumnCount ());
   if (0 > index || index > count - 1) return "";
   return handle.getTreeItemObject(index).getText();
@@ -616,29 +746,54 @@ public String getText (int index) {
  * 
  * @since 3.1
  */
-/*public*/ int indexOf (TreeItem item) {
+public int indexOf (TreeItem item) {
 	//TODO - make public and add Tree.indexOf(TreeItem) and TreeItem.indexOf(TreeItem)?
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	int hwnd = parent.handle;
-	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	return hItem == 0 ? -1 : parent.indexOf (hItem, item.handle);
+  return parent.indexOf(item);
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseChildren (boolean destroy) {
+  if (destroy) {
+    parent.destroyItem (this);
+  }
+  super.releaseChildren (destroy);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = null;
+  parent = null;
 }
 
-void releaseWidget () {
-	super.releaseWidget ();
-	parent = null;
+/**
+ * Removes all of the items from the receiver.
+ * <p>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void removeAll () {
+  checkWidget ();
+  int hwnd = parent.handle;
+  TVITEM tvItem = new TVITEM ();
+  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+  tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+  while (tvItem.hItem != 0) {
+    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+    TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
+    if (item != null && !item.isDisposed ()) {
+      item.dispose ();
+    } else {
+      parent.releaseItem (tvItem.hItem, tvItem, false);
+      parent.destroyItem (null, tvItem.hItem);
+    }
+    tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+  }
 }
 
 /**
@@ -665,6 +820,7 @@ public void setBackground (Color color) {
     SWT.error (SWT.ERROR_INVALID_ARGUMENT);
   }
   handle.setBackground(color == null? null: color.handle);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
@@ -695,6 +851,7 @@ public void setBackground (int index, Color color) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
   handle.getTreeItemObject(index).setBackground(color == null? null: color.handle);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
@@ -713,6 +870,7 @@ public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
   handle.setChecked(checked);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
@@ -756,7 +914,12 @@ public void setExpanded (boolean expanded) {
  * @since 3.0
  */
 public void setFont (Font font){
-  setFont(0, font);
+  checkWidget ();
+  if (font != null && font.isDisposed ()) {
+    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  }
+  handle.setFont(font == null? null: font.handle);
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 
@@ -787,6 +950,7 @@ public void setFont (int index, Font font) {
   int count = Math.max (1, parent.getColumnCount ());
   if (0 > index || index > count - 1) return;
   handle.getTreeItemObject(index).setFont(font == null? null: font.handle);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
@@ -846,14 +1010,15 @@ public void setForeground (int index, Color color){
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
   handle.getTreeItemObject(index).setForeground(color == null? null: color.handle);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
- * Sets the grayed state of the receiver.
- * <p>
+ * Sets the grayed state of the checkbox for this item.  This state change 
+ * only applies if the Tree was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state
+ * @param grayed the new grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -864,6 +1029,7 @@ public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
   handle.setGrayed(grayed);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
@@ -919,12 +1085,33 @@ public void setImage (int index, Image image) {
 		super.setImage (image);
 	}
 	handle.getTreeItemObject(index).setIcon(new ImageIcon(image.handle));
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
+}
+
+/**
+ * Sets the number of items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+public void setItemCount (int count) {
+  checkWidget ();
+  count = Math.max (0, count);
+  int hwnd = parent.handle;
+  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+  parent.setItemCount (count, handle, hItem);
 }
 
 /**
@@ -976,6 +1163,7 @@ public void setText (int index, String string) {
     super.setText(string);
   }
   handle.getTreeItemObject(index).setText(string);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
   parent.adjustColumnWidth();
 }

@@ -272,7 +272,7 @@ public int getStyle() {
 
 /**
  * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
+ * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -375,7 +375,8 @@ public void setName(String name) {
 /**
  * Sets the style of the receiver to the argument which must
  * be a bitwise OR of one or more of the <code>SWT</code> 
- * constants NORMAL, BOLD and ITALIC.
+ * constants NORMAL, BOLD and ITALIC. All other style bits are
+ * ignored.
  *
  * @param style the new style for this <code>FontData</code>
  *
@@ -396,17 +397,17 @@ public void setStyle(int style) {
  */
 public String toString() {
 	StringBuffer buffer = new StringBuffer();
-	buffer.append("1|");
+	buffer.append("1|"); //$NON-NLS-1$
 	buffer.append(getName());
-	buffer.append("|");
+	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getHeight());
-	buffer.append("|");
+	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getStyle());
-	buffer.append("|");
+	buffer.append("|"); //$NON-NLS-1$
   String locale = getLocale();
   if(locale != null) {
     buffer.append(locale);
-    buffer.append("|");
+    buffer.append("|"); //$NON-NLS-1$
   }
 	return buffer.toString();
 }

@@ -95,6 +95,7 @@ public class Table extends Composite {
  * @see SWT#CHECK
  * @see SWT#FULL_SELECTION
  * @see SWT#HIDE_SELECTION
+ * @see SWT#VIRTUAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -479,7 +480,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 Container createHandle () {
-  state &= ~CANVAS;
+  state &= ~(CANVAS | THEME_BACKGROUND);
   return (Container)CTable.Instanciator.createInstance(this, style);
 }
 
@@ -659,6 +660,7 @@ void destroyItem (TableItem item) {
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
+ * Columns are returned in the order that they were created.
  * If no <code>TableColumn</code>s were created by the programmer,
  * this method will throw <code>ERROR_INVALID_RANGE</code> despite
  * the fact that a single column of data may be visible in the table.
@@ -675,6 +677,12 @@ void destroyItem (TableItem item) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  */
 public TableColumn getColumn (int index) {
 	checkWidget ();
@@ -743,7 +751,8 @@ public int[] getColumnOrder () {
 
 /**
  * Returns an array of <code>TableColumn</code>s which are the
- * columns in the receiver. If no <code>TableColumn</code>s were
+ * columns in the receiver.  Columns are returned in the order
+ * that they were created.  If no <code>TableColumn</code>s were
  * created by the programmer, the array is empty, despite the fact
  * that visually, one column of items may be visible. This occurs
  * when the programmer uses the table like a list, adding items but
@@ -760,6 +769,12 @@ public int[] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  */
 public TableColumn [] getColumns () {
 	checkWidget ();
@@ -767,13 +782,13 @@ public TableColumn [] getColumns () {
   return (TableColumn[])columnList.toArray(new TableColumn[0]);
 }
 
-/*
-* Not currently used.
-*/
-int getFocusIndex () {
-//	checkWidget ();
-	return OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
-}
+///*
+//* Not currently used.
+//*/
+//int getFocusIndex () {
+////	checkWidget ();
+//	return OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+//}
 
 /**
  * Returns the width in pixels of a grid line.
@@ -856,9 +871,16 @@ public TableItem getItem (int index) {
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
  * coordinate system of the receiver.
+ * <p>
+ * The item that is returned represents an item that could be selected by the user.
+ * For example, if selection only occurs in items in the first column, then null is 
+ * returned if the point is outside of the item. 
+ * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
+ * determines the extent of the selection.
+ * </p>
  *
  * @param point the point used to locate the item
- * @return the item at the given point
+ * @return the item at the given point, or null if the point is not in a selectable item
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -912,8 +934,8 @@ public int getItemHeight () {
 }
 
 /**
- * Returns an array of <code>TableItem</code>s which are the items
- * in the receiver. 
+ * Returns a (possibly empty) array of <code>TableItem</code>s which
+ * are the items in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -956,8 +978,8 @@ public boolean getLinesVisible () {
 
 /**
  * Returns an array of <code>TableItem</code>s that are currently
- * selected in the receiver. An empty array indicates that no
- * items are selected.
+ * selected in the receiver. The order of the items is unspecified.
+ * An empty array indicates that no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -1025,7 +1047,8 @@ public int getSelectionIndex () {
 
 /**
  * Returns the zero-relative indices of the items which are currently
- * selected in the receiver.  The array is empty if no items are selected.
+ * selected in the receiver. The order of the indices is unspecified.
+ * The array is empty if no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -1046,6 +1069,48 @@ public int [] getSelectionIndices () {
 		result [j++] = i;
 	}
 	return result;
+}
+
+/**
+ * Returns the column which shows the sort indicator for
+ * the receiver. The value may be null if no column shows
+ * the sort indicator.
+ *
+ * @return the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortColumn(TableColumn)
+ * 
+ * @since 3.2
+ */
+public TableColumn getSortColumn () {
+  checkWidget ();
+  return sortColumn;
+}
+
+/**
+ * Returns the direction of the sort indicator for the receiver. 
+ * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * or <code>NONE</code>.
+ *
+ * @return the sort direction
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortDirection(int)
+ * 
+ * @since 3.2
+ */
+public int getSortDirection () {
+  checkWidget ();
+  return sortDirection;
 }
 
 /**
@@ -1192,18 +1257,21 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
   return new Point(size.width, size.height);
 }
 
-void releaseWidget () {
-  for(int i=0; i<columnList.size(); i++) {
-    TableColumn column = (TableColumn)columnList.get(i);
-    if (!column.isDisposed ()) column.releaseResources ();
+void releaseChildren (boolean destroy) {
+  if(itemList != null) {
+    for (int i=0; i<itemList.size(); i++) {
+      TableItem item = (TableItem)itemList.get(i);
+      if (!item.isDisposed ()) item.release (false);
+    }
+    itemList = null;
   }
-  columnList = null;
-  for (int i=0; i<itemList.size(); i++) {
-    TableItem item = (TableItem)itemList.get(i);
-    if (!item.isDisposed ()) item.releaseResources ();
+  if(columnList != null) {
+    for(int i=0; i<columnList.size(); i++) {
+      TableColumn column = (TableColumn)columnList.get(i);
+      if (!column.isDisposed ()) column.release (false);
+    }
+    columnList = null;
   }
-  itemList = null;
-
 //  
 //  int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 //	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -1256,7 +1324,7 @@ void releaseWidget () {
 //	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 //	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, 0);
 //	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
-	super.releaseWidget ();
+	super.releaseChildren(destroy);
 }
 
 /**
@@ -1941,6 +2009,27 @@ public void setItemCount (int count) {
 }
 
 /**
+ * Sets the height of the area which would be used to
+ * display <em>one</em> of the items in the table.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+/*public*/ void setItemHeight (int itemHeight) {
+  checkWidget ();
+  if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
+  this.itemHeight = itemHeight;
+  setItemHeight (true);
+  setScrollWidth (null, true);
+}
+
+/**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
  * <p>
@@ -2203,7 +2292,7 @@ public void setSelection (TableItem [] items) {
 
 /**
  * Selects the item at the given zero-relative index in the receiver. 
- * The current selected is first cleared, then the new item is selected.
+ * The current selection is first cleared, then the new item is selected.
  *
  * @param index the index of the item to select
  *
@@ -2291,6 +2380,57 @@ void setTableEmpty () {
 }
 
 /**
+ * Sets the column used by the sort indicator for the receiver. A null
+ * value will clear the sort indicator.  The current sort column is cleared 
+ * before the new column is set.
+ *
+ * @param column the column used by the sort indicator or <code>null</code>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortColumn (TableColumn column) {
+  checkWidget ();
+  if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+  if (sortColumn != null && !sortColumn.isDisposed ()) {
+    sortColumn.setSortDirection (SWT.NONE);
+  }
+  sortColumn = column;
+  if (sortColumn != null && sortDirection != SWT.NONE) {
+    sortColumn.setSortDirection (sortDirection);
+  }
+}
+
+/**
+ * Sets the direction of the sort indicator for the receiver. The value 
+ * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
+ *
+ * @param direction the direction of the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortDirection (int direction) {
+  checkWidget ();
+  if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
+  sortDirection = direction;
+  if (sortColumn != null && !sortColumn.isDisposed ()) {
+    sortColumn.setSortDirection (direction);
+  }
+}
+
+/**
  * Sets the zero-relative index of the item which is currently
  * at the top of the receiver. This index can change when items
  * are scrolled or new items are added and removed.
@@ -2362,8 +2502,8 @@ public void setTopIndex (int index) {
  * @param column the column to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the column is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

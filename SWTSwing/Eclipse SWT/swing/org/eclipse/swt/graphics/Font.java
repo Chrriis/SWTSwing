@@ -27,7 +27,7 @@ import org.eclipse.swt.*;
  * @see FontData
  */
 
-public final class Font {
+public final class Font extends Resource {
 	
 	/**
 	 * the handle to the OS font resource
@@ -43,11 +43,6 @@ public final class Font {
 	
   FontData fontData;
   
-	/**
-	 * the device where this font was created
-	 */
-	Device device;
-	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -193,7 +188,7 @@ public FontData[] getFontData() {
 
 /**
  * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
+ * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *

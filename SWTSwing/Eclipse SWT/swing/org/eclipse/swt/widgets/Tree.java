@@ -42,7 +42,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class provide a selectable user interface object
- * that displays a hierarchy of items and issue notificiation when an
+ * that displays a hierarchy of items and issue notification when an
  * item in the hierarchy is selected.
  * <p>
  * The item children that may be added to instances of this class
@@ -68,6 +68,7 @@ public class Tree extends Composite {
 //	TreeItem [] items;
   ArrayList itemList;
   ArrayList columnList;
+  TreeItem currentItem;
 //	TreeColumn [] columns;
 //	int hwndParent, hwndHeader, hAnchor;
 //	ImageList imageList;
@@ -202,6 +203,93 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+boolean checkData (TreeItem item, boolean redraw) {
+  TreeItem parentItem = item.getParentItem ();
+  return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
+}
+
+boolean checkData (TreeItem item, int index, boolean redraw) {
+  if (item.cached) return true;
+  if ((style & SWT.VIRTUAL) != 0) {
+    item.cached = true;
+    Event event = new Event ();
+    event.item = item;
+    event.index = index;
+    TreeItem oldItem = currentItem;
+    currentItem = item;
+    sendEvent (SWT.SetData, event);
+    //widget could be disposed at this point
+    currentItem = oldItem;
+    if (isDisposed () || item.isDisposed ()) return false;
+//    if (redraw) item.redraw ();
+  }
+  return true;
+}
+
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the tree was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clear (int index, boolean all) {
+  checkWidget ();
+  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  hItem = findItem (hItem, index);
+  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  TVITEM tvItem = new TVITEM ();
+  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+  clear (hItem, tvItem);
+  if (all) {
+    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+    clearAll (hItem, tvItem, all);
+  }
+}
+
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * tree was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ * 
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clearAll (boolean all) {
+  checkWidget ();
+  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+  if (hItem == 0) return;
+  TVITEM tvItem = new TVITEM ();
+  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+  clearAll (hItem, tvItem, all);
+}
+
 public Rectangle computeTrim(int x, int y, int width, int height) {
   CTree cTree = (CTree)handle;
   width += cTree.getVerticalScrollBar().getPreferredSize().width;
@@ -210,7 +298,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 Container createHandle () {
-  state &= ~CANVAS;
+  state &= ~(CANVAS | THEME_BACKGROUND);
   return (Container)CTree.Instanciator.createInstance(this, style);
 }
 
@@ -412,14 +500,14 @@ void destroyItem (TreeColumn column) {
 }
 
 void destroyItem (TreeItem item) {
-  TreeItem parentItem = item.getParentItem();
-  if(parentItem == null) {
-    ((CTree)handle).getRoot().remove((MutableTreeNode)item.handle);
-    itemList.remove(item);
-  } else {
-    ((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)item.handle);
-    parentItem.itemList.remove(item);
-  }
+//  TreeItem parentItem = item.getParentItem();
+//  if(parentItem == null) {
+//    ((CTree)handle).getRoot().remove((MutableTreeNode)item.handle);
+//    itemList.remove(item);
+//  } else {
+//    ((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)item.handle);
+//    parentItem.itemList.remove(item);
+//  }
 }
 
 //void enableWidget (boolean enabled) {
@@ -516,6 +604,7 @@ public boolean getHeaderVisible () {
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
+ * Columns are returned in the order that they were created.
  * If no <code>TreeColumn</code>s were created by the programmer,
  * this method will throw <code>ERROR_INVALID_RANGE</code> despite
  * the fact that a single column of data may be visible in the tree.
@@ -532,6 +621,12 @@ public boolean getHeaderVisible () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
  * 
  * @since 3.1
  */
@@ -566,8 +661,46 @@ public int getColumnCount () {
 }
 
 /**
+ * Returns an array of zero-relative integers that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
+ * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the current visual order of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+public int[] getColumnOrder () {
+  checkWidget ();
+  if (hwndHeader == 0) return new int [0];
+  int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+  int [] order = new int [count];
+  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+  return order;
+}
+
+/**
  * Returns an array of <code>TreeColumn</code>s which are the
- * columns in the receiver. If no <code>TreeColumn</code>s were
+ * columns in the receiver. Columns are returned in the order
+ * that they were created.  If no <code>TreeColumn</code>s were
  * created by the programmer, the array is empty, despite the fact
  * that visually, one column of items may be visible. This occurs
  * when the programmer uses the tree like a list, adding items but
@@ -585,6 +718,12 @@ public int getColumnCount () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * @see Tree#getColumnOrder()
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
  * @since 3.1
  */
 public TreeColumn [] getColumns () {
@@ -594,12 +733,46 @@ public TreeColumn [] getColumns () {
 }
 
 /**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public TreeItem getItem (int index) {
+  checkWidget ();
+  if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+  int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  int hItem = findItem (hFirstItem, index);
+  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+  return _getItem (hItem);
+}
+
+/**
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
  * coordinate system of the receiver.
+ * <p>
+ * The item that is returned represents an item that could be selected by the user.
+ * For example, if selection only occurs in items in the first column, then null is 
+ * returned if the point is outside of the item. 
+ * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
+ * determines the extent of the selection.
+ * </p>
  *
  * @param point the point used to locate the item
- * @return the item at the given point
+ * @return the item at the given point, or null if the point is not in a selectable item
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -664,8 +837,8 @@ public int getItemHeight () {
 }
 
 /**
- * Returns the items contained in the receiver
- * that are direct item children of the receiver.  These
+ * Returns a (possibly empty) array of items contained in the
+ * receiver that are direct item children of the receiver.  These
  * are the roots of the tree.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -760,8 +933,8 @@ public TreeItem getParentItem () {
 
 /**
  * Returns an array of <code>TreeItem</code>s that are currently
- * selected in the receiver. An empty array indicates that no
- * items are selected.
+ * selected in the receiver. The order of the items is unspecified.
+ * An empty array indicates that no items are selected. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -798,6 +971,48 @@ public TreeItem [] getSelection () {
 public int getSelectionCount () {
 	checkWidget ();
   return ((CTree)handle).getSelectionModel().getSelectionCount();
+}
+
+/**
+ * Returns the column which shows the sort indicator for
+ * the receiver. The value may be null if no column shows
+ * the sort indicator.
+ *
+ * @return the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortColumn(TreeColumn)
+ * 
+ * @since 3.2
+ */
+public TreeColumn getSortColumn () {
+  checkWidget ();
+  return sortColumn;
+}
+
+/**
+ * Returns the direction of the sort indicator for the receiver. 
+ * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * or <code>NONE</code>.
+ *
+ * @return the sort direction
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortDirection(int)
+ * 
+ * @since 3.2
+ */
+public int getSortDirection () {
+  checkWidget ();
+  return sortDirection;
 }
 
 /**
@@ -875,7 +1090,7 @@ int indexOf (int hItem, int hChild) {
  * 
  * @since 3.1
  */
-/*public*/ int indexOf (TreeColumn column) {
+public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -902,12 +1117,11 @@ int indexOf (int hItem, int hChild) {
  * 
  * @since 3.1
  */
-/*public*/ int indexOf (TreeItem item) {
+public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	return hItem == 0 ? -1 : indexOf (hItem, item.handle);
+  return itemList.indexOf(item);
 }
 
 //void register () {
@@ -943,17 +1157,21 @@ int indexOf (int hItem, int hChild) {
 //	hwndParent = hwndHeader = 0;
 //}
 
-void releaseWidget () {
-  for(int i=0; i<columnList.size(); i++) {
-    TreeColumn column = (TreeColumn)columnList.get(i);
-    if (!column.isDisposed ()) column.releaseResources ();
+void releaseChildren (boolean destroy) {
+  if(itemList != null) {
+    for (int i=0; i<itemList.size(); i++) {
+      TreeItem item = (TreeItem)itemList.get(i);
+      if (item != null && !item.isDisposed ()) item.release(false);
+    }
+    itemList = null;
   }
-	columnList = null;
-	for (int i=0; i<itemList.size(); i++) {
-    TreeItem item = (TreeItem)itemList.get(i);
-    if (!item.isDisposed ()) item.releaseResources ();
-	}
-	itemList = null;
+  if(columnList != null) {
+    for(int i=0; i<columnList.size(); i++) {
+      TreeColumn column = (TreeColumn)columnList.get(i);
+      if (column != null && !column.isDisposed ()) column.release(false);
+    }
+    columnList = null;
+  }
 //	/*
 //	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
 //	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW
@@ -978,7 +1196,21 @@ void releaseWidget () {
 //	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 //	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
 //	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
-	super.releaseWidget ();
+  super.releaseChildren (destroy);
+}
+
+void releaseItem (TreeItem treeItem, boolean release) {
+  TreeItem parentItem = treeItem.getParentItem();
+  if(parentItem == null) {
+    ((CTree)handle).getRoot().remove((MutableTreeNode)treeItem.handle);
+    itemList.remove(treeItem);
+  } else {
+    ((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)treeItem.handle);
+    parentItem.itemList.remove(treeItem);
+  }
+  if(release) {
+    treeItem.release (false);
+  }
 }
 
 /**
@@ -991,6 +1223,12 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
+  for (int i=0; i<itemList.size(); i++) {
+    TreeItem item = (TreeItem)itemList.get(i);
+    if (item != null && !item.isDisposed ()) {
+      item.release (false);
+    }
+  }
   ((CTree)handle).getRoot().removeAllChildren();
 }
 
@@ -1068,6 +1306,89 @@ public void setInsertMark (TreeItem item, boolean before) {
 		hItem = item.handle;
 	}
 	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
+}
+
+/**
+ * Sets the number of items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+public void setItemCount (int count) {
+  checkWidget ();
+  count = Math.max (0, count);
+  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+  setItemCount (count, OS.TVGN_ROOT, hItem);
+}
+
+void setItemCount (int count, int hParent, int hItem) {
+  boolean redraw = false;
+  if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
+    redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+    if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+  }
+  int itemCount = 0;
+  while (hItem != 0 && itemCount < count) {
+    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+    itemCount++;
+  }
+  TVITEM tvItem = new TVITEM ();
+  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+  while (hItem != 0) {
+    tvItem.hItem = hItem;
+    OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+    TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
+    if (item != null && !item.isDisposed ()) {
+      item.dispose ();
+    } else {
+      releaseItem (tvItem.hItem, tvItem, false);
+      destroyItem (null, tvItem.hItem);
+    }
+  }
+  if ((style & SWT.VIRTUAL) != 0) {
+    for (int i=itemCount; i<count; i++) {
+      createItem (null, hParent, OS.TVI_LAST, 0);
+    }
+  } else {
+    shrink = true;
+    int extra = Math.max (4, (count + 3) / 4 * 4);
+    TreeItem [] newItems = new TreeItem [items.length + extra];
+    System.arraycopy (items, 0, newItems, 0, items.length);
+    items = newItems;
+    for (int i=itemCount; i<count; i++) {
+      new TreeItem (this, SWT.NONE, hParent, OS.TVI_LAST, 0);
+    }
+  }
+  if (redraw) {
+    OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+    OS.InvalidateRect (handle, null, true);
+  }
+}
+
+/**
+ * Sets the height of the area which would be used to
+ * display <em>one</em> of the items in the tree.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+/*public*/ void setItemHeight (int itemHeight) {
+  checkWidget ();
+  if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
+  OS.SendMessage (handle, OS.TVM_SETITEMHEIGHT, itemHeight, 0);
 }
 
 /**
@@ -1202,6 +1523,78 @@ public void selectAll () {
 //}
 
 /**
+ * Sets the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param order the new order to display the items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
+ * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+public void setColumnOrder (int [] order) {
+  checkWidget ();
+  if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+  int count = 0;
+  if (hwndHeader != 0) {
+    count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+  }
+  if (count == 0) {
+    if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+    return;
+  }
+  if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+  int [] oldOrder = new int [count];
+  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
+  boolean reorder = false;
+  boolean [] seen = new boolean [count];
+  for (int i=0; i<order.length; i++) {
+    int index = order [i];
+    if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+    if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+    seen [index] = true;
+    if (index != oldOrder [i]) reorder = true;
+  }
+  if (reorder) {
+    RECT [] oldRects = new RECT [count];
+    for (int i=0; i<count; i++) {
+      oldRects [i] = new RECT ();
+      OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
+    }
+    OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
+    OS.InvalidateRect (handle, null, true);
+    updateImageList ();
+    TreeColumn [] newColumns = new TreeColumn [count];
+    System.arraycopy (columns, 0, newColumns, 0, count);
+    RECT newRect = new RECT ();
+    for (int i=0; i<count; i++) {
+      TreeColumn column = newColumns [i];
+      if (!column.isDisposed ()) {
+        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
+        if (newRect.left != oldRects [i].left) {
+          column.updateToolTip (i);
+          column.sendEvent (SWT.Move);
+        }
+      }
+    }
+  }
+}
+
+/**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
  * <p>
@@ -1277,6 +1670,31 @@ public void setHeaderVisible (boolean show) {
 //}
 
 /**
+ * Sets the receiver's selection to the given item.
+ * The current selection is cleared before the new item is selected.
+ * <p>
+ * If the item is not in the receiver, then it is ignored.
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSelection (TreeItem item) {
+  checkWidget ();
+  if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+  setSelection (new TreeItem [] {item});
+}
+
+/**
  * Sets the receiver's selection to be the given array of items.
  * The current selection is cleared before the new items are selected.
  * <p>
@@ -1310,6 +1728,57 @@ public void setSelection (TreeItem [] items) {
     paths[i] = new TreePath(items[i].handle.getPath());
   }
   ((CTree)handle).getSelectionModel().setSelectionPaths(paths);
+}
+
+/**
+ * Sets the column used by the sort indicator for the receiver. A null
+ * value will clear the sort indicator.  The current sort column is cleared 
+ * before the new column is set.
+ *
+ * @param column the column used by the sort indicator or <code>null</code>
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortColumn (TreeColumn column) {
+  checkWidget ();
+  if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+  if (sortColumn != null && !sortColumn.isDisposed ()) {
+    sortColumn.setSortDirection (SWT.NONE);
+  }
+  sortColumn = column;
+  if (sortColumn != null && sortDirection != SWT.NONE) {
+    sortColumn.setSortDirection (sortDirection);
+  }
+}
+
+/**
+ * Sets the direction of the sort indicator for the receiver. The value 
+ * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
+ *
+ * @param direction the direction of the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortDirection (int direction) {
+  checkWidget ();
+  if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
+  sortDirection = direction;
+  if (sortColumn != null && !sortColumn.isDisposed ()) {
+    sortColumn.setSortDirection (direction);
+  }
 }
 
 /**
@@ -2987,7 +3456,6 @@ public void showSelection () {
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
   java.awt.Dimension size = handle.getPreferredSize();
-  System.err.println(new Point(size.width, size.height));
   return new Point(size.width, size.height);
 }
 

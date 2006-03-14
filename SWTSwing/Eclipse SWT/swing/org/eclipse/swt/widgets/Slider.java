@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.swing.CSlider;
  * objects that represent a range of positive, numeric values. 
  * <p>
  * At any given moment, a given slider will have a 
- * single <em>selection</em> that is considered to be its
+ * single 'selection' that is considered to be its
  * value, which is constrained to be within the range of
  * values the slider represents (that is, between its
  * <em>minimum</em> and <em>maximum</em> values).
@@ -112,6 +112,7 @@ public Slider (Composite parent, int style) {
  * <p>
  * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
  * <code>0</code> - for the end of a drag.
+ * <code>SWT.NONE</code> - for the end of a drag.
  * <code>SWT.DRAG</code>.
  * <code>SWT.HOME</code>.
  * <code>SWT.END</code>.
@@ -217,7 +218,7 @@ public int getPageIncrement () {
 }
 
 /**
- * Returns the <em>selection</em>, which is the receiver's value.
+ * Returns the 'selection', which is the receiver's value.
  *
  * @return the selection
  *
@@ -349,7 +350,7 @@ public void setPageIncrement (int value) {
 }
 
 /**
- * Sets the <em>selection</em>, which is the receiver's
+ * Sets the 'selection', which is the receiver's
  * value, to the argument which must be greater than or equal
  * to zero.
  *
@@ -389,7 +390,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>

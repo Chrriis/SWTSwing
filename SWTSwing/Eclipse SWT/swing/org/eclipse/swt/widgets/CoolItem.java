@@ -47,9 +47,9 @@ public class CoolItem extends Item {
 
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>CoolBar</code>) and a style value
- * describing its behavior and appearance. The item is added
- * to the end of the items maintained by its parent.
+ * (which must be a <code>CoolBar</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
  * <p>
  * The style value is either one of the style constants defined in
  * class <code>SWT</code> which is applicable to instances of this
@@ -62,9 +62,11 @@ public class CoolItem extends Item {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
+ * @param index the zero-relative index at which to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -185,9 +187,9 @@ protected void checkSubclass () {
  * @see Layout
  * @see #getBounds
  * @see #getSize
- * @see CoolBar#getBorderWidth
- * @see CoolBar#computeTrim
- * @see CoolBar#getClientArea
+ * @see Control#getBorderWidth
+ * @see Scrollable#computeTrim
+ * @see Scrollable#getClientArea
  */
 public Point computeSize (int wHint, int hHint) {
 	checkWidget ();
@@ -196,12 +198,21 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 32;
 	if (hHint == SWT.DEFAULT) height = 32;
-//	width += parent.getMargin (index);
+//  if ((parent.style & SWT.VERTICAL) != 0) {
+//    height += parent.getMargin (index);
+//  } else {
+//    width += parent.getMargin (index);
+//  }
 	return new Point (width, height);
 }
 
 Container createHandle () {
   return (Container)CCoolItem.Instanciator.createInstance(this, style);
+}
+
+void destroyWidget () {
+  parent.destroyItem (this);
+  releaseHandle ();
 }
 
 /**
@@ -282,15 +293,10 @@ public CoolBar getParent () {
 	return parent;
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	control = null;
-	parent = null;
+void releaseHandle () {
+  super.releaseHandle ();
+  parent = null;
+  control = null;
 }
 
 /**

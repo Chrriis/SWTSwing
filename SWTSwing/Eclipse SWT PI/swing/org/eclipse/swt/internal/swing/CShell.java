@@ -71,9 +71,9 @@ class CShellFrame extends JFrame implements CShell {
         }
         return super.getGraphics();
       }
-      public void paint(Graphics g) {
+      public void paintComponent(Graphics g) {
         graphics = g;
-        super.paint(g);
+        super.paintComponent(g);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         graphics = null;
       }

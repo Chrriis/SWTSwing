@@ -116,18 +116,28 @@ class CTableItemImplementation implements CTableItem {
     this.foreground = foreground;
   }
 
+  public Color getForeground() {
+    return foreground;
+  }
+  
   protected Color background;
 
   public void setBackground(Color background) {
     this.background = background;
   }
 
-  public Color getForeground() {
-    return foreground;
-  }
-
   public Color getBackground() {
     return background;
+  }
+
+  protected Font font;
+
+  public void setFont(Font font) {
+    this.font = font;
+  }
+
+  public Font getFont() {
+    return font;
   }
 
 }
@@ -235,10 +245,14 @@ public interface CTableItem {
 
   public void setForeground(Color foreground);
 
-  public void setBackground(Color background);
-
   public Color getForeground();
 
+  public void setBackground(Color background);
+  
   public Color getBackground();
+
+  public void setFont(Font font);
+
+  public Font getFont();
 
 }

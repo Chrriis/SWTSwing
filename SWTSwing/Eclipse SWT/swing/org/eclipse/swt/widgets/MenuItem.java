@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -22,6 +23,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
@@ -111,10 +113,11 @@ public MenuItem (Menu parent, int style) {
  *
  * @param parent a menu control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -198,7 +201,7 @@ public void addHelpListener (HelpListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the menu item is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -234,6 +237,11 @@ protected void checkSubclass () {
 
 static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
+}
+
+void destroyWidget () {
+  parent.destroyItem (this);
+  releaseHandle ();
 }
 
 //void fillAccel (ACCEL accel) {
@@ -284,11 +292,13 @@ void fixMenus (Decorations newParent) {
 }
 
 /**
- * Return the widget accelerator.  An accelerator is the bit-wise
+ * Returns the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
  * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ * The default value is zero, indicating that the menu item does
+ * not have an accelerator.
  *
- * @return the accelerator
+ * @return the accelerator or 0
  *
  * </ul>
  * @exception SWTException <ul>
@@ -362,7 +372,7 @@ public int getAccelerator () {
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
+ * <code>false</code> otherwise. A disabled menu item is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
@@ -442,7 +452,7 @@ public boolean getSelection () {
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
+ * otherwise. A disabled menu item is typically not selectable from the
  * user interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
@@ -458,11 +468,17 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	if (menu != null) menu.dispose ();
-	menu = null;
-	parent.destroyItem (this);
+void releaseChildren (boolean destroy) {
+  if (menu != null) {
+    menu.release (false);
+    menu = null;
+  }
+  super.releaseChildren (destroy);
+}
+
+void releaseHandle () {
+  super.releaseHandle ();
+  parent = null;
 }
 
 void releaseMenu () {
@@ -470,19 +486,19 @@ void releaseMenu () {
 	menu = null;
 }
 
+void releaseParent () {
+  super.releaseParent ();
+  if (menu != null) menu.dispose ();
+  menu = null;
+}
+
 void releaseWidget () {
-  if(handle instanceof JRadioButtonMenuItem) {
-    parent.removeGroupedButton((JRadioButtonMenuItem)handle);
-  }
-	if (menu != null) menu.releaseResources ();
-	menu = null;
 	super.releaseWidget ();
 //	if (accelerator != 0) {
 //		parent.destroyAccelerators ();
 //	}
 	accelerator = 0;
 	display.removeMenuItem (this);
-	parent = null;
 }
 
 /**
@@ -572,6 +588,8 @@ void selectRadio () {
  * OR of zero or more modifier masks and a key. Examples:
  * <code>SWT.MOD1 | SWT.MOD2 | 'T', SWT.MOD3 | SWT.F2</code>.
  * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ * The default value is zero, indicating that the menu item does
+ * not have an accelerator.
  *
  * @param accelerator an integer that is the bit-wise OR of masks and a key
  *
@@ -610,7 +628,7 @@ public void setAccelerator (int accelerator) {
 
 /**
  * Enables the receiver if the argument is <code>true</code>,
- * and disables it otherwise. A disabled control is typically
+ * and disables it otherwise. A disabled menu item is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
@@ -631,8 +649,9 @@ public void setEnabled (boolean enabled) {
 /**
  * Sets the image the receiver will display to the argument.
  * <p>
- * Note: This feature is not available on all window systems (for example, Window NT),
- * in which case, calling this method will silently do nothing.
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept (for example, Windows NT).
+ * </p>
  *
  * @param image the image to display
  *
@@ -659,6 +678,11 @@ public void setImage (Image image) {
  * pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
+ * <p>
+ * Note: Disposing of a menu item that has a pull down menu
+ * will dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the menu item is disposed.
+ * </p>
  *
  * @param menu the new pull down menu
  *
@@ -929,11 +953,19 @@ void createHandle() {
   } else if((style & SWT.CHECK) != 0) {
     handle = new JCheckBoxMenuItem();
   } else if((style & SWT.RADIO) != 0) {
-    JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem();
-    parent.addGroupedButton(menuItem);
-    handle = menuItem;
-    menuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem() {
+      protected void fireActionPerformed(ActionEvent e) {
+        if(!isSelected()) {
+          setSelected(true);
+        }
+        Component[] components = getParent().getComponents();
+        for(int i=0; i<components.length; i++) {
+          Component component = components[i];
+          if(component instanceof JRadioButton && component != this) {
+            ((JRadioButton)component).setSelected(false);
+          }
+        }
+        super.fireActionPerformed(e);
         if(!hooks(SWT.Selection)) return;
         Display display = getDisplay();
         display.startExclusiveSection();
@@ -946,7 +978,11 @@ void createHandle() {
         sendEvent(SWT.Selection, event);
         display.stopExclusiveSection();
       }
-    });
+      public void setSelected(boolean b) {
+        super.setSelected(b);
+      }
+    };
+    handle = menuItem;
     menuItem.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if(e.getStateChange() == ItemEvent.SELECTED) {

@@ -191,9 +191,10 @@ protected void checkSubclass () {
 //}
 
 Container createHandle () {
+  state |= DRAW_BACKGROUND;
+  state &= ~CANVAS;
   return (Container)CGroup.Instanciator.createInstance(this, style);
 //	super.createHandle ();
-//	state &= ~CANVAS;
 }
 
 //public Rectangle getClientArea () {

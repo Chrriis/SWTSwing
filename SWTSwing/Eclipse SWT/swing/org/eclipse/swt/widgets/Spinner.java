@@ -68,6 +68,7 @@ public class Spinner extends Composite {
  * </ul>
  *
  * @see SWT#READ_ONLY
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -91,7 +92,7 @@ protected void checkSubclass () {
 }
 
 Container createHandle () {
-  state &= ~CANVAS;
+  state &= ~(CANVAS | THEME_BACKGROUND);
   return (Container)CSpinner.Instanciator.createInstance(this, style);
 }
 

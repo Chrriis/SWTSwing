@@ -9,6 +9,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 
@@ -181,7 +182,7 @@ class CButtonRadio extends JRadioButton implements CButton {
     this.handle = button;
     init(style);
   }
-  
+
   protected void init(int style) {
     CButtonCommon.applyStyle(this, style);
     Utils.installMouseListener(this, handle);
@@ -199,6 +200,16 @@ class CButtonRadio extends JRadioButton implements CButton {
   }
   
   protected void fireActionPerformed(ActionEvent e) {
+    if(!isSelected()) {
+      setSelected(true);
+    }
+    Component[] components = getParent().getComponents();
+    for(int i=0; i<components.length; i++) {
+      Component component = components[i];
+      if(component instanceof JRadioButton && component != this) {
+        ((JRadioButton)component).setSelected(false);
+      }
+    }
     super.fireActionPerformed(e);
     handle.processEvent(e);
   }

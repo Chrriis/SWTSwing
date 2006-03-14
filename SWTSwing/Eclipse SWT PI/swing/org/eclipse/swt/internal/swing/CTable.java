@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -104,8 +105,10 @@ class CTableImplementation extends JScrollPane implements CTable {
         protected boolean isOpaque;
         protected Color defaultForeground;
         protected Color defaultBackground;
+        protected Font defaultFont;
         protected Color selectionForeground;
         protected Color selectionBackground;
+        protected Font selectionFont;
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
           if(!isInitialized) {
             Component c = super.getTableCellRendererComponent(CTableImplementation.this.table, "", true, false, 0, 0);
@@ -114,11 +117,13 @@ class CTableImplementation extends JScrollPane implements CTable {
             }
             selectionForeground = c.getForeground();
             selectionBackground = c.getBackground();
+            selectionFont = c.getFont();
           }
           Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
           if(!isInitialized) {
             defaultForeground = c.getForeground();
             defaultBackground = c.getBackground();
+            defaultFont = c.getFont();
             isInitialized = true;
           }
           if(value == null) {
@@ -129,6 +134,7 @@ class CTableImplementation extends JScrollPane implements CTable {
           }
           c.setForeground(isSelected? selectionForeground: defaultForeground);
           c.setBackground(isSelected? selectionBackground: defaultBackground);
+          c.setFont(isSelected? selectionFont: defaultFont);
           if(c instanceof JComponent) {
             ((JComponent)c).setOpaque(isOpaque);
           }
@@ -164,6 +170,15 @@ class CTableImplementation extends JScrollPane implements CTable {
                 if(background != null) {
                   c.setBackground(background);
                 }
+              }
+            }
+            Font font = tableItemObject.getFont();
+            if(font != null) {
+              c.setFont(font);
+            } else {
+              font = tableItemObject.getTableItem().getFont();
+              if(font != null) {
+                c.setFont(font);
               }
             }
             // TODO: Complete with other properties from tableItemObject

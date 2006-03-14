@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -33,12 +33,13 @@ import org.eclipse.swt.internal.win32.*;
  * @since 3.0
  */
 public class TrayItem extends Item {
-	Tray parent;
-	int id;
-	Image image2;
-	String toolTipText;
-	boolean visible = true;
-	
+  Tray parent;
+  int id;
+  Image image2;
+  ToolTip toolTip;
+  String toolTipText;
+  boolean visible = true;
+  
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tray</code>) and a style value
@@ -70,10 +71,10 @@ public class TrayItem extends Item {
  * @see Widget#getStyle
  */
 public TrayItem (Tray parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
-	createWidget ();
+  super (parent, style);
+  this.parent = parent;
+  parent.createItem (this, parent.getItemCount ());
+  createWidget ();
 }
 
 /**
@@ -101,26 +102,65 @@ public TrayItem (Tray parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+  checkWidget ();
+  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+  TypedListener typedListener = new TypedListener (listener);
+  addListener (SWT.Selection,typedListener);
+  addListener (SWT.DefaultSelection,typedListener);
 }
 
 protected void checkSubclass () {
-	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+  if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
 void createWidget () {
-	if (OS.IsWinCE) return;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id = display.nextTrayId++;
-	iconData.hWnd = display.hwndMessage;
-	iconData.uFlags = OS.NIF_MESSAGE;
-	iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+  iconData.cbSize = NOTIFYICONDATA.sizeof;
+  iconData.uID = id = display.nextTrayId++;
+  iconData.hWnd = display.hwndMessage;
+  iconData.uFlags = OS.NIF_MESSAGE;
+  iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
+  OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+}
+
+void destroyWidget () {
+  parent.destroyItem (this);
+  releaseHandle ();
+}
+
+/**
+ * Returns the receiver's parent, which must be a <code>Tray</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public Tray getParent () {
+  checkWidget ();
+  return parent;
+}
+
+/**
+ * Returns the receiver's tool tip, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public ToolTip getToolTip () {
+  checkWidget ();
+  return toolTip;
 }
 
 /**
@@ -135,8 +175,8 @@ void createWidget () {
  * </ul>
  */
 public String getToolTipText () {
-	checkWidget ();
-	return toolTipText;
+  checkWidget ();
+  return toolTipText;
 }
 
 /**
@@ -151,76 +191,111 @@ public String getToolTipText () {
  * </ul>
  */
 public boolean getVisible () {
-	checkWidget ();
-	return visible;
+  checkWidget ();
+  return visible;
 }
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
-	/*
-	* Feature in Windows.  When the user clicks on the tray
-	* icon, another application may be the foreground window.
-	* This means that the event loop is not running and can
-	* cause problems.  For example, if a menu is shown, when
-	* the user clicks outside of the menu to cancel it, the
-	* menu is not hidden until an event is processed.  If
-	* another application is the foreground window, then the
-	* menu is not hidden.  The fix is to force the tray icon
-	* message window to the foreground when sending an event.
-	*/
-	switch (lParam) {
-		case OS.WM_LBUTTONDOWN:
-			if (hooks (SWT.Selection)) {
-				OS.SetForegroundWindow (hwnd);
-				postEvent (SWT.Selection);
-			}
-			break;
-		case OS.WM_LBUTTONDBLCLK:
-		case OS.WM_RBUTTONDBLCLK:
-			if (hooks (SWT.DefaultSelection)) {
-				OS.SetForegroundWindow (hwnd);
-				postEvent (SWT.DefaultSelection);
-			}
-			break;
-		case OS.WM_RBUTTONUP: {
-			if (hooks (SWT.MenuDetect)) {
-				OS.SetForegroundWindow (hwnd);
-				sendEvent (SWT.MenuDetect);
-				// widget could be disposed at this point
-				if (isDisposed()) return 0;
-			}
-			break;
-		}
-	}
-	display.wakeThread ();
-	return 0;
+  /*
+  * Feature in Windows.  When the user clicks on the tray
+  * icon, another application may be the foreground window.
+  * This means that the event loop is not running and can
+  * cause problems.  For example, if a menu is shown, when
+  * the user clicks outside of the menu to cancel it, the
+  * menu is not hidden until an event is processed.  If
+  * another application is the foreground window, then the
+  * menu is not hidden.  The fix is to force the tray icon
+  * message window to the foreground when sending an event.
+  */
+  switch (lParam) {
+    case OS.WM_LBUTTONDOWN:
+      if (hooks (SWT.Selection)) {
+        OS.SetForegroundWindow (hwnd);
+        postEvent (SWT.Selection);
+      }
+      break;
+    case OS.WM_LBUTTONDBLCLK:
+    case OS.WM_RBUTTONDBLCLK:
+      if (hooks (SWT.DefaultSelection)) {
+        OS.SetForegroundWindow (hwnd);
+        postEvent (SWT.DefaultSelection);
+      }
+      break;
+    case OS.WM_RBUTTONUP: {
+      if (hooks (SWT.MenuDetect)) {
+        OS.SetForegroundWindow (hwnd);
+        sendEvent (SWT.MenuDetect);
+        // widget could be disposed at this point
+        if (isDisposed()) return 0;
+      }
+      break;
+    }
+    case OS.NIN_BALLOONSHOW:
+      if (toolTip != null && !toolTip.visible) {
+        toolTip.visible = true;
+        if (toolTip.hooks (SWT.Show)) {
+          OS.SetForegroundWindow (hwnd);
+          toolTip.sendEvent (SWT.Show);
+          // widget could be disposed at this point
+          if (isDisposed()) return 0;
+        }
+      }
+      break;
+    case OS.NIN_BALLOONHIDE:
+    case OS.NIN_BALLOONTIMEOUT:
+    case OS.NIN_BALLOONUSERCLICK:
+      if (toolTip != null) {
+        if (toolTip.visible) {
+          toolTip.visible = false;
+          if (toolTip.hooks (SWT.Hide)) {
+            OS.SetForegroundWindow (hwnd);
+            toolTip.sendEvent (SWT.Hide);
+            // widget could be disposed at this point
+            if (isDisposed()) return 0;
+          }
+        }
+        if (lParam == OS.NIN_BALLOONUSERCLICK) {
+          if (toolTip.hooks (SWT.Selection)) {
+            OS.SetForegroundWindow (hwnd);
+            toolTip.postEvent (SWT.Selection);
+            // widget could be disposed at this point
+            if (isDisposed()) return 0;
+          }
+        }
+      }
+      break;
+  }
+  display.wakeThread ();
+  return 0;
 }
 
 void recreate () {
-	createWidget ();
-	if (!visible) setVisible (false);
-	if (text.length () != 0) setText (text);
-	if (image != null) setImage (image);
-	if (toolTipText != null) setToolTipText (toolTipText);
+  createWidget ();
+  if (!visible) setVisible (false);
+  if (text.length () != 0) setText (text);
+  if (image != null) setImage (image);
+  if (toolTipText != null) setToolTipText (toolTipText);
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+  super.releaseHandle ();
+  parent = null;
 }
 
 void releaseWidget () {
-	super.releaseWidget ();
-	if (image2 != null) image2.dispose ();
-	image2 = null;
-	toolTipText = null;
-	if (OS.IsWinCE) return;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id;
-	iconData.hWnd = display.hwndMessage;
-	OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
+  super.releaseWidget ();
+  if (toolTip != null) toolTip.item = null;
+  toolTip = null;
+  if (image2 != null) image2.dispose ();
+  image2 = null;
+  toolTipText = null;
+  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+  iconData.cbSize = NOTIFYICONDATA.sizeof;
+  iconData.uID = id;
+  iconData.hWnd = display.hwndMessage;
+  OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
 }
-	
+  
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver is selected.
@@ -239,11 +314,11 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+  checkWidget ();
+  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+  if (eventTable == null) return;
+  eventTable.unhook (SWT.Selection, listener);
+  eventTable.unhook (SWT.DefaultSelection,listener);  
 }
 
 /**
@@ -260,34 +335,52 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setImage (Image image) {
-	checkWidget ();
-	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	super.setImage (image);
-	if (OS.IsWinCE) return;
-	if (image2 != null) image2.dispose ();
-	image2 = null;
-	int hIcon = 0;
-	Image icon = image;
-	if (icon != null) {
-		switch (icon.type) {
-			case SWT.BITMAP:
-				ImageData data = icon.getImageData ();
-				ImageData mask = data.getTransparencyMask ();
-				image2 = new Image (display, data, mask);
-				hIcon = image2.handle;
-				break;
-			case SWT.ICON:
-				hIcon = icon.handle;
-				break;
-		}
-	}
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id;
-	iconData.hWnd = display.hwndMessage;
-	iconData.hIcon = hIcon;
-	iconData.uFlags = OS.NIF_ICON;
-	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+  checkWidget ();
+  if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+  super.setImage (image);
+  if (image2 != null) image2.dispose ();
+  image2 = null;
+  int hIcon = 0;
+  Image icon = image;
+  if (icon != null) {
+    switch (icon.type) {
+      case SWT.BITMAP:
+        image2 = Display.createIcon (image);
+        hIcon = image2.handle;
+        break;
+      case SWT.ICON:
+        hIcon = icon.handle;
+        break;
+    }
+  }
+  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+  iconData.cbSize = NOTIFYICONDATA.sizeof;
+  iconData.uID = id;
+  iconData.hWnd = display.hwndMessage;
+  iconData.hIcon = hIcon;
+  iconData.uFlags = OS.NIF_ICON;
+  OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+}
+
+/**
+ * Sets the receiver's tool tip to the argument, which
+ * may be null indicating that no tool tip should be shown.
+ *
+ * @param toolTip the new tool tip (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setToolTip (ToolTip toolTip) {
+  checkWidget ();
+  ToolTip oldTip = this.toolTip, newTip = toolTip;
+  if (oldTip != null) oldTip.item = null;
+  this.toolTip = newTip;
+  if (newTip != null) newTip.item = this;
 }
 
 /**
@@ -302,30 +395,28 @@ public void setImage (Image image) {
  * </ul>
  */
 public void setToolTipText (String value) {
-	checkWidget ();
-	toolTipText = value;
-	if (OS.IsWinCE) return;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
-	/*
-	* Note that the size of the szTip field is different
-	* in version 5.0 of shell32.dll.
-	*/
-	int length = OS.SHELL32_MAJOR < 5 ? 64 : 128;
-	if (OS.IsUnicode) {
-		char [] szTip = ((NOTIFYICONDATAW) iconData).szTip;
-		length = Math.min (length - 1, buffer.length ());
-		System.arraycopy (buffer.chars, 0, szTip, 0, length);
-	} else {
-		byte [] szTip = ((NOTIFYICONDATAA) iconData).szTip;
-		length = Math.min (length - 1, buffer.length ());
-		System.arraycopy (buffer.bytes, 0, szTip, 0, length);
-	}
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id;
-	iconData.hWnd = display.hwndMessage;
-	iconData.uFlags = OS.NIF_TIP;
-	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+  checkWidget ();
+  toolTipText = value;
+  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+  TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
+  /*
+  * Note that the size of the szTip field is different in version 5.0 of shell32.dll.
+  */
+  int length = OS.SHELL32_MAJOR < 5 ? 64 : 128;
+  if (OS.IsUnicode) {
+    char [] szTip = ((NOTIFYICONDATAW) iconData).szTip;
+    length = Math.min (length - 1, buffer.length ());
+    System.arraycopy (buffer.chars, 0, szTip, 0, length);
+  } else {
+    byte [] szTip = ((NOTIFYICONDATAA) iconData).szTip;
+    length = Math.min (length - 1, buffer.length ());
+    System.arraycopy (buffer.bytes, 0, szTip, 0, length);
+  }
+  iconData.cbSize = NOTIFYICONDATA.sizeof;
+  iconData.uID = id;
+  iconData.hWnd = display.hwndMessage;
+  iconData.uFlags = OS.NIF_TIP;
+  OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 }
 
 /**
@@ -340,41 +431,39 @@ public void setToolTipText (String value) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-	checkWidget ();
-	if (this.visible == visible) return;
-	if (visible) {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the show
-		* event.  If this happens, just return.
-		*/
-		sendEvent (SWT.Show);
-		if (isDisposed ()) return;
-	}
-	this.visible = visible;
-	if (!OS.IsWinCE) {
-		NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-		iconData.cbSize = NOTIFYICONDATA.sizeof;
-		iconData.uID = id;
-		iconData.hWnd = display.hwndMessage;
-		if (OS.SHELL32_MAJOR < 5) {
-			if (visible) {
-				iconData.uFlags = OS.NIF_MESSAGE;
-				iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-				OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
-				setImage (image);
-				setToolTipText (toolTipText);
-			} else {
-				OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
-			}
-		} else {
-			iconData.uFlags = OS.NIF_STATE;
-			iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-			iconData.dwStateMask = OS.NIS_HIDDEN;
-			OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-		}
-	}
-	if (!visible) sendEvent (SWT.Hide);
+  checkWidget ();
+  if (this.visible == visible) return;
+  if (visible) {
+    /*
+    * It is possible (but unlikely), that application
+    * code could have disposed the widget in the show
+    * event.  If this happens, just return.
+    */
+    sendEvent (SWT.Show);
+    if (isDisposed ()) return;
+  }
+  this.visible = visible;
+  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+  iconData.cbSize = NOTIFYICONDATA.sizeof;
+  iconData.uID = id;
+  iconData.hWnd = display.hwndMessage;
+  if (OS.SHELL32_MAJOR < 5) {
+    if (visible) {
+      iconData.uFlags = OS.NIF_MESSAGE;
+      iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
+      OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+      setImage (image);
+      setToolTipText (toolTipText);
+    } else {
+      OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
+    }
+  } else {
+    iconData.uFlags = OS.NIF_STATE;
+    iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
+    iconData.dwStateMask = OS.NIS_HIDDEN;
+    OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+  }
+  if (!visible) sendEvent (SWT.Hide);
 }
 
 }

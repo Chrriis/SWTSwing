@@ -67,7 +67,6 @@ Canvas () {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
  * @see SWT
@@ -114,10 +113,43 @@ public Caret getCaret () {
 	return caret;
 }
 
-void releaseWidget () {
-	if (caret != null) caret.releaseResources ();
-	caret = null;
-	super.releaseWidget ();
+void releaseChildren (boolean destroy) {
+  if (caret != null) {
+    caret.release (false);
+    caret = null;
+  }
+  super.releaseChildren (destroy);
+}
+
+/** 
+ * Fills the interior of the rectangle specified by the arguments,
+ * with the receiver's background. 
+ *
+ * @param gc the gc where the rectangle is to be filled
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled
+ * @param height the height of the rectangle to be filled
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the gc has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void drawBackground (GC gc, int x, int y, int width, int height) {
+  checkWidget ();
+  if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+  if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+  java.awt.Color oldColor = gc.handle.getColor();
+  gc.handle.setColor(handle.getBackground());
+  gc.handle.fillRect(x, y, width, height);
+  gc.handle.setColor(oldColor);
 }
 
 /**

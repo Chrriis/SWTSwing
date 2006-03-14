@@ -88,18 +88,28 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
     this.foreground = foreground;
   }
 
+  public Color getForeground() {
+    return foreground;
+  }
+  
   protected Color background;
 
   public void setBackground(Color background) {
     this.background = background;
   }
 
-  public Color getForeground() {
-    return foreground;
-  }
-
   public Color getBackground() {
     return background;
+  }
+
+  protected Font font;
+
+  public void setFont(Font font) {
+    this.font = font;
+  }
+
+  public Font getFont() {
+    return font;
   }
 
 }
@@ -213,10 +223,14 @@ public interface CTreeItem {
 
   public void setForeground(Color foreground);
 
+  public Color getForeground();
+  
   public void setBackground(Color background);
 
-  public Color getForeground();
-
   public Color getBackground();
+
+  public void setFont(Font font);
+
+  public Font getFont();
 
 }

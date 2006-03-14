@@ -442,16 +442,18 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 //	return findMnemonic (items [id [0]].text) != '\0';
 //}
 
-void releaseWidget () {
-  int count = itemList.size();
-	for (int i=0; i<count; i++) {
-		ToolItem item = (ToolItem)itemList.get(i);
-		if (item != null && !item.isDisposed ()) {
-//			item.releaseImages ();
-			item.releaseResources ();
-		}
-	}
-  itemList = null;
+void releaseChildren (boolean destroy) {
+  if (itemList != null) {
+    int count = itemList.size();
+  	for (int i=0; i<count; i++) {
+  		ToolItem item = (ToolItem)itemList.get(i);
+  		if (item != null && !item.isDisposed ()) {
+//  			item.releaseImages ();
+  			item.release (false);
+  		}
+  	}
+    itemList = null;
+  }
 //	if (imageList != null) {
 //		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
 //		display.releaseToolImageList (imageList);
@@ -465,7 +467,7 @@ void releaseWidget () {
 //		display.releaseToolDisabledImageList (disabledImageList);
 //	}
 //	imageList = hotImageList = disabledImageList = null;
-	super.releaseWidget ();
+  super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {

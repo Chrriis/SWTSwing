@@ -115,6 +115,7 @@ static int checkStyle (int style) {
 }
 
 Container createHandle () {
+  state |= THEME_BACKGROUND;
   return (Container)CSash.Instanciator.createInstance(this, style);
 }
 

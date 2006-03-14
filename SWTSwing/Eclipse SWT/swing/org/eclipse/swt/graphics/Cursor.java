@@ -50,7 +50,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 
-public final class Cursor {
+public final class Cursor extends Resource {
 	
 	/**
 	 * the handle to the OS cursor resource
@@ -63,11 +63,6 @@ public final class Cursor {
 	 * </p>
 	 */
 	public java.awt.Cursor handle;
-	
-	/**
-	 * the device where this cursor was created
-	 */
-	Device device;
 	
 //	/**
 //	 * data used to create a HAND cursor.

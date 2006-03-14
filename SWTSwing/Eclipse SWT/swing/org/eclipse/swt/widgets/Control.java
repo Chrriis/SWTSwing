@@ -47,6 +47,7 @@ import org.eclipse.swt.graphics.Drawable;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.GCData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CComponent;
@@ -94,6 +95,7 @@ public abstract class Control extends Widget implements Drawable {
 	Accessible accessible;
 //	int drawCount, foreground, background;
   long lastPressed = 0;
+  Image backgroundImage;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -419,7 +421,7 @@ public void addTraverseListener (TraverseListener listener) {
  * @see #getBorderWidth
  * @see #getBounds
  * @see #getSize
- * @see #pack
+ * @see #pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint) {
@@ -457,7 +459,7 @@ public Point computeSize (int wHint, int hHint) {
  * @see #getBorderWidth
  * @see #getBounds
  * @see #getSize
- * @see #pack
+ * @see #pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -789,6 +791,25 @@ public Color getBackground () {
 //	if (background == -1) return defaultBackground ();
 //	return background;
 //}
+
+/**
+ * Returns the receiver's background image.
+ *
+ * @return the background image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public Image getBackgroundImage () {
+  checkWidget ();
+  Control control = findBackgroundControl ();
+  if (control == null) control = this;
+  return control.backgroundImage;
+}
 
 /**
  * Returns the receiver's border width.
@@ -1558,7 +1579,7 @@ GC new_GC (GCData data) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #computeSize
+ * @see #computeSize(int, int, boolean)
  */
 public void pack () {
 	checkWidget ();
@@ -1584,7 +1605,7 @@ public void pack () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #computeSize
+ * @see #computeSize(int, int, boolean)
  */
 public void pack (boolean changed) {
 	checkWidget ();
@@ -1671,13 +1692,14 @@ void register () {
 	display.addControl (handle, this);
 }
 
-void releaseChild () {
-	parent.removeControl (this);
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = null;
+  parent = null;
+}
+
+void releaseParent () {
+  parent.removeControl (this);
 }
 
 void releaseWidget () {
@@ -1697,7 +1719,6 @@ void releaseWidget () {
 //	cursor = null;
 	deregister ();
 //	unsubclass ();
-	parent = null;
 	layoutData = null;
 	if (accessible != null) {
 		accessible.internal_dispose_Accessible ();
@@ -1997,6 +2018,38 @@ public void setBackground (Color color) {
   } else {
     handle.setBackground (color.handle);
   }
+}
+
+/**
+ * Sets the receiver's background image to the image specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.  The background image is tiled to fill
+ * the available space.
+ *
+ * @param image the new image (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setBackgroundImage (Image image) {
+  checkWidget ();
+  if (image != null) {
+    if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+    if (image.type != SWT.BITMAP) error (SWT.ERROR_INVALID_ARGUMENT);
+  }
+  if (backgroundImage == image) return;
+  backgroundImage = image;
+  Shell shell = getShell ();
+  shell.releaseBrushes ();
+  updateBackgroundImage ();
 }
 
 //void setBackgroundPixel (int pixel) {
@@ -2389,6 +2442,11 @@ public void setLocation (Point location) {
  * the control. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pop up
  * menu is platform specific.
+ * <p>
+ * Note: Disposing of a control that has a pop up menu will
+ * dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the control is disposed.
+ * </p>
  *
  * @param menu the new pop up menu
  *
@@ -2444,7 +2502,7 @@ boolean setRadioSelection (boolean value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #redraw
+ * @see #redraw(int, int, int, int, boolean)
  * @see #update
  */
 public void setRedraw (boolean redraw) {
@@ -3011,7 +3069,7 @@ boolean traverseReturn () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #redraw
+ * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint
  */
@@ -3117,12 +3175,13 @@ void updateLayout (boolean resize, boolean all) {
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is <code>null</code></li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *	</ul>
+ *  </ul>
  */
 public boolean setParent (Composite parent) {
 	checkWidget ();
@@ -3130,7 +3189,7 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
-	releaseChild ();
+	releaseParent ();
 	Shell newShell = parent.getShell (), oldShell = getShell ();
 	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
 	if (oldShell != newShell || oldDecorations != newDecorations) {
@@ -4004,8 +4063,8 @@ public void processEvent(AWTEvent e) {
     break;
   }
   case java.awt.event.PaintEvent.PAINT: if(!hooks(SWT.Paint)) return; break;
-  case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.MouseMove)) return; break;
-  case java.awt.event.MouseEvent.MOUSE_MOVED: if(!hooks(SWT.MouseMove)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_MOVED: if(!hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
     if(!hooks(SWT.MouseDown) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;

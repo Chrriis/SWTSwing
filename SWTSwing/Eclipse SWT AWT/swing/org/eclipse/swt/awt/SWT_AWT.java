@@ -48,13 +48,30 @@ import java.awt.event.FocusEvent;
  */
 public class SWT_AWT {
 
-	/**
-	 * The name of the embedded Frame class. The default class name
-	 * for the platform will be used if <code>null</code>. 
-	 */
-	public static String embeddedFrameClass;
+  /**
+   * Key for looking up the embedded frame for a Composite using
+   * getData(). 
+   */
+  static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 
-	static boolean loaded, swingInitialized;
+/**
+ * Answers a <code>java.awt.Frame</code> which is the embedded frame
+ * associated with the specified composite.
+ * 
+ * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>
+ * @return a <code>java.awt.Frame</code> the embedded frame or <code>null</code>.
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public static Frame getFrame (Composite parent) {
+  if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+  if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;
+  return (Frame)parent.getData(EMBEDDED_FRAME_KEY);
+}
 
 /**
  * Creates a new <code>java.awt.Frame</code>. This frame is the root for
@@ -96,6 +113,7 @@ public static Frame new_Frame (final Composite parent) {
     }
   };
   container.setLayout(new BorderLayout(0, 0));
+  parent.setData(EMBEDDED_FRAME_KEY, frame);  
 //	frame.addNotify();
 	
 	/*
@@ -173,6 +191,7 @@ public static Frame new_Frame (final Composite parent) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the display is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent's peer is not created</li>
  * </ul>
  * 
  * @since 3.0
@@ -187,7 +206,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
-	if (handle == 0) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+  if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 
 	final Shell shell = Shell.win32_new (display, handle);
 	parent.addComponentListener(new ComponentAdapter () {

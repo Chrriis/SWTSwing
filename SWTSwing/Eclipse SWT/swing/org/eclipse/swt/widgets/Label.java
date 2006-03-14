@@ -216,6 +216,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 Container createHandle () {
+  state |= THEME_BACKGROUND;
   return (Container)CLabel.Instanciator.createInstance(this, style);
 }
 
@@ -256,16 +257,6 @@ public String getText () {
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return ((CLabel)handle).getLabelText();
 }
-
-///*
-//* Not currently used.
-//*/
-//boolean getWrap () {
-//	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//	if ((bits & (OS.SS_RIGHT | OS.SS_CENTER)) != 0) return true;
-//	if ((bits & OS.SS_LEFTNOWORDWRAP) != 0) return false;
-//	return true;
-//}
 
 boolean mnemonicHit (char key) {
 	Composite control = this.parent;
@@ -341,7 +332,7 @@ public void setAlignment (int alignment) {
 public void setImage (Image image) {
   checkWidget ();
   if ((style & SWT.SEPARATOR) != 0) return;
-  if (image != null && image.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+  if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
   this.image = image;
   ImageIcon icon = null;
   if (image != null && image.handle != null) {
@@ -384,18 +375,6 @@ public void setText (String string) {
   ((CLabel)handle).setLabelText(string);
 }
 
-///*
-//* Not currently used.
-//*/
-//void setWrap (boolean wrap) {
-//	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//	if ((bits & (OS.SS_RIGHT | OS.SS_CENTER)) != 0) return;
-//	bits &= ~OS.SS_LEFTNOWORDWRAP;
-//	if (!wrap) bits |= OS.SS_LEFTNOWORDWRAP;
-//	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-//	OS.InvalidateRect (handle, null, true);
-//}
-//
 //int widgetExtStyle () {
 //	int bits = super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
 //	if ((style & SWT.BORDER) != 0) return bits | OS.WS_EX_STATICEDGE;

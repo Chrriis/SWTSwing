@@ -97,11 +97,11 @@ public TabItem (TabFolder parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- *    <li>ERROR_INVALID_RANGE - if the index is either negative or greater than the parent's current tab count</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -125,6 +125,11 @@ Container createHandle () {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void destroyWidget () {
+  parent.destroyItem (this);
+  releaseHandle ();
 }
 
 /**
@@ -175,19 +180,22 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseHandle () {
+  super.releaseHandle ();
+  parent = null;
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	int index = parent.indexOf (this);
 	if (index == parent.getSelectionIndex ()) {
 		if (control != null) control.setVisible (false);
 	}
-	parent.destroyItem (this);
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
-	parent = null;
 }
 
 /**

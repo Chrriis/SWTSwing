@@ -16,7 +16,6 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 
 import javax.swing.ImageIcon;
-import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 
 import org.eclipse.swt.SWT;
@@ -253,20 +252,6 @@ void click () {
 
 Container createHandle () {
   return (Container)CButton.Instanciator.createInstance(this, style);
-}
-
-void createWidget () {
-  super.createWidget();
-  if((style & SWT.RADIO) != 0) {
-    parent.addGroupedButton((JRadioButton)handle);
-  }
-}
-
-void destroyWidget () {
-  if((style & SWT.RADIO) != 0) {
-    parent.removeGroupedButton((JRadioButton)handle);
-  }
-  super.destroyWidget();
 }
 
 //int defaultBackground () {
@@ -519,9 +504,9 @@ public void setAlignment (int alignment) {
 
 /**
  * Sets the receiver's image to the argument, which may be
- * null indicating that no image should be displayed.
+ * <code>null</code> indicating that no image should be displayed.
  *
- * @param image the image to display on the receiver (may be null)
+ * @param image the image to display on the receiver (may be <code>null</code>)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
@@ -589,7 +574,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-    ((CButton)handle).setSelected(selected);
+  ((CButton)handle).setSelected(selected);
 }
 
 /**

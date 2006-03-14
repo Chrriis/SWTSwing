@@ -66,6 +66,8 @@ public abstract class Device implements Drawable {
 
 	boolean disposed;
 	
+  final static Object CREATE_LOCK = new Object();
+
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -82,20 +84,35 @@ public abstract class Device implements Drawable {
 	protected static Runnable DeviceFinder;
 	static {
 		try {
-			Class.forName ("org.eclipse.swt.widgets.Display");
+      Class.forName ("org.eclipse.swt.widgets.Display"); //$NON-NLS-1$
 		} catch (Throwable e) {}
 	}	
 
 /*
 * TEMPORARY CODE.
 */
-static Device getDevice () {
+static synchronized Device getDevice () {
 	if (DeviceFinder != null) DeviceFinder.run();
 	Device device = CurrentDevice;
 	CurrentDevice = null;
 	return device;
 }
-	
+
+/**
+ * Constructs a new instance of this class.
+ * <p>
+ * You must dispose the device when it is no longer required. 
+ * </p>
+ *
+ * @see #create
+ * @see #init
+ * 
+ * @since 3.1
+ */
+public Device() {
+  this(null);
+}
+
 /**
  * Constructs a new instance of this class.
  * <p>
@@ -109,19 +126,21 @@ static Device getDevice () {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	if (data != null) {
-		debug = data.debug;
-		tracking = data.tracking;
-	}
-	create (data);
-	init ();
-	if (tracking) {
-		errors = new Error [128];
-		objects = new Object [128];
-	}
-	
-	/* Initialize the system font slot */
-	systemFont = getSystemFont().handle;
+  synchronized (CREATE_LOCK) {
+  	if (data != null) {
+  		debug = data.debug;
+  		tracking = data.tracking;
+  	}
+  	create (data);
+  	init ();
+  	if (tracking) {
+  		errors = new Error [128];
+  		objects = new Object [128];
+  	}
+  	
+  	/* Initialize the system font slot */
+  	systemFont = getSystemFont().handle;
+  }
 }
 
 /**
@@ -522,7 +541,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
  * specified in class <code>SWT</code>. Any value other
  * than one of the SWT color constants which is passed
  * in will result in the color black. This color should
- * not be free'd because it was allocated by the system,
+ * not be freed because it was allocated by the system,
  * not the application.
  *
  * @param id the color constant
@@ -562,7 +581,7 @@ public Color getSystemColor (int id) {
  * Returns a reasonable font for applications to use.
  * On some platforms, this will match the "default font"
  * or "system font" if such can be found.  This font
- * should not be free'd because it was allocated by the
+ * should not be freed because it was allocated by the
  * system, not the application.
  * <p>
  * Typically, applications which want the default look

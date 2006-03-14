@@ -61,9 +61,18 @@ import org.eclipse.swt.internal.swing.CShell;
  * of these changes are also possible.
  * </li>
  * </ul>
- * </p>
- * <p>
- * Note: The styles supported by this class must be treated
+ * </p><p>
+ * The <em>modality</em> of an instance may be specified using
+ * style bits. The modality style bits are used to determine
+ * whether input is blocked for other shells on the display.
+ * The <code>PRIMARY_MODAL</code> style allows an instance to block
+ * input to its parent. The <code>APPLICATION_MODAL</code> style
+ * allows an instance to block input to every other shell in the
+ * display. The <code>SYSTEM_MODAL</code> style allows an instance
+ * to block input to all shells, including shells belonging to
+ * different applications.
+ * </p><p>
+ * Note: The styles supported by this class are treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate
  * control over the appearance and behavior of decorations
@@ -74,9 +83,14 @@ import org.eclipse.swt.internal.swing.CShell;
  * more restrictive modality style that is supported. For
  * example, if <code>PRIMARY_MODAL</code> is not supported,
  * it would be upgraded to <code>APPLICATION_MODAL</code>.
+ * A modality style may also be "downgraded" to a less
+ * restrictive style. For example, most operating systems
+ * no longer support <code>SYSTEM_MODAL</code> because
+ * it can freeze up the desktop, so this is typically
+ * downgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL</dd>
  * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
@@ -255,6 +269,9 @@ Shell (Display display, Shell parent, int style, Container handle) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
+  if (parent != null && parent.isDisposed ()) {
+    error (SWT.ERROR_INVALID_ARGUMENT); 
+  }
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
@@ -277,7 +294,7 @@ Shell (Display display, Shell parent, int style, Container handle) {
  * @param parent a shell which will be the parent of the new instance
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -311,6 +328,9 @@ public Shell (Shell parent) {
  * @param parent a shell which will be the parent of the new instance
  * @param style the style of control to construct
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
@@ -325,6 +345,8 @@ public Shell (Shell parent) {
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
+ * @see SWT#TOOL
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
@@ -767,9 +789,8 @@ public Shell [] getShells () {
 	return result;
 }
 
-public boolean isLayoutDeferred () {
-	checkWidget ();
-	return layoutCount > 0;
+Composite findDeferredControl () {
+  return layoutCount > 0 ? this : null;
 }
 
 public boolean isEnabled () {
@@ -824,6 +845,7 @@ public boolean isEnabled () {
 public void open () {
 	checkWidget ();
 	bringToTop ();
+  if (isDisposed ()) return;
   layout(); // Added because the default size is not taken into account be layout managers. cf snippet 109
 //	/*
 //	* Feature on WinCE PPC.  A new application becomes
@@ -857,25 +879,27 @@ public void open () {
 //	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
-void releaseChild () {
-	/* Do nothing */
-}
-
 //void releaseHandle () {
 //	super.releaseHandle ();
 //	hwndMDIClient = 0;
 //}
 
-void releaseShells () {
+void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.releaseResources ();
+    if (shell != null && !shell.isDisposed ()) {
+      shell.release (false);
+    }
 	}
+  super.releaseChildren (destroy);
+}
+
+void releaseParent () {
+  /* Do nothing */
 }
 
 void releaseWidget () {
-	releaseShells ();
 	super.releaseWidget ();
 	activeMenu = null;
     final Window window = (Window)handle;
@@ -977,6 +1001,7 @@ public void setActive () {
 	checkWidget ();
 	if(!isVisible()) return;
 	bringToTop ();
+  // widget could be disposed at this point
 }
 
 void setActiveControl (Control control) {
@@ -1105,7 +1130,7 @@ public void setImeInputMode (int mode) {
 }
 
 /**
- * Sets the receiver's minimum size to the point specified by the arguments.
+ * Sets the receiver's minimum size to the size specified by the arguments.
  * If the new minimum size is larger than the current size of the receiver,
  * the receiver is resized to the new minimum size.
  *
@@ -1147,7 +1172,7 @@ public void setMinimumSize (int width, int height) {
 }
 
 /**
- * Sets the receiver's minimum size to the point specified by the argument.
+ * Sets the receiver's minimum size to the size specified by the argument.
  * If the new minimum size is larger than the current size of the receiver,
  * the receiver is resized to the new minimum size.
  *

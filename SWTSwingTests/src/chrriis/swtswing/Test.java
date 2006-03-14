@@ -38,7 +38,7 @@ public class Test {
 //      {"122", "enable/disable menu depending on clipboard content availability"},
     }}, new Object[] {"Combo", new String[][] {
       {"26", "create a combo box (non-editable)"},
-//      {"24", "detect return in a combo box (default selection)"},
+      {"24", "detect return in a combo box (default selection)"},
 //      {"147", "prevent CR from going to the default button"},
     }}, new Object[] {"Composite", new String[][] {
       {"9", "scroll a child control automatically"},
@@ -104,7 +104,7 @@ public class Test {
 //      {"215", "take a screen shot with a GC"},
       {"168", "draw lines with different cap and join styles"},
       {"10", "drawing with transformations, paths and alpha blending"},
-//      {"207", "reflect, shear and rotate images using matrix transformations"},
+      {"207", "reflect, shear and rotate images using matrix transformations"},
     }}, new Object[] {"GridLayout", new String[][] {
       {"172", "align widgets in rows and columns"},
       {"6", "insert widgets into a grid layout"},
@@ -174,7 +174,7 @@ public class Test {
     }}, new Object[] {"Shell", new String[][] {
       {"50", "create a dialog shell"},
       {"63", "create a dialog shell (prompt for a value)"},
-      {"104", "create a splash screen"},
+//      {"104", "create a splash screen"},
       {"99", "prevent a shell from closing (prompt the user)"},
 //      {"4", "prevent escape from closing a dialog"},
       {"27", "open a shell minimized (iconified)"},
@@ -285,9 +285,9 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "207";
+  static String snippetNumber = "104";
 
-  static boolean isRealDispatch = false;
+  static boolean isRealDispatch = true;
 
   public static void main(final String[] args) {
     if(isRealDispatch) {

@@ -537,7 +537,6 @@ void createWidget () {
       clientArea.repaint();
     }
     if(parent instanceof Shell && parent.getChildren().length == 0) {
-      System.err.println("in");
       handle.requestFocus();
     }
   }

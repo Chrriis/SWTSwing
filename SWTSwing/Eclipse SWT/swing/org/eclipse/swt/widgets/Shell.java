@@ -15,7 +15,9 @@ import java.awt.AWTEvent;
 import java.awt.Container;
 import java.awt.Window;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
+import java.awt.im.InputContext;
+import java.awt.im.InputSubset;
+import java.lang.Character.UnicodeBlock;
 
 import javax.swing.SwingUtilities;
 
@@ -1073,26 +1075,32 @@ void setActiveControl (Control control) {
 public void setImeInputMode (int mode) {
 	checkWidget ();
   // TODO: implement probably with something like the following...
+  InputContext ic = handle.getInputContext();
   boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;
-  handle.enableInputMethods(imeOn);
+//handle.enableInputMethods(imeOn);
+  ic.setCompositionEnabled (imeOn);
   if(imeOn) {
-    ArrayList characterSubsetsList = new ArrayList();
-    if((mode & SWT.ROMAN) != 0) {
-      characterSubsetsList.add(Character.UnicodeBlock.BASIC_LATIN);
+    boolean phonetic = (mode & SWT.PHONETIC) != 0;
+    boolean nativecs = (mode & SWT.NATIVE) != 0;
+    // PHONETIC > NATIVE > ROMAN = ALPHA ; The former is stronger.
+    Character.Subset subset;
+    if ((mode & SWT.DBCS) != 0) {
+      // double byte characters
+      subset = InputSubset.FULLWIDTH_LATIN;
+      if (nativecs) {
+        subset = UnicodeBlock.HIRAGANA;
+      }
+      if (phonetic) {
+        subset = UnicodeBlock.KATAKANA;
+      }
+    } else {
+      // not double byte characters
+      subset = InputSubset.LATIN;
+      if (phonetic || nativecs) {
+        subset = InputSubset.HALFWIDTH_KATAKANA;
+      }
     }
-    if((mode & SWT.DBCS) != 0) {
-      characterSubsetsList.add(Character.UnicodeBlock.CJK_COMPATIBILITY);
-    }
-    if((mode & SWT.PHONETIC) != 0) {
-      characterSubsetsList.add(Character.UnicodeBlock.KATAKANA_PHONETIC_EXTENSIONS);
-    }
-    if((mode & SWT.NATIVE) != 0) {
-      characterSubsetsList.add(Character.UnicodeBlock.BASIC_LATIN);
-    }
-    if((mode & SWT.ALPHA) != 0) {
-      characterSubsetsList.add(Character.UnicodeBlock.ENCLOSED_ALPHANUMERICS);
-    }
-    handle.getInputContext().setCharacterSubsets((Character.Subset[])characterSubsetsList.toArray(new Character.Subset[0]));
+    ic.setCharacterSubsets (new Character.Subset[] { subset });
   }
 //	if (!OS.IsDBLocale) return;
 //	boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;

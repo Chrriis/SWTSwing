@@ -459,7 +459,7 @@ public CoolItem [] getItems () {
 	int count = getItemCount();
   CoolItem[] coolItems = new CoolItem[count];
   ArrayList itemList = (ArrayList)this.itemList.clone();
-  Component[] components = new Component[count];
+  Component[] components = handle.getComponents();
   for(int i=0; i<components.length; i++) {
     Component component = components[i];
     for(int j=itemList.size()-1; j>=0; j--) {

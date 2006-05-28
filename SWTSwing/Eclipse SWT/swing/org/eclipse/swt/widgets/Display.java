@@ -480,9 +480,9 @@ public Display (DeviceData data) {
       javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
     } catch(Exception e) {}
   }
-  new Thread("Repaint handler thread") {
+  Thread repaintHandlerThread = new Thread("Repaint handler thread") {
     public void run() {
-      while(true) {
+      while(!isDisposed()) {
         try {
           sleep(300);
         } catch(Exception e) {}
@@ -496,7 +496,9 @@ public Display (DeviceData data) {
         }
       }
     }
-  }.start();
+  };
+  repaintHandlerThread.setDaemon(true);
+  repaintHandlerThread.start();
 }
 
 volatile long lastActivityTime = System.currentTimeMillis();

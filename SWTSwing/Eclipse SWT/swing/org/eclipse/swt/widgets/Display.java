@@ -36,6 +36,7 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -429,6 +430,27 @@ static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
 
 static class SwingEventQueue extends EventQueue {
   protected AWTEvent event;
+  protected volatile long lastEventTime;
+  public SwingEventQueue() {
+    new Thread("Repaint handler thread") {
+      public void run() {
+        while(true) {
+          try {
+            sleep(300);
+          } catch(Exception e) {}
+          if(System.currentTimeMillis() - lastEventTime > 300) {
+            RepaintManager repaintManager = RepaintManager.currentManager(null);
+            repaintManager.validateInvalidComponents();
+            repaintManager.paintDirtyRegions();
+          }
+        }
+      }
+    }.start();
+  }
+  public void postEvent(final AWTEvent theEvent) {
+    lastEventTime = System.currentTimeMillis();
+    super.postEvent(theEvent);
+  }
   public boolean sleep() {
     event = null;
     try {

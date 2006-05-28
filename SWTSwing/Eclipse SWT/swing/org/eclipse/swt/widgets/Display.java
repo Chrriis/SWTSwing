@@ -430,27 +430,6 @@ static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
 
 static class SwingEventQueue extends EventQueue {
   protected AWTEvent event;
-  protected volatile long lastEventTime;
-  public SwingEventQueue() {
-    new Thread("Repaint handler thread") {
-      public void run() {
-        while(true) {
-          try {
-            sleep(300);
-          } catch(Exception e) {}
-          if(System.currentTimeMillis() - lastEventTime > 300) {
-            RepaintManager repaintManager = RepaintManager.currentManager(null);
-            repaintManager.validateInvalidComponents();
-            repaintManager.paintDirtyRegions();
-          }
-        }
-      }
-    }.start();
-  }
-  public void postEvent(final AWTEvent theEvent) {
-    lastEventTime = System.currentTimeMillis();
-    super.postEvent(theEvent);
-  }
   public boolean sleep() {
     event = null;
     try {
@@ -501,7 +480,26 @@ public Display (DeviceData data) {
       javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
     } catch(Exception e) {}
   }
+  new Thread("Repaint handler thread") {
+    public void run() {
+      while(true) {
+        try {
+          sleep(300);
+        } catch(Exception e) {}
+        if(System.currentTimeMillis() - lastActivityTime > 300) {
+          synchronized(UI_LOCK) {
+            // TODO: should be in correct thread?
+            RepaintManager repaintManager = RepaintManager.currentManager(null);
+            repaintManager.validateInvalidComponents();
+            repaintManager.paintDirtyRegions();
+          }
+        }
+      }
+    }
+  }.start();
 }
+
+volatile long lastActivityTime = System.currentTimeMillis();
 
 static void pushQueue() {
   if(isRealDispatch()) {
@@ -2728,6 +2726,7 @@ void postEvent (final Event event) {
  * @see #wake
  */
 public boolean readAndDispatch () {
+  lastActivityTime = System.currentTimeMillis();
 	checkDevice ();
   if(isRealDispatch()) {
     boolean result = swingEventQueue.dispatchEvent();

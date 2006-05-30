@@ -34,8 +34,8 @@ public class Test {
       {"74", "create a caret"},
 //      {"43", "create a caret (using an image)"},
     }}, new Object[] {"Clipboard", new String[][] {
-//      {"94", "copy and paste data with the clipboard"},
-//      {"122", "enable/disable menu depending on clipboard content availability"},
+      {"94", "copy and paste data with the clipboard"},
+      {"122", "enable/disable menu depending on clipboard content availability"},
     }}, new Object[] {"Combo", new String[][] {
       {"26", "create a combo box (non-editable)"},
       {"24", "detect return in a combo box (default selection)"},
@@ -174,7 +174,7 @@ public class Test {
     }}, new Object[] {"Shell", new String[][] {
       {"50", "create a dialog shell"},
       {"63", "create a dialog shell (prompt for a value)"},
-//      {"104", "create a splash screen"},
+      {"104", "create a splash screen"},
       {"99", "prevent a shell from closing (prompt the user)"},
 //      {"4", "prevent escape from closing a dialog"},
       {"27", "open a shell minimized (iconified)"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "22";
+  static String snippetNumber = "122";
 
   static boolean isRealDispatch = true;
 

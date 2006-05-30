@@ -12,7 +12,9 @@ package org.eclipse.swt.internal.swing;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
@@ -20,6 +22,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.PaintEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -76,6 +79,29 @@ class CShellFrame extends JFrame implements CShell {
         super.paintComponent(g);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         graphics = null;
+        if(paintHandlerList != null) {
+          int size = paintHandlerList.size();
+          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellFrame.this);
+          for(int i=0; i<size; i++) {
+            Graphics2D g2 = (Graphics2D)g.create();
+            g2.translate(-origin.x, -origin.y);
+            ((PaintHandler)paintHandlerList.get(i)).paintComponent(g2);
+            g2.dispose();
+          }
+        }
+      }
+      public void paint(Graphics g) {
+        super.paint(g);
+        if(paintHandlerList != null) {
+          int size = paintHandlerList.size();
+          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellFrame.this);
+          for(int i=0; i<size; i++) {
+            Graphics2D g2 = (Graphics2D)g.create();
+            g2.translate(-origin.x, -origin.y);
+            ((PaintHandler)paintHandlerList.get(i)).paint(g2);
+            g2.dispose();
+          }
+        }
       }
     };
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
@@ -164,6 +190,22 @@ class CShellFrame extends JFrame implements CShell {
     }
   }
 
+  protected ArrayList paintHandlerList;
+
+  public void addPaintHandler(PaintHandler paintHandler) {
+    if(paintHandlerList == null) {
+      paintHandlerList = new ArrayList();
+    }
+    paintHandlerList.add(paintHandler);
+  }
+
+  public void removePaintHandler(PaintHandler paintHandler) {
+    if(paintHandlerList == null) {
+      return;
+    }
+    paintHandlerList.remove(paintHandler);
+  }
+
 }
 
 class CShellDialog extends JDialog implements CShell {
@@ -247,6 +289,29 @@ class CShellDialog extends JDialog implements CShell {
         super.paintComponent(g);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         graphics = null;
+        if(paintHandlerList != null) {
+          int size = paintHandlerList.size();
+          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellDialog.this);
+          for(int i=0; i<size; i++) {
+            Graphics2D g2 = (Graphics2D)g.create();
+            g2.translate(-origin.x, -origin.y);
+            ((PaintHandler)paintHandlerList.get(i)).paintComponent(g2);
+            g2.dispose();
+          }
+        }
+      }
+      public void paint(Graphics g) {
+        super.paint(g);
+        if(paintHandlerList != null) {
+          int size = paintHandlerList.size();
+          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellDialog.this);
+          for(int i=0; i<size; i++) {
+            Graphics2D g2 = (Graphics2D)g.create();
+            g2.translate(-origin.x, -origin.y);
+            ((PaintHandler)paintHandlerList.get(i)).paint(g2);
+            g2.dispose();
+          }
+        }
       }
     };
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
@@ -346,6 +411,22 @@ class CShellDialog extends JDialog implements CShell {
     }
   }
 
+  protected ArrayList paintHandlerList;
+
+  public void addPaintHandler(PaintHandler paintHandler) {
+    if(paintHandlerList == null) {
+      paintHandlerList = new ArrayList();
+    }
+    paintHandlerList.add(paintHandler);
+  }
+
+  public void removePaintHandler(PaintHandler paintHandler) {
+    if(paintHandlerList == null) {
+      return;
+    }
+    paintHandlerList.remove(paintHandler);
+  }
+
 }
 
 /**
@@ -354,6 +435,11 @@ class CShellDialog extends JDialog implements CShell {
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
 public interface CShell extends CScrollable {
+
+  public static interface PaintHandler {
+    public void paintComponent(Graphics2D g);
+    public void paint(Graphics2D g);
+  }
 
   public static int MAXIMIZED_BOTH = JFrame.MAXIMIZED_BOTH;
   public static int ICONIFIED = JFrame.ICONIFIED;
@@ -395,5 +481,9 @@ public interface CShell extends CScrollable {
   public void setJMenuBar(JMenuBar menuBar);
 
   public void setDefaultButton(CButton button);
+
+  public void addPaintHandler(PaintHandler paintHandler);
+
+  public void removePaintHandler(PaintHandler paintHandler);
 
 }

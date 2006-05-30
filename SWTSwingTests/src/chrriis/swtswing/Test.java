@@ -47,7 +47,7 @@ public class Test {
       {"115", "force radio behavior on two different composites"},
       {"46", "intercept mouse events (drag a button with the mouse)"},
     }}, new Object[] {"Color and RGB", new String[][] {
-//      {"208", "adjust hue, brightness and saturation of a color"},
+      {"208", "adjust hue, brightness and saturation of a color"},
     }}, new Object[] {"Control", new String[][] {
       {"14", "detect mouse enter, exit and hover events"},
 //      {"127", "prevent Tab from traversing out of a control"},
@@ -145,7 +145,7 @@ public class Test {
 //      {"209", "draw a rotating torus using the JOGL OpenGL binding"},
 //      {"174", "draw a rectangle using the org.eclipse.opengl OpenGL binding"},
     }}, new Object[] {"Path", new String[][] {
-//      {"198", "Create a path from some text"},      
+      {"198", "Create a path from some text"},
     }}, new Object[] {"Printing", new String[][] {
 //      {"132", "print "Hello World!" in black, outlined in red, to default printer"},
 //      {"133", "print text to printer, with word wrap and pagination"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "122";
+  static String snippetNumber = "198";
 
   static boolean isRealDispatch = true;
 

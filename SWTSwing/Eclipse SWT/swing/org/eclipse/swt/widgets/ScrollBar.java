@@ -185,6 +185,7 @@ void createWidget () {
 	*/
   handle.addAdjustmentListener(new AdjustmentListener() {
     public void adjustmentValueChanged(AdjustmentEvent e) {
+      if(blockListener) return;
       Event event = new Event ();
       event.detail = SWT.DRAG;
       switch(e.getAdjustmentType()) {
@@ -598,7 +599,9 @@ public void setMaximum (int value) {
   if (value < 0) return;
   int minimum = handle.getMinimum();
   if (value <= minimum) return;
+  blockListener = true;
   handle.setMaximum(value);
+  blockListener = false;
 }
 
 /**
@@ -619,7 +622,9 @@ public void setMinimum (int value) {
 	if (value < 0) return;
   int maximum = handle.getMaximum();
   if (value >= maximum) return;
+  blockListener = true;
   handle.setMinimum(value);
+  blockListener = false;
 }
 
 /**
@@ -718,8 +723,12 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int selection) {
 	checkWidget();
+  blockListener = true;
   handle.setValue(selection);
+  blockListener = false;
 }
+
+boolean blockListener;
 
 /**
  * Sets the size of the receiver's thumb relative to the
@@ -749,7 +758,9 @@ public void setThumb (int value) {
   if (selection > maxSelection) {
     selection = maxSelection;
   }
+  blockListener = true;
   handle.setValues(selection, value, minimum, maximum);
+  blockListener = false;
 }
 
 /**
@@ -782,7 +793,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (pageIncrement < 1) return;
 	this.increment = increment;	
 	this.pageIncrement = pageIncrement;
+  blockListener = true;
   handle.setValues(selection, thumb, minimum, maximum);
+  blockListener = false;
 }
 
 /**

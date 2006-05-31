@@ -128,8 +128,8 @@ public class Test {
       {"89", "create a menu with radio items"},
       {"73", "enable menu items dynamically (when menu shown)"},
       {"97", "fill a menu dynamically (when menu shown)"},
-//      {"131", "show a popup menu (wait for it to close)"},
-//      {"152", "update a status line when an item is armed"},
+      {"131", "show a popup menu (wait for it to close)"},
+      {"152", "update a status line when an item is armed"},
 //      {"178", "access About, Preferences and Quit menus on carbon"},
     }}, new Object[] {"Monitor", new String[][] {
       {"120", "center a shell on the primary monitor"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "198";
+  static String snippetNumber = "167";
 
   static boolean isRealDispatch = true;
 

@@ -27,6 +27,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -936,9 +938,10 @@ void createHandle() {
   if((style & SWT.SEPARATOR) != 0) {
     handle = new JSeparator();
   } else if((style & SWT.CASCADE) != 0) {
-    handle = new JMenu() {
+    JMenu popup = new JMenu() {
       public void menuSelectionChanged(boolean isIncluded) {
         super.menuSelectionChanged(isIncluded);
+        if(!isIncluded) return;
         if(!hooks(SWT.Arm)) return;
         Display display = getDisplay();
         display.startExclusiveSection();
@@ -953,6 +956,37 @@ void createHandle() {
         display.stopExclusiveSection();
       }
     };
+    popup.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+      public void popupMenuCanceled(PopupMenuEvent e) {
+      }
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        if(!menu.hooks(SWT.Hide)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+        Event event = new Event();
+        event.widget = menu;
+        menu.sendEvent(SWT.Hide, event);
+        display.stopExclusiveSection();
+      }
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        if(!menu.hooks(SWT.Show)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+        Event event = new Event();
+        event.widget = menu;
+        menu.sendEvent(SWT.Show, event);
+        display.stopExclusiveSection();
+      }
+    });
+    handle = popup;
   } else if((style & SWT.PUSH) != 0) {
     JMenuItem menuItem = new JMenuItem() {
       public void menuSelectionChanged(boolean isIncluded) {

@@ -28,9 +28,14 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.ArmListener;
+import org.eclipse.swt.events.HelpListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -931,10 +936,77 @@ void createHandle() {
   if((style & SWT.SEPARATOR) != 0) {
     handle = new JSeparator();
   } else if((style & SWT.CASCADE) != 0) {
-    handle = new JMenu();
+    handle = new JMenu() {
+      public void menuSelectionChanged(boolean isIncluded) {
+        super.menuSelectionChanged(isIncluded);
+        if(!hooks(SWT.Arm)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+//        Event event = new Event();
+//        event.stateMask = Display.getInputState();
+//        sendEvent(SWT.Arm, event);
+        sendEvent(SWT.Arm);
+        display.stopExclusiveSection();
+      }
+    };
   } else if((style & SWT.PUSH) != 0) {
-    JMenuItem menuItem = new JMenuItem();
+    JMenuItem menuItem = new JMenuItem() {
+      public void menuSelectionChanged(boolean isIncluded) {
+        super.menuSelectionChanged(isIncluded);
+        if(!isIncluded) {
+          if(parent == null || parent.cascade == null) return;
+          if(!parent.cascade.hooks(SWT.Arm)) return;
+          Display display = getDisplay();
+          display.startExclusiveSection();
+          if(isDisposed()) {
+            display.stopExclusiveSection();
+            return;
+          }
+//          Event event = new Event();
+//          event.stateMask = Display.getInputState();
+//          sendEvent(SWT.Arm, event);
+          parent.cascade.sendEvent(SWT.Arm);
+          display.stopExclusiveSection();
+          return;
+        }
+        if(!hooks(SWT.Arm)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+//        Event event = new Event();
+//        event.stateMask = Display.getInputState();
+//        sendEvent(SWT.Arm, event);
+        sendEvent(SWT.Arm);
+        display.stopExclusiveSection();
+      }
+    };
     handle = menuItem;
+//    menuItem.addChangeListener(new ChangeListener() {
+//      boolean isSelected;
+//      public void stateChanged(ChangeEvent e) {
+//        isSelected = !isSelected;
+//        if(isSelected) return;
+//        if(!hooks(SWT.Arm)) return;
+//        Display display = getDisplay();
+//        display.startExclusiveSection();
+//        if(isDisposed()) {
+//          display.stopExclusiveSection();
+//          return;
+//        }
+////        Event event = new Event();
+////        event.stateMask = Display.getInputState();
+////        sendEvent(SWT.Arm, event);
+//        sendEvent(SWT.Arm);
+//        display.stopExclusiveSection();
+//      }
+//    });
     menuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if(!hooks(SWT.Selection)) return;

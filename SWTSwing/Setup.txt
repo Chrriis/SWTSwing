@@ -1,4 +1,4 @@
-* Get SWTSwing from "cvs.sf.net:/cvsroot/swtswing" and check out the modules:
+* Get SWTSwing from "swtswing.cvs.sourceforge.net:/cvsroot/swtswing" and check out the modules:
 
 - SWTSwing
 - SWTSwingTests

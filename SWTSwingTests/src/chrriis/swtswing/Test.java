@@ -169,7 +169,7 @@ public class Test {
     }}, new Object[] {"ScrolledComposite", new String[][] {
       {"5", "scroll a control in a scrolled composite"},
       {"166", "create a ScrolledComposite with wrapping content"},
-//      {"167", "create two ScrolledComposites that scroll in tandem"},
+      {"167", "create two ScrolledComposites that scroll in tandem"},
 //      {"188", "Scroll widgets into view when they get focus"},
     }}, new Object[] {"Shell", new String[][] {
       {"50", "create a dialog shell"},
@@ -186,7 +186,7 @@ public class Test {
       {"17", "print scroll event details"},
     }}, new Object[] {"Spinner", new String[][] {
       {"184", "create and initialize a spinner widget"},
-//      {"190", "use floats in a spinner widget"},
+      {"190", "use floats in a spinner widget"},
     }}, new Object[] {"StyledText", new String[][] {
 //      {"163", "change font style, foreground and background colors of StyledText"},
 //      {"189", "underline and strike through text"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "167";
+  static String snippetNumber = "190";
 
   static boolean isRealDispatch = true;
 

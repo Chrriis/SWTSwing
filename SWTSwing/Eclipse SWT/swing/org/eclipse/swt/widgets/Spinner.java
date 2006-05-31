@@ -41,7 +41,6 @@ import org.eclipse.swt.internal.swing.CSpinner;
 public class Spinner extends Composite {
 //	boolean ignoreModify;
 	int pageIncrement;
-  int digits;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -289,7 +288,7 @@ public void cut () {
  */
 public int getDigits () {
   checkWidget ();
-  return digits;
+  return ((CSpinner)handle).getDigitCount();
 }
 
 /**
@@ -571,16 +570,7 @@ void removeVerifyListener (VerifyListener listener) {
 public void setDigits (int value) {
   checkWidget ();
   if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-  if (value == this.digits) return;
-  this.digits = value;
-  // TODO: implement
-//  int pos;
-//  if (OS.IsWinCE) {
-//    pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
-//  } else {
-//    pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-//  }
-//  setSelection (pos, false, true, false);
+  ((CSpinner)handle).setDigitCount(value);
 }
 
 /**

@@ -25,16 +25,16 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 
   public CSpinnerImplementation(Spinner spinner, int style) {
     this.handle = spinner;
-    model = new SpinnerNumberModel(0, minimum, maximum, 1);
+    model = new SpinnerNumberModel(0, minimum, maximum, 1.0);
     setModel(model);
     model.setMinimum(new Comparable() {
       public int compareTo(Object o) {
-        return minimum - ((Number)o).intValue();
+        return minimum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
       }
     });
     model.setMaximum(new Comparable() {
       public int compareTo(Object o) {
-        return maximum - ((Number)o).intValue();
+        return maximum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
       }
     });
     init(style);
@@ -59,11 +59,11 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
   }
 
   public int getStepSize() {
-    return model.getStepSize().intValue();
+    return Math.round(model.getStepSize().floatValue() * (int)Math.pow(10, digitCount));
   }
 
   public void setStepSize(int stepSize) {
-    model.setStepSize(new Integer(stepSize));
+    model.setStepSize(new Float((float)stepSize / (int)Math.pow(10, digitCount)));
   }
 
   protected int minimum = 0;
@@ -86,11 +86,11 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
   }
   
   public void setSelectedValue(int value) {
-    model.setValue(new Integer(value));
+    model.setValue(new Float((float)value / (int)Math.pow(10, digitCount)));
   }
 
   public int getSelectedValue() {
-    return ((Number)model.getValue()).intValue();
+    return Math.round(((Number)model.getValue()).floatValue() * (int)Math.pow(10, digitCount));
   }
 
   public void copy() {
@@ -103,6 +103,19 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 
   public void paste() {
     ((DefaultEditor)getEditor()).getTextField().paste();
+  }
+
+  protected int digitCount;
+
+  public void setDigitCount(int digitCount) {
+    if(digitCount == this.digitCount) {
+      return;
+    }
+    this.digitCount = digitCount;
+  }
+
+  public int getDigitCount() {
+    return digitCount;
   }
 
 }
@@ -144,5 +157,9 @@ public interface CSpinner extends CComponent {
   public void cut();
 
   public void paste();
+
+  public void setDigitCount(int digitCount);
+
+  public int getDigitCount();
 
 }

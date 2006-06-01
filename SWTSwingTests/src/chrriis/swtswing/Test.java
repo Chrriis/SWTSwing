@@ -205,7 +205,7 @@ public class Test {
       {"76", "create a tab folder (six pages)"},
     }}, new Object[] {"Table, TableItem, TableColumn", new String[][] {
 //      {"151", "add 1000 sorted entries to a virtual table every 500 ms"},
-//      {"129", "color cells and rows in table"},
+      {"129", "color cells and rows in table"},
       {"35", "create a table (no columns, no headers)"},
       {"38", "create a table (columns, headers, lines)"},
 //      {"144", "create a table with 1,000,000 items (lazy)"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "190";
+  static String snippetNumber = "113";
 
   static boolean isRealDispatch = true;
 

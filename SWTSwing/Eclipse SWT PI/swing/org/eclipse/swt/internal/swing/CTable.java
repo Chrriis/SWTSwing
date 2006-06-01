@@ -242,6 +242,34 @@ class CTableImplementation extends JScrollPane implements CTable {
 //    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 //      setBorder(null);
 //    }
+    if((style & SWT.FULL_SELECTION) == 0) {
+      // Not perfect because it does not prevent the selection of the first cell by clicking anywhere on the row.
+      table.setCellSelectionEnabled(true);
+      table.getColumnModel().setSelectionModel(new DefaultListSelectionModel() {
+        public void addSelectionInterval(int index0, int index1) {
+          index0 = table.convertColumnIndexToView(0);
+          index1 = table.convertColumnIndexToView(0);
+          super.addSelectionInterval(index0, index1);
+        }
+        public void setAnchorSelectionIndex(int anchorIndex) {
+          anchorIndex = table.convertColumnIndexToView(0);
+          super.setAnchorSelectionIndex(anchorIndex);
+        }
+        public void setLeadSelectionIndex(int leadIndex) {
+          leadIndex = table.convertColumnIndexToView(0);
+          super.setLeadSelectionIndex(leadIndex);
+        }
+        public void moveLeadSelectionIndex(int leadIndex) {
+          leadIndex = table.convertColumnIndexToView(0);
+          super.moveLeadSelectionIndex(leadIndex);
+        }
+        public void setSelectionInterval(int index0, int index1) {
+          index0 = table.convertColumnIndexToView(0);
+          index1 = table.convertColumnIndexToView(0);
+          super.setSelectionInterval(index0, index1);
+        }
+      });
+    }
     setGridVisible(false);
     if((style & SWT.MULTI) == 0) {
       table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

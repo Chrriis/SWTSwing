@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="SWTSwing Tests Build Script" default="createJar">
+
+  <target name="createJar" description="Create the Jar files">
+    <jar destfile="../SWTSwing/SWTSwingTests.jar">
+      <fileset dir="bin"/>
+      <fileset dir="../org.eclipse.swt.snippets/bin"/>
+      <manifest>
+        <attribute name="Main-Class" value="chrriis.swtswing.Test"/>
+        <attribute name="Class-Path" value="SWTSwing.jar"/>
+      </manifest>
+    </jar>
+  </target>
+
+</project>

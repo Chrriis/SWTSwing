@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "113";
+  static String snippetNumber = "196";
 
   static boolean isRealDispatch = true;
 
@@ -315,7 +315,7 @@ public class Test {
     if(number == null && args.length < 1) {
       printUsage();
     } else {
-      if(args.length > 1) {
+      if(args.length > 0) {
         number = args[0];
         String[] newArgs = new String[args.length - 1];
         System.arraycopy(args, 1, newArgs, 0, newArgs.length);
@@ -347,8 +347,13 @@ public class Test {
   }
   
   public static void printUsage() {
-    System.out.println("Test by Christopher Deckers: chrriis@brainlex.com (chrriis.brainlex.com/swtswing)");
-    System.out.println("Usage: provide a number (as a parameter) identifying a snippet:");
+    System.out.println("-------------------------------------------------------------------------------");
+    System.out.println("SWT snippet launcher, for SWTSwing - http://www.nextencia.net/projects/swtswing");
+    System.out.println("by Christopher Deckers (chrriis@nextencia.net)");
+    System.out.println("Usage: provide a number as a parameter identifying a snippet from the list.");
+    System.out.println("Note: The \"swt.swing.laf\" property sets the L&F");
+    System.out.println("      e.g.: -Dswt.swing.laf=javax.swing.plaf.metal.MetalLookAndFeel");
+    System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
     for(int i=0; i<definitions.length; i++) {
       Object[] section = (Object[])definitions[i];
       if(((String[][])section[1]).length > 0) {
@@ -359,6 +364,7 @@ public class Test {
         }
       }
     }
+    System.out.println("-------------------------------------------------------------------------------");
   }
 
 } 

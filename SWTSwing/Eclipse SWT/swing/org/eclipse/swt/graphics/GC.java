@@ -17,6 +17,7 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
@@ -2200,17 +2201,10 @@ public int getAlpha() {
  * @since 3.1
  */
 public int getAntialias() {
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (data.gdipGraphics == 0) return SWT.DEFAULT;
-  int mode = Gdip.Graphics_GetSmoothingMode(data.gdipGraphics);
-  switch (mode) {
-    case Gdip.SmoothingModeDefault: return SWT.DEFAULT;
-    case Gdip.SmoothingModeHighSpeed:
-    case Gdip.SmoothingModeNone: return SWT.OFF;
-    case Gdip.SmoothingModeAntiAlias:
-    case Gdip.SmoothingModeAntiAlias8x8:
-    case Gdip.SmoothingModeHighQuality: return SWT.ON;
-  }
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  Object value = handle.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+  if(value == RenderingHints.VALUE_ANTIALIAS_OFF) return SWT.OFF;
+  if(value == RenderingHints.VALUE_ANTIALIAS_ON) return SWT.ON;
   return SWT.DEFAULT;
 }
 
@@ -2668,17 +2662,10 @@ public int getStyle () {
  * @since 3.1
  */
 public int getTextAntialias() {
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (data.gdipGraphics == 0) return SWT.DEFAULT;
-  int mode = Gdip.Graphics_GetTextRenderingHint(data.gdipGraphics);
-  switch (mode) {
-    case Gdip.TextRenderingHintSystemDefault: return SWT.DEFAULT;
-    case Gdip.TextRenderingHintSingleBitPerPixel:
-    case Gdip.TextRenderingHintSingleBitPerPixelGridFit: return SWT.OFF;
-    case Gdip.TextRenderingHintAntiAlias:
-    case Gdip.TextRenderingHintAntiAliasGridFit:
-    case Gdip.TextRenderingHintClearTypeGridFit: return SWT.ON;
-  }
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  Object value = handle.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+  if(value == RenderingHints.VALUE_ANTIALIAS_OFF) return SWT.OFF;
+  if(value == RenderingHints.VALUE_ANTIALIAS_ON) return SWT.ON;
   return SWT.DEFAULT;
 }
 
@@ -2917,24 +2904,20 @@ public void setAdvanced(boolean advanced) {
  * @since 3.1
  */
 public void setAntialias(int antialias) {
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (data.gdipGraphics == 0 && antialias == SWT.DEFAULT) return;
-  int mode = 0;
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch (antialias) {
     case SWT.DEFAULT:
-      mode = Gdip.SmoothingModeDefault;
+      handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
       break;
     case SWT.OFF:
-      mode = Gdip.SmoothingModeNone;
+      handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
       break;
     case SWT.ON:
-      mode = Gdip.SmoothingModeAntiAlias;
+      handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       break;      
     default:
       SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   }
-  initGdip(false, false);
-  Gdip.Graphics_SetSmoothingMode(data.gdipGraphics, mode);
 }
 
 /**
@@ -3599,30 +3582,20 @@ public void setXORMode(boolean xor) {
  * @since 3.1
  */
 public void setTextAntialias(int antialias) {
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (data.gdipGraphics == 0 && antialias == SWT.DEFAULT) return;
-  int textMode = 0;
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch (antialias) {
     case SWT.DEFAULT:
-      textMode = Gdip.TextRenderingHintSystemDefault;
+      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
       break;
     case SWT.OFF:
-      textMode = Gdip.TextRenderingHintSingleBitPerPixelGridFit;
+      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
       break;
     case SWT.ON:
-      int[] type = new int[1];
-      OS.SystemParametersInfo(OS.SPI_GETFONTSMOOTHINGTYPE, 0, type, 0);
-      if (type[0] == OS.FE_FONTSMOOTHINGCLEARTYPE) {
-        textMode = Gdip.TextRenderingHintClearTypeGridFit;
-      } else {
-        textMode = Gdip.TextRenderingHintAntiAliasGridFit;
-      }
-      break;
+      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      break;      
     default:
       SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   }
-  initGdip(false, false);
-  Gdip.Graphics_SetTextRenderingHint(data.gdipGraphics, textMode);
 }
 
 /** 

@@ -181,6 +181,7 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget ();
   ((CProgressBar)handle).setValue(value);
+  update();
 }
 
 }

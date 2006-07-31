@@ -480,25 +480,14 @@ public Display (DeviceData data) {
       javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
     } catch(Exception e) {}
   }
-  Thread repaintHandlerThread = new Thread("Repaint handler thread") {
-    public void run() {
-      while(!isDisposed()) {
-        try {
-          sleep(300);
-        } catch(Exception e) {}
-        if(System.currentTimeMillis() - lastActivityTime > 300) {
-          synchronized(UI_LOCK) {
-            // TODO: should be in correct thread?
-            RepaintManager repaintManager = RepaintManager.currentManager(null);
-            repaintManager.validateInvalidComponents();
-            repaintManager.paintDirtyRegions();
-          }
-        }
-      }
-    }
-  };
-  repaintHandlerThread.setDaemon(true);
-  repaintHandlerThread.start();
+}
+
+void paintComponentImmediately(Component component) {
+  synchronized(UI_LOCK) {
+    RepaintManager repaintManager = RepaintManager.currentManager(component);
+    repaintManager.validateInvalidComponents();
+    repaintManager.paintDirtyRegions();
+  }
 }
 
 volatile long lastActivityTime = System.currentTimeMillis();

@@ -3078,16 +3078,7 @@ boolean traverseReturn () {
  */
 public void update () {
 	checkWidget ();
-  if(SwingUtilities.isEventDispatchThread()) {
-    return;
-  }
-  try {
-    SwingUtilities.invokeAndWait(new Runnable() {
-      public void run() {
-        // Do nothing
-      }
-    });
-  } catch(Exception e) {}
+  display.paintComponentImmediately(handle);
 //	update (false);
 }
 

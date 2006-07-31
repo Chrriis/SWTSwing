@@ -36,6 +36,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
     init(style);
   }
 
+  public void requestFocus() {
+    contentPane.requestFocus();
+  }
+
   protected Graphics graphics;
 
   protected void init(int style) {

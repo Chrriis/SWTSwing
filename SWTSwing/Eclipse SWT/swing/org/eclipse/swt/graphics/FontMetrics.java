@@ -35,7 +35,13 @@ public final class FontMetrics {
 	 * </p>
 	 */
 	public java.awt.FontMetrics handle;
-	
+
+  int ascent;
+  int descent;
+  int height;
+  int leading;
+  int averageCharWidth;
+
 /**
  * Prevents instances from being created outside the package.
  */
@@ -88,7 +94,7 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-  return handle.getAscent();
+  return handle == null? ascent: handle.getAscent();
 }
 
 /**
@@ -99,7 +105,7 @@ public int getAscent() {
  */
 public int getAverageCharWidth() {
   // Use a letter that looks average
-  return handle.charWidth('c');
+  return handle == null? averageCharWidth: handle.charWidth('c');
 }
 
 /**
@@ -111,7 +117,7 @@ public int getAverageCharWidth() {
  * @return the descent of the font
  */
 public int getDescent() {
-	return handle.getDescent();
+	return handle == null? descent: handle.getDescent();
 }
 
 /**
@@ -126,7 +132,7 @@ public int getDescent() {
  * @see #getLeading
  */
 public int getHeight() {
-	return handle.getHeight();
+	return handle == null? height: handle.getHeight();
 }
 
 /**
@@ -137,7 +143,7 @@ public int getHeight() {
  * @return the leading space of the font
  */
 public int getLeading() {
-	return handle.getLeading();
+	return handle == null? leading: handle.getLeading();
 }
 
 /**
@@ -151,7 +157,7 @@ public int getLeading() {
  * @see #equals
  */
 public int hashCode() {
-	return handle == null? 0: handle.hashCode();
+  return (handle == null? 0: handle.hashCode()) ^ getAscent() ^ getDescent() ^ getHeight() ^ getLeading() ^ getAverageCharWidth();
 }
 
 /**	 
@@ -171,6 +177,16 @@ public static FontMetrics swing_new(java.awt.FontMetrics handle) {
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.handle = handle;
 	return fontMetrics;
+}
+
+static FontMetrics internal_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
+  FontMetrics fontMetrics = new FontMetrics();
+  fontMetrics.ascent = ascent;
+  fontMetrics.descent = descent;
+  fontMetrics.height = height;
+  fontMetrics.leading = leading;
+  fontMetrics.averageCharWidth = averageCharWidth;
+  return fontMetrics;
 }
 
 }

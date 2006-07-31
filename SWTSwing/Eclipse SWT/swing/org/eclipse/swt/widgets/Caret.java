@@ -106,7 +106,15 @@ void createWidget () {
           timer.stop();
         }
       }
-    });
+    }) {
+      public void stop() {
+        super.stop();
+        blink = true;
+        if(Caret.this.parent != null) {
+          Caret.this.parent.redraw ();
+        }
+      }
+    };
     timer.start ();
   }
 //  isVisible = true;
@@ -406,6 +414,7 @@ public void setBounds (int x, int y, int width, int height) {
 	boolean samePosition = this.x == x && this.y == y;
 	boolean sameExtent = this.width == width && this.height == height;
 	if (samePosition && sameExtent) return;
+  timer.stop();
 	this.x = x;  this.y = y;
 	this.width = width;  this.height = height;
 	if (sameExtent) {
@@ -415,6 +424,7 @@ public void setBounds (int x, int y, int width, int height) {
 		resized = true;
 		if (isVisible && hasFocus ()) resize ();
 	}
+  timer.start();
 }
 
 /**
@@ -535,9 +545,11 @@ void setIMEFont (int hFont) {
 public void setLocation (int x, int y) {
 	checkWidget();
 	if (this.x == x && this.y == y) return;
+  timer.stop();
 	this.x = x;  this.y = y;
 	moved = true;
 	if (isVisible && hasFocus ()) move ();
+  timer.start();
 }
 
 /**

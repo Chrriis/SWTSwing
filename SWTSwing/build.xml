@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project name="SWTSwing Build Script" default="createJar">
+
+  <target name="createJar" description="Create the Jar files">
+    <jar duplicate="preserve" destfile="SWTSwing.jar">
+      <fileset dir="bin"/>
+      <fileset dir="../org.eclipse.swt/bin"/>
+	</jar>
+  </target>
+
+</project>

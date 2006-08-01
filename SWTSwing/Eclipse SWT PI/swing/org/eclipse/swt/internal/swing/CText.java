@@ -39,7 +39,8 @@ class CTextMulti extends JScrollPane implements CText {
 
   public CTextMulti(Text text, int style) {
     this.handle = text;
-    textArea = new JTextArea(4, 7);
+//    textArea = new JTextArea(4, 7);
+    textArea = new JTextArea();
     setFocusable(false);
     getViewport().setView(textArea);
     init(style);

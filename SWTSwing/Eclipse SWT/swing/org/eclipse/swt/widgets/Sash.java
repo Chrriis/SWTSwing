@@ -225,6 +225,7 @@ public void processEvent(AWTEvent e) {
     if (event.doit) {
       targetPoint.x = event.x;
       targetPoint.y = event.y;
+      ((CSash)handle).setDragLocation((style & SWT.VERTICAL) != 0? targetPoint.x: targetPoint.y);
 //        if ((style & SWT.SMOOTH) != 0) {
 //          setLocation(targetPoint.x, targetPoint.y);
 //        }

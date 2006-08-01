@@ -15,6 +15,7 @@ import java.awt.Container;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -35,9 +36,6 @@ class CSashImplementation extends JPanel implements CSash {
 
   protected BasicSplitPaneDivider divider;
 
-  protected Point originPoint;
-  protected Point currentPoint;
-
   public CSashImplementation(Sash sash, int style) {
     super(new BorderLayout(0, 0));
     this.handle = sash;
@@ -51,42 +49,37 @@ class CSashImplementation extends JPanel implements CSash {
           if((e.getButton() & MouseEvent.BUTTON1) == 0) {
             return;
           }
+          dragLocation = (handle.getStyle() & SWT.VERTICAL) != 0? getLocation().x: getLocation().y;
           paintHandler = new PaintHandler() {
             public void paintComponent(Graphics2D g) {};
             public void paint(Graphics2D g) {
               Rectangle bounds = divider.getBounds();
+              Window window = SwingUtilities.getWindowAncestor(CSashImplementation.this);
+              bounds = SwingUtilities.convertRectangle(divider, bounds, window);
+              Point p = SwingUtilities.convertPoint(CSashImplementation.this.getParent(), new Point(dragLocation, dragLocation), window);
               if((handle.getStyle() & SWT.VERTICAL) != 0) {
-                bounds.x += currentPoint.x - originPoint.x;
+                bounds.x = p.x;
               } else {
-                bounds.y += currentPoint.y - originPoint.y;
+                bounds.y = p.y;
               }
-              bounds = SwingUtilities.convertRectangle(divider, bounds, SwingUtilities.getWindowAncestor(CSashImplementation.this));
-              g.setXORMode(SwingUtilities.getWindowAncestor(CSashImplementation.this).getBackground());
+              g.setXORMode(window.getBackground());
               g.setColor(Color.BLACK);
               g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
             };
           };
           ((CShell)SwingUtilities.getWindowAncestor(CSashImplementation.this)).addPaintHandler(paintHandler);
-          originPoint = e.getPoint();
-          currentPoint = originPoint;
           SwingUtilities.getWindowAncestor(CSashImplementation.this).repaint();
         }
         public void mouseReleased(MouseEvent e) {
           if((e.getButton() & MouseEvent.BUTTON1) == 0) {
             return;
           }
-          originPoint = null;
-          currentPoint = null;
           SwingUtilities.getWindowAncestor(CSashImplementation.this).repaint();
           ((CShell)SwingUtilities.getWindowAncestor(CSashImplementation.this)).removePaintHandler(paintHandler);
         }
       });
       divider.addMouseMotionListener(new MouseMotionAdapter() {
         public void mouseDragged(MouseEvent e) {
-          if(originPoint == null) {
-            return;
-          }
-          currentPoint = e.getPoint();
           SwingUtilities.getWindowAncestor(CSashImplementation.this).repaint();
         }
       });
@@ -109,11 +102,11 @@ class CSashImplementation extends JPanel implements CSash {
     return divider;
   }
 
-  public Integer getDragMove() {
-    if(originPoint == null) {
-      return null;
-    }
-    return (handle.getStyle() & SWT.HORIZONTAL) != 0? new Integer(currentPoint.y - originPoint.y): new Integer(currentPoint.x - originPoint.x);
+  protected int dragLocation = Integer.MIN_VALUE;
+
+  public void setDragLocation(int dragLocation) {
+    this.dragLocation = dragLocation;
+    repaint();
   }
 
 }
@@ -129,6 +122,6 @@ public interface CSash extends CComponent {
 
   }
 
-  public Integer getDragMove();
+  public void setDragLocation(int dragLocation);
 
 }

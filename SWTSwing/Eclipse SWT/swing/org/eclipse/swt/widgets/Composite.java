@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,8 +46,8 @@ import org.eclipse.swt.internal.swing.CComposite;
  * Note: The <code>CENTER</code> style, although undefined for composites, has the
  * same value as <code>EMBEDDED</code> (which is used to embed widgets from other
  * widget toolkits into SWT).  On some operating systems (GTK, Motif), this may cause
- * the children of this compostite to be obscured.  The <code>EMBEDDED</code> style
- * is for used by other widget toolkits and should normally never be used.
+ * the children of this composite to be obscured.  The <code>EMBEDDED</code> style
+ * is for use by other widget toolkits and should normally never be used.
  * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates

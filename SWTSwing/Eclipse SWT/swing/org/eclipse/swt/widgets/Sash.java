@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -84,7 +84,7 @@ public Sash (Composite parent, int style) {
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the x, y, width, and height fields of the event object are valid.
- * If the reciever is being dragged, the event object detail field contains the value <code>SWT.DRAG</code>.
+ * If the receiver is being dragged, the event object detail field contains the value <code>SWT.DRAG</code>.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *

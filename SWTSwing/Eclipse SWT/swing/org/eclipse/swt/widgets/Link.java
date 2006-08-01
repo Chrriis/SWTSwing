@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,7 +41,7 @@ public class Link extends Control {
   Point selection;
   String [] ids;
   int [] mnemonics;
-  int focusIndex;
+  int focusIndex, mouseDownIndex;
   int font;
   static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
   static final int LinkProc;
@@ -181,7 +181,7 @@ void createHandle () {
     ids = new String [0];
     mnemonics = new int [0];
     selection = new Point (-1, -1);
-    focusIndex = -1;
+    focusIndex = mouseDownIndex = -1;
   }
 }
 
@@ -338,8 +338,7 @@ Rectangle [] getRectangles (int linkIndex) {
 
 /**
  * Returns the receiver's text, which will be an empty
- * string if it has never been set or if the receiver is
- * a <code>SEPARATOR</code> label.
+ * string if it has never been set.
  *
  * @return the receiver's text
  *
@@ -759,9 +758,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
         Rectangle rect = rects [i];
         if (rect.contains (x, y)) {
           if (j != focusIndex) {
-            focusIndex = j;           
             redraw ();
           }
+          focusIndex = mouseDownIndex = j;
           return result;
         }
       }
@@ -774,20 +773,21 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
   LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
   if (result == LRESULT.ZERO) return result;
   if (OS.COMCTL32_MAJOR < 6) {
-    if (focusIndex == -1) return result;
+    if (mouseDownIndex == -1) return result;
     int x = lParam & 0xFFFF;
     int y = lParam >> 16;
-    Rectangle [] rects = getRectangles (focusIndex);
+    Rectangle [] rects = getRectangles (mouseDownIndex);
     for (int i = 0; i < rects.length; i++) {
       Rectangle rect = rects [i];
       if (rect.contains (x, y)) {
         Event event = new Event ();
-        event.text = ids [focusIndex];
+        event.text = ids [mouseDownIndex];
         sendEvent (SWT.Selection, event);
-        return result;
+        break;
       }
     }
   }
+  mouseDownIndex = -1;
   return result;
 }
 
@@ -890,10 +890,20 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 
 LRESULT wmColorChild (int wParam, int lParam) {
   LRESULT result = super.wmColorChild (wParam, lParam);
+  /*
+  * Feature in Windows.  When a SysLink is disabled, it does
+  * not gray out the non-link portion of the text.  The fix
+  * is to set the text color to the system gray color.
+  */
   if (OS.COMCTL32_MAJOR >= 6) {
     if (!OS.IsWindowEnabled (handle)) {
-      int forePixel = OS.GetSysColor (OS.COLOR_GRAYTEXT);
-      OS.SetTextColor (wParam, forePixel);
+      OS.SetTextColor (wParam, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+      if (result == null) {
+        int backPixel = getBackgroundPixel ();
+        OS.SetBkColor (wParam, backPixel);
+        int hBrush = findBrush (backPixel, OS.BS_SOLID);
+        return new LRESULT (hBrush);
+      }
     }
   }
   return result;

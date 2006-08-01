@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,8 +47,8 @@ public int getCharCount();
  * <p>
  *
  * @param lineIndex index of the line to return. Does not include 
- *	delimiters of preceeding lines. Index 0 is the first line of the 
- * 	content.
+ *  delimiters of preceding lines. Index 0 is the first line of the 
+ *  content.
  * @return the line text without delimiters
  */
 public String getLine(int lineIndex);
@@ -58,12 +58,12 @@ public String getLine(int lineIndex);
  * <p>
  *
  * @param offset offset of the line to return. The first character of the 
- * 	document is at offset 0.  An offset of getLength() is valid and should 
- *	answer the number of lines. 
+ *  document is at offset 0.  An offset of getLength() is valid and should 
+ *  answer the number of lines. 
  * @return the line index. The first line is at index 0.  If the character 
- * 	at offset is a delimiter character, answer the line index of the line 
- * 	that is delimited. 
- * 	For example, if text = "\r\n\r\n", and delimiter = "\r\n", then:
+ *  at offset is a delimiter character, answer the line index of the line 
+ *  that is delimited. 
+ *  For example, if text = "\r\n\r\n", and delimiter = "\r\n", then:
  * <ul>
  * <li>getLineAtOffset(0) == 0
  * <li>getLineAtOffset(1) == 0
@@ -81,11 +81,11 @@ public int getLineAtOffset(int offset);
  *
  * @return the number of lines.  For example:
  * <ul>
- * <li>	text value ==> getLineCount		
- * <li>	null ==> 1		
- * <li>	"" ==> 1		
- * <li>	"a\n" ==> 2			
- * <li>	"\n\n" ==> 3			
+ * <li> text value ==> getLineCount   
+ * <li> null ==> 1    
+ * <li> "" ==> 1    
+ * <li> "a\n" ==> 2     
+ * <li> "\n\n" ==> 3      
  * </ul>
  */
 public int getLineCount();
@@ -99,7 +99,7 @@ public int getLineCount();
  * <p>
  *
  * @return the line delimiter that should be used by the StyledText widget
- *	when inserting new lines.
+ *  when inserting new lines.
  */
 public String getLineDelimiter();
 
@@ -112,9 +112,9 @@ public String getLineDelimiter();
  *
  * @param lineIndex index of the line. The first line is at index 0.
  * @return offset offset of the first character of the line. The first 
- * 	character of the document is at offset 0.  The return value should 
- * 	include line delimiters.  
- * 	For example, if text = "\r\ntest\r\n" and delimiter = "\r\n", then:
+ *  character of the document is at offset 0.  The return value should 
+ *  include line delimiters.  
+ *  For example, if text = "\r\ntest\r\n" and delimiter = "\r\n", then:
  * <ul>
  * <li>getOffsetAtLine(0) == 0
  * <li>getOffsetAtLine(1) == 2
@@ -128,7 +128,7 @@ public int getOffsetAtLine(int lineIndex);
  * <p>
  *
  * @param start the start offset of the text to return. Offset 0 is the 
- * 	first character of the document.
+ *  first character of the document.
  * @param length the length of the text to return
  * @return the text at the given range
  */
@@ -165,7 +165,7 @@ public void removeTextChangeListener(TextChangeListener listener);
  * <ul>
  * <li>event.start = start of the replaced text
  * <li>event.newText = text that is going to be inserted or empty String 
- *	if no text will be inserted
+ *  if no text will be inserted
  * <li>event.replaceCharCount = length of text that is going to be replaced
  * <li>event.newCharCount = length of text that is going to be inserted
  * <li>event.replaceLineCount = number of lines that are going to be replaced
@@ -184,8 +184,8 @@ public void removeTextChangeListener(TextChangeListener listener);
  * </p>
  *
  * @param start start offset of text to replace, none of the offsets include 
- *	delimiters of preceeding lines, offset 0 is the first character of the 
- * 	document 
+ *  delimiters of preceding lines, offset 0 is the first character of the 
+ *  document 
  * @param replaceLength length of text to replace
  * @param text text to replace
  * @see TextChangeListener

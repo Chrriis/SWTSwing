@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -42,7 +42,7 @@ import java.awt.event.FocusEvent;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
- * is possible to embedded AWT components in SWT and vice versa.
+ * is possible to embed AWT components in SWT and vice versa.
  * 
  * @since 3.0
  */
@@ -55,7 +55,7 @@ public class SWT_AWT {
   static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 
 /**
- * Answers a <code>java.awt.Frame</code> which is the embedded frame
+ * Returns a <code>java.awt.Frame</code> which is the embedded frame
  * associated with the specified composite.
  * 
  * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>

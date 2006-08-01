@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -211,28 +211,28 @@ public Color getBackground (int index) {
   return Color.swing_new(display, color);
 }
 
-///**
-// * Returns a rectangle describing the receiver's size and location
-// * relative to its parent.
-// *
-// * @return the receiver's bounding rectangle
-// *
-// * @exception SWTException <ul>
-// *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-// *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-// * </ul>
-// * 
-// * @since 3.1
-// */
-///*public*/ Rectangle getBounds () {
-//	checkWidget();
-//	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-//	int itemIndex = parent.indexOf (this);
-//	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-//	RECT rect = getBounds (itemIndex, 0, true, false);
-//	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-//	return new Rectangle (rect.left, rect.top, width, height);
-//}
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public Rectangle getBounds () {
+  checkWidget();
+  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+  int itemIndex = parent.indexOf (this);
+  if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+  RECT rect = getBounds (itemIndex, 0, true, false, false);
+  int width = rect.right - rect.left, height = rect.bottom - rect.top;
+  return new Rectangle (rect.left, rect.top, width, height);
+}
 
 /**
  * Returns a rectangle describing the receiver's size and location

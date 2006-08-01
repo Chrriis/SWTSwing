@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -43,10 +43,9 @@ import org.eclipse.swt.graphics.*;
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
  * </p><p>
- * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */

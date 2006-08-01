@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "196";
+  static String snippetNumber = "48";
 
   static boolean isRealDispatch = true;
 

@@ -65,10 +65,7 @@ class CShellFrame extends JFrame implements CShell {
       protected Graphics graphics;
       public Graphics getGraphics() {
         if(graphics != null) {
-          java.awt.Point point = new java.awt.Point(0, 0);
-          point = SwingUtilities.convertPoint(getParent(), point, this);
           Graphics g = graphics.create();
-          g.translate(point.x, point.y);
           g.setClip(new Rectangle(getSize()));
           return g;
         }
@@ -275,10 +272,7 @@ class CShellDialog extends JDialog implements CShell {
       protected Graphics graphics;
       public Graphics getGraphics() {
         if(graphics != null) {
-          java.awt.Point point = new java.awt.Point(0, 0);
-          point = SwingUtilities.convertPoint(getParent(), point, this);
           Graphics g = graphics.create();
-          g.translate(point.x, point.y);
           g.setClip(new Rectangle(getSize()));
           return g;
         }

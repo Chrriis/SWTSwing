@@ -18,7 +18,6 @@ import java.awt.event.PaintEvent;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
@@ -51,10 +50,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
     JPanel panel = new JPanel(null) {
       public Graphics getGraphics() {
         if(graphics != null) {
-          java.awt.Point point = new java.awt.Point(0, 0);
-          point = SwingUtilities.convertPoint(getParent (), point, this);
           Graphics g = graphics.create();
-          g.translate(point.x, point.y);
           g.setClip(new Rectangle(getSize()));
           return g;
         }

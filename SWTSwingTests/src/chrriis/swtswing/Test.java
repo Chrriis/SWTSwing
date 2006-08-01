@@ -59,8 +59,8 @@ public class Test {
       {"150", "create a cool bar (relayout when resized)"},
 //      {"140", "drop-down a chevron menu containing hidden tool items"},
     }}, new Object[] {"CTabFolder, CTabItem", new String[][] {
-//      {"82", "prevent an item from closing"},
-//      {"165", "min and max buttons, close button and image only on selected tab"},
+      {"82", "prevent an item from closing"},
+      {"165", "min and max buttons, close button and image only on selected tab"},
     }}, new Object[] {"Cursor", new String[][] {
       {"44", "set the hand cursor into a control"},
 //      {"92", "create a cursor from a source and a mask"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "48";
+  static String snippetNumber = "163";
 
   static boolean isRealDispatch = true;
 

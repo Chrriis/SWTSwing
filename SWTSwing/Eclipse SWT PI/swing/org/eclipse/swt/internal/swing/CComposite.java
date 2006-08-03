@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.PaintEvent;
@@ -39,6 +40,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
     contentPane.requestFocus();
   }
 
+  public void setCursor(Cursor cursor) {
+    contentPane.setCursor(cursor);
+  }
+
   protected Graphics graphics;
 
   protected void init(int style) {
@@ -56,7 +61,6 @@ class CCompositeImplementation extends JPanel implements CComposite {
         }
         return super.getGraphics();
       }
-
       protected void paintComponent (Graphics g) {
         graphics = g;
         super.paintComponent(g);

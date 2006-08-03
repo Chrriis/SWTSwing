@@ -53,7 +53,7 @@ public class Test {
 //      {"127", "prevent Tab from traversing out of a control"},
       {"25", "print key state, code and character"},
       {"62", "print mouse state and button (down, move, up)"},
-//      {"214", "set a background image"},
+      {"214", "set a background image"},
     }}, new Object[] {"CoolBar", new String[][] {
 //      {"20", "create a cool bar"},
       {"150", "create a cool bar (relayout when resized)"},
@@ -188,14 +188,14 @@ public class Test {
       {"184", "create and initialize a spinner widget"},
       {"190", "use floats in a spinner widget"},
     }}, new Object[] {"StyledText", new String[][] {
-//      {"163", "change font style, foreground and background colors of StyledText"},
-//      {"189", "underline and strike through text"},
-//      {"211", "use rise and font with StyleRange"},
-//      {"212", "embed images in StyledText"},
+      {"163", "change font style, foreground and background colors of StyledText"},
+      {"189", "underline and strike through text"},
+      {"211", "use rise and font with StyleRange"},
+      {"212", "embed images in StyledText"},
 //      {"213", "use indent, alignment and justify"},
-//      {"217", "embed controls in StyledText"},        
+      {"217", "embed controls in StyledText"},        
 //      {"222", "use bulleted lists in StyledText"},        
-//      {"218", "use gradient background in StyledText"},        
+      {"218", "use gradient background in StyledText"},        
     }}, new Object[] {"Swing/AWT", new String[][] {
 //      {"135", "embed Swing/AWT in SWT"},
       {"154", "embed a JTable in SWT (no flickering)"},
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "163";
+  static String snippetNumber = "218";
 
   static boolean isRealDispatch = true;
 

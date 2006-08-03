@@ -12,6 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Shape;
+
+import javax.swing.ImageIcon;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -146,10 +150,18 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
   checkWidget ();
   if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
   if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  java.awt.Color oldColor = gc.handle.getColor();
-  gc.handle.setColor(getBackground().handle);
-  gc.handle.fillRect(x, y, width, height);
-  gc.handle.setColor(oldColor);
+  if(backgroundImage != null) {
+    Shape clip = gc.handle.getClip();
+    gc.handle.clipRect(x, y, width, height);
+    Dimension size = handle.getSize();
+    gc.handle.drawImage(new ImageIcon(backgroundImage.handle).getImage(), 0, 0, size.width, size.height, null);
+    gc.handle.setClip(clip);
+  } else {
+    java.awt.Color oldColor = gc.handle.getColor();
+    gc.handle.setColor(getBackground().handle);
+    gc.handle.fillRect(x, y, width, height);
+    gc.handle.setColor(oldColor);
+  }
 }
 
 /**

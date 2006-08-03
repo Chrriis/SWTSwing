@@ -1732,127 +1732,21 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
   java.awt.Color fromColor = handle.getColor();
   java.awt.Color toColor = handle.getBackground();
   Paint oldPaint = handle.getPaint();
-  java.awt.Point p1 = null;
-  java.awt.Point p2 = null;
+  java.awt.Point p1;
+  java.awt.Point p2;
   if(vertical) {
-    p1 = new java.awt.Point(x + width/2, y);
-    p2 = new java.awt.Point(x + width/2, y + height);
+    p1 = new java.awt.Point(x, y);
+    p2 = new java.awt.Point(x, y + height);
+  } else {
+    p1 = new java.awt.Point(x, y);
+    p2 = new java.awt.Point(x + width, y);
   }
+//  java.awt.Color oldColor = handle.getColor();
+//  handle.setColor(data.background);
   handle.setPaint(new GradientPaint(p1, fromColor, p2, toColor));
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
-  handle.fillRect(x, y, width, height);
-  handle.setColor(oldColor);
+  handle.fill(new java.awt.Rectangle(x, y, width, height));
+//  handle.setColor(oldColor);
   handle.setPaint(oldPaint);
-//	int fromColor = OS.GetTextColor(handle);
-//	if (fromColor == OS.CLR_INVALID) {
-//		fromColor = OS.GetSysColor(OS.COLOR_WINDOWTEXT);
-//	}
-//	int toColor = OS.GetBkColor(handle);
-//	if (toColor == OS.CLR_INVALID) {
-//		toColor = OS.GetSysColor(OS.COLOR_WINDOW);
-//	}
-//	boolean swapColors = false;
-//	if (width < 0) {
-//		x += width; width = -width;
-//		if (! vertical) swapColors = true;
-//	}
-//	if (height < 0) {
-//		y += height; height = -height;
-//		if (vertical) swapColors = true;
-//	}
-//	if (swapColors) {
-//		final int t = fromColor;
-//		fromColor = toColor;
-//		toColor = t;
-//	}
-//	int rop2 = 0;
-//	if (OS.IsWinCE) {
-//		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
-//		OS.SetROP2(handle, rop2);
-//	} else {
-//		rop2 = OS.GetROP2(handle);
-//	}
-//	final RGB fromRGB = new RGB(fromColor & 0xff, (fromColor >>> 8) & 0xff, (fromColor >>> 16) & 0xff);
-//	final RGB toRGB = new RGB(toColor & 0xff, (toColor >>> 8) & 0xff, (toColor >>> 16) & 0xff);	
-//	if (fromRGB.red == toRGB.red && fromRGB.green == toRGB.green && fromRGB.blue == toRGB.blue) {
-//		int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
-//		OS.PatBlt(handle, x, y, width, height, dwRop);
-//		return;
-//	}
-//	if (data.gdipGraphics != 0) {
-//		initGdip(false, true);
-//		PointF p1= new PointF(), p2 = new PointF();
-//		p1.X = x;
-//		p1.Y = y;
-//		if (vertical) {
-//			p2.X = p1.X;
-//			p2.Y = p1.Y + height;
-//		} else {
-//			p2.X = p1.X + width;
-//			p2.Y = p1.Y;
-//		}
-//		int rgb = ((fromColor >> 16) & 0xFF) | (fromColor & 0xFF00) | ((fromColor & 0xFF) << 16);
-//		int fromGpColor = Gdip.Color_new(data.alpha << 24 | rgb);
-//		if (fromGpColor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//		rgb = ((toColor >> 16) & 0xFF) | (toColor & 0xFF00) | ((toColor & 0xFF) << 16);
-//		int toGpColor = Gdip.Color_new(data.alpha << 24 | rgb);
-//		if (toGpColor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//		int brush = Gdip.LinearGradientBrush_new(p1, p2, fromGpColor, toGpColor);
-//		Gdip.Graphics_FillRectangle(data.gdipGraphics, brush, x, y, width, height);
-//		Gdip.LinearGradientBrush_delete(brush);
-//		Gdip.Color_delete(fromColor);
-//		Gdip.Color_delete(toColor);
-//		return;
-//	}
-//	/* Use GradientFill if supported, only on Windows 98, 2000 and newer. */
-//	/* 
-//	* Bug in Windows: On Windows 2000 when the device is a printer,
-//	* GradientFill swaps red and blue color components, causing the
-//	* gradient to be printed in the wrong color. On Windows 98 when
-//	* the device is a printer, GradientFill does not fill completely
-//	* to the right edge of the rectangle. The fix is not to use
-//	* GradientFill for printer devices.
-//	*/
-//	if (!OS.IsWinCE && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
-//		final int hHeap = OS.GetProcessHeap();
-//		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,
-//			GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
-//		final int pVertex = pMesh + GRADIENT_RECT.sizeof;
-//	
-//		GRADIENT_RECT gradientRect = new GRADIENT_RECT();
-//		gradientRect.UpperLeft = 0;
-//		gradientRect.LowerRight = 1;
-//		OS.MoveMemory(pMesh, gradientRect, GRADIENT_RECT.sizeof);
-//	
-//		TRIVERTEX trivertex = new TRIVERTEX();
-//		trivertex.x = x;
-//		trivertex.y = y;
-//		trivertex.Red = (short)((fromRGB.red << 8) | fromRGB.red);
-//		trivertex.Green = (short)((fromRGB.green << 8) | fromRGB.green);
-//		trivertex.Blue = (short)((fromRGB.blue << 8) | fromRGB.blue);
-//		trivertex.Alpha = -1;
-//		OS.MoveMemory(pVertex, trivertex, TRIVERTEX.sizeof);
-//		
-//		trivertex.x = x + width;
-//		trivertex.y = y + height;
-//		trivertex.Red = (short)((toRGB.red << 8) | toRGB.red);
-//		trivertex.Green = (short)((toRGB.green << 8) | toRGB.green);
-//		trivertex.Blue = (short)((toRGB.blue << 8) | toRGB.blue);
-//		trivertex.Alpha = -1;
-//		OS.MoveMemory(pVertex + TRIVERTEX.sizeof, trivertex, TRIVERTEX.sizeof);
-//	
-//		boolean success = OS.GradientFill(handle, pVertex, 2, pMesh, 1,
-//			vertical ? OS.GRADIENT_FILL_RECT_V : OS.GRADIENT_FILL_RECT_H);
-//		OS.HeapFree(hHeap, 0, pMesh);
-//		if (success) return;
-//	}
-//	
-//	final int depth = OS.GetDeviceCaps(handle, OS.BITSPIXEL);
-//	final int bitResolution = (depth >= 24) ? 8 : (depth >= 15) ? 5 : 0;
-//	ImageData.fillGradientRectangle(this, data.device,
-//		x, y, width, height, vertical, fromRGB, toRGB,
-//		bitResolution, bitResolution, bitResolution);
 }
 
 /** 

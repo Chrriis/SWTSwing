@@ -22,6 +22,10 @@ import java.awt.Rectangle;
  */
 public interface CComponent {
 
+  public static final int NO_BACKGROUND_INHERITANCE = 0;
+  public static final int PREFERRED_BACKGROUND_INHERITANCE = 1;
+  public static final int BACKGROUND_INHERITANCE = 2;
+
   public Rectangle getBounds();
 
   public Point getLocation();
@@ -39,5 +43,7 @@ public interface CComponent {
   public void setToolTipText(String string);
 
   public void setBackgroundImage(Image backgroundImage);
+
+  public void setBackgroundInheritance(int backgroundInheritanceType);
 
 }

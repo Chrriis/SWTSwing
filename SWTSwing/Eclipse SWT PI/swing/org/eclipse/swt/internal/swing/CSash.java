@@ -114,6 +114,10 @@ class CSashImplementation extends JPanel implements CSash {
     // TODO: implement
   }
 
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    // TODO: implement
+  }
+
 }
 
 public interface CSash extends CComponent {

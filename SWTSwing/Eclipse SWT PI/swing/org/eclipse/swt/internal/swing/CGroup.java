@@ -11,9 +11,11 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -35,7 +37,7 @@ class CGroupImplementation extends JPanel implements CGroup {
     this.handle = group;
     init(style);
   }
-  
+
   protected void init(int style) {
     // TODO: support styles
     titledBorder = BorderFactory.createTitledBorder("");
@@ -78,6 +80,26 @@ class CGroupImplementation extends JPanel implements CGroup {
 
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE:
+      setOpaque(true);
+      ((JComponent)contentPane).setOpaque(true);
+      if(scrollPane != null) {
+        scrollPane.setOpaque(true);
+      }
+      break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE:
+      setOpaque(false);
+      ((JComponent)contentPane).setOpaque(false);
+      if(scrollPane != null) {
+        scrollPane.setOpaque(false);
+      }
+      break;
+    }
   }
 
 }

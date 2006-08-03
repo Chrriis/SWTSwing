@@ -81,6 +81,14 @@ class CButtonArrow extends ArrowButton implements CButton {
     // TODO: implement
   }
 
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
+  }
+
 }
 
 class CButtonPush extends JButton implements CButton {
@@ -115,6 +123,14 @@ class CButtonPush extends JButton implements CButton {
 
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
   }
 
 }
@@ -153,6 +169,14 @@ class CButtonCheck extends JCheckBox implements CButton {
     // TODO: implement
   }
 
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
+  }
+
 }
 
 class CButtonToggle extends JToggleButton implements CButton {
@@ -187,6 +211,14 @@ class CButtonToggle extends JToggleButton implements CButton {
 
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
   }
 
 }
@@ -233,6 +265,14 @@ class CButtonRadio extends JRadioButton implements CButton {
 
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
   }
 
 }

@@ -17,7 +17,6 @@ import java.awt.Container;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
-import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 
 import org.eclipse.swt.SWT;
@@ -711,6 +710,8 @@ void removeControl (Control control) {
 //	}
 //}
 
+int backgroundMode;
+
 /**
  * Sets the background drawing mode to the argument which should
  * be one of the following constants defined in class <code>SWT</code>:
@@ -730,6 +731,7 @@ void removeControl (Control control) {
  */
 public void setBackgroundMode (int mode) {
   checkWidget ();
+  if(backgroundMode == mode) return;
   backgroundMode = mode;
   Control [] children = _getChildren ();
   for (int i = 0; i < children.length; i++) {
@@ -909,6 +911,15 @@ boolean translateMnemonic (Event event, Control control) {
 //	}
 //	return changed;
 //}
+
+void updateBackgroundMode () {
+  this.backgroundMode = parent.getBackgroundMode();
+  super.updateBackgroundMode ();
+  Control [] children = _getChildren ();
+  for (int i = 0; i < children.length; i++) {
+    children [i].updateBackgroundMode ();   
+  }
+}
 
 void updateLayout (boolean resize, boolean all) {
 	if (isLayoutDeferred ()) return;

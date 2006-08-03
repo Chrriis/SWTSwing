@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -24,6 +25,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -74,6 +76,10 @@ class CShellFrame extends JFrame implements CShell {
       public void paintComponent(Graphics g) {
         graphics = g;
         super.paintComponent(g);
+        if(backgroundImageIcon != null) {
+          Dimension size = getSize();
+          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
+        }
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         graphics = null;
         if(paintHandlerList != null) {
@@ -203,8 +209,13 @@ class CShellFrame extends JFrame implements CShell {
     paintHandlerList.remove(paintHandler);
   }
 
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = new ImageIcon(backgroundImage);
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
   }
 
 }
@@ -285,6 +296,10 @@ class CShellDialog extends JDialog implements CShell {
       public void paintComponent(Graphics g) {
         graphics = g;
         super.paintComponent(g);
+        if(backgroundImageIcon != null) {
+          Dimension size = getSize();
+          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
+        }
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         graphics = null;
         if(paintHandlerList != null) {
@@ -425,8 +440,13 @@ class CShellDialog extends JDialog implements CShell {
     paintHandlerList.remove(paintHandler);
   }
 
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = new ImageIcon(backgroundImage);
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
   }
 
 }

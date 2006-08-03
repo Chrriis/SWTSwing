@@ -77,6 +77,20 @@ class CSeparator extends JPanel implements CLabel {
     // TODO: implement
   }
 
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE:
+      setOpaque(true);
+      separator.setOpaque(true);
+      break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE:
+      setOpaque(false);
+      separator.setOpaque(false);
+      break;
+    }
+  }
+
 }
 
 class CLabelImplementation extends JLabel implements CLabel {
@@ -152,6 +166,14 @@ class CLabelImplementation extends JLabel implements CLabel {
 
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
   }
 
 }

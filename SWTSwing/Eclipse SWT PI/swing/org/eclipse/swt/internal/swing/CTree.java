@@ -363,6 +363,20 @@ class CTreeImplementation extends JScrollPane implements CTree {
     // TODO: implement
   }
 
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case NO_BACKGROUND_INHERITANCE:
+      setOpaque(true);
+      treeTable.setOpaque(true);
+      break;
+    case BACKGROUND_INHERITANCE:
+      setOpaque(false);
+      treeTable.setOpaque(false);
+      break;
+    }
+  }
+
 }
 
 public interface CTree extends CComposite {

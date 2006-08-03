@@ -49,6 +49,14 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
     // TODO: implement
   }
 
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
+  }
+
 }
 
 public interface CCoolBar extends CComposite {

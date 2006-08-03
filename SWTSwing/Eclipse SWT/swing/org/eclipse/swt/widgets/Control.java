@@ -533,6 +533,7 @@ void createWidget () {
       Container clientArea = ((CComponent)parent.handle).getClientArea();
       clientArea.setLayout(null);
       clientArea.add(handle);
+      updateBackgroundMode();
       ((JComponent)clientArea).revalidate();
       clientArea.repaint();
     }
@@ -545,7 +546,7 @@ void createWidget () {
 //      handle.setSize(handle.getPreferredSize());
       if(handle instanceof JComponent) {
         JComponent component = (JComponent)handle;
-        component.setOpaque(true);
+//        component.setOpaque(true);
 //        component.revalidate();
 //      } else {
 //        handle.validate();
@@ -809,9 +810,7 @@ public Color getBackground () {
  */
 public Image getBackgroundImage () {
   checkWidget ();
-  Control control = findBackgroundControl ();
-  if (control == null) control = this;
-  return control.backgroundImage;
+  return backgroundImage;
 }
 
 /**
@@ -2050,9 +2049,8 @@ public void setBackgroundImage (Image image) {
   }
   if (backgroundImage == image) return;
   backgroundImage = image;
-  Shell shell = getShell ();
-  shell.releaseBrushes ();
-  updateBackgroundImage ();
+  ((CComponent)handle).setBackgroundImage(backgroundImage.handle);
+  handle.repaint();
 }
 
 //void setBackgroundPixel (int pixel) {
@@ -3104,6 +3102,14 @@ public void update () {
 //	return sameFont;
 //}
 
+void updateBackgroundMode() {
+  switch(parent.getBackgroundMode()) {
+  case SWT.INHERIT_NONE: ((CComponent)handle).setBackgroundInheritance(CComponent.NO_BACKGROUND_INHERITANCE); break;
+  case SWT.INHERIT_DEFAULT: ((CComponent)handle).setBackgroundInheritance(CComponent.PREFERRED_BACKGROUND_INHERITANCE); break;
+  case SWT.INHERIT_FORCE: ((CComponent)handle).setBackgroundInheritance(CComponent.BACKGROUND_INHERITANCE); break;
+  }
+}
+
 void updateLayout (boolean resize, boolean all) {
 	/* Do nothing */
 }
@@ -3191,6 +3197,7 @@ public boolean setParent (Composite parent) {
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
   ((CComponent)parent.handle).getClientArea().add(handle);
+  updateBackgroundMode();
 //	int topHandle = topHandle ();
 //	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 //	this.parent = parent;

@@ -263,6 +263,20 @@ class CTextMulti extends JScrollPane implements CText {
     // TODO: implement
   }
 
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE:
+      setOpaque(true);
+      textArea.setOpaque(true);
+      break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE:
+      setOpaque(false);
+      textArea.setOpaque(false);
+      break;
+    }
+  }
+
 }
 
 class CTextField extends JScrollPane implements CText {
@@ -466,6 +480,20 @@ class CTextField extends JScrollPane implements CText {
 
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE:
+      setOpaque(true);
+      passwordField.setOpaque(true);
+      break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE:
+      setOpaque(false);
+      passwordField.setOpaque(false);
+      break;
+    }
   }
 
 }

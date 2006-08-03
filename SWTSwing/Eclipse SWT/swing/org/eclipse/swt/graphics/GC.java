@@ -2689,8 +2689,8 @@ public int getStyle () {
 public int getTextAntialias() {
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   Object value = handle.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
-  if(value == RenderingHints.VALUE_ANTIALIAS_OFF) return SWT.OFF;
-  if(value == RenderingHints.VALUE_ANTIALIAS_ON) return SWT.ON;
+  if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_OFF) return SWT.OFF;
+  if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_ON) return SWT.ON;
   return SWT.DEFAULT;
 }
 
@@ -3610,13 +3610,13 @@ public void setTextAntialias(int antialias) {
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch (antialias) {
     case SWT.DEFAULT:
-      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
+      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
       break;
     case SWT.OFF:
-      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
       break;
     case SWT.ON:
-      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
       break;      
     default:
       SWT.error(SWT.ERROR_INVALID_ARGUMENT);

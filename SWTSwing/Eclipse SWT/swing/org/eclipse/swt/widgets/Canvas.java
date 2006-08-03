@@ -147,7 +147,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
   if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
   if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
   java.awt.Color oldColor = gc.handle.getColor();
-  gc.handle.setColor(handle.getBackground());
+  gc.handle.setColor(getBackground().handle);
   gc.handle.fillRect(x, y, width, height);
   gc.handle.setColor(oldColor);
 }

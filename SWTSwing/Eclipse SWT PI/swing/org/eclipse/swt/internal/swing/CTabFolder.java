@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Image;
 
 import javax.swing.Icon;
 import javax.swing.JScrollBar;
@@ -53,6 +54,10 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
 
   public JScrollBar getVerticalScrollBar() {
     return null;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

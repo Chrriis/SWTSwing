@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -36,5 +37,7 @@ public interface CComponent {
 
   // TODO: implement so that it traverses the complete hierarchy
   public void setToolTipText(String string);
+
+  public void setBackgroundImage(Image backgroundImage);
 
 }

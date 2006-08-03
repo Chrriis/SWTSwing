@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -107,6 +108,10 @@ class CSashImplementation extends JPanel implements CSash {
   public void setDragLocation(int dragLocation) {
     this.dragLocation = dragLocation;
     repaint();
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

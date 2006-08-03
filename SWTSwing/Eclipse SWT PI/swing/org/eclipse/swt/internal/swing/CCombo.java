@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -143,6 +144,10 @@ public interface CCombo extends CComposite {
 
     public void reshape(int x, int y, int w, int h) {
       super.reshape(x, y, w, getPreferredSize().height);
+    }
+
+    public void setBackgroundImage(Image backgroundImage) {
+      // TODO: implement
     }
 
   }

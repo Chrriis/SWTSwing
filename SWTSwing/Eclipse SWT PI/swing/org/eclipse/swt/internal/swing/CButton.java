@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractButton;
@@ -76,6 +77,10 @@ class CButtonArrow extends ArrowButton implements CButton {
     handle.processEvent(e);
   }
 
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
+  }
+
 }
 
 class CButtonPush extends JButton implements CButton {
@@ -106,6 +111,10 @@ class CButtonPush extends JButton implements CButton {
   protected void fireActionPerformed(ActionEvent e) {
     super.fireActionPerformed(e);
     handle.processEvent(e);
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }
@@ -140,6 +149,10 @@ class CButtonCheck extends JCheckBox implements CButton {
     handle.processEvent(e);
   }
 
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
+  }
+
 }
 
 class CButtonToggle extends JToggleButton implements CButton {
@@ -170,6 +183,10 @@ class CButtonToggle extends JToggleButton implements CButton {
   protected void fireActionPerformed(ActionEvent e) {
     super.fireActionPerformed(e);
     handle.processEvent(e);
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }
@@ -212,6 +229,10 @@ class CButtonRadio extends JRadioButton implements CButton {
     }
     super.fireActionPerformed(e);
     handle.processEvent(e);
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

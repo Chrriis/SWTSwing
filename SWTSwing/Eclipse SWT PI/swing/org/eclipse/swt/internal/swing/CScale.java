@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Image;
 
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -48,6 +49,10 @@ class CScaleImplementation extends JSlider implements CScale {
 
   public Container getClientArea() {
     return this;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

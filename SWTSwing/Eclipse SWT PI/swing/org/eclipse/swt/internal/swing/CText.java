@@ -13,6 +13,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -258,6 +259,10 @@ class CTextMulti extends JScrollPane implements CText {
     return textLimit;
   }
 
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
+  }
+
 }
 
 class CTextField extends JScrollPane implements CText {
@@ -457,6 +462,10 @@ class CTextField extends JScrollPane implements CText {
 
   public int getTextLimit() {
     return textLimit;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Image;
 
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -116,6 +117,10 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 
   public int getDigitCount() {
     return digitCount;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

@@ -15,6 +15,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -356,6 +357,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
 
   public int getPreferredColumnWidth(int columnIndex) {
     return treeTable.getPreferredColumnWidth(columnIndex);
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
@@ -191,6 +192,10 @@ class CListImplementation extends JScrollPane implements CList {
     }
     scrollRectToVisible(new Rectangle(0, 0, getWidth(), 0));
     scrollRectToVisible(list.getCellBounds(index, index));
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

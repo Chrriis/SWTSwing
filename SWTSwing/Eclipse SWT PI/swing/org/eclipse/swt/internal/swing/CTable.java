@@ -15,6 +15,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -341,6 +342,10 @@ class CTableImplementation extends JScrollPane implements CTable {
       newWidth = Math.max(newWidth, (int)component.getPreferredSize().getWidth());
     }
     return newWidth;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Image;
 
 import javax.swing.JScrollBar;
 import javax.swing.UIManager;
@@ -42,6 +43,10 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
 
   public JScrollBar getHorizontalScrollBar() {
     return null;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

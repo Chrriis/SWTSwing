@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Image;
 
 import javax.swing.JProgressBar;
 
@@ -37,6 +38,10 @@ class CProgressBarImplementation extends JProgressBar implements CProgressBar {
 
   public Container getClientArea() {
     return this;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

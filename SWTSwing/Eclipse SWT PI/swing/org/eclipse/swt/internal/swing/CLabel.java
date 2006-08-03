@@ -13,6 +13,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -70,6 +71,10 @@ class CSeparator extends JPanel implements CLabel {
   }
 
   public void setIcon(Icon icon) {
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }
@@ -145,10 +150,14 @@ class CLabelImplementation extends JLabel implements CLabel {
     return getText();
   }
 
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
+  }
+
 }
 
 /**
- * The button equivalent on the Swing side.
+ * The label equivalent on the Swing side.
  * @version 1.0 2005.08.20
  * @author Christopher Deckers (chrriis@brainlex.com)
  */

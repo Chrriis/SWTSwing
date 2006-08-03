@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Image;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -73,6 +74,10 @@ class CGroupImplementation extends JPanel implements CGroup {
 
   public JScrollBar getHorizontalScrollBar() {
     return scrollPane == null? null: scrollPane.getHorizontalScrollBar();
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * @(#)Composite.java
+ * @(#)CComposite.java
  * 
  * Christopher Deckers (chrriis@brainlex.com)
  * http://chrriis.brainlex.com
@@ -12,10 +12,13 @@ package org.eclipse.swt.internal.swing;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.PaintEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -64,6 +67,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
       protected void paintComponent (Graphics g) {
         graphics = g;
         super.paintComponent(g);
+        if(backgroundImageIcon != null) {
+          Dimension size = getSize();
+          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
+        }
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         graphics = null;
       }
@@ -94,6 +101,12 @@ class CCompositeImplementation extends JPanel implements CComposite {
 
   public JScrollBar getHorizontalScrollBar() {
     return scrollPane == null? null: scrollPane.getHorizontalScrollBar();
+  }
+
+  protected ImageIcon backgroundImageIcon;
+
+  public void setBackgroundImage(Image backgroundImage) {
+    this.backgroundImageIcon = new ImageIcon(backgroundImage);
   }
 
 }

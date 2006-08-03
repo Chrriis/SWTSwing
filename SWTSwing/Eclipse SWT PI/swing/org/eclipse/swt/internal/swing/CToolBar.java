@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Image;
 
 import javax.swing.JScrollBar;
 import javax.swing.JToolBar;
@@ -53,6 +54,10 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
 
   public JScrollBar getVerticalScrollBar() {
     return null;
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

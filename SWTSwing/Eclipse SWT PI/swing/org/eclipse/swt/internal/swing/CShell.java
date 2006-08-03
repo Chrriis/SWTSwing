@@ -203,6 +203,10 @@ class CShellFrame extends JFrame implements CShell {
     paintHandlerList.remove(paintHandler);
   }
 
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
+  }
+
 }
 
 class CShellDialog extends JDialog implements CShell {
@@ -419,6 +423,10 @@ class CShellDialog extends JDialog implements CShell {
       return;
     }
     paintHandlerList.remove(paintHandler);
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
   }
 
 }

@@ -3,7 +3,7 @@ Widget
   Control
     Button                   CArrowButton, JToggleButton, JRadioButton, JCheckBox, JButton
     Label                    JLabel, JSeparator
-    Link
+    Link                     JEditorPane
     ProgressBar              JProgressBar
     Sash                     JSplitPane
     Scale                    JSlider

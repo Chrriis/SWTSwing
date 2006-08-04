@@ -151,8 +151,8 @@ class CLinkImplementation extends JEditorPane implements CLink {
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
-    case PREFERRED_BACKGROUND_INHERITANCE:
     case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
     case BACKGROUND_INHERITANCE: setOpaque(false); break;
     }
   }

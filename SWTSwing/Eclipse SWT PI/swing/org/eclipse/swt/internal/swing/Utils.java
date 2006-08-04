@@ -116,11 +116,15 @@ public class Utils {
   }
 
   public static String escapeXML(String s) {
-    if(s == null || s.length() == 0) {
+    if(s == null) {
       return s;
     }
-    StringBuffer sb = new StringBuffer((int)(s.length() * 1.1));
-    for(int i=0; i<s.length(); i++) {
+    int length = s.length();
+    if(length == 0) {
+      return s;
+    }
+    StringBuffer sb = new StringBuffer((int)(length * 1.1));
+    for(int i=0; i < length; i++) {
       char c = s.charAt(i);
       switch(c) {
         case '<':
@@ -147,12 +151,16 @@ public class Utils {
   }
 
   public static String unescapeXML(String s) {
-    if(s == null || s.length() < 3) {
+    if(s == null) {
       return s;
     }
-    char[] chars = new char[s.length()];
+    int length = s.length();
+    if(length < 3) {
+      return s;
+    }
+    char[] chars = new char[length];
     int pos = 0;
-    for (int i = 0; i < s.length(); i++) {
+    for (int i = 0; i < length; i++) {
       char c = s.charAt(i);
       if(c == '&') {
         String right = s.substring(i + 1);

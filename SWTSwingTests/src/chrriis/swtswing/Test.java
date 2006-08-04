@@ -118,8 +118,8 @@ public class Test {
       {"34", "create a label (with an image)"},
       {"37", "create a label (a separator)"},
     }}, new Object[] {"Link", new String[][] {
-//      {"182", "create a link widget"},
-//      {"183", "detect selection events in a link widget"},
+      {"182", "create a link widget"},
+      {"183", "detect selection events in a link widget"},
     }}, new Object[] {"List", new String[][] {
       {"59", "print selected items in a list"},
     }}, new Object[] {"Menu", new String[][] {
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "218";
+  static String snippetNumber = "183";
 
   static boolean isRealDispatch = true;
 

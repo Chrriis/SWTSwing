@@ -15,6 +15,7 @@ import java.awt.Image;
 import java.util.Locale;
 
 import javax.swing.JEditorPane;
+import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.basic.BasicHTML;
@@ -43,6 +44,10 @@ class CLinkImplementation extends JEditorPane implements CLink {
 
   protected void init(int style) {
     setEditable(false);
+    setForeground(UIManager.getColor("Label.foreground"));
+    setBackground(UIManager.getColor("Label.background"));
+    setFont(UIManager.getFont("Label.font"));
+    setOpaque(false);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);

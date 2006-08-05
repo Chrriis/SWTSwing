@@ -11,7 +11,6 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.BorderFactory;

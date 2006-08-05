@@ -86,7 +86,7 @@ public class Test {
 //      {"185", "Dropped data type depends on target item in table"},
 //      {"210", "dragging text from a StyledText widget"},
     }}, new Object[] {"ExpandBar", new String[][] {
-//      {"223", "create a expand bar"},
+      {"223", "create a expand bar"},
     }}, new Object[] {"FileDialog", new String[][] {
       {"72", "prompt for a file name (to save)"},
     }}, new Object[] {"Font", new String[][] {
@@ -285,7 +285,7 @@ public class Test {
     }},
   };
 
-  static String snippetNumber = "183";
+  static String snippetNumber = "223";
 
   static boolean isRealDispatch = true;
 

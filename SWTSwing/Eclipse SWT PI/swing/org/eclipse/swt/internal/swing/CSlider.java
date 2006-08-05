@@ -51,7 +51,7 @@ class CSliderImplementation extends JScrollBar implements CSlider {
 
   public Dimension getPreferredSize() {
     if(!isPreferredSizeSet()) {
-      return new Dimension(170, super.getPreferredSize().height);
+      return getOrientation() == JSlider.HORIZONTAL? new Dimension(170, super.getPreferredSize().height): new Dimension(super.getPreferredSize().width, 170);
     }
     return super.getPreferredSize();
   }

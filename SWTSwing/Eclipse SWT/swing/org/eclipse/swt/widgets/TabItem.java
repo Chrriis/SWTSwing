@@ -230,17 +230,6 @@ public void setControl (Control control) {
   handle.invalidate();
   handle.validate();
   handle.repaint();
-//	Control oldControl = this.control, newControl = control;
-//	int index = parent.indexOf (this);
-//	if (index != parent.getSelectionIndex ()) {
-//		if (newControl != null) newControl.setVisible (false);
-//		return;
-//	}
-//	if (newControl != null) {
-//		newControl.setBounds (parent.getClientArea ());
-//		newControl.setVisible (true);
-//	}
-//	if (oldControl != null) oldControl.setVisible (false);
 }
 
 public void setImage (Image image) {

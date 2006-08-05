@@ -49,7 +49,8 @@ import org.eclipse.swt.internal.swing.CTabFolder;
  * </p>
  */
 public class TabFolder extends Composite {
-	ArrayList itemList;
+
+  ArrayList itemList;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -124,26 +125,22 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+boolean autoAddChildren() {
+  return false;
+}
+
+Container createHandle () {
+  state &= ~(CANVAS | THEME_BACKGROUND);
+  return (Container)CTabFolder.Instanciator.createInstance(this, style);
+}
+
 void createItem (TabItem item, int index) {
+  int count = getItemCount();
+  if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
   itemList.add(index, item);
   handle.add(item.handle, index);
   handle.invalidate();
   handle.validate();
-//  handle.repaint();
-//	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
-//	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-//	if (count == items.length) {
-//		TabItem [] newItems = new TabItem [items.length + 4];
-//		System.arraycopy (items, 0, newItems, 0, items.length);
-//		items = newItems;
-//	}
-//	TCITEM tcItem = new TCITEM ();
-//	if (OS.SendMessage (handle, OS.TCM_INSERTITEM, index, tcItem) == -1) {
-//		error (SWT.ERROR_ITEM_NOT_ADDED);
-//	}
-//	System.arraycopy (items, index, items, index + 1, count - index);
-//	items [index] = item;
-	
 	/*
 	* Send a selection event when the item that is added becomes
 	* the new selection.  This only happens when the first item
@@ -155,15 +152,6 @@ void createItem (TabItem item, int index) {
 //		sendEvent (SWT.Selection, event);
 //		// the widget could be destroyed at this point
 //	}
-}
-
-boolean autoAddChildren() {
-  return false;
-}
-
-Container createHandle () {
-  state &= ~(CANVAS | THEME_BACKGROUND);
-  return (Container)CTabFolder.Instanciator.createInstance(this, style);
 }
 
 void createWidget () {
@@ -179,30 +167,7 @@ void destroyItem (TabItem item) {
     handle.validate();
     handle.repaint();
   }
-//	int count = getItemCount();
-//	int index = 0;
-//	while (index < count) {
-//		if (itemList.get(index) == item) break;
-//		index++;
-//	}
-//	if (index == count) return;
-//	int selectionIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
-//	if (OS.SendMessage (handle, OS.TCM_DELETEITEM, index, 0) == 0) {
-//		error (SWT.ERROR_ITEM_NOT_REMOVED);
-//	}
-//	System.arraycopy (items, index + 1, items, index, --count - index);
-//	items [count] = null;
-//	if (count == 0) {
-//		if (imageList != null) {
-//			OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-//			display.releaseImageList (imageList);
-//		}
-//		imageList = null;
-//	}
   itemList = null;
-//	if (count > 0 && index == selectionIndex) {
-//		setSelection (Math.max (0, selectionIndex - 1), true);
-//	}
 }
 
 /**

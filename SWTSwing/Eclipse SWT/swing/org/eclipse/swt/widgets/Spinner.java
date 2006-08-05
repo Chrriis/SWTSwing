@@ -19,6 +19,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CSpinner;
 
 /**
@@ -241,6 +242,11 @@ void addVerifyListener (VerifyListener listener) {
 //	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 //	return new Rectangle (x, y, width, height);
 //}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+  Point p = super.computeSize(wHint, hHint, changed);
+  return new Point(p.x, handle.getPreferredSize().height);
+}
 
 /**
  * Copies the selected text.

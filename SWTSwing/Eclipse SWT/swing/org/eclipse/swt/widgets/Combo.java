@@ -289,6 +289,11 @@ public void clearSelection () {
   ((CCombo)handle).setEditorCaretPosition(0);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+  Point p = super.computeSize(wHint, hHint, changed);
+  return new Point(p.x, handle.getPreferredSize().height);
+}
+
 /**
  * Copies the selected text.
  * <p>

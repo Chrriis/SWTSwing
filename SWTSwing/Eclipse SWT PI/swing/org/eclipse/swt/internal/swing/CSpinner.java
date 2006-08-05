@@ -51,10 +51,6 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
     Utils.installComponentListener(this, handle);
   }
 
-  public void reshape(int x, int y, int w, int h) {
-    super.reshape(x, y, w, getPreferredSize().height);
-  }
-
   public Container getClientArea() {
     return this;
   }

@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -46,6 +47,13 @@ class CSliderImplementation extends JScrollBar implements CSlider {
 
   public Container getClientArea() {
     return this;
+  }
+
+  public Dimension getPreferredSize() {
+    if(!isPreferredSizeSet()) {
+      return new Dimension(170, super.getPreferredSize().height);
+    }
+    return super.getPreferredSize();
   }
 
   public void setBackgroundImage(Image backgroundImage) {

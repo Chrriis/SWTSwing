@@ -392,6 +392,7 @@ class CTextField extends JScrollPane implements CText {
   }
 
   public void setEchoChar(char echoChar) {
+    passwordField.setEchoChar(echoChar);
   }
 
   public char getEchoChar() {

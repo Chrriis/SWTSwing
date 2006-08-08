@@ -33,6 +33,10 @@ public interface CCombo extends CComposite {
 
   class CComboBox extends JComboBox implements CCombo {
 
+    static {
+      
+    }
+
     protected Combo handle;
 
     public CComboBox(Combo combo, int style) {
@@ -40,10 +44,36 @@ public interface CCombo extends CComposite {
       init(style);
     }
 
+    protected boolean isDefaultButtonHackActive;
+    
+    public boolean isPopupVisible() {
+      boolean isPopupVisible = super.isPopupVisible();
+      if(!isPopupVisible) {
+        return isDefaultButtonHackActive;
+      }
+      return isPopupVisible;
+    }
+
     protected void init(int style) {
       setEditable((style & SWT.READ_ONLY) == 0);
-      ((JTextField)getEditor().getEditorComponent()).addActionListener(new ActionListener() {
+      JTextField textField = (JTextField)getEditor().getEditorComponent();
+      // We put a listener before and after all existing listeners to place and remove the hack
+      // The hack is there because the combo notifies the default button of the rootpane when its popup is not visible 
+      ActionListener[] actionListeners = textField.getActionListeners();
+      for(int i=actionListeners.length-1; i>=0; i--) {
+        textField.removeActionListener(actionListeners[i]);
+      }
+      textField.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
+          isDefaultButtonHackActive = false;
+        }
+      });
+      for(int i=0; i<actionListeners.length; i++) {
+        textField.addActionListener(actionListeners[i]);
+      }
+      textField.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          isDefaultButtonHackActive = true;
           handle.processEvent(e);
         }
       });

@@ -9,13 +9,16 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -43,7 +46,22 @@ class CTextMulti extends JScrollPane implements CText {
   public CTextMulti(Text text, int style) {
     this.handle = text;
 //    textArea = new JTextArea(4, 7);
-    textArea = new JTextArea();
+    textArea = new JTextArea() {
+      public Cursor getCursor() {
+        if(!isCursorSet()) {
+          return super.getCursor();
+        }
+        for(Component parent = this; (parent = parent.getParent()) != null; ) {
+          if(parent.isCursorSet()) {
+            Cursor cursor = parent.getCursor();
+            if(!(parent instanceof Window) || cursor != Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)) {
+              return cursor;
+            }
+          }
+        }
+        return super.getCursor();
+      }
+    };
     setFocusable(false);
     getViewport().setView(textArea);
     init(style);
@@ -306,7 +324,22 @@ class CTextField extends JScrollPane implements CText {
 
   public CTextField(Text text, int style) {
     this.handle = text;
-    passwordField = new JPasswordField();
+    passwordField = new JPasswordField() {
+      public Cursor getCursor() {
+        if(!isCursorSet()) {
+          return super.getCursor();
+        }
+        for(Component parent = this; (parent = parent.getParent()) != null; ) {
+          if(parent.isCursorSet()) {
+            Cursor cursor = parent.getCursor();
+            if(!(parent instanceof Window) || cursor != Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)) {
+              return cursor;
+            }
+          }
+        }
+        return super.getCursor();
+      }
+    };
     passwordField.setEchoChar('\0');
     setFocusable(false);
     getViewport().setView(passwordField);

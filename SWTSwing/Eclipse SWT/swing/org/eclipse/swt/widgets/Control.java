@@ -4241,7 +4241,7 @@ private void showPopup(java.awt.event.MouseEvent e) {
   }
 }
 
-private Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputState) {
+Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputState) {
   Event event = new Event();
   Container container = handle;
   if(container instanceof RootPaneContainer) {

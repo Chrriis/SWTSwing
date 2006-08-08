@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.Container;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.im.InputContext;
 import java.awt.im.InputSubset;
@@ -1938,6 +1939,7 @@ boolean traverseEscape () {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
+  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse)) { super.processEvent(e); return; } break;
   case WindowEvent.WINDOW_ACTIVATED: if(!hooks(SWT.Activate)) { super.processEvent(e); return; } break;
   case WindowEvent.WINDOW_DEACTIVATED: if(!hooks(SWT.Deactivate)) { super.processEvent(e); return; } break;
   case WindowEvent.WINDOW_CLOSED: if(!hooks(SWT.Close)) { super.processEvent(e); return; } break;
@@ -1968,6 +1970,14 @@ public void processEvent(AWTEvent e) {
       closeWidget();
     }
     break;
+  case ActionEvent.ACTION_PERFORMED:
+    Event event = new Event();
+    event.detail = SWT.TRAVERSE_ESCAPE;
+    sendEvent(SWT.Traverse, event);
+    if(event.doit) {
+      close();
+    }
+//    return;
   }
   super.processEvent(e);
   display.stopExclusiveSection();

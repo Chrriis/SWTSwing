@@ -18,8 +18,11 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.PaintEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -34,6 +37,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
@@ -340,6 +344,11 @@ class CShellDialog extends JDialog implements CShell {
 //    setFocusable(false);
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
+    getRootPane().registerKeyboardAction(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        handle.processEvent(e);
+      }
+    }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 //    Utils.installFocusListener(contentPane, handle);
     addComponentListener(new ComponentAdapter() {
       public void componentHidden(ComponentEvent e) {

@@ -4084,8 +4084,8 @@ public void processEvent(AWTEvent e) {
   case ComponentEvent.COMPONENT_MOVED: if(!hooks(SWT.Move)) return; break;
   case ComponentEvent.COMPONENT_SHOWN: if(!hooks(SWT.Show)) return; break;
   case ComponentEvent.COMPONENT_HIDDEN: if(!hooks(SWT.Hide)) return; break;
-  case java.awt.event.FocusEvent.FOCUS_GAINED: if(!hooks(SWT.FocusIn)) return; break;
-  case java.awt.event.FocusEvent.FOCUS_LOST: if(!hooks(SWT.FocusOut)) return; break;
+  case java.awt.event.FocusEvent.FOCUS_GAINED: /*if(!hooks(SWT.FocusIn)) return;*/ break;
+  case java.awt.event.FocusEvent.FOCUS_LOST: /*if(!hooks(SWT.FocusOut)) return;*/ break;
   default: return;
   }
   if(isDisposed()) {

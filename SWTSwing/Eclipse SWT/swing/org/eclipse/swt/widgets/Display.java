@@ -2638,11 +2638,20 @@ public boolean post (Event event) {
   try {
   	int type = event.type;
   	switch (type) {
-  		case SWT.KeyDown:
-        new Robot().keyPress(untranslateKey (event.keyCode));
+  		case SWT.KeyDown: {
+        int keyCode = event.keyCode == 0? untranslateChar(event.character): untranslateKey(event.keyCode);
+        if(keyCode == 0) {
+          return false;
+        }
+        new Robot().keyPress(keyCode);
         return true;
+      }
   		case SWT.KeyUp:
-        new Robot().keyRelease(untranslateKey (event.keyCode));
+  		  int keyCode = event.keyCode == 0? untranslateChar(event.character): untranslateKey(event.keyCode);
+  		  if(keyCode == 0) {
+  		    return false;
+  		  }
+        new Robot().keyRelease(keyCode);
         return true;
       case SWT.MouseMove: 
         new Robot().mouseMove(event.x, event.y);
@@ -2651,9 +2660,9 @@ public boolean post (Event event) {
   		case SWT.MouseUp: {
         int buttons;
         switch (event.button) {
-          case 1: buttons = java.awt.event.InputEvent.BUTTON1_DOWN_MASK; break;
-          case 2: buttons = java.awt.event.InputEvent.BUTTON2_DOWN_MASK; break;
-          case 3: buttons = java.awt.event.InputEvent.BUTTON3_DOWN_MASK; break;
+          case 1: buttons = java.awt.event.InputEvent.BUTTON1_MASK; break;
+          case 2: buttons = java.awt.event.InputEvent.BUTTON2_MASK; break;
+          case 3: buttons = java.awt.event.InputEvent.BUTTON3_MASK; break;
           default: return false;
         }
         if(type == SWT.MouseDown) {
@@ -3581,6 +3590,52 @@ static int untranslateKey (int key) {
 		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
 	}
 	return 0;
+}
+
+static int untranslateChar(char c) {
+  if(c >= '0' && c <='9') {
+    return c;
+  }
+  char uc = Character.toUpperCase(c);
+  if(uc >= 'A' && uc <= 'Z') {
+    return uc;
+  }
+  switch(c) {
+  case '\n': return java.awt.event.KeyEvent.VK_ENTER;
+  case '\b': return java.awt.event.KeyEvent.VK_BACK_SPACE;
+  case '\t': return java.awt.event.KeyEvent.VK_TAB;
+  case ' ': return java.awt.event.KeyEvent.VK_SPACE;
+  case ',': return java.awt.event.KeyEvent.VK_COMMA;
+  case '-': return java.awt.event.KeyEvent.VK_MINUS;
+  case '.': return java.awt.event.KeyEvent.VK_PERIOD;
+  case ';': return java.awt.event.KeyEvent.VK_SEMICOLON;
+  case '=': return java.awt.event.KeyEvent.VK_EQUALS;
+  case '[': return java.awt.event.KeyEvent.VK_OPEN_BRACKET;
+  case '\\': return java.awt.event.KeyEvent.VK_BACK_SLASH;
+  case ']': return java.awt.event.KeyEvent.VK_CLOSE_BRACKET;
+  case '`': return java.awt.event.KeyEvent.VK_BACK_QUOTE;
+  case '´': return java.awt.event.KeyEvent.VK_QUOTE;
+  case '&': return java.awt.event.KeyEvent.VK_AMPERSAND;
+  case '*': return java.awt.event.KeyEvent.VK_ASTERISK;
+  case '"': return java.awt.event.KeyEvent.VK_QUOTEDBL;
+  case '<': return java.awt.event.KeyEvent.VK_LESS;
+  case '>': return java.awt.event.KeyEvent.VK_GREATER;
+  case '{': return java.awt.event.KeyEvent.VK_BRACELEFT;
+  case '}': return java.awt.event.KeyEvent.VK_BRACERIGHT;
+  case '@': return java.awt.event.KeyEvent.VK_AT;
+  case ':': return java.awt.event.KeyEvent.VK_COLON;
+  case '^': return java.awt.event.KeyEvent.VK_CIRCUMFLEX;
+  case '$': return java.awt.event.KeyEvent.VK_DOLLAR;
+  case '€': return java.awt.event.KeyEvent.VK_EURO_SIGN;
+  case '!': return java.awt.event.KeyEvent.VK_EXCLAMATION_MARK;
+  case '¡': return java.awt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK;
+  case '(': return java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
+  case '#': return java.awt.event.KeyEvent.VK_NUMBER_SIGN;
+  case '+': return java.awt.event.KeyEvent.VK_PLUS;
+  case ')': return java.awt.event.KeyEvent.VK_RIGHT_PARENTHESIS;
+  case '_': return java.awt.event.KeyEvent.VK_UNDERSCORE;
+  }
+  return 0;
 }
 
 /**

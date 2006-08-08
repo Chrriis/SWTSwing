@@ -225,11 +225,11 @@ public void append (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
   CText cText = (CText)handle;
   String text = cText.getText();
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-    int length = text.length();
-		string = verifyText (string, length, length, null);
-		if (string == null) return;
-	}
+//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+//    int length = text.length();
+//		string = verifyText (string, length, length, null);
+//		if (string == null) return;
+//	}
   cText.setText(text + string);
 }
 
@@ -786,10 +786,10 @@ public void insert (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
   CText cText = (CText)handle;
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		string = verifyText (string, cText.getSelectionStart(), cText.getSelectionEnd(), null);
-		if (string == null) return;
-	}
+//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+//		string = verifyText (string, cText.getSelectionStart(), cText.getSelectionEnd(), null);
+//		if (string == null) return;
+//	}
   cText.replaceSelection(string);
 }
 
@@ -1269,11 +1269,11 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
   CText cText = (CText)handle;
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		int length = cText.getText().length();
-		string = verifyText (string, 0, length, null);
-		if (string == null) return;
-	}
+//	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+//		int length = cText.getText().length();
+//		string = verifyText (string, 0, length, null);
+//		if (string == null) return;
+//	}
   cText.setText(string);
 	if ((style & SWT.MULTI) != 0) {
 		sendEvent (SWT.Modify);
@@ -1714,7 +1714,7 @@ public void processEvent(EventObject e) {
   }
   if(e instanceof FilterEvent) {
     FilterEvent filterEvent = (FilterEvent)e;
-    filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getEnd(), null));
+    filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
   }
   super.processEvent(e);
   display.stopExclusiveSection();

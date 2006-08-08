@@ -4261,7 +4261,7 @@ private Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousI
   return event;
 }
 
-private Event createKeyEvent(java.awt.event.KeyEvent ke) {
+Event createKeyEvent(java.awt.event.KeyEvent ke) {
   Event event = new Event();
   Container container = handle;
   if(container instanceof RootPaneContainer) {

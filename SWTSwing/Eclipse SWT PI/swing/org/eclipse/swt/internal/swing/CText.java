@@ -18,6 +18,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.EventObject;
 
 import javax.swing.JPasswordField;
@@ -51,6 +53,8 @@ class CTextMulti extends JScrollPane implements CText {
     textArea.requestFocus();
   }
   
+  protected KeyEvent keyEvent = null;
+
   protected void init(int style) {
     setFont(textArea.getFont());
     if((style & SWT.BORDER) == 0) {
@@ -70,6 +74,16 @@ class CTextMulti extends JScrollPane implements CText {
     Utils.installKeyListener(textArea, handle);
     Utils.installFocusListener(textArea, handle);
     Utils.installComponentListener(this, handle);
+    textArea.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+        keyEvent = e;
+      }
+      public void keyReleased(KeyEvent e) {
+        keyEvent = null;
+      }
+      public void keyTyped(KeyEvent e) {
+      }
+    });
     textArea.getDocument().addDocumentListener(new DocumentListener() {
     	public void changedUpdate(DocumentEvent e) {
     		handle.processEvent(e);
@@ -94,15 +108,21 @@ class CTextMulti extends JScrollPane implements CText {
         if(getText().length() - length + text.length() > getTextLimit()) {
           return;
         }
-        FilterEvent filterEvent = new FilterEvent(this, text, offset, length);
+        FilterEvent filterEvent = new FilterEvent(this, text, offset, length, keyEvent);
         handle.processEvent(filterEvent);
         String s = filterEvent.getText();
         if(s != null) {
           super.replace(fb, offset, length, s, attrs);
         }
       }
-//      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-//      }
+      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+        FilterEvent filterEvent = new FilterEvent(this, "", offset, length, keyEvent);
+        handle.processEvent(filterEvent);
+        String s = filterEvent.getText();
+        if(s != null) {
+          super.replace(fb, offset, length, s, null);
+        }
+      }
     });
   }
 
@@ -297,6 +317,8 @@ class CTextField extends JScrollPane implements CText {
     passwordField.requestFocus();
   }
   
+  protected KeyEvent keyEvent = null;
+  
   protected void init(int style) {
     setFont(passwordField.getFont());
     if((style & SWT.BORDER) == 0) {
@@ -316,6 +338,16 @@ class CTextField extends JScrollPane implements CText {
     Utils.installKeyListener(passwordField, handle);
     Utils.installFocusListener(passwordField, handle);
     Utils.installComponentListener(this, handle);
+    passwordField.addKeyListener(new KeyListener() {
+      public void keyPressed(KeyEvent e) {
+        keyEvent = e;
+      }
+      public void keyReleased(KeyEvent e) {
+        keyEvent = null;
+      }
+      public void keyTyped(KeyEvent e) {
+      }
+    });
     passwordField.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         handle.processEvent(e);
@@ -328,15 +360,21 @@ class CTextField extends JScrollPane implements CText {
         if(getText().length() - length + text.length() > getTextLimit()) {
           return;
         }
-        FilterEvent filterEvent = new FilterEvent(this, text, offset, length);
+        FilterEvent filterEvent = new FilterEvent(this, text, offset, length, keyEvent);
         handle.processEvent(filterEvent);
         String s = filterEvent.getText();
         if(s != null) {
           super.replace(fb, offset, length, s, attrs);
         }
       }
-//      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-//      }
+      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+        FilterEvent filterEvent = new FilterEvent(this, "", offset, length, keyEvent);
+        handle.processEvent(filterEvent);
+        String s = filterEvent.getText();
+        if(s != null) {
+          super.replace(fb, offset, length, s, null);
+        }
+      }
     });
   }
 
@@ -511,12 +549,14 @@ public interface CText extends CScrollable {
     protected String text;
     protected int start;
     protected int end;
+    protected KeyEvent keyEvent;
 
-    public FilterEvent(Object source, String text, int start, int end) {
+    public FilterEvent(Object source, String text, int start, int end, KeyEvent keyEvent) {
       super(source);
       this.text = text;
       this.start = start;
       this.end = end;
+      this.keyEvent = keyEvent;
     }
 
     public String getText() {
@@ -533,6 +573,10 @@ public interface CText extends CScrollable {
 
     public int getEnd() {
       return end;
+    }
+
+    public KeyEvent getKeyEvent() {
+      return keyEvent;
     }
 
   }

@@ -5,8 +5,9 @@
     <jar destfile="../SWTSwing/SWTSwingTests.jar">
       <fileset dir="bin"/>
       <fileset dir="../org.eclipse.swt.snippets/bin"/>
+      <fileset dir="../org.eclipse.swt.snippets/src"/>
       <manifest>
-        <attribute name="Main-Class" value="chrriis.swtswing.Test"/>
+        <attribute name="Main-Class" value="chrriis.swtswing.SnippetLauncherUI"/>
         <attribute name="Class-Path" value="SWTSwing.jar"/>
       </manifest>
     </jar>

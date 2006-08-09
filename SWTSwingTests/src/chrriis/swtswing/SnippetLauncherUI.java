@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.swing.BorderFactory;
@@ -45,7 +46,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -88,8 +88,10 @@ public class SnippetLauncherUI extends JFrame {
   protected JComboBox swtComboBox;
   protected JTextArea processTextArea;
   protected JCheckBox lookAndFeelCheckBox;
+  protected JLabel lookAndFeelClassPathLabel;
   protected JCheckBox realDispatchCheckBox;
   protected JTextField lookAndFeelField;
+  protected JTextField lookAndFeelClassPathField;
   protected JTextField classPathField;
   protected JTextField libraryPathField;
 
@@ -111,7 +113,6 @@ public class SnippetLauncherUI extends JFrame {
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitPane.setContinuousLayout(true);
     JPanel leftComponent = new JPanel(new BorderLayout(0, 0));
-    leftComponent.add(createStatisticsComponent(), BorderLayout.SOUTH);
     leftComponent.add(new JScrollPane(createSnippetTree()), BorderLayout.CENTER);
     splitPane.setLeftComponent(leftComponent);
     JPanel centerPane = new JPanel(new BorderLayout());
@@ -176,7 +177,39 @@ public class SnippetLauncherUI extends JFrame {
     centerPane.add(southPane, BorderLayout.CENTER);
     splitPane.setRightComponent(centerPane);
     getContentPane().add(splitPane, BorderLayout.CENTER);
+    JPanel southComponent = new JPanel(new BorderLayout(0, 0));
+    southComponent.add(createStatisticsComponent(), BorderLayout.WEST);
+    southComponent.add(new JLabel("Christopher Deckers - chrriis@nextencia.net "), BorderLayout.EAST);
+    getContentPane().add(southComponent, BorderLayout.SOUTH);
     setSize(800, 600);
+  }
+
+  protected String getClassPath() {
+    String classPath = System.getProperty("java.class.path");
+    String pathSeparator = System.getProperty("path.separator");
+    if(System.getProperty("javawebstart.version") != null) {
+      try {
+        java.lang.ClassLoader cl = getClass().getClassLoader();
+        java.lang.reflect.Field jcpField = cl.getClass().getDeclaredField("_jcp");
+        jcpField.setAccessible(true);
+        Object jcp = jcpField.get(cl);
+        java.lang.reflect.Field fileToUrlsField = jcp.getClass().getDeclaredField("_fileToUrls");
+        fileToUrlsField.setAccessible(true);
+        java.util.HashMap fileToUrlFieldMap = (java.util.HashMap)fileToUrlsField.get(jcp);
+        StringBuffer sb = new StringBuffer();
+        for(Iterator it = fileToUrlFieldMap.keySet().iterator(); it.hasNext(); ) {
+          if(sb.length() != 0) {
+            sb.append(pathSeparator);
+            sb.append(((File)it.next()).getAbsolutePath());
+          }
+        }
+        sb.append(classPath);
+        return sb.toString();
+      } catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return classPath;
   }
 
   protected JPanel createSWTSwingPanel() {
@@ -192,6 +225,12 @@ public class SnippetLauncherUI extends JFrame {
     gridBag.setConstraints(lookAndFeelCheckBox, cons);
     contentPane.add(lookAndFeelCheckBox);
     cons.gridy++;
+    cons.insets = new Insets(2, new JCheckBox().getPreferredSize().width + 2, 2, 2);
+    lookAndFeelClassPathLabel = new JLabel("ClassPath: ");
+    gridBag.setConstraints(lookAndFeelClassPathLabel, cons);
+    contentPane.add(lookAndFeelClassPathLabel);
+    cons.insets = new Insets(2, 2, 2, 2);
+    cons.gridy++;
     cons.gridwidth = 2;
     realDispatchCheckBox = new JCheckBox("Use Real Dispatching");
     realDispatchCheckBox.setSelected(true);
@@ -204,6 +243,10 @@ public class SnippetLauncherUI extends JFrame {
     lookAndFeelField = new JTextField("javax.swing.plaf.metal.MetalLookAndFeel");
     gridBag.setConstraints(lookAndFeelField, cons);
     contentPane.add(lookAndFeelField);
+    cons.gridy++;
+    lookAndFeelClassPathField = new JTextField();
+    gridBag.setConstraints(lookAndFeelClassPathField, cons);
+    contentPane.add(lookAndFeelClassPathField);
     return contentPane;
   }
 
@@ -283,6 +326,8 @@ public class SnippetLauncherUI extends JFrame {
         super.paintComponent(g);
       }
     };
+    label.setBorder(BorderFactory.createEtchedBorder());
+    label.setPreferredSize(new Dimension(150, label.getPreferredSize().height));
     return label;
   }
   
@@ -507,14 +552,20 @@ public class SnippetLauncherUI extends JFrame {
       } else {
         parameterList.add(System.getProperty("java.home") + "/bin/java");
         parameterList.add("-Dswt.swing.realdispatch=" + realDispatchCheckBox.isSelected());
+        String classPath = "";
         if(lookAndFeelCheckBox.isSelected()) {
           String laf = lookAndFeelField.getText();
           if(laf.length() > 0) {
             parameterList.add("-Dswt.swing.laf=" + laf);
           }
+          classPath = lookAndFeelClassPathField.getText();
+        }
+        if(classPath.length() != 0) {
+          String pathSeparator = System.getProperty("path.separator");
+          classPath += pathSeparator;
         }
         parameterList.add("-cp");
-        parameterList.add(System.getProperty("java.class.path"));
+        parameterList.add(classPath + System.getProperty("java.class.path"));
         parameterList.add("chrriis.swtswing.SnippetLauncher");
         parameterList.add(String.valueOf(selectedSnippet.getNumber()));
       }

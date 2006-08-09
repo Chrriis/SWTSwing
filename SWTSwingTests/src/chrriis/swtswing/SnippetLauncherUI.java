@@ -12,6 +12,7 @@ package chrriis.swtswing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -270,12 +271,19 @@ public class SnippetLauncherUI extends JFrame {
         }
       }
     }
-    int ratio = Math.round((float)achieved * 100 / total);
-    JProgressBar progressBar = new JProgressBar(0, 100);
-    progressBar.setValue(ratio);
-    progressBar.setString(ratio + "% completed");
-    progressBar.setStringPainted(true);
-    return progressBar;
+    final int ratio = Math.round((float)achieved * 100 / total);
+    JLabel label = new JLabel(ratio + "% completed", JLabel.CENTER) {
+      protected void paintComponent(Graphics g) {
+        Dimension size = getSize();
+        int amount = Math.round(size.width * ratio / 100);
+        g.setColor(SUCCESS_COLOR);
+        g.fillRect(0, 0, amount, size.height);
+        g.setColor(FAILURE_COLOR);
+        g.fillRect(amount, 0, size.width - amount - 1, size.height);
+        super.paintComponent(g);
+      }
+    };
+    return label;
   }
   
   protected JTree createSnippetTree() {

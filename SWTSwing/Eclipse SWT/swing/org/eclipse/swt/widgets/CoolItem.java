@@ -324,7 +324,9 @@ public void setControl (Control control) {
     handle.removeAll();
   }
   this.control = control;
-  handle.add(control.handle);
+  if(control != null) {
+    handle.add(control.handle);
+  }
   handle.invalidate();
   handle.validate();
   handle.repaint();

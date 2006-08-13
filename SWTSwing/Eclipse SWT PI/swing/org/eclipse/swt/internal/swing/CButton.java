@@ -322,6 +322,6 @@ public interface CButton extends CComponent {
 
   public void doClick();
 
-  public void setMnemonic(char mnemonic);
+  public void setDisplayedMnemonicIndex(int mnemonicIndex);
 
 }

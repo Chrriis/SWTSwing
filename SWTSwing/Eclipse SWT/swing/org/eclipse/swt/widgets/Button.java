@@ -610,16 +610,18 @@ public void setText (String string) {
 	if ((style & SWT.ARROW) != 0) return;
   this.text = string;
   CButton cButton = (CButton)handle;
-  int index = findMnemonicIndex(string);
-  char mnemonic;
-  if(index < 0) {
-    mnemonic = '\0';
-    cButton.setText(string);
+
+  int mnemonicIndex = findMnemonicIndex(string);
+  if(mnemonicIndex > 0) {
+    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+    mnemonicIndex -= mnemonicIndex - 1 - s.length();
+    mnemonicIndex--;
   } else {
-    mnemonic = string.charAt(index);
-    cButton.setText(string.substring(0, index - 1) + string.substring(index));
+    string = string.replaceAll("&&", "&");
   }
-  cButton.setMnemonic(mnemonic);
+  cButton.setText(string);
+  cButton.setDisplayedMnemonicIndex(mnemonicIndex);
 }
 
 //int widgetStyle () {

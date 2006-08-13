@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -164,6 +165,13 @@ class CShellFrame extends JFrame implements CShell {
         handle.processEvent(e);
       }
     });
+  }
+
+  public void setBackground(Color c) {
+    super.setBackground(c);
+    if(contentPane != null) {
+      contentPane.setBackground(c);
+    }
   }
 
   public void forceActive() {
@@ -389,6 +397,13 @@ class CShellDialog extends JDialog implements CShell {
         handle.processEvent(e);
       }
     });
+  }
+
+  public void setBackground(Color c) {
+    super.setBackground(c);
+    if(contentPane != null) {
+      contentPane.setBackground(c);
+    }
   }
 
   public void forceActive() {

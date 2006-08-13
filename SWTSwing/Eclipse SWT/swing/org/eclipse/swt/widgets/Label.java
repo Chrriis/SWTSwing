@@ -48,6 +48,7 @@ import org.eclipse.swt.internal.swing.CLabel;
 public class Label extends Control {
 //	String text = "";
 	Image image;
+  String text;
 //	int font;
 //	static final int LabelProc;
 //	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
@@ -255,32 +256,32 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return "";
-	return ((CLabel)handle).getLabelText();
+	return text;
 }
 
-boolean mnemonicHit (char key) {
-	Composite control = this.parent;
-	while (control != null) {
-		Control [] children = control._getChildren ();
-		int index = 0;
-		while (index < children.length) {
-			if (children [index] == this) break;
-			index++;
-		}
-		index++;
-		if (index < children.length) {
-			if (children [index].setFocus ()) return true;
-		}
-		control = control.parent;
-	}
-	return false;
-}
-
-boolean mnemonicMatch (char key) {
-	char mnemonic = findMnemonic (getText ());
-	if (mnemonic == '\0') return false;
-	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
-}
+//boolean mnemonicHit (char key) {
+//	Composite control = this.parent;
+//	while (control != null) {
+//		Control [] children = control._getChildren ();
+//		int index = 0;
+//		while (index < children.length) {
+//			if (children [index] == this) break;
+//			index++;
+//		}
+//		index++;
+//		if (index < children.length) {
+//			if (children [index].setFocus ()) return true;
+//		}
+//		control = control.parent;
+//	}
+//	return false;
+//}
+//
+//boolean mnemonicMatch (char key) {
+//	char mnemonic = findMnemonic (getText ());
+//	if (mnemonic == '\0') return false;
+//	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+//}
 
 void releaseWidget () {
 	super.releaseWidget ();
@@ -372,7 +373,17 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-  ((CLabel)handle).setLabelText(string);
+  this.text = string;
+  int mnemonicIndex = findMnemonicIndex(string);
+  if(mnemonicIndex > 0) {
+    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+    mnemonicIndex -= mnemonicIndex - 1 - s.length();
+    mnemonicIndex--;
+  } else {
+    string = string.replaceAll("&&", "&");
+  }
+  ((CLabel)handle).setText(string, mnemonicIndex);
 }
 
 //int widgetExtStyle () {

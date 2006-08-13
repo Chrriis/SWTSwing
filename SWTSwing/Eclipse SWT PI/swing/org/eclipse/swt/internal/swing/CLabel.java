@@ -10,18 +10,14 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.UIManager;
-import javax.swing.plaf.basic.BasicHTML;
-import javax.swing.text.View;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
@@ -60,11 +56,7 @@ class CSeparator extends JPanel implements CLabel {
     return separator;
   }
 
-  public String getLabelText() {
-    return null;
-  }
-
-  public void setLabelText(String text) {
+  public void setText(String text, int mnemonicIndex) {
   }
 
   public void setAlignment(int alignment) {
@@ -93,36 +85,37 @@ class CSeparator extends JPanel implements CLabel {
 
 }
 
-class CLabelImplementation extends JLabel implements CLabel {
+class CLabelImplementation extends JMultiLineLabel implements CLabel {
 
   protected Label handle;
 
-  protected boolean isWrapping;
+//  protected boolean isWrapping;
 
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
     init(style);
   }
 
-  public Dimension getPreferredSize() {
-    if(isWrapping) {
-      Dimension preferredSize = super.getPreferredSize();
-      View view = ((View)getClientProperty(BasicHTML.propertyKey)).getView(0);
-      Dimension size = super.getSize();
-      view.setSize(size.width, 0);
-      preferredSize.height = super.getPreferredSize().height;
-      return preferredSize;
-    }
-    Dimension size = super.getPreferredSize();
-    if(getIcon() == null && getText().length() == 0) {
-      size.height += getFontMetrics(getFont()).getHeight();
-    }
-    return size;
-  }
+//  public Dimension getPreferredSize() {
+//    if(isWrapping) {
+//      Dimension preferredSize = super.getPreferredSize();
+//      View view = ((View)getClientProperty(BasicHTML.propertyKey)).getView(0);
+//      Dimension size = super.getSize();
+//      view.setSize(size.width, 0);
+//      preferredSize.height = super.getPreferredSize().height;
+//      return preferredSize;
+//    }
+//    Dimension size = super.getPreferredSize();
+//    if(getIcon() == null && getText().length() == 0) {
+//      size.height += getFontMetrics(getFont()).getHeight();
+//    }
+//    return size;
+//  }
 
   protected void init(int style) {
-    setVerticalAlignment(TOP);
-    isWrapping = (style & SWT.WRAP) != 0;
+//    setVerticalAlignment(TOP);
+//    isWrapping = (style & SWT.WRAP) != 0;
+    setWrapping((style & SWT.WRAP) != 0);
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     }
@@ -140,29 +133,12 @@ class CLabelImplementation extends JLabel implements CLabel {
     setHorizontalAlignment(alignment);
   }
 
-  public void setLabelText(String text) {
-    if(isWrapping) {
-      super.setText("<html>" + Utils.escapeXML(text) + "</html>");
-    } else {
-      super.setText(text);
-    }
-  }
-
-  public String getText() {
-    if(getIcon() != null) {
-      return "";
-    }
-    return super.getText();
-  }
-
-  public String getLabelText() {
-    if(isWrapping) {
-      String text = getText();
-      text = text.substring(6, text.length() - 7);
-      return Utils.unescapeXML(text);
-    }
-    return getText();
-  }
+//  public String getText() {
+//    if(getIcon() != null) {
+//      return "";
+//    }
+//    return super.getText();
+//  }
 
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
@@ -197,9 +173,7 @@ public interface CLabel extends CComponent {
 
   }
 
-  public String getLabelText();
-
-  public void setLabelText(String text);
+  public void setText(String text, int mnemonicIndex);
 
   public void setAlignment(int alignment);
 

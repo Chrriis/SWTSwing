@@ -1677,7 +1677,9 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	if (width <= 0 || height <= 0) return;
   // TODO: what about the "all" setting?
-  handle.repaint(x, y, width, height);
+//	handle.repaint();
+  // TODO: check using the Paint Example why this repaint needs -1 and +2...
+  ((CComponent)handle).getClientArea().repaint(x-1, y-1, width+2, height+2);
 //	if (!OS.IsWindowVisible (handle)) return;
 //	RECT rect = new RECT ();
 //	OS.SetRect (rect, x, y, x + width, y + height);
@@ -4102,6 +4104,7 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.PaintEvent.PAINT: {
     Event event = new Event();
     event.gc = new GC(this);
+    event.gc.isValid = true;
     Rectangle r = this.getBounds ();
     event.width = r.width;
     event.height = r.height;
@@ -4112,6 +4115,7 @@ public void processEvent(AWTEvent e) {
         canvas.caret.paintCaret (event.gc);
       }
     }
+    event.gc.isValid = false;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_DRAGGED:
@@ -4244,10 +4248,13 @@ private void showPopup(java.awt.event.MouseEvent e) {
 Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputState) {
   Event event = new Event();
   Container container = handle;
+  java.awt.Point point = me.getPoint();
   if(container instanceof RootPaneContainer) {
     container = ((RootPaneContainer)container).getContentPane();
+    point = SwingUtilities.convertPoint(me.getComponent(), point, container);
+  } else {
+    point = SwingUtilities.convertPoint(me.getComponent(), point, ((CComponent)handle).getClientArea());
   }
-  java.awt.Point point = SwingUtilities.convertPoint(me.getComponent(), me.getPoint(), container);
   event.x = point.x;
   event.y = point.y;
   if (SwingUtilities.isLeftMouseButton (me)) {

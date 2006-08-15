@@ -536,7 +536,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendEvent (SWT.Selection);
 	}
 	return true;
 }

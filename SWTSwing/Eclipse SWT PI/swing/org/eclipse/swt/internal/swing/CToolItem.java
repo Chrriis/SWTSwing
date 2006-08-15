@@ -34,6 +34,8 @@ class CToolItemPush extends JButton implements CToolItem {
   }
 
   protected void init(int style) {
+    setHorizontalTextPosition(CENTER);
+    setVerticalTextPosition(BOTTOM);
     setMargin(new Insets(0, 1, 0, 1));
     Utils.installMouseListener(this, handle.getParent());
     addActionListener(new ActionListener() {
@@ -58,6 +60,8 @@ class CToolItemCheck extends JToggleButton implements CToolItem {
   }
 
   protected void init(int style) {
+    setHorizontalTextPosition(CENTER);
+    setVerticalTextPosition(BOTTOM);
     setMargin(new Insets(0, 1, 0, 1));
     Utils.installMouseListener(this, handle.getParent());
   }
@@ -77,6 +81,8 @@ class CToolItemRadio extends JToggleButton implements CToolItem {
   }
 
   protected void init(int style) {
+    setHorizontalTextPosition(CENTER);
+    setVerticalTextPosition(BOTTOM);
     setMargin(new Insets(0, 1, 0, 1));
     Utils.installMouseListener(this, handle.getParent());
     addItemListener(new ItemListener() {

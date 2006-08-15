@@ -10,6 +10,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -89,6 +90,13 @@ class CCompositeImplementation extends JPanel implements CComposite {
     Utils.installKeyListener(contentPane, handle);
     Utils.installFocusListener(contentPane, handle);
     Utils.installComponentListener(this, handle);
+  }
+
+  public void setBackground(Color bg) {
+    super.setBackground(bg);
+    if(contentPane != null) {
+      contentPane.setBackground(bg);
+    }
   }
 
   public Container getClientArea() {

@@ -13,6 +13,7 @@ package org.eclipse.swt.graphics;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
+import java.awt.Container;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -23,10 +24,13 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.widgets.Control;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
@@ -176,6 +180,7 @@ static int checkStyle(int style) {
  * </ul>
  */
 public void copyArea(Image image, int x, int y) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -252,6 +257,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * @since 3.1 
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
+  Graphics2D handle = getGraphics();
   // TODO: check what to do with the paint argument
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.copyArea(srcX, srcY, width, height, destX - srcX, destY - srcY);
@@ -379,6 +385,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * which they allocate.
  */
 public void dispose() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) return;
 //	if (data.device.isDisposed()) return;
 	
@@ -459,6 +466,7 @@ public void dispose() {
  * </ul>
  */
 public void drawArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -490,6 +498,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  * @see #drawRectangle(int, int, int, int)
  */	 
 public void drawFocus (int x, int y, int width, int height) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   java.awt.Color newColor = oldColor;
@@ -531,6 +540,7 @@ public void drawFocus (int x, int y, int width, int height) {
  * </ul>
  */
 public void drawImage(Image image, int x, int y) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -570,6 +580,7 @@ public void drawImage(Image image, int x, int y) {
  * </ul>
  */
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
@@ -581,6 +592,7 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+  Graphics2D handle = getGraphics();
   if(srcWidth == -1) {
     srcWidth = srcImage.handle.getWidth();
   }
@@ -1117,6 +1129,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  * </ul>
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawLine(x1, y1, x2, y2);
 }
@@ -1143,6 +1156,7 @@ public void drawLine (int x1, int y1, int x2, int y2) {
  * </ul>
  */	 
 public void drawOval (int x, int y, int width, int height) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawOval(x, y, width, height);
 }
@@ -1165,6 +1179,7 @@ public void drawOval (int x, int y, int width, int height) {
  * @since 3.1
  */
 public void drawPath (Path path) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	handle.draw(path.handle);
@@ -1188,6 +1203,7 @@ public void drawPath (Path path) {
  * @since 3.0
  */
 public void drawPoint (int x, int y) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawLine(x, y, x, y);
 }
@@ -1210,6 +1226,7 @@ public void drawPoint (int x, int y) {
  * </ul>
  */
 public void drawPolygon(int[] pointArray) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   int[] xPoints = new int[pointArray.length/2];
@@ -1239,6 +1256,7 @@ public void drawPolygon(int[] pointArray) {
  * </ul>
  */
 public void drawPolyline(int[] pointArray) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   int[] xPoints = new int[pointArray.length/2];
@@ -1266,6 +1284,7 @@ public void drawPolyline(int[] pointArray) {
  * </ul>
  */
 public void drawRectangle (int x, int y, int width, int height) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawRect(x, y, width, height);
 }
@@ -1313,6 +1332,7 @@ public void drawRectangle (Rectangle rect) {
  * </ul>
  */
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
 }
@@ -1412,6 +1432,7 @@ public void drawString (String string, int x, int y) {
  * </ul>
  */
 public void drawString (String string, int x, int y, boolean isTransparent) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   if(!isTransparent) {
@@ -1507,6 +1528,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
@@ -1625,6 +1647,7 @@ public boolean equals (Object object) {
  * @see #drawArc
  */
 public void fillArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1727,6 +1750,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
   java.awt.Color fromColor = handle.getColor();
@@ -1766,6 +1790,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  * @see #drawOval
  */	 
 public void fillOval (int x, int y, int width, int height) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -1801,6 +1826,7 @@ public void fillOval (int x, int y, int width, int height) {
  * @since 3.1
  */
 public void fillPath (Path path) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	// Set fill(winding) rule
@@ -1833,6 +1859,7 @@ public void fillPath (Path path) {
  * @see #drawPolygon	
  */
 public void fillPolygon(int[] pointArray) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   int[] xPoints = new int[pointArray.length/2];
@@ -1873,6 +1900,7 @@ public void fillPolygon(int[] pointArray) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (int x, int y, int width, int height) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -1910,6 +1938,7 @@ public void fillRectangle (int x, int y, int width, int height) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (Rectangle rect) {
+  Graphics2D handle = getGraphics();
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -1935,6 +1964,7 @@ public void fillRectangle (Rectangle rect) {
  * @see #drawRoundRectangle
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -2016,6 +2046,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  * </ul>
  */
 public int getAdvanceWidth(char ch) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return handle.getFontMetrics().charWidth(ch);
 //	if (OS.IsWinCE) {
@@ -2058,6 +2089,7 @@ public int getAdvanceWidth(char ch) {
  * @since 3.1
  */
 public boolean getAdvanced() {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data.advanced;
 }
@@ -2074,6 +2106,7 @@ public boolean getAdvanced() {
  * @since 3.1
  */
 public int getAlpha() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.alpha;
 }
@@ -2095,6 +2128,7 @@ public int getAlpha() {
  * @since 3.1
  */
 public int getAntialias() {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   Object value = handle.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
   if(value == RenderingHints.VALUE_ANTIALIAS_OFF) return SWT.OFF;
@@ -2112,6 +2146,7 @@ public int getAntialias() {
  * </ul>
  */
 public Color getBackground() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return Color.swing_new(data.device, handle.getBackground());
 //	int color = OS.GetBkColor(handle);
@@ -2136,6 +2171,7 @@ public Color getBackground() {
  * @since 3.1
  */
 public Pattern getBackgroundPattern() {
+  Graphics2D handle = getGraphics();
   if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data.backgroundPattern;
 }
@@ -2157,6 +2193,7 @@ public Pattern getBackgroundPattern() {
  * </ul>
  */
 public int getCharWidth(char ch) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   // TODO: find the difference between advance width and char width
   return handle.getFontMetrics().charWidth(ch);
@@ -2195,6 +2232,7 @@ public int getCharWidth(char ch) {
  * </ul>
  */
 public Rectangle getClipping() {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   // TODO: getClipBounds could return null!
   java.awt.Rectangle clipping = handle.getClipBounds();
@@ -2219,6 +2257,7 @@ public Rectangle getClipping() {
  * </ul>
  */
 public void getClipping (Region region) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -2271,6 +2310,7 @@ public void getClipping (Region region) {
  * @since 3.1
  */
 public int getFillRule() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return fillRule;
 }
@@ -2286,6 +2326,7 @@ public int getFillRule() {
  * </ul>
  */
 public Font getFont () {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return Font.swing_new(data.device, handle.getFont());
 }
@@ -2302,6 +2343,7 @@ public Font getFont () {
  * </ul>
  */
 public FontMetrics getFontMetrics() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return FontMetrics.swing_new(handle.getFontMetrics());
 }
@@ -2316,6 +2358,7 @@ public FontMetrics getFontMetrics() {
  * </ul>
  */
 public Color getForeground() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return Color.swing_new(data.device, handle.getColor());
 }
@@ -2335,6 +2378,7 @@ public Color getForeground() {
  * @since 3.1
  */
 public Pattern getForegroundPattern() {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data.foregroundPattern;
 }
@@ -2360,6 +2404,7 @@ public Pattern getForegroundPattern() {
  * @since 3.2
  */
 public GCData getGCData() {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data;
 }
@@ -2378,6 +2423,7 @@ public GCData getGCData() {
  * @since 3.1
  */
 public int getInterpolation() {
+  Graphics2D handle = getGraphics();
   if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (data.gdipGraphics == 0) return SWT.DEFAULT;
   int mode = Gdip.Graphics_GetInterpolationMode(data.gdipGraphics);
@@ -2408,6 +2454,7 @@ public int getInterpolation() {
  * @since 3.1 
  */
 public int getLineCap() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch(getCurrentBasicStroke().getEndCap()) {
     case BasicStroke.CAP_ROUND:
@@ -2431,6 +2478,7 @@ public int getLineCap() {
  * @since 3.1 
  */
 public int[] getLineDash() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   float[] dashArray = getCurrentBasicStroke().getDashArray();
   int[] dashes = new int[dashArray.length];
@@ -2454,6 +2502,7 @@ public int[] getLineDash() {
  * @since 3.1 
  */
 public int getLineJoin() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch(getCurrentBasicStroke().getLineJoin()) {
     case BasicStroke.JOIN_BEVEL:
@@ -2477,6 +2526,7 @@ public int getLineJoin() {
  * </ul>
  */
 public int getLineStyle() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   float[] dashArray = getCurrentBasicStroke().getDashArray();
   if(dashArray == null) {
@@ -2537,6 +2587,7 @@ public int getLineStyle() {
  * </ul>
  */
 public int getLineWidth() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return (int)getCurrentBasicStroke().getLineWidth();
 }
@@ -2560,6 +2611,7 @@ public int getLineWidth() {
  * @since 2.1.2
  */
 public int getStyle () {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.style;
 }
@@ -2581,6 +2633,7 @@ public int getStyle () {
  * @since 3.1
  */
 public int getTextAntialias() {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   Object value = handle.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
   if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_OFF) return SWT.OFF;
@@ -2607,6 +2660,7 @@ public int getTextAntialias() {
  * @since 3.1
  */
 public void getTransform(Transform transform) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2630,6 +2684,7 @@ boolean isXORMode = false;
  * </ul>
  */
 public boolean getXORMode() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   // TODO: Not a solution because if swing is used directly in future implementation, this does not detect.
   return isXORMode;
@@ -2714,6 +2769,7 @@ void init(Drawable drawable, GCData data, Graphics2D handle) {
  * @see #equals
  */
 public int hashCode () {
+  Graphics2D handle = getGraphics();
   return handle == null? 0: handle.hashCode();
 }
 
@@ -2732,6 +2788,7 @@ public int hashCode () {
  * </ul>
  */
 public boolean isClipped() {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return handle.getClip() != null;
 }
@@ -2747,6 +2804,7 @@ public boolean isClipped() {
  * @return <code>true</code> when the GC is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
+  Graphics2D handle = getGraphics();
 	return handle == null;
 }
 
@@ -2798,6 +2856,7 @@ public boolean isDisposed() {
  * @since 3.1
  */
 public void setAdvanced(boolean advanced) {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   data.advanced = advanced;
 }
@@ -2823,6 +2882,7 @@ public void setAdvanced(boolean advanced) {
  * @since 3.1
  */
 public void setAntialias(int antialias) {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch (antialias) {
     case SWT.DEFAULT:
@@ -2851,6 +2911,7 @@ public void setAntialias(int antialias) {
  * @since 3.1
  */
 public void setAlpha(int alpha) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
 	AlphaComposite comp = AlphaComposite.getInstance(
@@ -2874,6 +2935,7 @@ public void setAlpha(int alpha) {
  * </ul>
  */
 public void setBackground (Color color) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2909,6 +2971,7 @@ public void setBackground (Color color) {
  * @since 3.1
  */
 public void setBackgroundPattern (Pattern pattern) {
+  Graphics2D handle = getGraphics();
   if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   if (data.gdipGraphics == 0 && pattern == null) return;
@@ -2971,6 +3034,7 @@ public void setBackgroundPattern (Pattern pattern) {
  * </ul>
  */
 public void setClipping (int x, int y, int width, int height) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.setClip(x, y, width, height);
 }
@@ -2994,6 +3058,7 @@ public void setClipping (int x, int y, int width, int height) {
  * @since 3.1
  */
 public void setClipping (Path path) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	handle.setClip(path.handle);
@@ -3013,6 +3078,7 @@ public void setClipping (Path path) {
  * </ul>
  */
 public void setClipping (Rectangle rect) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
 		handle.setClip(null);
@@ -3038,6 +3104,7 @@ public void setClipping (Rectangle rect) {
  * </ul>
  */
 public void setClipping (Region region) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   handle.setClip(region.handle);
@@ -3060,6 +3127,7 @@ public void setClipping (Region region) {
  * @since 3.1
  */
 public void setFillRule(int rule) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (rule) {
 		case SWT.FILL_WINDING: 
@@ -3087,6 +3155,7 @@ public void setFillRule(int rule) {
  * </ul>
  */
 public void setFont (Font font) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
     handle.setFont(data.device.systemFont);
@@ -3111,6 +3180,7 @@ public void setFont (Font font) {
  * </ul>
  */
 public void setForeground (Color color) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3135,6 +3205,7 @@ public void setForeground (Color color) {
  * @since 3.1
  */
 public void setForegroundPattern (Pattern pattern) {
+  Graphics2D handle = getGraphics();
   if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   if (data.gdipGraphics == 0 && pattern == null) return;
@@ -3168,6 +3239,7 @@ public void setForegroundPattern (Pattern pattern) {
  * @since 3.1
  */
 public void setInterpolation(int interpolation) {
+  Graphics2D handle = getGraphics();
   if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (data.gdipGraphics == 0 && interpolation == SWT.DEFAULT) return;
   int mode = 0;
@@ -3200,6 +3272,7 @@ public void setInterpolation(int interpolation) {
  * @since 3.1 
  */
 public void setLineCap(int cap) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
 	int capStyle = 0;
@@ -3237,6 +3310,7 @@ public void setLineCap(int cap) {
  * @since 3.1 
  */
 public void setLineDash(int[] dashes) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   if(dashes == null) dashes = new int[0];
@@ -3264,6 +3338,7 @@ public void setLineDash(int[] dashes) {
  * @since 3.1 
  */
 public void setLineJoin(int join) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   int joinStyle = 0;
@@ -3299,6 +3374,7 @@ public void setLineJoin(int join) {
  * </ul>
  */
 public void setLineStyle(int lineStyle) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   float[] array = null;
@@ -3345,6 +3421,7 @@ public void setLineStyle(int lineStyle) {
  * </ul>
  */
 public void setLineWidth(int lineWidth) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   handle.setStroke(new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
@@ -3470,6 +3547,7 @@ public void setLineWidth(int lineWidth) {
  * @deprecated this functionality is not supported on some platforms
  */
 public void setXORMode(boolean xor) {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if(xor) {
     // need to check if "handle.setXORMode(getBackground().handle)" must be called any time the background color changes.
@@ -3501,6 +3579,7 @@ public void setXORMode(boolean xor) {
  * @since 3.1
  */
 public void setTextAntialias(int antialias) {
+  Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch (antialias) {
     case SWT.DEFAULT:
@@ -3536,6 +3615,7 @@ public void setTextAntialias(int antialias) {
  * @since 3.1
  */
 public void setTransform(Transform transform) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (saveAT != null) {
@@ -3566,6 +3646,7 @@ public void setTransform(Transform transform) {
  * </ul>
  */
 public Point stringExtent(String string) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
   java.awt.FontMetrics fm = handle.getFontMetrics();
@@ -3627,6 +3708,7 @@ public Point textExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string, int flags) {
+  Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
   // TODO: Implement this method properly
@@ -3641,7 +3723,7 @@ public Point textExtent(String string, int flags) {
  */
 public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
-	return "GC {" + handle + "}";
+	return "GC {" + getGraphics() + "}";
 }
 
 /**	 
@@ -3693,12 +3775,32 @@ static final float[] lineDashDotArray = new float[] {9, 6, 3, 6};
 static final float[] lineDashDotDotArray = new float[] {9, 3, 3, 3, 3, 3};
 
 BasicStroke getCurrentBasicStroke() {
+  Graphics2D handle = getGraphics();
   Graphics2D g2d = handle;
   Stroke stroke = g2d.getStroke();
   if(stroke instanceof BasicStroke) {
     return (BasicStroke)stroke;
   }
   return new BasicStroke();
+}
+
+public boolean isValid = false;
+
+Graphics2D getGraphics() {
+  if(isValid || !(drawable instanceof Control)) return handle;
+  Container container = ((Control)drawable).handle;
+  Container parent = container;
+  for(; parent != null && parent.isLightweight(); parent = parent.getParent());
+  if(parent == null || parent == container) {
+    return handle;
+  }
+  Container clientArea = ((CComponent)container).getClientArea();
+  java.awt.Point p = SwingUtilities.convertPoint(clientArea, new java.awt.Point(0, 0), parent);
+  Graphics2D g = (Graphics2D)parent.getGraphics();
+  g.translate(p.x, p.y);
+  g.setClip(handle.getClip());
+  g.clipRect(0, 0, clientArea.getWidth(), clientArea.getHeight());
+  return g;
 }
 
 }

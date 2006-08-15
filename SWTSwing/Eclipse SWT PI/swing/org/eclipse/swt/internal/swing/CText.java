@@ -79,6 +79,7 @@ class CTextMulti extends JScrollPane implements CText {
       setBorder(null);
       textArea.setBorder(null);
     }
+    textArea.setEditable((style & SWT.READ_ONLY) == 0);
     if((style & SWT.H_SCROLL) == 0) {
       setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     }
@@ -358,6 +359,7 @@ class CTextField extends JScrollPane implements CText {
       setBorder(null);
       passwordField.setBorder(null);
     }
+    passwordField.setEditable((style & SWT.READ_ONLY) == 0);
     if((style & SWT.H_SCROLL) == 0) {
       setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
     }

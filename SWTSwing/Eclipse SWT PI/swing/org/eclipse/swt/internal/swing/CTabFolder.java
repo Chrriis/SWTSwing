@@ -10,7 +10,9 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Rectangle;
 
 import javax.swing.Icon;
 import javax.swing.JScrollBar;
@@ -66,6 +68,16 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
     case PREFERRED_BACKGROUND_INHERITANCE:
     case BACKGROUND_INHERITANCE: setOpaque(false); break;
     }
+  }
+
+  public Dimension getPreferredSize() {
+    Dimension size = super.getPreferredSize();
+    int count = getTabCount();
+    if(count > 0) {
+      Rectangle bounds = getUI().getTabBounds(this, count - 1);
+      size.width = Math.max(size.width, bounds.x + bounds.width + 10);
+    }
+    return size;
   }
 
 }

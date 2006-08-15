@@ -21,6 +21,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CTabFolder;
 
 /**
@@ -435,6 +436,11 @@ public void setSelection (int index) {
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) return;
   ((CTabFolder)handle).setSelectedIndex(index);
+}
+
+Point minimumSize (int wHint, int hHint, boolean changed) {
+  java.awt.Dimension size = handle.getPreferredSize();
+  return new Point(size.width, size.height);
 }
 
 public void processEvent(EventObject e) {

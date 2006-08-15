@@ -647,7 +647,7 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		postEvent (SWT.Selection);
+		sendEvent (SWT.Selection);
 	}
 	return true;
 }
@@ -861,12 +861,18 @@ public void processEvent(AWTEvent e) {
   switch(id) {
   case java.awt.event.ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) return; break;
   case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
+    if(!handle.isShowing()) {
+      return;
+    }
     if((style & SWT.RADIO) != 0 && (parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
       // No event sending, so no need to be in an exclusive section
       java.awt.event.ItemEvent ie = (java.awt.event.ItemEvent)e;
       if(ie.getStateChange() == ItemEvent.SELECTED) {
         selectRadio();
+        if(!hooks(SWT.Selection)) return;
+        break;
       }
+      return;
     }
     return;
   }
@@ -889,6 +895,10 @@ public void processEvent(AWTEvent e) {
       event.detail = SWT.ARROW;
     }
     sendEvent(SWT.Selection, event);
+    break;
+  }
+  case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
+    sendEvent(SWT.Selection);
     break;
   }
   }

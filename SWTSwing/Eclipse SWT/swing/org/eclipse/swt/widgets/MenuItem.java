@@ -23,6 +23,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
@@ -721,16 +722,23 @@ public void setMenu (Menu menu) {
 		}
 	}
 
-	/* Assign the new menu */
+	JMenu menuHandle = (JMenu)handle;
+	JPopupMenu popupMenu = menuHandle.getPopupMenu();
+  popupMenu.removeAll();
+
+  /* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
   if (menu != null) {
     menu.cascade = this; 
+    Component[] components = ((JMenu)menu.handle).getPopupMenu().getComponents();
+    for(int i=0; i<components.length; i++) {
+      popupMenu.add(components[i]);
+    }
+    menu.handle = popupMenu;
   }
-  JMenu menuHandle = (JMenu)handle;
-  menu.handle = menuHandle.getPopupMenu();
 //	parent.destroyAccelerators ();
 }
 

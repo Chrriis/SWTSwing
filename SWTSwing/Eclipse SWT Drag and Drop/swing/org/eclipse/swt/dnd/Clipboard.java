@@ -18,6 +18,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -54,9 +56,7 @@ public Clipboard(Display display) {
 			display = Display.getDefault();
 		}
 	}
-	if (display.getThread() != Thread.currentThread()) {
-		DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	}
+  if (display.getThread() != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	this.display = display;
 }
 
@@ -120,7 +120,7 @@ protected void checkSubclass () {
 protected void checkWidget () {
 	Display display = this.display;
 	if (display == null) DND.error (SWT.ERROR_WIDGET_DISPOSED);
-	if (display.getThread() != Thread.currentThread ()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (display.getThread() != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (display.isDisposed()) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 }
 
@@ -196,7 +196,7 @@ public void clearContents(int clipboards) {
  */
 public void dispose () {
 	if (isDisposed()) return;
-	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+  if (display.getThread() != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	display = null;
 }
 

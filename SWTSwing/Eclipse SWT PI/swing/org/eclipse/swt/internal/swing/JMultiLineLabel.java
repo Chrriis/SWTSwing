@@ -44,6 +44,9 @@ public class JMultiLineLabel extends JPanel {
       }
       return size;
     }
+    public Dimension getMaximumSize() {
+      return new Dimension(Integer.MAX_VALUE, super.getMaximumSize().height);
+    }
 
   }
 
@@ -77,6 +80,7 @@ public class JMultiLineLabel extends JPanel {
         label = "<html>" + Utils.escapeXML(label) + "</html>";
       }
       InnerLabel innerLabel = new InnerLabel();
+      innerLabel.setHorizontalAlignment(alignment);
       innerLabel.setText(label);
       int newCount = count + label.length() + 1;
       // TODO: check with HTML style what to do with mnemonics
@@ -104,7 +108,10 @@ public class JMultiLineLabel extends JPanel {
     return isWrapping;
   }
 
+  protected int alignment = JLabel.CENTER;
+
   public void setHorizontalAlignment(int alignment) {
+    this.alignment = alignment;
     for(int i=getComponentCount()-1; i>=0; i--) {
       ((InnerLabel)getComponent(i)).setHorizontalAlignment(alignment);
     }

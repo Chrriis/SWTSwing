@@ -129,7 +129,14 @@ public class DisabledStatePanel extends JPanel {
   }
 
   public void release() {
-    
+    Component component = control.handle;
+    Container parent = component.getParent();
+    if(parent != null) {
+      parent.remove(this);
+      revalidate();
+    }
+    component.removeHierarchyListener(hierarchyListener);
+    component.removeComponentListener(componentListener);
   }
 
 }

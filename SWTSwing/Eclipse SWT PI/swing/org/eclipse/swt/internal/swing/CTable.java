@@ -362,6 +362,16 @@ class CTableImplementation extends JScrollPane implements CTable {
     }
   }
 
+  public void ensureRowVisible(int index) {
+    if(index < 0 || index >= table.getRowCount()) {
+      return;
+    }
+    Rectangle bounds = getCellRect(0, 0, true);
+    bounds.width = table.getWidth();
+    bounds.height = table.getHeight();
+    table.scrollRectToVisible(bounds);
+  }
+
 }
 
 public interface CTable extends CComposite {
@@ -396,5 +406,7 @@ public interface CTable extends CComposite {
   public TableCellRenderer getCellRenderer(int row, int column);
 
   public int getPreferredColumnWidth(int columnIndex);
+
+  public void ensureRowVisible(int index);
 
 }

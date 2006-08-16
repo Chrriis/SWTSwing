@@ -647,12 +647,8 @@ public void deselect (int start, int end) {
  */
 public void deselectAll () {
 	checkWidget ();
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, lvItem);
-	ignoreSelect = false;
+  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  selectionModel.clearSelection();
 }
 
 void destroyItem (TableColumn column) {
@@ -1632,17 +1628,8 @@ public void select (int [] indices) {
  */
 public void select (int index) {
 	checkWidget ();
-	/*
-	* An index of -1 will apply the change to all
-	* items.  Ensure that index is greater than -1.
-	*/
-	if (index < 0) return;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.state = OS.LVIS_SELECTED;
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
-	ignoreSelect = false;
+  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  selectionModel.addSelectionInterval(index, index);
 }
 
 /**
@@ -1940,17 +1927,10 @@ void setCheckboxImageList (int width, int height) {
 
 void setFocusIndex (int index) {
 //	checkWidget ();	
-	/*
-	* An index of -1 will apply the change to all
-	* items.  Ensure that index is greater than -1.
-	*/
-	if (index < 0) return;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.state = OS.LVIS_FOCUSED;
-	lvItem.stateMask = OS.LVIS_FOCUSED;
-	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
-	ignoreSelect = false;
+  if(index < 0 || index >= getItemCount()) return;
+  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  selectionModel.addSelectionInterval(index, index);
+  selectionModel.setLeadSelectionIndex(index);
 }
 
 public void setFont (Font font) {
@@ -2697,8 +2677,7 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget (); 
-	int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_SELECTED);
-	if (index != -1) showItem (index);
+  ((CTable)handle).ensureRowVisible(getSelectionIndex());
 }
 
 static int checkStyle (int style) {

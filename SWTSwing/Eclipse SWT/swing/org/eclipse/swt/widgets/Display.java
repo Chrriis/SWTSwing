@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.AWTEvent;
+import java.awt.ActiveEvent;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -22,6 +23,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.KeyboardFocusManager;
+import java.awt.MenuComponent;
 import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.awt.Toolkit;
@@ -2701,6 +2703,8 @@ void postEvent (final Event event) {
 	eventQueue [index] = event;
 }
 
+AWTEvent event;
+
 /**
  * Reads an event from the operating system's event queue,
  * dispatches it appropriately, and returns <code>true</code>
@@ -2732,6 +2736,25 @@ public boolean readAndDispatch () {
     boolean result = swingEventQueue.dispatchEvent();
     runDeferredEvents ();
     return result;
+  }
+  if(event != null) {
+    try {
+      Object source = event.getSource();
+      if (event instanceof ActiveEvent) {
+        ((ActiveEvent)event).dispatch();
+      } else if(source instanceof Component) {
+        ((Component)source).dispatchEvent(event);
+      } else if(source instanceof MenuComponent) {
+        ((MenuComponent)source).dispatchEvent(event);
+      }
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+    event = null;
+    return true;
+  }
+  if(SwingUtilities.isEventDispatchThread()) {
+    return false;
   }
   synchronized(UI_LOCK) {
     if(exclusiveSectionCount == 0) {
@@ -3433,6 +3456,8 @@ public void setSynchronizer (Synchronizer synchronizer) {
 //	return 0;
 //}
 
+volatile Thread fakeDispatchingEDT;
+
 /**
  * Causes the user-interface thread to <em>sleep</em> (that is,
  * to be put in a state where it does not consume CPU cycles)
@@ -3451,6 +3476,17 @@ public boolean sleep () {
 	checkDevice ();
   if(isRealDispatch()) {
     return swingEventQueue.sleep();
+  }
+  if(SwingUtilities.isEventDispatchThread()) {
+    boolean result = true;
+    fakeDispatchingEDT = Thread.currentThread();
+    try {
+      event = Toolkit.getDefaultToolkit().getSystemEventQueue().getNextEvent();
+    } catch(InterruptedException e) {
+      result = false;
+    }
+    fakeDispatchingEDT = null;
+    return result;
   }
   synchronized(UI_LOCK) {
     if(exclusiveSectionCount == 0) {
@@ -3704,6 +3740,10 @@ protected static final Object UI_LOCK = new Object();
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
+  if(fakeDispatchingEDT != null) {
+    fakeDispatchingEDT.interrupt();
+    return;
+  }
   synchronized(UI_LOCK) {
     UI_LOCK.notify();
   }

@@ -1057,6 +1057,10 @@ Control findControl (Component handle) {
  * @return the display for the given thread
  */
 public static synchronized Display findDisplay (Thread thread) {
+  if(Displays.length == 0) return null;
+  if(Thread.currentThread() == thread && SwingUtilities.isEventDispatchThread()) {
+    return Displays[0];
+  }
 	for (int i=0; i<Displays.length; i++) {
 		Display display = Displays [i];
 		if (display != null && display.thread == thread) {

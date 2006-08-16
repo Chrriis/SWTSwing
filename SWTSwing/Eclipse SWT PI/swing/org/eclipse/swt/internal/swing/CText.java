@@ -383,6 +383,17 @@ class CTextField extends JScrollPane implements CText {
       public void keyTyped(KeyEvent e) {
       }
     });
+    passwordField.getDocument().addDocumentListener(new DocumentListener() {
+      public void changedUpdate(DocumentEvent e) {
+        handle.processEvent(e);
+      }
+      public void insertUpdate(DocumentEvent e) {
+        handle.processEvent(e);
+      }
+      public void removeUpdate(DocumentEvent e) {
+        handle.processEvent(e);
+      }
+    });
     passwordField.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         handle.processEvent(e);

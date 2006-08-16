@@ -1015,16 +1015,22 @@ public boolean getLinesVisible () {
 public TableItem [] getSelection () {
 	checkWidget ();
   CTable table = (CTable)handle;
-  DefaultListSelectionModel selectionModel = table.getSelectionModel();
-  
-  
-  
-	int i = -1, j = 0, count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
-	TableItem [] result = new TableItem [count];
-	while ((i = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, i, OS.LVNI_SELECTED)) != -1) {
-		result [j++] = _getItem (i);
-	}
-	return result;
+  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  int minSelectionIndex = selectionModel.getMinSelectionIndex();
+  int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
+  if(minSelectionIndex == -1 || maxSelectionIndex == -1) {
+    return new TableItem[0];
+  }
+  TableItem[] selectedIndices_ = new TableItem[1 + maxSelectionIndex - minSelectionIndex];
+  int count = 0;
+  for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
+    if(selectionModel.isSelectedIndex(i)) {
+      selectedIndices_[count++] = (TableItem)itemList.get(i);
+    }
+  }
+  TableItem[] selectedIndices = new TableItem[count];
+  System.arraycopy(selectedIndices_, 0, selectedIndices, 0, count);
+  return selectedIndices;
 }
 
 /**
@@ -1039,7 +1045,16 @@ public TableItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
+  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  int minSelectionIndex = selectionModel.getMinSelectionIndex();
+  int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
+  int count = 0;
+  for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
+    if(selectionModel.isSelectedIndex(i)) {
+      count++;
+    }
+  }
+  return count;
 }
 
 /**
@@ -1055,14 +1070,8 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget ();
-	int focusIndex = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
-	int selectedIndex = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_SELECTED);
-	if (focusIndex == selectedIndex) return selectedIndex;
-	int i = -1;
-	while ((i = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, i, OS.LVNI_SELECTED)) != -1) {
-		if (i == focusIndex) return i;
-	}
-	return selectedIndex;
+  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  return selectionModel.getMinSelectionIndex();
 }
 
 /**
@@ -1083,12 +1092,22 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-	int i = -1, j = 0, count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
-	int [] result = new int [count];
-	while ((i = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, i, OS.LVNI_SELECTED)) != -1) {
-		result [j++] = i;
-	}
-	return result;
+  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  int minSelectionIndex = selectionModel.getMinSelectionIndex();
+  int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
+  if(minSelectionIndex == -1 || maxSelectionIndex == -1) {
+    return new int[0];
+  }
+  int[] selectedIndices_ = new int[1 + maxSelectionIndex - minSelectionIndex];
+  int count = 0;
+  for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
+    if(selectionModel.isSelectedIndex(i)) {
+      selectedIndices_[count++] = i;
+    }
+  }
+  int[] selectedIndices = new int[count];
+  System.arraycopy(selectedIndices_, 0, selectedIndices, 0, count);
+  return selectedIndices;
 }
 
 /**

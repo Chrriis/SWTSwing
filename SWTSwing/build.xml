@@ -2,9 +2,15 @@
 <project name="SWTSwing Build Script" default="createJar">
 
   <target name="createJar" description="Create the Jar files">
+    <delete file="SWTSwing.jar"/>
     <jar duplicate="preserve" destfile="SWTSwing.jar">
       <fileset dir="bin"/>
-      <fileset dir="../org.eclipse.swt/bin"/>
+      <fileset dir="../org.eclipse.swt/bin">
+        <exclude name="library/**"/>
+        <exclude name="org/eclipse/swt/ole/**"/>
+        <exclude name="org/eclipse/swt/internal/ole/**"/>
+        <exclude name="org/eclipse/swt/internal/win32/**"/>
+	  </fileset>
 	</jar>
   </target>
 

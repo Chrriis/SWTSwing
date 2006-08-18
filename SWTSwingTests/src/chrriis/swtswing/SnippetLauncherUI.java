@@ -331,7 +331,7 @@ public class SnippetLauncherUI extends JFrame {
       }
     }
     final int ratio = Math.round((float)achieved * 100 / total);
-    JLabel label = new JLabel(ratio + "% completed", JLabel.CENTER) {
+    JLabel label = new JLabel(ratio + "% supported", JLabel.CENTER) {
       protected void paintComponent(Graphics g) {
         Dimension size = getSize();
         int amount = Math.round(size.width * ratio / 100);

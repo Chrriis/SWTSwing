@@ -1,3 +1,9 @@
 bin
 SWTSwingTests.jar
 SWTSwing.jar
+swt-awt-win32-3232.dll
+swt-win32-3232.dll
+swt.jar
+swt-wgl-win32-3232.dll
+napkinlaf.jar
+swt-gdip-win32-3232.dll

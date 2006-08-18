@@ -2,8 +2,8 @@
 <project name="SWTSwing Tests Build Script" default="createJar">
 
   <target name="createJar" description="Create the Jar files">
-    <delete file="../SWTSwing/SWTSwingTests.jar"/>
-    <jar duplicate="preserve" destfile="../SWTSwing/SWTSwingTests.jar">
+    <delete file="../SWTSwing/SWTSwingSnippetLauncher.jar"/>
+    <jar duplicate="preserve" destfile="../SWTSwing/SWTSwingSnippetLauncher.jar">
       <fileset dir="bin"/>
       <fileset dir="../org.eclipse.swt.snippets/bin"/>
       <fileset dir="../org.eclipse.swt.snippets/src"/>

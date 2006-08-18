@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -45,6 +46,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -68,8 +70,11 @@ import chrriis.swtswing.source.SourcePane;
 
 public class SnippetLauncherUI extends JFrame {
 
-  protected static final ImageIcon APPLICATION_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/swt.gif"));
+  protected static final ImageIcon APPLICATION_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/SWTSwingIcon32x32.gif"));
   protected static final ImageIcon SOURCE_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/source.gif"));
+
+  protected static final Icon SWT_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/Eclipse100x55.png"));
+  protected static final Icon SWTSWING_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/SWTSwing100x55.png"));
 
   protected static final Icon ROOT_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/snippets.gif"));
   protected static final Icon UNSUPPORTED_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/Unsupported.gif"));
@@ -120,7 +125,18 @@ public class SnippetLauncherUI extends JFrame {
     swtSelectionPane.setBorder(BorderFactory.createTitledBorder("SWT Selection"));
     JPanel swtChoicePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 5));
     swtComboBox = new JComboBox(new String[] {SWT_SWING, "Native SWT"});
-    swtChoicePane.add(swtComboBox, BorderLayout.NORTH);
+    swtComboBox.setRenderer(new DefaultListCellRenderer() {
+      public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        DefaultListCellRenderer renderer = (DefaultListCellRenderer)super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
+        if(NATIVE_SWT.equals(value)) {
+          renderer.setIcon(SWT_ICON);
+        } else {
+          renderer.setIcon(SWTSWING_ICON);
+        }
+        return renderer;
+      }
+    });
+    swtChoicePane.add(swtComboBox);
     swtSelectionPane.add(swtChoicePane, BorderLayout.NORTH);
     final JPanel swtConfigurationPane = new JPanel(new BorderLayout(0, 0));
     final JPanel swtSwingPanel = createSWTSwingPanel();

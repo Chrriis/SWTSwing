@@ -13,10 +13,11 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
 
-public class JMultiLineLabel extends JPanel {
+public class JMultiLineLabel extends JPanel implements SwingConstants {
 
   protected class InnerLabel extends JLabel {
 
@@ -106,7 +107,7 @@ public class JMultiLineLabel extends JPanel {
     return isWrapping;
   }
 
-  protected int alignment = JLabel.CENTER;
+  protected int alignment = JLabel.LEFT;
 
   public void setHorizontalAlignment(int alignment) {
     this.alignment = alignment;

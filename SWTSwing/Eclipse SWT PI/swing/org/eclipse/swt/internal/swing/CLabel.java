@@ -117,6 +117,13 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     }
+    if((style & SWT.RIGHT) != 0) {
+      setAlignment(JMultiLineLabel.RIGHT);
+    } else if((style & SWT.CENTER) != 0) {
+      setAlignment(JMultiLineLabel.CENTER);
+    } else  {
+      setAlignment(JMultiLineLabel.LEFT);
+    }
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);

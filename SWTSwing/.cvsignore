@@ -1,6 +1,6 @@
 bin
-SWTSwingTests.jar
 SWTSwing.jar
+SWTSwingSnippetLauncher.jar
 swt-awt-win32-3232.dll
 swt-win32-3232.dll
 swt.jar

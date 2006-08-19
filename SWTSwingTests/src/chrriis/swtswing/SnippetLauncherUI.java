@@ -18,6 +18,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -73,7 +74,7 @@ public class SnippetLauncherUI extends JFrame {
   protected static final ImageIcon APPLICATION_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/SWTSwingIcon32x32.gif"));
   protected static final ImageIcon SOURCE_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/source.gif"));
 
-  protected static final Icon SWT_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/Eclipse100x55.png"));
+  protected static final Icon SWT_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/SWT100x55.png"));
   protected static final Icon SWTSWING_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/SWTSwing100x55.png"));
 
   protected static final Icon ROOT_ICON = new ImageIcon(SnippetLauncherUI.class.getResource("resources/snippets.gif"));
@@ -636,6 +637,7 @@ public class SnippetLauncherUI extends JFrame {
   }
 
   public static void main(String[] args) {
+    Toolkit.getDefaultToolkit().setDynamicLayout(true);
     new SnippetLauncherUI().setVisible(true);
   }
 

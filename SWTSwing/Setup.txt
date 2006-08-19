@@ -21,7 +21,6 @@ on "HEAD":
 on "R3_2" version:
 - org.eclipse.swt
 - org.eclipse.swt.examples
-- org.eclipse.swt.examples.launcher
 - org.eclipse.swt.win32.win32.x86
 
 To compile SWT itself, copy "org.eclipse.swt/.classpath_win32" to "org.eclipse.swt/.classpath"

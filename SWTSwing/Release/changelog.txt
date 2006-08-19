@@ -1,0 +1,18 @@
+The SWTSwing project - SWT running on Swing
+http://swtswing.sourceforge.net
+Christopher Deckers (chrriis@nextencia.com)
+Licence terms: EPL 1.0 (see licence.html)
+
+---------------------------------- Change log ----------------------------------
+
+* Version 3.2.0002 (xxxxxxxxxxxxxxx):
+
+- Label alignment is fixed.
+
+
+* Version 3.2.0001 (August 18, 2006):
+
+- Complete reimplementation from scratch.
+- Threading and deadlock issues from the original implementation are resolved.
+- The widget set is almost complete but some of the methods or event handling
+are still missing.

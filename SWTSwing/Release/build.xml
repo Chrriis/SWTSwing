@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<project name="SWTSwing Build Script" default="createRelease" basedir="..">
+
+  <target name="createRelease" description="Create the release">
+    <ant antfile="build.xml" inheritall="false"/>
+    <ant antfile="../SWTSwingTests/build.xml" inheritall="false"/>
+    <delete file="SWTSwing.zip"/>
+    <zip duplicate="preserve" destfile="Release/SWTSwing.zip">
+      <!-- SWTSwing documents -->
+      <zipfileset dir="." includes="licence.html"/>
+      <zipfileset dir="Release" includes="readme.txt,changelog.txt"/>
+      <!-- SWTSwing binaries -->
+      <zipfileset dir="../SWTSwing" includes="SWTSwing.jar,SWTSwingSnippetLauncher.jar"/>
+      <!-- SWTSwingTests sources -->
+      <zipfileset dir="../SWTSwingTests/src" prefix="src/swtswingtests"/>
+      <zipfileset dir="../org.eclipse.swt.snippets/src" prefix="src/swtswingtests"/>
+      <!-- SWTSwing sources -->
+      <zipfileset dir="../SWTSwing/Eclipse SWT/common" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT Accessibility/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT AWT/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT Browser/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT Custom Widgets/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT Drag and Drop/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT PI/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT Printing/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT Program/swing" prefix="src/swtswing"/>
+      <!-- SWT sources -->
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT/common" prefix="src/swtswing">
+        <exclude name="library/**"/>
+	  </zipfileset>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT/common_j2se" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT PI/common_j2se" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT Accessibility/common" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT AWT/common" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT Browser/common" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT Custom Widgets/common" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT Drag and Drop/common" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT Printing/common" prefix="src/swtswing"/>
+      <zipfileset dir="../org.eclipse.swt/Eclipse SWT Program/common" prefix="src/swtswing"/>
+	</zip>
+  </target>
+
+</project>

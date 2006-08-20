@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0002 (xxxxxxxxxxxxxxx):
 
+- Combo box size is constrained in height.
+- Border style for scale is supported.
 - ExpandBar background is changed to respect desktop color.
 - Label alignment is fixed.
 

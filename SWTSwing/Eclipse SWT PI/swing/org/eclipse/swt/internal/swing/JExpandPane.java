@@ -71,7 +71,7 @@ class JExpandPaneLayout implements LayoutManager {
   }
 }
 
-public class JExpandPane extends JComponent {
+public class JExpandPane extends JPanel {
 
   public static class JExpandPaneItem extends JPanel {
 
@@ -164,6 +164,7 @@ public class JExpandPane extends JComponent {
 
   public JExpandPane() {
     expandPaneLayout = new JExpandPaneLayout();
+    setBackground(UIManager.getColor("desktop"));
     setLayout(expandPaneLayout);
   }
 

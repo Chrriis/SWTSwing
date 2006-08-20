@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0002 (xxxxxxxxxxxxxxx):
 
+- ExpandBar background is changed to respect desktop color.
 - Label alignment is fixed.
 
 

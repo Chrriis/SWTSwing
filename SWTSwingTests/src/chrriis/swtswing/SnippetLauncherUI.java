@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import javax.swing.BorderFactory;
@@ -56,6 +57,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -89,6 +92,8 @@ public class SnippetLauncherUI extends JFrame {
   protected static final String LAUNCH_TEXT = "Launch";
   protected static final String TERMINATE_TEXT = "Terminate";
 
+  protected static final Color HIGHLIGHT_COLOR = Color.YELLOW;
+
   protected JButton viewSourceButton;
   protected JButton launchButton;
   protected JComboBox swtComboBox;
@@ -100,6 +105,8 @@ public class SnippetLauncherUI extends JFrame {
   protected JTextField lookAndFeelClassPathField;
   protected JTextField classPathField;
   protected JTextField libraryPathField;
+
+  protected String filterText;
 
   public SnippetLauncherUI() {
     super("SWTSwing Snippet Launcher");
@@ -119,7 +126,30 @@ public class SnippetLauncherUI extends JFrame {
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitPane.setContinuousLayout(true);
     JPanel leftComponent = new JPanel(new BorderLayout(0, 0));
-    leftComponent.add(new JScrollPane(createSnippetTree()), BorderLayout.CENTER);
+    final JTextField filterTextField = new JTextField();
+    leftComponent.add(filterTextField, BorderLayout.NORTH);
+    final JTree snippetTree = createSnippetTree();
+    filterTextField.getDocument().addDocumentListener(new DocumentListener() {
+      public void changedUpdate(DocumentEvent e) {
+        validateSelection();
+      }
+      public void insertUpdate(DocumentEvent e) {
+        validateSelection();
+      }
+      public void removeUpdate(DocumentEvent e) {
+        validateSelection();
+      }
+      protected void validateSelection() {
+        filterText = filterTextField.getText();
+        if(filterText.length() == 0) {
+          filterText = null;
+        } else {
+          filterText = filterText.toLowerCase(Locale.ENGLISH);
+        }
+        snippetTree.repaint();
+      }
+    });
+    leftComponent.add(new JScrollPane(snippetTree), BorderLayout.CENTER);
     splitPane.setLeftComponent(leftComponent);
     JPanel centerPane = new JPanel(new BorderLayout());
     JPanel swtSelectionPane = new JPanel(new BorderLayout());
@@ -437,6 +467,7 @@ public class SnippetLauncherUI extends JFrame {
     tree.setCellRenderer(new DefaultTreeCellRenderer() {
       public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         DefaultTreeCellRenderer c = (DefaultTreeCellRenderer)super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+        c.setOpaque(false);
         if(value instanceof Snippet) {
           Snippet snippet = (Snippet)value;
           switch(snippet.getStatus()) {
@@ -445,12 +476,18 @@ public class SnippetLauncherUI extends JFrame {
           case Snippet.PARTIALLY_WORKING: c.setIcon(PARTIALLY_WORKING_ICON); break;
           case Snippet.NOT_WORKING: c.setIcon(NOT_WORKING_ICON); break;
           }
+          if(filterText != null && c.getText().toLowerCase(Locale.ENGLISH).contains(filterText)) {
+            c.setOpaque(true);
+            c.setBackground(HIGHLIGHT_COLOR);
+          }
         } else if(value instanceof SnippetCategory) {
           Snippet[] snippets = ((SnippetCategory)value).getSnippets();
           int total = 0;
           int achieved = 0;
+          boolean isFound = false;
           for(int i=0; i<snippets.length; i++) {
-            switch(snippets[i].getStatus()) {
+            Snippet snippet = snippets[i];
+            switch(snippet.getStatus()) {
             case Snippet.WORKING:
               total += 2;
               achieved += 2;
@@ -462,6 +499,9 @@ public class SnippetLauncherUI extends JFrame {
             case Snippet.NOT_WORKING:
               total += 2;
               break;
+            }
+            if(!isFound && filterText != null && snippet.toString().toLowerCase(Locale.ENGLISH).contains(filterText)) {
+              isFound = true;
             }
           }
           int ratio = total == 0? -1: Math.round(((float)achieved) * 14 / total);
@@ -484,6 +524,10 @@ public class SnippetLauncherUI extends JFrame {
             icon = new ImageIcon(image);
           }
           c.setIcon(icon);
+          if(isFound) {
+            c.setOpaque(true);
+            c.setBackground(HIGHLIGHT_COLOR);
+          }
         } else {
           c.setIcon(ROOT_ICON);
         }

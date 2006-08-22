@@ -458,7 +458,7 @@ public void close () {
 	closeWidget ();
 }
 
-Container createHandle () {
+protected Container createHandle () {
   CShell parentShell = parent != null? (CShell)parent.handle: null;
   return (Container)CShell.Instanciator.createInstance(this, parentShell, style);
 //	boolean embedded = handle != 0;

@@ -158,7 +158,7 @@ boolean autoAddChildren() {
   return false;
 }
 
-Container createHandle () {
+protected Container createHandle () {
   state &= ~CANVAS;
   return (Container)CToolBar.Instanciator.createInstance(this, style);
 //  super.createHandle ();

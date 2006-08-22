@@ -226,7 +226,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 
-Container createHandle () {
+protected Container createHandle () {
   state |= CANVAS;
   if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
     state |= THEME_BACKGROUND;

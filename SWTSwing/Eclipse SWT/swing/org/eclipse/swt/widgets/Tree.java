@@ -327,7 +327,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
   return super.computeTrim(x, y, width, height);
 }
 
-Container createHandle () {
+protected Container createHandle () {
   state &= ~(CANVAS | THEME_BACKGROUND);
   return (Container)CTree.Instanciator.createInstance(this, style);
 }

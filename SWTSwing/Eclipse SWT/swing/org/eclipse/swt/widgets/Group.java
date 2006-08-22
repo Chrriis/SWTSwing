@@ -190,7 +190,7 @@ protected void checkSubclass () {
 //	return trim;
 //}
 
-Container createHandle () {
+protected Container createHandle () {
   state |= DRAW_BACKGROUND;
   state &= ~CANVAS;
   return (Container)CGroup.Instanciator.createInstance(this, style);

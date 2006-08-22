@@ -119,7 +119,7 @@ boolean autoAddChildren() {
   return false;
 }
 
-Container createHandle () {
+protected Container createHandle () {
   state &= ~CANVAS;
   return (Container)CExpandBar.Instanciator.createInstance(this, style);
 }

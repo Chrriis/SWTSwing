@@ -8,6 +8,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -20,6 +21,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -69,6 +71,16 @@ class CListImplementation extends JScrollPane implements CList {
 
   public Container getClientArea() {
     return list;
+  }
+
+  public Dimension getPreferredSize() {
+    int itemCount = getItemCount();
+    int height = super.getPreferredSize().height;
+    if(itemCount > 0) {
+      Rectangle bounds = list.getCellBounds(itemCount - 1, itemCount - 1);
+      height = bounds.y + 2 * bounds.height + SwingUtilities.convertPoint(list, 0, 0, this).y + 1;
+    }
+    return new Dimension(super.getPreferredSize().width, height);
   }
 
   public void addElement(Object obj) {

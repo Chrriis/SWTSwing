@@ -14,8 +14,6 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.plaf.basic.BasicHTML;
-import javax.swing.text.View;
 
 public class JMultiLineLabel extends JPanel implements SwingConstants {
 
@@ -29,14 +27,14 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
 //    }
 
     public Dimension getPreferredSize() {
-      if(isWrapping) {
-        Dimension preferredSize = super.getPreferredSize();
-        View view = ((View)getClientProperty(BasicHTML.propertyKey)).getView(0);
-        Dimension size = super.getSize();
-        view.setSize(size.width, 0);
-        preferredSize.height = super.getPreferredSize().height;
-        return preferredSize;
-      }
+//      if(isWrapping) {
+//        Dimension preferredSize = super.getPreferredSize();
+//        View view = ((View)getClientProperty(BasicHTML.propertyKey)).getView(0);
+//        Dimension size = super.getSize();
+//        view.setSize(size.width, 0);
+//        preferredSize.height = super.getPreferredSize().height;
+//        return preferredSize;
+//      }
       Dimension size = super.getPreferredSize();
       if(getIcon() == null && getText().length() == 0) {
         size.height += getFontMetrics(getFont()).getHeight();

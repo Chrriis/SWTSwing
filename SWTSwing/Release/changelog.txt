@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0002 (xxxxxxxxxxxxxxx):
 
+- Preferred width of a wrapping label is fixed.
+- Preferred width of a list is fixed.
 - Browser is added using the really-limited JEditorPane class.
 - Border style is now supported for scale.
 - SnippetLauncher now offers a filter box.

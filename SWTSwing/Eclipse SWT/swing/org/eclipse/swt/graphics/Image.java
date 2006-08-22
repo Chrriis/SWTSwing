@@ -1054,20 +1054,37 @@ void init(Device device, int width, int height) {
 }
 
 static int[] init(Device device, Image image, ImageData i) {
+	int index = i.transparentPixel;
+//	System.out.println("index: " + index);
+	
 	if (image != null) image.device = device;
   image.handle = new BufferedImage(i.width, i.height, BufferedImage.TYPE_INT_ARGB);
   ImageData transparencyMask = i.getTransparencyMask();
+  
   for(int x=image.handle.getWidth()-1; x >= 0; x--) {
     for(int j=image.handle.getHeight()-1; j >= 0; j--) {
       int alpha = i.getAlpha(x, j);
-      if(transparencyMask != null) {
-        RGB alphaMask = i.palette.getRGB(transparencyMask.getPixel(x, j));
-        if(alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0) {
-          alpha = 0;
-        }
-      }
+      
       int pixel = i.getPixel(x, j);
       RGB rgb = i.palette.getRGB(pixel);
+      
+      if(transparencyMask != null) {
+    	  // Edited by Dieter Krachtus
+          RGB alphaMask = i.palette.getRGB(transparencyMask.getPixel(x, j));
+          boolean hasAlphaMask = alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0;
+          if(hasAlphaMask) {
+            alpha = 0;
+          }
+          else {
+        	  boolean isBlack = (rgb.red == 0 && rgb.green == 0 && rgb.blue == 0);
+        	  boolean isWhite = (rgb.red == 255 && rgb.green == 255 && rgb.blue == 255);
+        	  
+            if(isBlack || isWhite) {
+                alpha = 0;
+            }
+          }
+      }
+      
       image.handle.setRGB(x, j, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
     }
   }

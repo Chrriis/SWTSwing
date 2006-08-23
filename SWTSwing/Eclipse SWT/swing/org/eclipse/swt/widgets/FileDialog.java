@@ -178,16 +178,23 @@ public String open () {
     fileChooser.setAcceptAllFileFilterUsed(false);
     for(int i=0; i<filterExtensions.length; i++) {
       String filterExtension = filterExtensions[i];
-      String regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
-      final Pattern pattern = Pattern.compile(regExp.toString());
+      final String[] filters = filterExtensions[i].split(";");
       final String description = (filterNames == null || i >= filterNames.length)? filterExtension: filterNames[i];
       fileChooser.addChoosableFileFilter(new FileFilter() {
         public boolean accept(File f) {
           if(f.isDirectory()) {
             return true;
           }
-          Matcher m = pattern.matcher(f.getName());
-          return m.matches();
+          for(int i=0; i<filters.length; i++) {
+            String filterExtension = filters[i].trim();
+            String regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
+            final Pattern pattern = Pattern.compile(regExp.toString());
+            Matcher m = pattern.matcher(f.getName());
+            if(m.matches()) {
+              return true;
+            }
+          }
+          return false;
         }
         public String getDescription() {
           return description;

@@ -1053,30 +1053,10 @@ void init(Device device, int width, int height) {
   handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 }
 
-//ImageData transparencyMask = i.getTransparencyMask();
-//
-//for(int x=image.handle.getWidth()-1; x >= 0; x--) {
-//  for(int j=image.handle.getHeight()-1; j >= 0; j--) {
-//    int alpha = i.getAlpha(x, j);
-//    
-//    int pixel = i.getPixel(x, j);
-//    RGB rgb = i.palette.getRGB(pixel);
-//    
-//    if(transparencyMask != null) {
-//  	  // FIXME by Dieter Krachtus - Consider Review!
-//        RGB alphaMask = i.palette.getRGB(transparencyMask.getPixel(x, j));
-//        boolean hasAlphaMask = alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0;
-//        if(hasAlphaMask) {
-//          alpha = 0;
-//        }
-//    }
-
-// FIXME by Dieter Krachtus - Consider Review!!!
 static int[] init(Device device, Image image, ImageData i) {
   if (image != null) image.device = device;
   image.handle = new BufferedImage(i.width, i.height, BufferedImage.TYPE_INT_ARGB);
   ImageData transparencyMask = i.getTransparencyMask();
-  
   RGB argb = i.transparentPixel<0 ? null : i.getRGBs()[i.transparentPixel];
   for(int x=image.handle.getWidth()-1; x >= 0; x--) {
     for(int j=image.handle.getHeight()-1; j >= 0; j--) {
@@ -1320,81 +1300,6 @@ static int[] init(Device device, Image image, ImageData i) {
 //	return result;
 }
 
-//static int[] init(Device device, Image image, ImageData source, ImageData mask) {
-//	/* Create a temporary image and locate the black pixel */
-//	ImageData imageData;
-//	int blackIndex = 0;
-//	if (source.palette.isDirect) {
-//		imageData = new ImageData(source.width, source.height, source.depth, source.palette);
-//	} else {
-//		RGB black = new RGB(0, 0, 0);
-//		RGB[] rgbs = source.getRGBs();
-//		if (source.transparentPixel != -1) {
-//			/*
-//			 * The source had transparency, so we can use the transparent pixel
-//			 * for black.
-//			 */
-//			RGB[] newRGBs = new RGB[rgbs.length];
-//			System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
-//			if (source.transparentPixel >= newRGBs.length) {
-//				/* Grow the palette with black */
-//				rgbs = new RGB[source.transparentPixel + 1];
-//				System.arraycopy(newRGBs, 0, rgbs, 0, newRGBs.length);
-//				for (int i = newRGBs.length; i <= source.transparentPixel; i++) {
-//					rgbs[i] = new RGB(0, 0, 0);
-//				}
-//			} else {
-//				newRGBs[source.transparentPixel] = black;
-//				rgbs = newRGBs;
-//			}
-//			blackIndex = source.transparentPixel;
-//			imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
-//		} else {
-//			while (blackIndex < rgbs.length) {
-//				if (rgbs[blackIndex].equals(black)) break;
-//				blackIndex++;
-//			}
-//			if (blackIndex == rgbs.length) {
-//				/*
-//				 * We didn't find black in the palette, and there is no transparent
-//				 * pixel we can use.
-//				 */
-//				if ((1 << source.depth) > rgbs.length) {
-//					/* We can grow the palette and add black */
-//					RGB[] newRGBs = new RGB[rgbs.length + 1];
-//					System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
-//					newRGBs[rgbs.length] = black;
-//					rgbs = newRGBs;
-//				} else {
-//					/* No room to grow the palette */
-//					blackIndex = -1;
-//				}
-//			}
-//			imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
-//		}
-//	}
-//	if (blackIndex == -1) {
-//		/* There was no black in the palette, so just copy the data over */
-//		System.arraycopy(source.data, 0, imageData.data, 0, imageData.data.length);
-//	} else {
-//		/* Modify the source image to contain black wherever the mask is 0 */
-//		int[] imagePixels = new int[imageData.width];
-//		int[] maskPixels = new int[mask.width];
-//		for (int y = 0; y < imageData.height; y++) {
-//			source.getPixels(0, y, imageData.width, imagePixels, 0);
-//			mask.getPixels(0, y, mask.width, maskPixels, 0);
-//			for (int i = 0; i < imagePixels.length; i++) {
-//				if (maskPixels[i] == 0) imagePixels[i] = blackIndex;
-//			}
-//			imageData.setPixels(0, y, source.width, imagePixels, 0);
-//		}
-//	}
-//	imageData.maskPad = mask.scanlinePad;
-//	imageData.maskData = mask.data;	
-//	return init(device, image, imageData);
-//}
-
-// FIXME by Dieter Krachtus - Consider Review!!!
 static int[] init(Device device, Image image, ImageData source, ImageData mask) {
 	ImageData imageData;
 	if (source.palette.isDirect) {

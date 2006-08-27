@@ -4246,6 +4246,9 @@ private void showPopup(java.awt.event.MouseEvent e) {
 }
 
 Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputState) {
+  if(me == null) {
+    return null;
+  }
   Event event = new Event();
   Container container = handle;
   java.awt.Point point = me.getPoint();
@@ -4269,6 +4272,9 @@ Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputStat
 }
 
 Event createKeyEvent(java.awt.event.KeyEvent ke) {
+  if(ke == null) {
+    return null;
+  }
   Event event = new Event();
   Container container = handle;
   if(container instanceof RootPaneContainer) {

@@ -456,7 +456,12 @@ public void processEvent(EventObject e) {
   }
   if(e instanceof ChangeEvent) {
 //    ChangeEvent ce = (ChangeEvent)e;
-    sendEvent(SWT.Selection);
+    int index = ((CTabFolder)handle).getSelectedIndex();
+    Event event = new Event();
+    if(index >= 0) {
+      event.item = (Widget)itemList.get(index);
+    }
+    sendEvent(SWT.Selection, event);
   }
   super.processEvent(e);
   display.stopExclusiveSection();

@@ -385,8 +385,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * which they allocate.
  */
 public void dispose() {
-  Graphics2D handle = getGraphics();
-	if (handle == null) return;
+	if (this.handle == null) return;
 //	if (data.device.isDisposed()) return;
 	
 //	if (data.gdipGraphics != 0) Gdip.Graphics_delete(data.gdipGraphics);
@@ -2769,7 +2768,6 @@ void init(Drawable drawable, GCData data, Graphics2D handle) {
  * @see #equals
  */
 public int hashCode () {
-  Graphics2D handle = getGraphics();
   return handle == null? 0: handle.hashCode();
 }
 
@@ -3785,21 +3783,28 @@ BasicStroke getCurrentBasicStroke() {
 }
 
 public boolean isValid = false;
+Graphics2D validGraphics;
 
 Graphics2D getGraphics() {
+  if(handle == null) return null;
   if(isValid || !(drawable instanceof Control)) return handle;
+  // TODO: check that this optimization is correct.
+  if(validGraphics != null) return validGraphics;
   Container container = ((Control)drawable).handle;
-  Container parent = container;
-  for(; parent != null && parent.isLightweight(); parent = parent.getParent());
-  if(parent == null || parent == container) {
-    return handle;
+  Graphics2D g = (Graphics2D)((CComponent)container).getClientArea().getGraphics();
+  int offsetX = 0;
+  int offsetY = 0;
+  for(Container parent = container; parent != null && parent.isLightweight(); parent = parent.getParent()) {
+    if(!parent.isVisible()) {
+      g.clipRect(0, 0, 0, 0);
+      break;
+    }
+    java.awt.Rectangle rectangle = parent.getBounds();
+    g.clipRect(-offsetX, -offsetY, rectangle.width, rectangle.height);
+    offsetX += parent.getX();
+    offsetY += parent.getY();
   }
-  Container clientArea = ((CComponent)container).getClientArea();
-  java.awt.Point p = SwingUtilities.convertPoint(clientArea, new java.awt.Point(0, 0), parent);
-  Graphics2D g = (Graphics2D)parent.getGraphics();
-  g.translate(p.x, p.y);
-  g.setClip(handle.getClip());
-  g.clipRect(0, 0, clientArea.getWidth(), clientArea.getHeight());
+  validGraphics = g;
   return g;
 }
 

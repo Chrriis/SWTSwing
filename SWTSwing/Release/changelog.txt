@@ -7,6 +7,14 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0002 (xxxxxxxxxxxxxxx):
 
+- Selection event is now sent upon selection of a combo item.
+- Fixed a problem when some events were sent and the tree was empty.
+- removeXXX() methods are implemented.
+- Some fixes to the clipping of the GC.
+- syncExec() and asyncExec() were flawed and should be fixed now.
+- The TabFolder Selection event now sets the item the event structure.
+- Multi file extensions in a single filter is now supported.
+- Image bug realted with transparency is fixed.
 - Preferred width of a wrapping label is fixed.
 - Preferred width of a list is fixed.
 - Browser is added using the really-limited JEditorPane class.

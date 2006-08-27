@@ -134,123 +134,34 @@ import org.eclipse.swt.internal.swing.Utils;
 
 public class Display extends Device {
 
-//	/**
-//	 * the handle to the OS message queue
-//	 * (Warning: This field is platform dependent)
-//	 * <p>
-//	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-//	 * public API. It is marked public only so that it can be shared
-//	 * within the packages provided by SWT. It is not available on all
-//	 * platforms and should never be accessed from application code.
-//	 * </p>
-//	 */
-//	public MSG msg = new MSG ();
-//
-//	/* Windows and Events */
 	Event [] eventQueue;
-//	Callback windowCallback;
-//	int windowProc, threadId;
-//	TCHAR windowClass, windowShadowClass;
-//	static int WindowClassCount;
-//	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
-//	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
 	EventTable eventTable, filterTable;
   Vector timerList = new Vector();
   boolean runMessages = true, runMessagesInIdle = false;
   static final String RUN_MESSAGES_IN_IDLE_KEY = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
-//
-//	/* Widget Table */
-//	int freeSlot;
-//	int [] indexTable;
-//	Control [] controlTable;
-//	static final int GROW_SIZE = 1024;
-//	static final int SWT_OBJECT_INDEX;
-//	static final boolean USE_PROPERTY = !OS.IsWinCE;
-//	static {
-//		if (USE_PROPERTY) {
-//			SWT_OBJECT_INDEX = OS.GlobalAddAtom (new TCHAR (0, "SWT_OBJECT_INDEX", true)); //$NON-NLS-1$
-//		} else {
-//			SWT_OBJECT_INDEX = 0;
-//		}
-//	}
-//	
-//	/* Focus */
-//	int focusEvent;
-//	Control focusControl;
 	
 	/* Menus */
 	Menu [] bars, popups;
 	ArrayList menuItemsList = new ArrayList();
 	
-//	/*
-//	* The start value for WM_COMMAND id's.
-//	* Windows reserves the values 0..100.
-//	* 
-//	* The SmartPhone SWT resource file reserves
-//	* the values 101..107.
-//	*/
-//	static final int ID_START = 108;
-//	
-//	/* Filter Hook */
-//	Callback msgFilterCallback;
-//	int msgFilterProc, filterHook;
-//	MSG hookMsg = new MSG ();
-//	boolean ignoreMsgFilter;
-//	
-//	/* Idle Hook */
-//	Callback foregroundIdleCallback;
-//	int foregroundIdleProc, idleHook;
-//	
-//	/* Message Hook and Embedding */
-//	Callback getMsgCallback, embeddedCallback;
-//	int getMsgProc, msgHook, embeddedHwnd, embeddedProc;
 //	static final String AWT_WINDOW_CLASS = "SunAwtWindow";
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
 
-//	/* Display Shutdown */
+	/* Display Shutdown */
   ArrayList disposeList;
 //	Runnable [] disposeList;
 	
 	/* System Tray */
 	Tray tray;
-//	int nextTrayId = 0;
-	
-//	/* Timers */
-//	int [] timerIds;
-//	Runnable [] timerList;
-//	int nextTimerId;
-//	
-//	/* Keyboard and Mouse State */
-//	int lastKey, lastAscii, lastMouse;
-//	boolean lastVirtual, lastNull, lastDead;
-//	byte [] keyboard = new byte [256];
-//	boolean accelKeyHit, mnemonicKeyHit;
-//	boolean lockActiveWindow;
-//	
-//	/* MDI */
-//	boolean ignoreRestoreFocus;
-//	Control lastHittestControl;
-//	int lastHittest;
-//	
-//	/* Message Only Window */
-//	Callback messageCallback;
-//	int hwndMessage, messageProc;
-//	int [] systemFonts;
 	
 	/* System Images Cache */
 	java.awt.Image errorIcon, infoIcon, questionIcon, warningIcon;
 
 	/* System Cursors Cache */
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
-//
-//	/* ImageList Cache */	
-//	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
-//
-//	/* Custom Colors for ChooseColor */
-//	int lpCustColors;
 
 	/* Display Data */
 	Object data;
@@ -350,27 +261,8 @@ public class Display extends Device {
 	Shell modalDialogShell;
 	static boolean TrimEnabled = false;
 
-//	/* Private SWT Window Messages */
-//	static final int SWT_GETACCELCOUNT	= OS.WM_APP;
-//	static final int SWT_GETACCEL 		= OS.WM_APP + 1;
-//	static final int SWT_KEYMSG	 		= OS.WM_APP + 2;
-//	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
-//	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
-//	static int SWT_TASKBARCREATED;
-	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
-	/*
-	* This code is intentionally commented.  In order
-	* to support CLDC, .class cannot be used because
-	* it does not compile on some Java compilers when
-	* they are targeted for CLDC.
-	*/
-//	static {
-//		String name = Display.class.getName ();
-//		int index = name.lastIndexOf ('.');
-//		PACKAGE_PREFIX = name.substring (0, index + 1);
-//	}
 
   static {
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
@@ -523,10 +415,6 @@ public static void swtExec(Runnable runnable) {
   SwingUtilities.invokeLater(runnable);
 }
 
-//Control _getFocusControl () {
-//	return findControl (OS.GetFocus ());
-//}
-
 void addBar (Menu menu) {
 	if (bars == null) bars = new Menu [4];
 	int length = bars.length;
@@ -549,26 +437,6 @@ void addBar (Menu menu) {
 void addControl (Component handle, Control control) {
 	if (handle == null) return;
   componentToControlMap.put(handle, control);
-//	if (freeSlot == -1) {
-//		int length = (freeSlot = indexTable.length) + GROW_SIZE;
-//		int [] newIndexTable = new int [length];
-//		Control [] newControlTable = new Control [length];
-//		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
-//		System.arraycopy (controlTable, 0, newControlTable, 0, freeSlot);
-//		for (int i=freeSlot; i<length-1; i++) newIndexTable [i] = i + 1;
-//		newIndexTable [length - 1] = -1;
-//		indexTable = newIndexTable;
-//		controlTable = newControlTable;
-//	}
-//	if (USE_PROPERTY) {
-//		OS.SetProp (handle, SWT_OBJECT_INDEX, freeSlot + 1);
-//	} else {
-//		OS.SetWindowLong (handle, OS.GWL_USERDATA, freeSlot + 1);
-//	}
-//	int oldSlot = freeSlot;
-//	freeSlot = indexTable [oldSlot];
-//	indexTable [oldSlot] = -2;
-//	controlTable [oldSlot] = control;
 }
 
 /**
@@ -647,19 +515,6 @@ public void addListener (int eventType, Listener listener) {
 
 void addMenuItem (MenuItem item) {
   menuItemsList.add(item);
-//	if (items == null) items = new MenuItem [64];
-//	for (int i=0; i<items.length; i++) {
-//		if (items [i] == null) {
-//			item.id = i + ID_START;
-//			items [i] = item;
-//			return;
-//		}
-//	}
-//	item.id = items.length + ID_START;
-//	MenuItem [] newItems = new MenuItem [items.length + 64];
-//	newItems [items.length] = item;
-//	System.arraycopy (items, 0, newItems, 0, items.length);
-//	items = newItems;
 }
 
 void addPopup (Menu menu) {
@@ -680,24 +535,6 @@ void addPopup (Menu menu) {
 	}
 	popups [index] = menu;
 }
-
-//int asciiKey (int key) {
-//	if (OS.IsWinCE) return 0;
-//	
-//	/* Get the current keyboard. */
-//	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
-//	if (!OS.GetKeyboardState (keyboard)) return 0;
-//		
-//	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
-//	if (OS.IsUnicode) {
-//		char [] result = new char [1];
-//		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
-//	} else {
-//		short [] result = new short [1];
-//		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
-//	}
-//	return 0;
-//}
 
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -770,28 +607,6 @@ static synchronized void checkDisplay (Thread thread, boolean multiple) {
     }
   }
 }
-
-//void clearModal (Shell shell) {
-//	if (modalShells == null) return;
-//	int index = 0, length = modalShells.length;
-//	while (index < length) {
-//		if (modalShells [index] == shell) break;
-//		if (modalShells [index] == null) return;
-//		index++;
-//	}
-//	if (index == length) return;
-//	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
-//	modalShells [length] = null;
-//	if (index == 0 && modalShells [0] == null) modalShells = null;
-//	Shell [] shells = getShells ();
-//	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
-//}
-//
-//int controlKey (int key) {
-//	int upper = OS.CharUpper ((short) key);
-//	if (64 <= upper && upper <= 95) return upper & 0xBF;
-//	return key;
-//}
 
 /**
  * Requests that the connection between SWT and the underlying
@@ -887,50 +702,7 @@ public void disposeExec (Runnable runnable) {
 	checkDevice ();
   if (disposeList == null) disposeList = new ArrayList();
   disposeList.add(runnable);
-//	if (disposeList == null) disposeList = new Runnable [4];
-//	for (int i=0; i<disposeList.length; i++) {
-//		if (disposeList [i] == null) {
-//			disposeList [i] = runnable;
-//			return;
-//		}
-//	}
-//	Runnable [] newDisposeList = new Runnable [disposeList.length + 4];
-//	System.arraycopy (disposeList, 0, newDisposeList, 0, disposeList.length);
-//	newDisposeList [disposeList.length] = runnable;
-//	disposeList = newDisposeList;
 }
-
-//void drawMenuBars () {
-//	if (bars == null) return;
-//	for (int i=0; i<bars.length; i++) {
-//		Menu menu = bars [i];
-//		if (menu != null && !menu.isDisposed ()) menu.update ();
-//	}
-//	bars = null;
-//}
-//
-//int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
-//	switch (msg) {
-//		case SWT_KEYMSG: {
-//			MSG keyMsg = new MSG ();
-//			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
-//			OS.TranslateMessage (keyMsg);
-//			OS.DispatchMessage (keyMsg);
-//			int hHeap = OS.GetProcessHeap ();
-//			OS.HeapFree (hHeap, 0, lParam);
-//			break;
-//		}
-//		case SWT_DESTROY: {
-//			OS.DestroyWindow (hwnd);
-//			if (embeddedCallback != null) embeddedCallback.dispose ();
-//			if (getMsgCallback != null) getMsgCallback.dispose ();
-//			embeddedCallback = getMsgCallback = null;
-//			embeddedProc = getMsgProc = 0;
-//			break;
-//		}
-//	}
-//	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
-//}
 
 /**
  * Does whatever display specific cleanup is required, and then
@@ -964,87 +736,6 @@ Control findControl (Component handle) {
   } while ((handle = handle.getParent()) != null);
   return null;
 }
-
-//boolean filterMessage (MSG msg) {
-//	int message = msg.message;
-//	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
-//		Control control = findControl (msg.hwnd);
-//		if (control != null) {
-//			if (translateAccelerator (msg, control) || translateMnemonic (msg, control) || translateTraversal (msg, control)) {	
-//				lastAscii = lastKey = 0;
-//				lastVirtual = lastNull = lastDead = false;
-//				return true;
-//			}
-//		}
-//	}
-//	return false;
-//}
-//
-//Control findControl (int handle) {
-//	if (handle == 0) return null;
-//	do {
-//		Control control = getControl (handle);
-//		if (control != null) return control;
-//	} while ((handle = OS.GetParent (handle)) != 0);
-//	return null;
-//}
-//
-///**
-// * Given the operating system handle for a widget, returns
-// * the instance of the <code>Widget</code> subclass which
-// * represents it in the currently running application, if
-// * such exists, or null if no matching widget can be found.
-// * <p>
-// * <b>IMPORTANT:</b> This method should not be called from
-// * application code. The arguments are platform-specific.
-// * </p>
-// *
-// * @param handle the handle for the widget
-// * @return the SWT widget that the handle represents
-// *
-// * @exception SWTException <ul>
-// *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-// *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
-// * </ul>
-// */
-//public Widget findWidget (int handle) {
-//	checkDevice ();
-//	return getControl (handle);
-//}
-//
-///**
-// * Given the operating system handle for a widget,
-// * and widget-specific id, returns the instance of
-// * the <code>Widget</code> subclass which represents
-// * the handle/id pair in the currently running application,
-// * if such exists, or null if no matching widget can be found.
-// * <p>
-// * <b>IMPORTANT:</b> This method should not be called from
-// * application code. The arguments are platform-specific.
-// * </p>
-// *
-// * @param handle the handle for the widget
-// * @param id the id for the subwidget (usually an item)
-// * @return the SWT widget that the handle/id pair represents
-// *
-// * @exception SWTException <ul>
-// *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-// *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
-// * </ul>
-// * 
-// * @since 3.1
-// */
-//public Widget findWidget (int handle, int id) {
-//	Control control = getControl (handle);
-//	return control != null ? control.findItem (id) : null;
-//}
-
-//int foregroundIdleProc (int code, int wParam, int lParam) {
-//	if (code >= 0) {
-//		if (getMessageCount () > 0) wakeThread ();
-//	}
-//	return OS.CallNextHookEx (idleHook, code, wParam, lParam);
-//}
 
 /**
  * Returns the display which the given thread is the
@@ -1140,28 +831,6 @@ public Rectangle getClientArea () {
 
 Control getControl (Component handle) {
   return (Control)componentToControlMap.get(handle);
-//	if (handle == 0) return null;
-//	int index;
-//	if (USE_PROPERTY) {
-//		index = OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
-//	} else {
-//		index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
-//	}
-//	if (0 <= index && index < controlTable.length) {
-//		Control control = controlTable [index];
-//		/*
-//		* Because GWL_USERDATA can be used by native widgets that
-//		* do not belong to SWT, it is possible that GWL_USERDATA
-//		* could return an index that is in the range of the table,
-//		* but was not put there by SWT.  Therefore, it is necessary
-//		* to check the handle of the control that is in the table
-//		* against the handle that provided the GWL_USERDATA.
-//		*/
-//		if (control != null && control.checkHandle (handle)) {
-//			return control;
-//		}
-//	}
-//	return null;
 }
 
 /**
@@ -1450,114 +1119,6 @@ public Point [] getIconSizes () {
 	};	
 }
 
-//ImageList getImageList (Point size) {
-//	if (imageList == null) imageList = new ImageList [4];
-//	
-//	int i = 0;
-//	int length = imageList.length; 
-//	while (i < length) {
-//		ImageList list = imageList [i];
-//		if (list == null) break;
-//		if (list.getImageSize().equals(size)) {
-//			list.addRef();
-//			return list;
-//		}
-//		i++;
-//	}
-//	
-//	if (i == length) {
-//		ImageList [] newList = new ImageList [length + 4];
-//		System.arraycopy (imageList, 0, newList, 0, length);
-//		imageList = newList;
-//	}
-//	
-//	ImageList list = new ImageList();
-//	imageList [i] = list;
-//	list.addRef();
-//	return list;
-//}
-//
-//ImageList getToolImageList (Point size) {
-//	if (toolImageList == null) toolImageList = new ImageList [4];
-//	
-//	int i = 0;
-//	int length = toolImageList.length; 
-//	while (i < length) {
-//		ImageList list = toolImageList [i];
-//		if (list == null) break;
-//		if (list.getImageSize().equals(size)) {
-//			list.addRef();
-//			return list;
-//		}
-//		i++;
-//	}
-//	
-//	if (i == length) {
-//		ImageList [] newList = new ImageList [length + 4];
-//		System.arraycopy (toolImageList, 0, newList, 0, length);
-//		toolImageList = newList;
-//	}
-//	
-//	ImageList list = new ImageList();
-//	toolImageList [i] = list;
-//	list.addRef();
-//	return list;
-//}
-//
-//ImageList getToolHotImageList (Point size) {
-//	if (toolHotImageList == null) toolHotImageList = new ImageList [4];
-//	
-//	int i = 0;
-//	int length = toolHotImageList.length; 
-//	while (i < length) {
-//		ImageList list = toolHotImageList [i];
-//		if (list == null) break;
-//		if (list.getImageSize().equals(size)) {
-//			list.addRef();
-//			return list;
-//		}
-//		i++;
-//	}
-//	
-//	if (i == length) {
-//		ImageList [] newList = new ImageList [length + 4];
-//		System.arraycopy (toolHotImageList, 0, newList, 0, length);
-//		toolHotImageList = newList;
-//	}
-//	
-//	ImageList list = new ImageList();
-//	toolHotImageList [i] = list;
-//	list.addRef();
-//	return list;
-//}
-//
-//ImageList getToolDisabledImageList (Point size) {
-//	if (toolDisabledImageList == null) toolDisabledImageList = new ImageList [4];
-//	
-//	int i = 0;
-//	int length = toolDisabledImageList.length; 
-//	while (i < length) {
-//		ImageList list = toolDisabledImageList [i];
-//		if (list == null) break;
-//		if (list.getImageSize().equals(size)) {
-//			list.addRef();
-//			return list;
-//		}
-//		i++;
-//	}
-//	
-//	if (i == length) {
-//		ImageList [] newList = new ImageList [length + 4];
-//		System.arraycopy (toolDisabledImageList, 0, newList, 0, length);
-//		toolDisabledImageList = newList;
-//	}
-//	
-//	ImageList list = new ImageList();
-//	toolDisabledImageList [i] = list;
-//	list.addRef();
-//	return list;
-//}
-
 static long lastTime = System.currentTimeMillis();
 
 int getLastEventTime () {
@@ -1577,22 +1138,6 @@ MenuItem getMenuItem (JComponent component) {
 int getMessageCount () {
 	return synchronizer.getMessageCount ();
 }
-
-//
-//Shell getModalShell () {
-//	if (modalShells == null) return null;
-//	int index = modalShells.length;
-//	while (--index >= 0) {
-//		Shell shell = modalShells [index];
-//		if (shell != null) return shell;
-//	}
-//	return null;
-//}
-//
-//Shell getModalDialogShell () {
-//	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-//	return modalDialogShell;
-//}
 
 /**
  * Returns an array of monitors attached to the device.
@@ -1631,43 +1176,6 @@ public Monitor [] getMonitors () {
   }
   return (Monitor[])monitorsList.toArray(new Monitor[0]);
 }
-
-//int getMsgProc (int code, int wParam, int lParam) {
-//	if (embeddedHwnd == 0) {
-//		int hInstance = OS.GetModuleHandle (null);
-//		embeddedHwnd = OS.CreateWindowEx (0,
-//			windowClass,
-//			null,
-//			OS.WS_OVERLAPPED,
-//			0, 0, 0, 0,
-//			0,
-//			0,
-//			hInstance,
-//			null);
-//		embeddedCallback = new Callback (this, "embeddedProc", 4); //$NON-NLS-1$
-//		embeddedProc = embeddedCallback.getAddress ();
-//		if (embeddedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-//		OS.SetWindowLong (embeddedHwnd, OS.GWL_WNDPROC, embeddedProc);
-//	}
-//	if (code >= 0 && wParam != OS.PM_NOREMOVE) {
-//		MSG msg = new MSG ();
-//		OS.MoveMemory (msg, lParam, MSG.sizeof);
-//		switch (msg.message) {
-//			case OS.WM_KEYDOWN:
-//			case OS.WM_KEYUP:
-//			case OS.WM_SYSKEYDOWN:
-//			case OS.WM_SYSKEYUP: {
-//				int hHeap = OS.GetProcessHeap ();
-//				int keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
-//				OS.MoveMemory (keyMsg, msg, MSG.sizeof);
-//				OS.PostMessage (hwndMessage, SWT_KEYMSG, wParam, keyMsg);
-//				msg.message = OS.WM_NULL;
-//				OS.MoveMemory (lParam, msg, MSG.sizeof);
-//			}
-//		}
-//	}
-//	return OS.CallNextHookEx (msgHook, code, wParam, lParam);
-//}
 
 /**
  * Returns the primary monitor for that device.
@@ -2024,12 +1532,9 @@ public Graphics2D internal_new_GC (GCData data) {
 //		data.hFont = systemFont ();
 //	}
 //	return hDC;
-  // TODO: implement
-//  throw new IllegalStateException("Not implemented!");
   Frame[] frames = Frame.getFrames ();
   for (int i = 0; i < frames.length; i++) {
     if (frames[i].isActive ()) {
-      // active frame
       return (Graphics2D) frames[i].getGraphics ();
     }
   }
@@ -2047,99 +1552,6 @@ public Graphics2D internal_new_GC (GCData data) {
  */
 protected void init () {
 	super.init ();
-//		
-//	/* Create the callbacks */
-//	windowCallback = new Callback (this, "windowProc", 4); //$NON-NLS-1$
-//	windowProc = windowCallback.getAddress ();
-//	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-//	
-//	/* Remember the current thread id */
-//	threadId = OS.GetCurrentThreadId ();
-//	
-//	/* Use the character encoding for the default locale */
-//	windowClass = new TCHAR (0, WindowName + WindowClassCount, true);
-//	windowShadowClass = new TCHAR (0, WindowShadowName + WindowClassCount, true);
-//	WindowClassCount++;
-//
-//	/* Register the SWT window class */
-//	int hHeap = OS.GetProcessHeap ();
-//	int hInstance = OS.GetModuleHandle (null);
-//	WNDCLASS lpWndClass = new WNDCLASS ();
-//	lpWndClass.hInstance = hInstance;
-//	lpWndClass.lpfnWndProc = windowProc;
-//	lpWndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
-//	lpWndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
-//	int byteCount = windowClass.length () * TCHAR.sizeof;
-//	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-//	OS.MoveMemory (lpWndClass.lpszClassName, windowClass, byteCount);
-//	OS.RegisterClass (lpWndClass);
-//
-//	/* Register the SWT drop shadow window class */
-//	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-//		lpWndClass.style |= OS.CS_DROPSHADOW;
-//	}
-//	byteCount = windowShadowClass.length () * TCHAR.sizeof;
-//	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-//	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
-//	OS.RegisterClass (lpWndClass);
-//	
-//	/* Initialize the system font */
-//	int systemFont = 0;
-//	if (!OS.IsWinCE) {
-//		NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-//		info.cbSize = NONCLIENTMETRICS.sizeof;
-//		if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-//			systemFont = OS.CreateFontIndirect (OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont);
-//		}
-//	}
-//	if (systemFont == 0) systemFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-//	if (systemFont == 0) systemFont = OS.GetStockObject (OS.SYSTEM_FONT);
-//	if (systemFont != 0) systemFonts = new int [] {systemFont};
-//	
-//	/* Create the message only HWND */
-//	hwndMessage = OS.CreateWindowEx (0,
-//		windowClass,
-//		null,
-//		OS.WS_OVERLAPPED,
-//		0, 0, 0, 0,
-//		0,
-//		0,
-//		hInstance,
-//		null);
-//	messageCallback = new Callback (this, "messageProc", 4); //$NON-NLS-1$
-//	messageProc = messageCallback.getAddress ();
-//	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-//	OS.SetWindowLong (hwndMessage, OS.GWL_WNDPROC, messageProc);
-//
-//	/* Create the filter hook */
-//	if (!OS.IsWinCE) {
-//		msgFilterCallback = new Callback (this, "msgFilterProc", 3); //$NON-NLS-1$
-//		msgFilterProc = msgFilterCallback.getAddress ();
-//		if (msgFilterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-//		filterHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
-//	}
-//	
-//	/* Create the idle hook */
-//	if (!OS.IsWinCE) {
-//		foregroundIdleCallback = new Callback (this, "foregroundIdleProc", 3); //$NON-NLS-1$
-//		foregroundIdleProc = foregroundIdleCallback.getAddress ();
-//		if (foregroundIdleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-//		idleHook = OS.SetWindowsHookEx (OS.WH_FOREGROUNDIDLE, foregroundIdleProc, 0, threadId);
-//	}
-//	
-//	/* Register the task bar created message */
-//	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true));
-//
-//	/* Initialize OLE */
-//	if (!OS.IsWinCE) {
-//		OS.OleInitialize (0);
-//	}
-//	
-//	/* Initialize the Widget Table */
-//	indexTable = new int [GROW_SIZE];
-//	controlTable = new Control [GROW_SIZE];
-//	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
-//	indexTable [GROW_SIZE - 1] = -1;
 }
 
 /**	 
@@ -2377,213 +1789,6 @@ static int convertModifiersEx(int modifiersEx) {
   }
   return state;
 }
-
-///*
-// * Returns a single character, converted from the default
-// * multi-byte character set (MBCS) used by the operating
-// * system widgets to a wide character set (WCS) used by Java.
-// *
-// * @param ch the MBCS character
-// * @return the WCS character
-// */
-//static char mbcsToWcs (int ch) {
-//	return mbcsToWcs (ch, 0);
-//}
-//
-///*
-// * Returns a single character, converted from the specified
-// * multi-byte character set (MBCS) used by the operating
-// * system widgets to a wide character set (WCS) used by Java.
-// *
-// * @param ch the MBCS character
-// * @param codePage the code page used to convert the character
-// * @return the WCS character
-// */
-//static char mbcsToWcs (int ch, int codePage) {
-//	if (OS.IsUnicode) return (char) ch;
-//	int key = ch & 0xFFFF;
-//	if (key <= 0x7F) return (char) ch;
-//	byte [] buffer;
-//	if (key <= 0xFF) {
-//		buffer = new byte [1];
-//		buffer [0] = (byte) key;
-//	} else {
-//		buffer = new byte [2];
-//		buffer [0] = (byte) ((key >> 8) & 0xFF);
-//		buffer [1] = (byte) (key & 0xFF);
-//	}
-//	char [] unicode = new char [1];
-//	int cp = codePage != 0 ? codePage : OS.CP_ACP;
-//	int count = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, buffer.length, unicode, 1);
-//	if (count == 0) return 0;
-//	return unicode [0];
-//}
-//
-//int messageProc (int hwnd, int msg, int wParam, int lParam) {
-//	switch (msg) {
-//		case SWT_KEYMSG:
-//			boolean consumed = false;
-//			MSG keyMsg = new MSG ();
-//			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
-//			Control control = findControl (keyMsg.hwnd);
-//			if (control != null) {
-//				keyMsg.hwnd = control.handle;
-//				int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-//				do {
-//					if (!(consumed |= filterMessage (keyMsg))) {
-//						OS.TranslateMessage (keyMsg);
-//						consumed |= OS.DispatchMessage (keyMsg) == 1;	
-//					}
-//				} while (OS.PeekMessage (keyMsg, keyMsg.hwnd, OS.WM_KEYFIRST, OS.WM_KEYLAST, flags));
-//			}
-//			if (consumed) {
-//				int hHeap = OS.GetProcessHeap ();
-//				OS.HeapFree (hHeap, 0, lParam);
-//			} else {
-//				OS.PostMessage (embeddedHwnd, SWT_KEYMSG, wParam, lParam);
-//			}
-//			return 0;
-//		case SWT_TRAYICONMSG:
-//			if (tray != null) {
-//				TrayItem [] items = tray.items;
-//				for (int i=0; i<items.length; i++) {
-//					TrayItem item = items [i];
-//					if (item != null && item.id == wParam) {
-//						return item.messageProc (hwnd, msg, wParam, lParam);
-//					}
-//				}
-//			}
-//			return 0;
-//		case OS.WM_ACTIVATEAPP:
-//			/*
-//			* Feature in Windows.  When multiple shells are
-//			* disabled and one of the shells has an enabled
-//			* dialog child and the user selects a disabled
-//			* shell that does not have the enabled dialog
-//			* child using the Task bar, Windows brings the
-//			* disabled shell to the front.  As soon as the
-//			* user clicks on the disabled shell, the enabled
-//			* dialog child comes to the front.  This behavior
-//			* is unspecified and seems strange.  Normally, a
-//			* disabled shell is frozen on the screen and the
-//			* user cannot change the z-order by clicking with
-//			* the mouse.  The fix is to look for WM_ACTIVATEAPP
-//			* and force the enabled dialog child to the front.
-//			* This is typically what the user is expecting.
-//			* 
-//			* NOTE: If the modal shell is disabled for any reason,
-//			* it should not be brought to the front.
-//			*/
-//			if (wParam != 0) {
-//				if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-//				Shell modal = modalDialogShell != null ? modalDialogShell : getModalShell ();
-//				if (modal != null) {
-//					int hwndModal = modal.handle;
-//					if (OS.IsWindowEnabled (hwndModal)) {
-//						modal.bringToTop ();
-//					}
-//					int hwndPopup = OS.GetLastActivePopup (hwndModal);
-//					if (hwndPopup != 0 && hwndPopup != modal.handle) {
-//						if (getControl (hwndPopup) == null) {
-//							if (OS.IsWindowEnabled (hwndPopup)) {
-//								OS.SetActiveWindow (hwndPopup);
-//							}
-//						}
-//					}
-//				}
-//			}
-//			break;
-//		case OS.WM_ENDSESSION:
-//			if (wParam != 0) {
-//				dispose ();
-//				/*
-//				* When the session is ending, no SWT program can continue
-//				* to run.  In order to avoid running code after the display
-//				* has been disposed, exit from Java.
-//				*/
-//				System.exit (0);
-//			}
-//			break;
-//		case OS.WM_QUERYENDSESSION:
-//			Event event = new Event ();
-//			sendEvent (SWT.Close, event);
-//			if (!event.doit) return 0;
-//			break;
-//		case OS.WM_SETTINGCHANGE:
-//			updateFont ();
-//			break;
-//		case OS.WM_TIMER:
-//			runTimer (wParam);
-//			break;
-//	}
-//	if (msg == SWT_TASKBARCREATED) {
-//		if (tray != null) {
-//			TrayItem [] items = tray.items;
-//			for (int i=0; i<items.length; i++) {
-//				TrayItem item = items [i];
-//				if (item != null) item.recreate ();
-//			}
-//		}
-//	}
-//	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
-//}
-//
-//int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
-//	if (monitorCount >= monitors.length) {
-//		Monitor[] newMonitors = new Monitor [monitors.length + 4];
-//		System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
-//		monitors = newMonitors;
-//	}
-//	MONITORINFO lpmi = new MONITORINFO ();
-//	lpmi.cbSize = MONITORINFO.sizeof;
-//	OS.GetMonitorInfo (hmonitor, lpmi);
-//	Monitor monitor = new Monitor ();
-//	monitor.handle = hmonitor;
-//	monitor.x = lpmi.rcMonitor_left;
-//	monitor.y = lpmi.rcMonitor_top;
-//	monitor.width = lpmi.rcMonitor_right - lpmi.rcMonitor_left;
-//	monitor.height = lpmi.rcMonitor_bottom - lpmi.rcMonitor_top;
-//	monitor.clientX = lpmi.rcWork_left;
-//	monitor.clientY = lpmi.rcWork_top;
-//	monitor.clientWidth = lpmi.rcWork_right - lpmi.rcWork_left;
-//	monitor.clientHeight = lpmi.rcWork_bottom - lpmi.rcWork_top;
-//	monitors [monitorCount++] = monitor;
-//	return 1;
-//}
-//
-//int msgFilterProc (int code, int wParam, int lParam) {
-//	if (!ignoreMsgFilter) {
-//		if (code >= 0) {
-//			OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
-//			if (hookMsg.message == OS.WM_NULL) {
-//				if (runAsyncMessages (false)) wakeThread ();
-//			}
-//		}
-//	}
-//	return OS.CallNextHookEx (filterHook, code, wParam, lParam);
-//}
-//
-//int numpadKey (int key) {
-//	switch (key) {
-//		case OS.VK_NUMPAD0:	return '0';
-//		case OS.VK_NUMPAD1:	return '1';
-//		case OS.VK_NUMPAD2:	return '2';
-//		case OS.VK_NUMPAD3:	return '3';
-//		case OS.VK_NUMPAD4:	return '4';
-//		case OS.VK_NUMPAD5:	return '5';
-//		case OS.VK_NUMPAD6:	return '6';
-//		case OS.VK_NUMPAD7:	return '7';
-//		case OS.VK_NUMPAD8:	return '8';
-//		case OS.VK_NUMPAD9:	return '9';
-//		case OS.VK_MULTIPLY:	return '*';
-//		case OS.VK_ADD: 		return '+';
-//		case OS.VK_SEPARATOR:	return '\0';
-//		case OS.VK_SUBTRACT:	return '-';
-//		case OS.VK_DECIMAL:	return '.';
-//		case OS.VK_DIVIDE:		return '/';
-//	}
-//	return 0;
-//}
 
 /**
  * Generate a low level system event.
@@ -2829,9 +2034,6 @@ protected void release () {
     for(Iterator it = disposeList.iterator(); it.hasNext(); ) {
       ((Runnable)it.next()).run();
     }
-//		for (int i=0; i<disposeList.length; i++) {
-//			if (disposeList [i] != null) disposeList [i].run ();
-//		}
 	}
 	disposeList = null;
 	synchronizer.releaseSynchronizer ();
@@ -2841,179 +2043,9 @@ protected void release () {
 }
 
 void releaseDisplay () {
-//	if (embeddedHwnd != 0) {
-//		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
-//	}
-//
-//	/* Unhook the message hook */
-//	if (!OS.IsWinCE) {
-//		if (msgHook != 0) OS.UnhookWindowsHookEx (msgHook);
-//		msgHook = 0;
-//	}
-//
-//	/* Unhook the filter hook */
-//	if (!OS.IsWinCE) {
-//		if (filterHook != 0) OS.UnhookWindowsHookEx (filterHook);
-//		filterHook = 0;
-//		msgFilterCallback.dispose ();
-//		msgFilterCallback = null;
-//		msgFilterProc = 0;
-//	}
-//	
-//	/* Unhook the idle hook */
-//	if (!OS.IsWinCE) {
-//		if (idleHook != 0) OS.UnhookWindowsHookEx (idleHook);
-//		idleHook = 0;
-//		foregroundIdleCallback.dispose ();
-//		foregroundIdleCallback = null;
-//		foregroundIdleProc = 0;
-//	}
-//	
-//	/* Destroy the message only HWND */
-//	if (hwndMessage != 0) OS.DestroyWindow (hwndMessage);
-//	hwndMessage = 0;
-//	messageCallback.dispose ();
-//	messageCallback = null;
-//	messageProc = 0;
-//	
-//	/* Unregister the SWT window class */
-//	int hHeap = OS.GetProcessHeap ();
-//	int hInstance = OS.GetModuleHandle (null);
-//	WNDCLASS lpWndClass = new WNDCLASS ();
-//	OS.GetClassInfo (0, windowClass, lpWndClass);
-//	OS.UnregisterClass (windowClass, hInstance);
-//	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
-//	
-//	/* Unregister the SWT drop shadow window class */
-//	OS.GetClassInfo (0, windowShadowClass, lpWndClass);
-//	OS.UnregisterClass (windowShadowClass, hInstance);
-//	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
-//	windowClass = windowShadowClass = null;
-//	windowCallback.dispose ();
-//	windowCallback = null;
-//	windowProc = 0;
-//	
-//	/* Release the system fonts */
-//	if (systemFonts != null) {
-//		for (int i=0; i<systemFonts.length; i++) {
-//			if (systemFonts [i] != 0) OS.DeleteObject (systemFonts [i]);
-//		}
-//	}
-//	systemFonts = null;
-//	
-//	/* Release the System Images */
-//	if (errorIcon != 0) OS.DestroyIcon (errorIcon);
-//	if (infoIcon != 0) OS.DestroyIcon (infoIcon);
-//	if (questionIcon != 0) OS.DestroyIcon (questionIcon);
-//	if (warningIcon != 0) OS.DestroyIcon (warningIcon);
 	errorIcon = infoIcon = questionIcon = warningIcon = null;
-//	
-//	/* Release the System Cursors */
-//	for (int i = 0; i < cursors.length; i++) {
-//		if (cursors [i] != null) cursors [i].dispose ();
-//	}
-//	cursors = null;
-//
-//	/* Release Custom Colors for ChooseColor */
-//	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
-//	lpCustColors = 0;
-//	
-//	/* Uninitialize OLE */
-//	if (!OS.IsWinCE) {
-//		OS.OleUninitialize ();
-//	}
-//	
-//	/* Release references */
-//	thread = null;
-//	msg = null;
-//	keyboard = null;
-//	modalDialogShell = null;
-//	modalShells = null;
-//	data = null;
-//	keys = null;
-//	values = null;
 	bars = popups = null;
-//	indexTable = null;
-//	controlTable = null;
-//	lastHittestControl = null;
-//	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
 }
-
-//void releaseImageList (ImageList list) {
-//	int i = 0;
-//	int length = imageList.length; 
-//	while (i < length) {
-//		if (imageList [i] == list) {
-//			if (list.removeRef () > 0) return;
-//			list.dispose ();
-//			System.arraycopy (imageList, i + 1, imageList, i, --length - i);
-//			imageList [length] = null;
-//			for (int j=0; j<length; j++) {
-//				if (imageList [j] != null) return;
-//			}
-//			imageList = null;
-//			return;
-//		}
-//		i++;
-//	}
-//}
-//
-//void releaseToolImageList (ImageList list) {
-//	int i = 0;
-//	int length = toolImageList.length; 
-//	while (i < length) {
-//		if (toolImageList [i] == list) {
-//			if (list.removeRef () > 0) return;
-//			list.dispose ();
-//			System.arraycopy (toolImageList, i + 1, toolImageList, i, --length - i);
-//			toolImageList [length] = null;
-//			for (int j=0; j<length; j++) {
-//				if (toolImageList [j] != null) return;
-//			}
-//			toolImageList = null;
-//			return;
-//		}
-//		i++;
-//	}
-//}
-//
-//void releaseToolHotImageList (ImageList list) {
-//	int i = 0;
-//	int length = toolHotImageList.length; 
-//	while (i < length) {
-//		if (toolHotImageList [i] == list) {
-//			if (list.removeRef () > 0) return;
-//			list.dispose ();
-//			System.arraycopy (toolHotImageList, i + 1, toolHotImageList, i, --length - i);
-//			toolHotImageList [length] = null;
-//			for (int j=0; j<length; j++) {
-//				if (toolHotImageList [j] != null) return;
-//			}
-//			toolHotImageList = null;
-//			return;
-//		}
-//		i++;
-//	}
-//}
-//
-//void releaseToolDisabledImageList (ImageList list) {
-//	int i = 0;
-//	int length = toolDisabledImageList.length; 
-//	while (i < length) {
-//		if (toolDisabledImageList [i] == list) {
-//			if (list.removeRef () > 0) return;
-//			list.dispose ();
-//			System.arraycopy (toolDisabledImageList, i + 1, toolDisabledImageList, i, --length - i);
-//			toolDisabledImageList [length] = null;
-//			for (int j=0; j<length; j++) {
-//				if (toolDisabledImageList [j] != null) return;
-//			}
-//			toolDisabledImageList = null;
-//			return;
-//		}
-//		i++;
-//	}
-//}
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -3088,23 +2120,6 @@ void removeBar (Menu menu) {
 Control removeControl (Component handle) {
 	if (handle == null) return null;
   return (Control)componentToControlMap.remove(handle);
-//	Control control = null;
-//	int index;
-//	if (USE_PROPERTY) {
-//		index = OS.RemoveProp (handle, SWT_OBJECT_INDEX) - 1;
-//	} else {
-//		index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
-//	}
-//	if (0 <= index && index < controlTable.length) {
-//		control = controlTable [index];
-//		controlTable [index] = null;
-//		indexTable [index] = freeSlot;
-//		freeSlot = index;
-//		if (!USE_PROPERTY) {
-//			OS.SetWindowLong (handle, OS.GWL_USERDATA, 0);
-//		}
-//	}
-//	return control;
 }
 
 void removeMenuItem (MenuItem item) {
@@ -3160,64 +2175,6 @@ boolean runDeferredEvents () {
 	eventQueue = null;
 	return true;
 }
-
-//boolean runPopups () {
-//	if (popups == null) return false;
-//	boolean result = false;
-//	while (popups != null) {
-//		Menu menu = popups [0];
-//		if (menu == null) break;
-//		int length = popups.length;
-//		System.arraycopy (popups, 1, popups, 0, --length);
-//		popups [length] = null;
-////    managedEventQueue.processPostedRunnableList();
-//		runDeferredEvents ();
-//    menu.setVisible (true);
-////		menu._setVisible (true);
-//		result = true;
-//	}
-//	popups = null;
-//	return result;
-//}
-//
-//void runSettings () {
-//  Font oldFont = getSystemFont ();
-//  saveResources ();
-//  updateImages ();
-//  sendEvent (SWT.Settings, null);
-//  Font newFont = getSystemFont ();
-//  boolean sameFont = oldFont.equals (newFont);
-//  Shell [] shells = getShells ();
-//  for (int i=0; i<shells.length; i++) {
-//    Shell shell = shells [i];
-//    if (!shell.isDisposed ()) {
-//      if (!sameFont) {
-//        shell.updateFont (oldFont, newFont);
-//      }
-//      /* This code is intentionally commented */
-//      //shell.redraw (true);
-//      shell.layout (true, true);
-//    }
-//  }
-//}
-//
-//boolean runTimer (int id) {
-//	if (timerList != null && timerIds != null) {
-//		int index = 0;
-//		while (index <timerIds.length) {
-//			if (timerIds [index] == id) {
-//				OS.KillTimer (hwndMessage, timerIds [index]);
-//				timerIds [index] = 0;
-//				Runnable runnable = timerList [index];
-//				timerList [index] = null;
-//				if (runnable != null) runnable.run ();
-//				return true;
-//			}
-//			index++;
-//		}
-//	}
-//	return false;
-//}
 
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null && filterTable == null) {
@@ -3393,31 +2350,6 @@ public static void setAppName (String name) {
 	/* Do nothing */
 }
 
-//void setModalDialogShell (Shell modalDailog) {
-//	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-//	this.modalDialogShell = modalDailog;
-//	Shell [] shells = getShells ();
-//	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
-//}
-//
-//void setModalShell (Shell shell) {
-//	if (modalShells == null) modalShells = new Shell [4];
-//	int index = 0, length = modalShells.length;
-//	while (index < length) {
-//		if (modalShells [index] == shell) return;
-//		if (modalShells [index] == null) break;
-//		index++;
-//	}
-//	if (index == length) {
-//		Shell [] newModalShells = new Shell [length + 4];
-//		System.arraycopy (modalShells, 0, newModalShells, 0, length);
-//		modalShells = newModalShells;
-//	}
-//	modalShells [index] = shell;
-//	Shell [] shells = getShells ();
-//	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
-//}
-
 /**
  * Sets the synchronizer used by the display to be
  * the argument, which can not be null.
@@ -3441,24 +2373,6 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	}
 	this.synchronizer = synchronizer;
 }
-
-//int shiftedKey (int key) {
-//	if (OS.IsWinCE) return 0;
-//	
-//	/* Clear the virtual keyboard and press the shift key */
-//	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
-//	keyboard [OS.VK_SHIFT] |= 0x80;
-//
-//	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
-//	if (OS.IsUnicode) {
-//		char [] result = new char [1];
-//		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
-//	} else {
-//		short [] result = new short [1];
-//		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
-//	}
-//	return 0;
-//}
 
 volatile Thread fakeDispatchingEDT;
 
@@ -3527,7 +2441,12 @@ public boolean sleep () {
  */
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	synchronizer.syncExec (runnable);
+  if(isValidThread ()) {
+    synchronizer.runAsyncMessages(true);
+    runnable.run();
+  } else {
+    synchronizer.syncExec (runnable);
+  }
 }
 
 /**
@@ -3576,54 +2495,12 @@ public void timerExec (final int milliseconds, final Runnable runnable) {
   }.start();
 }
 
-//boolean translateAccelerator (MSG msg, Control control) {
-//	accelKeyHit = true;
-//	boolean result = control.translateAccelerator (msg);
-//	accelKeyHit = false;
-//	return result;
-//}
-
 static int translateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
 		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
 	}
 	return 0;
 }
-
-//boolean translateMnemonic (MSG msg, Control control) {
-//	switch (msg.message) {
-//		case OS.WM_CHAR:
-//		case OS.WM_SYSCHAR:
-//			return control.translateMnemonic (msg);
-//	}
-//	return false;
-//}
-//
-//boolean translateTraversal (MSG msg, Control control) {
-//	switch (msg.message) {
-//		case OS.WM_KEYDOWN:
-//			switch (msg.wParam) {
-//				case OS.VK_RETURN:
-//				case OS.VK_ESCAPE:
-//				case OS.VK_TAB:
-//				case OS.VK_UP:
-//				case OS.VK_DOWN:
-//				case OS.VK_LEFT:
-//				case OS.VK_RIGHT:
-//				case OS.VK_PRIOR:
-//				case OS.VK_NEXT:
-//					return control.translateTraversal (msg);
-//			}
-//			break;
-//		case OS.WM_SYSKEYDOWN:
-//			switch (msg.wParam) {
-//				case OS.VK_MENU:
-//					return control.translateTraversal (msg);
-//			}
-//			break;
-//	}
-//	return false;
-//}
 
 static int untranslateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
@@ -3699,35 +2576,6 @@ public void update() {
 	}
 }
 
-//void updateFont () {
-//	if (OS.IsWinCE) return;
-//	Font oldFont = getSystemFont ();
-//	int systemFont = 0;
-//	NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-//	info.cbSize = NONCLIENTMETRICS.sizeof;
-//	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-//		systemFont = OS.CreateFontIndirect (OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont);
-//	}
-//	if (systemFont == 0) systemFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-//	if (systemFont == 0) systemFont = OS.GetStockObject (OS.SYSTEM_FONT);
-//	if (systemFont == 0) return;
-//	int length = systemFonts == null ? 0 : systemFonts.length;
-//	int [] newFonts = new int [length + 1];
-//	if (systemFonts != null) {
-//		System.arraycopy (systemFonts, 0, newFonts, 0, length);
-//	}
-//	newFonts [length] = systemFont;
-//	systemFonts = newFonts;
-//	Font newFont = getSystemFont ();
-//	Shell [] shells = getShells ();
-//	for (int i=0; i<shells.length; i++) {
-//		Shell shell = shells [i];
-//		if (!shell.isDisposed ()) {
-//			shell.updateFont (oldFont, newFont);
-//		}
-//	}
-//}
-
 protected static final Object UI_LOCK = new Object();
 
 /**
@@ -3757,110 +2605,11 @@ void wakeThread () {
   SwingUtilities.invokeLater(new Runnable() {
     public void run() {
       startExclusiveSection();
-      runAsyncMessages (false);
+      runAsyncMessages (true);
       stopExclusiveSection();
     }
   });
 }
-
-//void wakeThread () {
-//	if (OS.IsWinCE) {
-//		OS.PostMessage (hwndMessage, OS.WM_NULL, 0, 0);
-//	} else {
-//		OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
-//	}
-//}
-//
-///*
-// * Returns a single character, converted from the wide
-// * character set (WCS) used by Java to the specified
-// * multi-byte character set used by the operating system
-// * widgets.
-// *
-// * @param ch the WCS character
-// * @param codePage the code page used to convert the character
-// * @return the MBCS character
-// */
-//static int wcsToMbcs (char ch, int codePage) {
-//	if (OS.IsUnicode) return ch;
-//	if (ch <= 0x7F) return ch;
-//	TCHAR buffer = new TCHAR (codePage, ch, false);
-//	return buffer.tcharAt (0);
-//}
-//
-///*
-// * Returns a single character, converted from the wide
-// * character set (WCS) used by Java to the default
-// * multi-byte character set used by the operating system
-// * widgets.
-// *
-// * @param ch the WCS character
-// * @return the MBCS character
-// */
-//static int wcsToMbcs (char ch) {
-//	return wcsToMbcs (ch, 0);
-//}
-//
-//int windowProc (int hwnd, int msg, int wParam, int lParam) {
-//	int index;
-//	if (USE_PROPERTY) {
-//		index = OS.GetProp (hwnd, SWT_OBJECT_INDEX) - 1;
-//	} else {
-//		index = OS.GetWindowLong (hwnd, OS.GWL_USERDATA) - 1;
-//	}
-//	if (0 <= index && index < controlTable.length) {
-//		Control control = controlTable [index];
-//		if (control != null) {
-//			return control.windowProc (hwnd, msg, wParam, lParam);
-//		}
-//	}
-//	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
-//}
-//
-//static String withCrLf (String string) {
-//
-//	/* If the string is empty, return the string. */
-//	int length = string.length ();
-//	if (length == 0) return string;
-//	
-//	/*
-//	* Check for an LF or CR/LF and assume the rest of
-//	* the string is formated that way.  This will not
-//	* work if the string contains mixed delimiters.
-//	*/
-//	int i = string.indexOf ('\n', 0);
-//	if (i == -1) return string;
-//	if (i > 0 && string.charAt (i - 1) == '\r') {
-//		return string;
-//	}
-//
-//	/*
-//	* The string is formatted with LF.  Compute the
-//	* number of lines and the size of the buffer
-//	* needed to hold the result
-//	*/
-//	i++;	
-//	int count = 1;
-//	while (i < length) {
-//		if ((i = string.indexOf ('\n', i)) == -1) break;
-//		count++; i++;
-//	}
-//	count += length;
-//
-//	/* Create a new string with the CR/LF line terminator. */
-//	i = 0;
-//	StringBuffer result = new StringBuffer (count);
-//	while (i < length) {
-//		int j = string.indexOf ('\n', i);
-//		if (j == -1) j = length;
-//		result.append (string.substring (i, j));
-//		if ((i = j) < length) {
-//			result.append ("\r\n"); //$NON-NLS-1$
-//			i++;
-//		}
-//	}
-//	return result.toString ();
-//}
 
 protected static int exclusiveSectionCount = 0;
 
@@ -3868,7 +2617,6 @@ protected void startExclusiveSection() {
   if(isRealDispatch() || !SwingUtilities.isEventDispatchThread()) {
     exclusiveSectionCount++;
     return;
-//    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");
   }
   synchronized(UI_LOCK) {
     exclusiveSectionCount++;
@@ -3886,7 +2634,6 @@ protected void stopExclusiveSection() {
   if(isRealDispatch() || !SwingUtilities.isEventDispatchThread()) {
     exclusiveSectionCount--;
     return;
-//    throw new IllegalStateException("This call must be done from the Swing Event Dispatch Thread!");
   }
   synchronized(UI_LOCK) {
     exclusiveSectionCount--;

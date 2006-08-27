@@ -3523,6 +3523,10 @@ public void processEvent(AWTEvent e) {
 public void processEvent(EventObject e) {
   if(e instanceof TreeExpansionEvent) {
     TreePath path = ((TreeExpansionEvent)e).getPath();
+    if(!(path.getLastPathComponent() instanceof CTreeItem)) {
+      super.processEvent(e);
+      return;
+    }
     boolean isExpanded = ((CTree)handle).isExpanded(path);
     if(isExpanded) {
       if(!hooks(SWT.Expand)) { super.processEvent(e); return; }
@@ -3530,6 +3534,11 @@ public void processEvent(EventObject e) {
       if(!hooks(SWT.Collapse)) { super.processEvent(e); return; }
     }
   } else if(e instanceof TreeSelectionEvent) {
+    TreePath path = ((TreeSelectionEvent)e).getPath();
+    if(!(path.getLastPathComponent() instanceof CTreeItem)) {
+      super.processEvent(e);
+      return;
+    }
     if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
   } else {
     super.processEvent(e);

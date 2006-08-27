@@ -1385,26 +1385,13 @@ public void remove (int [] indices) {
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
 	int start = newIndices [newIndices.length - 1], end = newIndices [0];
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	int count = getItemCount();
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int last = -1;
-	for (int i=0; i<newIndices.length; i++) {
-		int index = newIndices [i];
-		if (index != last) {
-			TableItem item = items [index];
-			ignoreSelect = ignoreShrink = true;
-			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
-			ignoreSelect = ignoreShrink = false;
-			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
-			System.arraycopy (items, index + 1, items, index, --count - index);
-			items [count] = null;
-			last = index;
-		}
-	}
-	if (count == 0) setTableEmpty ();
+  for(int i=newIndices.length-1; i>=0; i--) {
+    ((TableItem)itemList.get(newIndices[i])).dispose();
+  }
 }
 
 /**
@@ -1423,17 +1410,9 @@ public void remove (int [] indices) {
  */
 public void remove (int index) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	TableItem item = items [index];
-	ignoreSelect = ignoreShrink = true;
-	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
-	ignoreSelect = ignoreShrink = false;
-	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	if (item != null && !item.isDisposed ()) item.releaseResources ();
-	System.arraycopy (items, index + 1, items, index, --count - index);
-	items [count] = null;
-	if (count == 0) setTableEmpty ();
+	((TableItem)itemList.get(index)).dispose();
 }
 
 /**
@@ -1455,27 +1434,13 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	int count = getItemCount();
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	if (start == 0 && end == count - 1) {
-		removeAll ();
-	} else {
-		int index = start;
-		while (index <= end) {
-			TableItem item = items [index];
-			ignoreSelect = ignoreShrink = true;
-			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
-			ignoreSelect = ignoreShrink = false;
-			if (code == 0) break;
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
-			index++;
-		}
-		System.arraycopy (items, index, items, start, count - index);
-		for (int i=count-(index-start); i<count; i++) items [i] = null;
-		if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	}
+  for(int i=end; i>=start; i--) {
+    ((TableItem)itemList.get(i)).dispose();
+  }
 }
 
 /**
@@ -1488,61 +1453,9 @@ public void remove (int start, int end) {
  */
 public void removeAll () {
 	checkWidget ();
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (columnCount == 1 && columns [0] == null) columnCount = 0;
-	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	
-	/*
-	* Feature in Windows 98.  When there are a large number
-	* of columns and items in a table (>1000) where each
-	* of the subitems in the table has a string, it is much
-	* faster to delete each item with LVM_DELETEITEM rather
-	* than using LVM_DELETEALLITEMS.  The fix is to detect
-	* this case and delete the items, one by one.  The fact
-	* that the fix is only necessary on Windows 98 was
-	* confirmed using version 5.81 of COMCTL32.DLL on both
-	* Windows 98 and NT.
-	*
-	* NOTE: LVM_DELETEALLITEMS is also sent by the table
-	* when the table is destroyed.
-	*/	
-	if (OS.IsWin95 && columnCount > 1) {
-		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-		int index = itemCount - 1;
-		while (index >= 0) {
-			TableItem item = items [index];
-			ignoreSelect = ignoreShrink = true;
-			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
-			ignoreSelect = ignoreShrink = false;
-			if (code == 0) break;
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
-			--index;
-		}
-		if (redraw) {
-			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			/*
-			* This code is intentionally commented.  The window proc
-			* for the table implements WM_SETREDRAW to invalidate
-			* and erase the table so it is not necessary to do this
-			* again.
-			*/
-//			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-//			OS.RedrawWindow (handle, null, 0, flags);
-		}
-		if (index != -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	} else {
-		ignoreSelect = ignoreShrink = true;
-		int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
-		ignoreSelect = ignoreShrink = false;
-		if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
-		}
-	}
-	setTableEmpty ();
+  for(int i=itemList.size()-1; i>=0; i--) {
+    ((TableItem)itemList.get(i)).dispose();
+  }
 }
 
 /**
@@ -2395,39 +2308,6 @@ public void setSelection (int start, int end) {
 	select (start, end);
 	setFocusIndex (start);
 	showSelection ();
-}
-
-void setTableEmpty () {
-	if (imageList != null) {
-		int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (columnCount == 1 && columns [0] == null) columnCount = 0;
-		int i = 0;
-		while (i < columnCount) {
-			TableColumn column = columns [i];
-			if (column.getImage () != null) break;
-			i++;
-		}
-		if (i == columnCount) {
-			/*
-			* Bug in Windows.  When LVM_SETIMAGELIST is used to remove the
-			* image list by setting it to NULL, the item width and height
-			* is not changed and space is reserved for icons despite the
-			* fact that there are none.  The fix is to set the image list
-			* to be very small before setting it to NULL.  This causes
-			* Windows to reserve the smallest possible space when an image
-			* list is removed.
-			*/
-			int hImageList = OS.ImageList_Create (1, 1, 0, 0, 0);
-			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-			OS.ImageList_Destroy (hImageList);
-			display.releaseImageList (imageList);
-			imageList = null;
-		}
-	}
-	customDraw = false;
-	items = new TableItem [4];
 }
 
 /**

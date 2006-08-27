@@ -15,6 +15,7 @@ import java.awt.AWTEvent;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 
 import javax.swing.JButton;
 import javax.swing.RootPaneContainer;
@@ -1081,6 +1082,7 @@ public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
   case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; } break;
+  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
@@ -1110,7 +1112,10 @@ public void processEvent(AWTEvent e) {
     if(isSending) {
       sendEvent(SWT.DefaultSelection);
     }
-//    return;
+    break;
+  case ItemEvent.ITEM_STATE_CHANGED:
+    sendEvent(SWT.Selection);
+    break;
   }
   super.processEvent(e);
   display.stopExclusiveSection();

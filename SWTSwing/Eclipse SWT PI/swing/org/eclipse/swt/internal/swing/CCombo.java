@@ -13,6 +13,8 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -82,6 +84,11 @@ public interface CCombo extends CComposite {
         }
 //        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
 //        }
+      });
+      addItemListener(new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+          handle.processEvent(e);
+        }
       });
     }
 

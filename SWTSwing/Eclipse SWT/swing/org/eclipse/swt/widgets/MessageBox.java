@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class are used to inform or warn the user.
@@ -125,7 +126,31 @@ public int open () {
 	if ((style & SWT.ICON_QUESTION) != 0) messageType = JOptionPane.QUESTION_MESSAGE;
 	if ((style & SWT.ICON_WARNING) != 0) messageType = JOptionPane.WARNING_MESSAGE;
 	if ((style & SWT.ICON_WORKING) != 0) messageType = JOptionPane.INFORMATION_MESSAGE;
-
+  
+  String[] messageTokens = this.message.split(" ");
+  StringBuffer sb = new StringBuffer(this.message.length());
+  int count = 0;
+  for(int i=0; i<messageTokens.length; i++) {
+    String token = messageTokens[i];
+    if(count > 0 && count + token.length() > 120) {
+      sb.append("<br>");
+      count = 0;
+    }
+    int splitCount = Math.max(0, (token.length() - 1)) / 120 + 1;
+    for(int j=0; j<splitCount; j++) {
+      if(j<splitCount - 1) {
+        sb.append(Utils.escapeXML(token.substring(j * 120, (j + 1) * 120)));
+        sb.append("<br>");
+      } else {
+        sb.append(Utils.escapeXML(token.substring(j * 120)));
+      }
+    }
+    if(i < messageTokens.length - 1) {
+      sb.append(" ");
+    }
+    count += token.length();
+  }
+  String message = "<html>" + sb.toString() + "</html>";
   if((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) {
     int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK", "Cancel"}, null);
     if(result == JOptionPane.CLOSED_OPTION) {

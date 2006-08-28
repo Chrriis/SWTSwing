@@ -4027,8 +4027,8 @@ public boolean setParent (Composite parent) {
 //	return null;
 //}
 
-private long mouseHoverTimeStamp;
-private Thread mouseHoverThread;
+private volatile long mouseHoverTimeStamp;
+private volatile Thread mouseHoverThread;
 private java.awt.event.MouseEvent mouseHoverEvent;
 
 /**
@@ -4130,7 +4130,7 @@ public void processEvent(AWTEvent e) {
         public void run() {
           while(mouseHoverThread == this) {
             try {
-              sleep(mouseHoverTimeStamp - System.currentTimeMillis());
+              sleep(Math.max(50, mouseHoverTimeStamp - System.currentTimeMillis()));
             } catch(Exception e) {}
             if(mouseHoverThread != this) {
               return;

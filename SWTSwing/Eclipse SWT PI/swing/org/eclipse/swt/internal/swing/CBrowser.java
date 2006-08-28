@@ -120,6 +120,9 @@ public interface CBrowser extends CComposite {
     }
     
     public boolean setURL(String url) {
+      if(url != null && url.startsWith("file://")) {
+        url = "file:/" + url.substring("file://".length());
+      }
       try {
         forwardActionList.clear();
         backActionList.add(getCurrentCommand());

@@ -384,8 +384,6 @@ void paintComponentImmediately(Component component) {
   }
 }
 
-volatile long lastActivityTime = System.currentTimeMillis();
-
 static void pushQueue() {
   if(isRealDispatch()) {
     EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
@@ -1939,7 +1937,6 @@ AWTEvent event;
  * @see #wake
  */
 public boolean readAndDispatch () {
-  lastActivityTime = System.currentTimeMillis();
 	checkDevice ();
   if(isRealDispatch()) {
     boolean result = swingEventQueue.dispatchEvent();
@@ -2137,6 +2134,9 @@ void removePopup (Menu menu) {
 }
 
 boolean runAsyncMessages (boolean all) {
+  if(synchronizer == null) {
+    return false;
+  }
 	return synchronizer.runAsyncMessages (all);
 }
 
@@ -2375,6 +2375,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 }
 
 volatile Thread fakeDispatchingEDT;
+long lastSleepTime;
 
 /**
  * Causes the user-interface thread to <em>sleep</em> (that is,
@@ -2392,8 +2393,21 @@ volatile Thread fakeDispatchingEDT;
  */
 public boolean sleep () {
 	checkDevice ();
+  long now = System.currentTimeMillis();
+  if(now - lastSleepTime > 100) {
+    try {
+      Thread.sleep(100);
+    } catch(Exception e) {
+    }
+    lastSleepTime = now;
+  }
   if(isRealDispatch()) {
-    return swingEventQueue.sleep();
+    boolean result = swingEventQueue.sleep();
+    long newSleepTime = System.currentTimeMillis();
+    if(newSleepTime - now > 100) {
+      lastSleepTime = newSleepTime;
+    }
+    return result;
   }
   if(SwingUtilities.isEventDispatchThread()) {
     boolean result = true;
@@ -2402,6 +2416,10 @@ public boolean sleep () {
       event = Toolkit.getDefaultToolkit().getSystemEventQueue().getNextEvent();
     } catch(InterruptedException e) {
       result = false;
+    }
+    long newSleepTime = System.currentTimeMillis();
+    if(newSleepTime - now > 100) {
+      lastSleepTime = newSleepTime;
     }
     fakeDispatchingEDT = null;
     return result;
@@ -2412,6 +2430,10 @@ public boolean sleep () {
         UI_LOCK.wait();
       } catch(Exception e) {
       }
+    }
+    long newSleepTime = System.currentTimeMillis();
+    if(newSleepTime - now > 100) {
+      lastSleepTime = newSleepTime;
     }
     return exclusiveSectionCount > 0;
   }

@@ -92,41 +92,18 @@ public class ToolBar extends Composite {
  */
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	/*
-	* Ensure that either of HORIZONTAL or VERTICAL is set.
-	* NOTE: HORIZONTAL and VERTICAL have the same values
-	* as H_SCROLL and V_SCROLL so it is necessary to first
-	* clear these bits to avoid scroll bars and then reset
-	* the bits using the original style supplied by the
-	* programmer.
-	*/
-	if ((style & SWT.VERTICAL) != 0) {
-		this.style |= SWT.VERTICAL;
-	} else {
-		this.style |= SWT.HORIZONTAL;
-	}
+}
+
+ScrollBar createScrollBar (int type) {
+  return null;
 }
 
 static int checkStyle (int style) {
 	/*
-	* On Windows, only flat tool bars can be traversed.
-	*/
-	if ((style & SWT.FLAT) == 0) style |= SWT.NO_FOCUS;
-	
-	/*
-	* A vertical tool bar cannot wrap because TB_SETROWS
-	* fails when the toobar has TBSTYLE_WRAPABLE.
+	* A vertical tool bar cannot wrap.
 	*/
 	if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
-		
-	/*
-	* Even though it is legal to create this widget
-	* with scroll bars, they serve no useful purpose
-	* because they do not automatically scroll the
-	* widget's client area.  The fix is to clear
-	* the SWT style.
-	*/
-	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	return style;
 }
 
 protected void checkSubclass () {

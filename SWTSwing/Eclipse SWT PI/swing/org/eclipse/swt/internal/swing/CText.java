@@ -77,6 +77,10 @@ class CTextMulti extends JScrollPane implements CText {
       setBorder(null);
       textArea.setBorder(null);
     }
+    if((style & SWT.WRAP) != 0) {
+      textArea.setLineWrap(true);
+      textArea.setWrapStyleWord(true);
+    }
     textArea.setEditable((style & SWT.READ_ONLY) == 0);
     if((style & SWT.H_SCROLL) == 0) {
       setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);

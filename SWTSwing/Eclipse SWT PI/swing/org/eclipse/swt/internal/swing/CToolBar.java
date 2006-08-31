@@ -20,6 +20,10 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
 
   protected ToolBar handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CToolBarImplementation(ToolBar toolBar, int style) {
     super((style & SWT.VERTICAL) != 0? JToolBar.VERTICAL: JToolBar.HORIZONTAL);
     this.handle = toolBar;

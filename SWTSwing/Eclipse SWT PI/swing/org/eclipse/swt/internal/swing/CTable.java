@@ -42,6 +42,10 @@ class CTableImplementation extends JScrollPane implements CTable {
   protected JTable table;
   protected boolean isCheckType;
 
+  public Container getSwingComponent() {
+    return table;
+  }
+
   protected class CheckBoxCellRenderer extends JPanel {
     protected JStateCheckBox checkBox = new JStateCheckBox();
     public CheckBoxCellRenderer(Component c) {

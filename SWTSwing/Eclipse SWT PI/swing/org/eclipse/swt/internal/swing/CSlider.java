@@ -23,6 +23,10 @@ class CSliderImplementation extends JScrollBar implements CSlider {
 
   protected Slider handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CSliderImplementation(Slider slider, int style) {
     super((style & SWT.HORIZONTAL) != 0? JSlider.HORIZONTAL: JSlider.VERTICAL);
     handle = slider;
@@ -68,7 +72,7 @@ class CSliderImplementation extends JScrollBar implements CSlider {
 
 }
 
-public interface CSlider extends CComponent {
+public interface CSlider extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

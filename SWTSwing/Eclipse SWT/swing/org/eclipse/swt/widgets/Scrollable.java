@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.internal.swing.CControl;
 
 /**
  * This class is the abstract superclass of all classes which
@@ -114,7 +114,7 @@ public Scrollable (Composite parent, int style) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	java.awt.Dimension hSize = handle.getPreferredSize();
-	java.awt.Container clientArea = ((CComponent)handle).getClientArea();
+	java.awt.Container clientArea = ((CControl)handle).getClientArea();
 	java.awt.Dimension cSize = clientArea.getPreferredSize();
 	java.awt.Point location = new java.awt.Point(0, 0);
 	SwingUtilities.convertPoint(clientArea, location, handle);
@@ -157,7 +157,7 @@ void createWidget () {
 public Rectangle getClientArea () {
 	checkWidget ();
 
-    Container clientArea = ((CComponent)handle).getClientArea();
+    Container clientArea = ((CControl)handle).getClientArea();
     java.awt.Rectangle bounds = clientArea.getBounds();
     if(handle instanceof Window) {
       return new Rectangle(0, 0, bounds.width, bounds.height);

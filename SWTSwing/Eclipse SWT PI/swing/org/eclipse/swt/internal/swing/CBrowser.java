@@ -30,6 +30,10 @@ public interface CBrowser extends CComposite {
     protected Browser handle;
     protected JEditorPane editorPane;
 
+    public Container getSwingComponent() {
+      return editorPane;
+    }
+
     public CBrowserImplementation(Browser browser, int style) {
       this.handle = browser;
       editorPane = new JEditorPane();

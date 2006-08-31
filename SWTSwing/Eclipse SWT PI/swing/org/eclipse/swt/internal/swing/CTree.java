@@ -49,6 +49,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
   protected DefaultMutableTreeTableNode rootNode;
   protected boolean isCheckType;
 
+  public Container getSwingComponent() {
+    return treeTable;
+  }
+
   protected class CheckBoxCellRenderer extends JPanel {
     protected JStateCheckBox checkBox = new JStateCheckBox();
     public CheckBoxCellRenderer(Component c) {

@@ -34,6 +34,10 @@ class CButtonArrow extends ArrowButton implements CButton {
 
   protected Button handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   protected static int getDirection(int style) {
     int direction = 0;
     if((style & SWT.UP) != 0) {
@@ -93,6 +97,10 @@ class CButtonPush extends JButton implements CButton {
 
   protected Button handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CButtonPush(Button button, int style) {
     this.handle = button;
     init(style);
@@ -136,6 +144,10 @@ class CButtonPush extends JButton implements CButton {
 class CButtonCheck extends JCheckBox implements CButton {
 
   protected Button handle;
+
+  public Container getSwingComponent() {
+    return this;
+  }
 
   public CButtonCheck(Button button, int style) {
     this.handle = button;
@@ -181,6 +193,10 @@ class CButtonToggle extends JToggleButton implements CButton {
 
   protected Button handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CButtonToggle(Button button, int style) {
     this.handle = button;
     init(style);
@@ -224,6 +240,10 @@ class CButtonToggle extends JToggleButton implements CButton {
 class CButtonRadio extends JRadioButton implements CButton {
 
   protected Button handle;
+
+  public Container getSwingComponent() {
+    return this;
+  }
 
   public CButtonRadio(Button button, int style) {
     this.handle = button;
@@ -280,7 +300,7 @@ class CButtonRadio extends JRadioButton implements CButton {
  * @version 1.0 2005.03.14
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
-public interface CButton extends CComponent {
+public interface CButton extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

@@ -25,6 +25,10 @@ class CLinkImplementation extends JEditorPane implements CLink {
 
   protected Link handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CLinkImplementation(Link link, int style) {
     this.handle = link;
     setContentType("text/html");
@@ -167,7 +171,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
  * @version 1.0 2005.08.20
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
-public interface CLink extends CComponent {
+public interface CLink extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

@@ -50,7 +50,7 @@ import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.win32.OS;
@@ -465,7 +465,7 @@ public Point computeSize (int wHint, int hHint) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
   Dimension size = handle.getPreferredSize();
-  Container clientArea = ((CComponent)handle).getClientArea();
+  Container clientArea = ((CControl)handle).getClientArea();
   Dimension contentSize = clientArea.getPreferredSize();
   Insets insets = clientArea.getInsets();
   contentSize.width -= insets.left + insets.right;
@@ -522,7 +522,7 @@ boolean autoAddChildren() {
 void createWidget () {
 	checkOrientation (parent);
 	handle = createHandle ();
-  if(!(handle instanceof CComponent)) throw new IllegalStateException("The widget should implement the CComponent interface!");
+  if(!(handle instanceof CControl)) throw new IllegalStateException("The widget should implement the CComponent interface!");
   if(handle instanceof Window) {
     Dimension size = ((Window)handle).getSize();
     ((Window)handle).pack();
@@ -530,7 +530,7 @@ void createWidget () {
   }
   if(parent != null && !(handle instanceof Window)) {
     if(parent.autoAddChildren()) {
-      Container clientArea = ((CComponent)parent.handle).getClientArea();
+      Container clientArea = ((CControl)parent.handle).getClientArea();
       clientArea.setLayout(null);
       clientArea.add(handle);
       updateBackgroundMode();
@@ -826,7 +826,7 @@ public Image getBackgroundImage () {
 public int getBorderWidth () {
 	checkWidget ();
   java.awt.Rectangle bounds = handle.getBounds();
-  java.awt.Rectangle cBounds = ((CComponent)handle).getClientArea().getBounds();
+  java.awt.Rectangle cBounds = ((CControl)handle).getClientArea().getBounds();
   return Math.max((bounds.width - cBounds.width + 1) / 2, (bounds.height - cBounds.height + 1) / 2);
 }
 
@@ -1192,7 +1192,7 @@ public Graphics2D internal_new_GC (GCData data) {
     data.background = handle.getBackground();
     data.hFont = handle.getFont();
   }
-  Component component = ((CComponent)handle).getClientArea();
+  Component component = ((CControl)handle).getClientArea();
   Graphics2D g2D = (Graphics2D)component.getGraphics();
 //  java.awt.Point point = new java.awt.Point(0, 0);
 //  point = SwingUtilities.convertPoint(component, point, handle);
@@ -1679,7 +1679,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
   // TODO: what about the "all" setting?
 //	handle.repaint();
   // TODO: check using the Paint Example why this repaint needs -1 and +2...
-  ((CComponent)handle).getClientArea().repaint(x-1, y-1, width+2, height+2);
+  ((CControl)handle).getClientArea().repaint(x-1, y-1, width+2, height+2);
 //	if (!OS.IsWindowVisible (handle)) return;
 //	RECT rect = new RECT ();
 //	OS.SetRect (rect, x, y, x + width, y + height);
@@ -2051,7 +2051,7 @@ public void setBackgroundImage (Image image) {
   }
   if (backgroundImage == image) return;
   backgroundImage = image;
-  ((CComponent)handle).setBackgroundImage(backgroundImage.handle);
+  ((CControl)handle).setBackgroundImage(backgroundImage.handle);
   handle.repaint();
 }
 
@@ -2592,7 +2592,7 @@ String toolTipText;
 public void setToolTipText (String string) {
 	checkWidget ();
   toolTipText = string;
-  ((CComponent)handle).setToolTipText(Utils.convertStringToHTML(string));
+  ((CControl)handle).setToolTipText(Utils.convertStringToHTML(string));
 }
 
 /**
@@ -3106,9 +3106,9 @@ public void update () {
 
 void updateBackgroundMode() {
   switch(parent.getBackgroundMode()) {
-  case SWT.INHERIT_NONE: ((CComponent)handle).setBackgroundInheritance(CComponent.NO_BACKGROUND_INHERITANCE); break;
-  case SWT.INHERIT_DEFAULT: ((CComponent)handle).setBackgroundInheritance(CComponent.PREFERRED_BACKGROUND_INHERITANCE); break;
-  case SWT.INHERIT_FORCE: ((CComponent)handle).setBackgroundInheritance(CComponent.BACKGROUND_INHERITANCE); break;
+  case SWT.INHERIT_NONE: ((CControl)handle).setBackgroundInheritance(CControl.NO_BACKGROUND_INHERITANCE); break;
+  case SWT.INHERIT_DEFAULT: ((CControl)handle).setBackgroundInheritance(CControl.PREFERRED_BACKGROUND_INHERITANCE); break;
+  case SWT.INHERIT_FORCE: ((CControl)handle).setBackgroundInheritance(CControl.BACKGROUND_INHERITANCE); break;
   }
 }
 
@@ -3198,7 +3198,7 @@ public boolean setParent (Composite parent) {
 		Menu [] menus = oldShell.findMenus (this);
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
-  ((CComponent)parent.handle).getClientArea().add(handle);
+  ((CControl)parent.handle).getClientArea().add(handle);
   updateBackgroundMode();
 //	int topHandle = topHandle ();
 //	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
@@ -4256,7 +4256,7 @@ Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputStat
     container = ((RootPaneContainer)container).getContentPane();
     point = SwingUtilities.convertPoint(me.getComponent(), point, container);
   } else {
-    point = SwingUtilities.convertPoint(me.getComponent(), point, ((CComponent)handle).getClientArea());
+    point = SwingUtilities.convertPoint(me.getComponent(), point, ((CControl)handle).getClientArea());
   }
   event.x = point.x;
   event.y = point.y;

@@ -26,6 +26,10 @@ class CSeparator extends JPanel implements CLabel {
 
   protected JSeparator separator;
 
+  public Container getSwingComponent() {
+    return separator;
+  }
+
   public CSeparator(Label label, int style) {
     this.handle = label;
     GridBagLayout gridBag = new GridBagLayout();
@@ -87,32 +91,16 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
 
   protected Label handle;
 
-//  protected boolean isWrapping;
+  public Container getSwingComponent() {
+    return this;
+  }
 
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
     init(style);
   }
 
-//  public Dimension getPreferredSize() {
-//    if(isWrapping) {
-//      Dimension preferredSize = super.getPreferredSize();
-//      View view = ((View)getClientProperty(BasicHTML.propertyKey)).getView(0);
-//      Dimension size = super.getSize();
-//      view.setSize(size.width, 0);
-//      preferredSize.height = super.getPreferredSize().height;
-//      return preferredSize;
-//    }
-//    Dimension size = super.getPreferredSize();
-//    if(getIcon() == null && getText().length() == 0) {
-//      size.height += getFontMetrics(getFont()).getHeight();
-//    }
-//    return size;
-//  }
-
   protected void init(int style) {
-//    setVerticalAlignment(TOP);
-//    isWrapping = (style & SWT.WRAP) != 0;
     setWrapping((style & SWT.WRAP) != 0);
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
@@ -138,13 +126,6 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
     setHorizontalAlignment(alignment);
   }
 
-//  public String getText() {
-//    if(getIcon() != null) {
-//      return "";
-//    }
-//    return super.getText();
-//  }
-
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
@@ -164,7 +145,7 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
  * @version 1.0 2005.08.20
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
-public interface CLabel extends CComponent {
+public interface CLabel extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

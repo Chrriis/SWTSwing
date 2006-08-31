@@ -33,6 +33,10 @@ class CListImplementation extends JScrollPane implements CList {
   protected List handle;
   protected JList list;
 
+  public Container getSwingComponent() {
+    return list;
+  }
+
   public CListImplementation(List list, int style) {
     this.handle = list;
     this.list = new JList(new DefaultListModel());

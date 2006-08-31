@@ -9,6 +9,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.dnd.DnDConstants;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
@@ -21,6 +22,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -211,6 +213,49 @@ public class Utils {
     }
     sb.append("</html>");
     return sb.toString();
+  }
+
+  public static int convertDnDActionsToSWT(int actions) {
+    if(actions == 0) {
+      return 0;
+    }
+    int swtActions = 0;
+    if((actions & DnDConstants.ACTION_COPY) != 0) {
+      swtActions |= DND.DROP_COPY;
+    }
+    if((actions & DnDConstants.ACTION_MOVE) != 0) {
+      swtActions |= DND.DROP_MOVE;
+    }
+    if((actions & DnDConstants.ACTION_LINK) != 0) {
+      swtActions |= DND.DROP_LINK;
+    }
+    return swtActions;
+  }
+
+  public static int convertDnDActionsToSwing(int actions) {
+    if(actions == 0) {
+      return 0;
+    }
+    int swingActions = 0;
+    if((actions & DND.DROP_COPY) != 0) {
+      swingActions |= DnDConstants.ACTION_COPY;
+    }
+    if((actions & DND.DROP_MOVE) != 0) {
+      swingActions |= DnDConstants.ACTION_MOVE;
+    }
+    if((actions & DND.DROP_LINK) != 0) {
+      swingActions |= DnDConstants.ACTION_LINK;
+    }
+    if(actions == 0 && (actions & DND.DROP_DEFAULT) == 0) {
+      swingActions |= DnDConstants.ACTION_MOVE;
+    }
+    return swingActions;
+  }
+  
+  static long timeStamp = System.currentTimeMillis();
+
+  public static int getCurrentTime () {
+    return (int)(System.currentTimeMillis() - timeStamp);
   }
 
 }

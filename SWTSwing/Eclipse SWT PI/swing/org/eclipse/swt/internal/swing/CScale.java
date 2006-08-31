@@ -23,6 +23,10 @@ class CScaleImplementation extends JSlider implements CScale {
 
   protected Scale handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CScaleImplementation(Scale scale, int style) {
     handle = scale;
     init(style);
@@ -75,7 +79,7 @@ class CScaleImplementation extends JSlider implements CScale {
 
 }
 
-public interface CScale extends CComponent {
+public interface CScale extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

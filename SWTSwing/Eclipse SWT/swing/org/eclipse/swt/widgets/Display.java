@@ -1117,12 +1117,6 @@ public Point [] getIconSizes () {
 	};	
 }
 
-static long lastTime = System.currentTimeMillis();
-
-int getLastEventTime () {
-	return (int)(System.currentTimeMillis() - lastTime);
-}
-
 MenuItem getMenuItem (JComponent component) {
   for(int i=0; i<menuItemsList.size(); i++) {
     MenuItem menuItem = (MenuItem)menuItemsList.get(i);
@@ -2183,7 +2177,7 @@ void sendEvent (int eventType, Event event) {
 	if (event == null) event = new Event ();
 	event.display = this;
 	event.type = eventType;
-	if (event.time == 0) event.time = getLastEventTime ();
+	if (event.time == 0) event.time = Utils.getCurrentTime ();
 	if (!filterEvent (event)) {
 		if (eventTable != null) eventTable.sendEvent (event);
 	}

@@ -20,6 +20,10 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
 
   protected CoolBar handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CCoolBarImplementation(CoolBar coolBar, int style) {
     handle = coolBar;
     init(style);

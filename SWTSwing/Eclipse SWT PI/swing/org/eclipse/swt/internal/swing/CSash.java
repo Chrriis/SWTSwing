@@ -35,6 +35,10 @@ class CSashImplementation extends JPanel implements CSash {
 
   protected BasicSplitPaneDivider divider;
 
+  public Container getSwingComponent() {
+    return divider;
+  }
+
   public CSashImplementation(Sash sash, int style) {
     super(new BorderLayout(0, 0));
     this.handle = sash;
@@ -118,7 +122,7 @@ class CSashImplementation extends JPanel implements CSash {
 
 }
 
-public interface CSash extends CComponent {
+public interface CSash extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

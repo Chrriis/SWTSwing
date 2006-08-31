@@ -50,6 +50,10 @@ class CShellFrame extends JFrame implements CShell {
 
   protected Shell handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CShellFrame(Shell shell, int style) {
     this.handle = shell;
     setLocationByPlatform(true);
@@ -235,6 +239,10 @@ class CShellDialog extends JDialog implements CShell {
   protected Container contentPane;
   protected JScrollPane scrollPane;
   protected Shell handle;
+
+  public Container getSwingComponent() {
+    return this;
+  }
 
   public CShellDialog(Shell shell, CShellDialog parent, int style) {
     super(parent);

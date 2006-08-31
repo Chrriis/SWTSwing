@@ -29,6 +29,10 @@ class CGroupImplementation extends JPanel implements CGroup {
 
   protected Group handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CGroupImplementation(Group group, int style) {
     super(new BorderLayout(0, 0));
     this.handle = group;

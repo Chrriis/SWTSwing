@@ -19,6 +19,10 @@ class CProgressBarImplementation extends JProgressBar implements CProgressBar {
 
   protected ProgressBar handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CProgressBarImplementation(ProgressBar progressBar, int style) {
     handle = progressBar;
     init(style);
@@ -52,7 +56,7 @@ class CProgressBarImplementation extends JProgressBar implements CProgressBar {
 
 }
 
-public interface CProgressBar extends CComponent {
+public interface CProgressBar extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

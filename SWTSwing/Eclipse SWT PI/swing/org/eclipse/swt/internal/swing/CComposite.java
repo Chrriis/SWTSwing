@@ -32,6 +32,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
   protected JPanel contentPane;
   protected JScrollPane scrollPane;
 
+  public Container getSwingComponent() {
+    return contentPane;
+  }
+
   public CCompositeImplementation(Composite composite, int style) {
     super(new BorderLayout(0, 0));
     this.handle = composite;

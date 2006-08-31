@@ -26,6 +26,10 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
   protected ExpandBar handle;
   protected JExpandPane expandPane;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CExpandBarImplementation(ExpandBar expandBar, int style) {
     this.handle = expandBar;
     expandPane = new JExpandPane();

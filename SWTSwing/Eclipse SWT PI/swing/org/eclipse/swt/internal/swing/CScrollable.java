@@ -14,7 +14,7 @@ import javax.swing.JScrollBar;
  * @version 1.0 2005.03.22
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
-public interface CScrollable extends CComponent {
+public interface CScrollable extends CControl {
 
   public JScrollBar getHorizontalScrollBar();
 

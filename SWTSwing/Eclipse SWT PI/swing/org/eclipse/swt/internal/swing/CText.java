@@ -41,6 +41,10 @@ class CTextMulti extends JScrollPane implements CText {
   protected Text handle;
   protected JTextArea textArea;
 
+  public Container getSwingComponent() {
+    return textArea;
+  }
+
   public CTextMulti(Text text, int style) {
     this.handle = text;
 //    textArea = new JTextArea(4, 7);
@@ -324,6 +328,10 @@ class CTextField extends JScrollPane implements CText {
 
   protected Text handle;
   protected JPasswordField passwordField;
+
+  public Container getSwingComponent() {
+    return passwordField;
+  }
 
   public CTextField(Text text, int style) {
     this.handle = text;

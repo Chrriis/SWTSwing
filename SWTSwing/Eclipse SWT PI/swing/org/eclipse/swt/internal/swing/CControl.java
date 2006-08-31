@@ -18,7 +18,7 @@ import java.awt.Rectangle;
  * @version 1.0 2005.03.13
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
-public interface CComponent {
+public interface CControl {
 
   public static final int NO_BACKGROUND_INHERITANCE = 0;
   public static final int PREFERRED_BACKGROUND_INHERITANCE = 1;
@@ -43,5 +43,7 @@ public interface CComponent {
   public void setBackgroundImage(Image backgroundImage);
 
   public void setBackgroundInheritance(int backgroundInheritanceType);
+
+  public Container getSwingComponent();
 
 }

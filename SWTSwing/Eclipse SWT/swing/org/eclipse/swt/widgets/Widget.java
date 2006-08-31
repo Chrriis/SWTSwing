@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -951,7 +952,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
-		event.time = display.getLastEventTime ();
+		event.time = Utils.getCurrentTime ();
 	}
 	if (send) {
 		sendEvent (event);

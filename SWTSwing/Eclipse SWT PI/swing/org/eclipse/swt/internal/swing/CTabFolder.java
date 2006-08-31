@@ -25,6 +25,10 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
 
   protected TabFolder handle;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CTabFolderImplementation(TabFolder tabFolder, int style) {
     this.handle = tabFolder;
     init(style);

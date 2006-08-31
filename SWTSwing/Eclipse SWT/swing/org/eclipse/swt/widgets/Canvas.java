@@ -19,7 +19,7 @@ import javax.swing.ImageIcon;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.internal.swing.CControl;
 
 /**
  * Instances of this class provide a surface for drawing
@@ -192,7 +192,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 //  handle.repaint();
-  Container clientArea = ((CComponent)handle).getClientArea();
+  Container clientArea = ((CControl)handle).getClientArea();
   java.awt.Graphics g = clientArea.getGraphics();
   int dx = destX - x;
   int dy = destY - y;

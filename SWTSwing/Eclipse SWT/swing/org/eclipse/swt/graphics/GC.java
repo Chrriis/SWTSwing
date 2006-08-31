@@ -41,7 +41,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -3808,7 +3808,7 @@ Graphics2D getGraphics() {
   // TODO: check that this optimization is correct.
   if(validGraphics != null) return validGraphics;
   Container container = ((Control)drawable).handle;
-  Graphics2D g = (Graphics2D)((CComponent)container).getClientArea().getGraphics();
+  Graphics2D g = (Graphics2D)((CControl)container).getClientArea().getGraphics();
   int offsetX = 0;
   int offsetY = 0;
   for(Container parent = container; parent != null && parent.isLightweight(); parent = parent.getParent()) {

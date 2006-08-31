@@ -35,6 +35,10 @@ public interface CCombo extends CComposite {
 
     protected Combo handle;
 
+    public Container getSwingComponent() {
+      return this;
+    }
+
     public CComboBox(Combo combo, int style) {
       this.handle = combo;
       init(style);

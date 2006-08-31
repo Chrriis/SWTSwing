@@ -23,7 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.CComponent;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CComposite;
 
 /**
@@ -104,7 +104,7 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-  Component[] children = ((CComponent)handle).getClientArea().getComponents();
+  Component[] children = ((CControl)handle).getClientArea().getComponents();
   if(children.length == 0) {
     return new Control[0];
   }

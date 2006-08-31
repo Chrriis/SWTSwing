@@ -22,6 +22,10 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 
   protected SpinnerNumberModel model;
 
+  public Container getSwingComponent() {
+    return this;
+  }
+
   public CSpinnerImplementation(Spinner spinner, int style) {
     this.handle = spinner;
     model = new SpinnerNumberModel(0, minimum, maximum, 1.0);
@@ -132,7 +136,7 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
  * @version 1.0 2006.03.12
  * @author Christopher Deckers (chrriis@brainlex.com)
  */
-public interface CSpinner extends CComponent {
+public interface CSpinner extends CControl {
 
   public static class Instanciator {
     private Instanciator() {}

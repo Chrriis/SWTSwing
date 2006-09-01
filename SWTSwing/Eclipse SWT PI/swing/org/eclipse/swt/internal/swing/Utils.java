@@ -246,9 +246,6 @@ public class Utils {
     if((actions & DND.DROP_LINK) != 0) {
       swingActions |= DnDConstants.ACTION_LINK;
     }
-    if(actions == 0 && (actions & DND.DROP_DEFAULT) == 0) {
-      swingActions |= DnDConstants.ACTION_MOVE;
-    }
     return swingActions;
   }
   

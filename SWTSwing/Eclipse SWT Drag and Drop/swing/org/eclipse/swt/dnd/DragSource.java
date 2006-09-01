@@ -251,13 +251,17 @@ public DragSource(Control control, int style) {
         dragCursor = new Image(display, imageData);
       }
       e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
+        int action;
         public void dragEnter(DragSourceDragEvent e) {
+          action = e.getDropAction();
         }
         public void dragOver(DragSourceDragEvent e) {
+          action = e.getDropAction();
           // TODO: set the cursor with given image
 //          e.getDragSourceContext().setCursor(dragCursor);
         }
         public void dropActionChanged(DragSourceDragEvent e) {
+          action = e.getDropAction();
         }
         public void dragExit(java.awt.dnd.DragSourceEvent e) {
         }
@@ -265,7 +269,7 @@ public DragSource(Control control, int style) {
           DNDEvent event = new DNDEvent();
           event.widget = DragSource.this;
           event.time = Utils.getCurrentTime();
-          event.doit = e.getDropSuccess();
+          event.doit = e.getDropSuccess() || action == 0;
           event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
           notifyListeners(DND.DragEnd,event);
           dataEffect = DND.DROP_NONE;

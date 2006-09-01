@@ -203,9 +203,11 @@ public DropTarget(Control control, int style) {
         } else {
           e.acceptDrop(action);
         }
+        e.dropComplete(true);
         effect.showDropTargetEffect(event.feedback, event.x, event.y);
       } else {
         e.rejectDrop();
+        e.dropComplete(false);
       }
     }
 	}, true); 

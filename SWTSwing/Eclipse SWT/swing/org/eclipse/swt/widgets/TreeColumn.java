@@ -23,6 +23,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeColumn;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent a column in a tree widget.
@@ -242,7 +243,8 @@ public int getAlignment () {
  */
 public boolean getMoveable () {
   checkWidget ();
-  return moveable;
+  Utils.notImplemented(); return false;
+//  return moveable;
 }
 
 String getNameText () {
@@ -296,7 +298,8 @@ public boolean getResizable () {
  */
 public String getToolTipText () {
   checkWidget();
-  return toolTipText;
+  Utils.notImplemented(); return null;
+//  return toolTipText;
 }
 
 /**
@@ -505,7 +508,8 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
   checkWidget ();
-  this.moveable = moveable;
+  Utils.notImplemented();
+//  this.moveable = moveable;
 }
 
 /**
@@ -549,12 +553,13 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
   checkWidget();
-  toolTipText = string;
-  int hwndHeaderToolTip = parent.headerToolTipHandle;
-  if (hwndHeaderToolTip == 0) {
-    parent.createHeaderToolTips ();
-    parent.updateHeaderToolTips ();
-  }
+  Utils.notImplemented();
+//  toolTipText = string;
+//  int hwndHeaderToolTip = parent.headerToolTipHandle;
+//  if (hwndHeaderToolTip == 0) {
+//    parent.createHeaderToolTips ();
+//    parent.updateHeaderToolTips ();
+//  }
 }
 
 /**

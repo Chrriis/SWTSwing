@@ -16,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CBrowser;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 
@@ -88,7 +89,7 @@ public Browser(Composite parent, int style) {
  * @since 3.2
  */
 public static void clearSessions () {
-  // NOT_IMPLEMENTED
+  Utils.notImplemented();
 }
 
 /**	 

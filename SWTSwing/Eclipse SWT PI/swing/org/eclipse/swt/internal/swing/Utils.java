@@ -255,4 +255,19 @@ public class Utils {
     return (int)(System.currentTimeMillis() - timeStamp);
   }
 
+  public static void notImplemented() {
+    if(System.getProperty("swt.swing.debug") == null) {
+      return;
+    }
+    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    int i = 0;
+    for(; i<stackTraceElements.length; i++) {
+      StackTraceElement stackElement = stackTraceElements[i];
+      if(stackElement.getMethodName().equals("notImplemented")) {
+        System.err.println("Not implemented: " + stackTraceElements[i + 1]);
+        break;
+      }
+    }
+  }
+
 }

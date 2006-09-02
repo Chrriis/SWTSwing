@@ -13,14 +13,12 @@ package org.eclipse.swt.widgets;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
-import org.eclipse.swt.internal.swing.CGroup;
 import org.eclipse.swt.internal.swing.CToolBar;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -340,10 +338,11 @@ public ToolItem [] getItems () {
  */
 public int getRowCount () {
 	checkWidget ();
-	if ((style & SWT.VERTICAL) != 0) {
-		return OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
-	}
-	return OS.SendMessage (handle, OS.TB_GETROWS, 0, 0);
+  Utils.notImplemented(); return 1;
+//	if ((style & SWT.VERTICAL) != 0) {
+//		return OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+//	}
+//	return OS.SendMessage (handle, OS.TB_GETROWS, 0, 0);
 }
 
 /**
@@ -513,9 +512,10 @@ void removeControl (Control control) {
 public boolean setParent (Composite parent) {
 	checkWidget ();
 	if (!super.setParent (parent)) return false;
-  // TODO: how to add, assuming the new parent is a toolbar?
-	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
-	return true;
+	// TODO: how to add, assuming the new parent is a toolbar?
+  Utils.notImplemented(); return false;
+//	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
+//	return true;
 }
 
 boolean setTabItemFocus () {

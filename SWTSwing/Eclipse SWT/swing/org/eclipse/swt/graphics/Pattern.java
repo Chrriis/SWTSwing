@@ -11,8 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.gdip.*;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent patterns to use while drawing. Patterns
@@ -62,19 +61,20 @@ public Pattern(Device device, Image image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
-	device.checkGDIP();
-	int[] gdipImage = image.createGdipImage();
-	int img = gdipImage[0];
-	int width = Gdip.Image_GetWidth(img);
-	int height = Gdip.Image_GetHeight(img);
-	handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);	
-	Gdip.Bitmap_delete(img);
-	if (gdipImage[1] != 0) {
-		int hHeap = OS.GetProcessHeap ();
-		OS.HeapFree(hHeap, 0, gdipImage[1]);
-	}
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+  Utils.notImplemented();
+//	device.checkGDIP();
+//	int[] gdipImage = image.createGdipImage();
+//	int img = gdipImage[0];
+//	int width = Gdip.Image_GetWidth(img);
+//	int height = Gdip.Image_GetHeight(img);
+//	handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);	
+//	Gdip.Bitmap_delete(img);
+//	if (gdipImage[1] != 0) {
+//		int hHeap = OS.GetProcessHeap ();
+//		OS.HeapFree(hHeap, 0, gdipImage[1]);
+//	}
+//	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -141,33 +141,34 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
-	device.checkGDIP();
-	int colorRef1 = color1.handle;
-	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
-	int foreColor = Gdip.Color_new((alpha1 & 0xFF) << 24 | rgb);
-	int colorRef2 = color2.handle;
-	rgb = ((colorRef2 >> 16) & 0xFF) | (colorRef2 & 0xFF00) | ((colorRef2 & 0xFF) << 16);
-	int backColor = Gdip.Color_new((alpha2 & 0xFF) << 24 | rgb);
-	PointF p1 = new PointF();
-	p1.X = x1;
-	p1.Y = y1;
-	PointF p2 = new PointF();
-	p2.X = x2;
-	p2.Y = y2;
-	handle = Gdip.LinearGradientBrush_new(p1, p2, foreColor, backColor);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (alpha1 != 0xFF || alpha2 != 0xFF) {
-		int a = (int)((alpha1 & 0xFF) * 0.5f + (alpha2 & 0xFF) * 0.5f);
-		int r = (int)(((colorRef1 & 0xFF) >> 0) * 0.5f + ((colorRef2 & 0xFF) >> 0) * 0.5f);
-		int g = (int)(((colorRef1 & 0xFF00) >> 8) * 0.5f + ((colorRef2 & 0xFF00) >> 8) * 0.5f);
-		int b = (int)(((colorRef1 & 0xFF0000) >> 16) * 0.5f + ((colorRef2 & 0xFF0000) >> 16) * 0.5f);
-		int midColor = Gdip.Color_new(a << 24 | r << 16 | g << 8 | b);
-		Gdip.LinearGradientBrush_SetInterpolationColors(handle, new int[]{foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
-		Gdip.Color_delete(midColor);
-	}
-	Gdip.Color_delete(foreColor);
-	Gdip.Color_delete(backColor);
-	if (device.tracking) device.new_Object(this);
+  Utils.notImplemented();
+//	device.checkGDIP();
+//	int colorRef1 = color1.handle;
+//	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
+//	int foreColor = Gdip.Color_new((alpha1 & 0xFF) << 24 | rgb);
+//	int colorRef2 = color2.handle;
+//	rgb = ((colorRef2 >> 16) & 0xFF) | (colorRef2 & 0xFF00) | ((colorRef2 & 0xFF) << 16);
+//	int backColor = Gdip.Color_new((alpha2 & 0xFF) << 24 | rgb);
+//	PointF p1 = new PointF();
+//	p1.X = x1;
+//	p1.Y = y1;
+//	PointF p2 = new PointF();
+//	p2.X = x2;
+//	p2.Y = y2;
+//	handle = Gdip.LinearGradientBrush_new(p1, p2, foreColor, backColor);
+//	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+//	if (alpha1 != 0xFF || alpha2 != 0xFF) {
+//		int a = (int)((alpha1 & 0xFF) * 0.5f + (alpha2 & 0xFF) * 0.5f);
+//		int r = (int)(((colorRef1 & 0xFF) >> 0) * 0.5f + ((colorRef2 & 0xFF) >> 0) * 0.5f);
+//		int g = (int)(((colorRef1 & 0xFF00) >> 8) * 0.5f + ((colorRef2 & 0xFF00) >> 8) * 0.5f);
+//		int b = (int)(((colorRef1 & 0xFF0000) >> 16) * 0.5f + ((colorRef2 & 0xFF0000) >> 16) * 0.5f);
+//		int midColor = Gdip.Color_new(a << 24 | r << 16 | g << 8 | b);
+//		Gdip.LinearGradientBrush_SetInterpolationColors(handle, new int[]{foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
+//		Gdip.Color_delete(midColor);
+//	}
+//	Gdip.Color_delete(foreColor);
+//	Gdip.Color_delete(backColor);
+//	if (device.tracking) device.new_Object(this);
 }
 	
 /**
@@ -178,21 +179,21 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 public void dispose() {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
-	int type = Gdip.Brush_GetType(handle);
-	switch (type) {
-		case Gdip.BrushTypeSolidColor:
-			Gdip.SolidBrush_delete(handle);
-			break;
-		case Gdip.BrushTypeHatchFill:
-			Gdip.HatchBrush_delete(handle);
-			break;
-		case Gdip.BrushTypeLinearGradient:
-			Gdip.LinearGradientBrush_delete(handle);
-			break;
-		case Gdip.BrushTypeTextureFill:
-			Gdip.TextureBrush_delete(handle);
-			break;
-	}
+//	int type = Gdip.Brush_GetType(handle);
+//	switch (type) {
+//		case Gdip.BrushTypeSolidColor:
+//			Gdip.SolidBrush_delete(handle);
+//			break;
+//		case Gdip.BrushTypeHatchFill:
+//			Gdip.HatchBrush_delete(handle);
+//			break;
+//		case Gdip.BrushTypeLinearGradient:
+//			Gdip.LinearGradientBrush_delete(handle);
+//			break;
+//		case Gdip.BrushTypeTextureFill:
+//			Gdip.TextureBrush_delete(handle);
+//			break;
+//	}
 	handle = 0;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;

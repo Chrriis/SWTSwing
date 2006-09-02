@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.internal.Library;
 import org.eclipse.swt.internal.swing.CComposite;
+import org.eclipse.swt.internal.swing.Utils;
 
 /* AWT Imports */
 import java.awt.BorderLayout;
@@ -199,27 +200,28 @@ public static Frame new_Frame (final Composite parent) {
 public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int handle = 0;
-	try {
-		loadLibrary ();
-		handle = getAWTHandle (parent);
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
-	}
-  if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
-
-	final Shell shell = Shell.win32_new (display, handle);
-	parent.addComponentListener(new ComponentAdapter () {
-		public void componentResized (ComponentEvent e) {
-			display.syncExec (new Runnable () {
-				public void run () {
-					Dimension dim = parent.getSize ();
-					shell.setSize (dim.width, dim.height);
-				}
-			});
-		}
-	});
-	shell.setVisible (true);
-	return shell;
+  Utils.notImplemented(); return null;
+//  int handle = 0;
+//	try {
+//		loadLibrary ();
+//		handle = getAWTHandle (parent);
+//	} catch (Throwable e) {
+//		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+//	}
+//  if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
+//
+//	final Shell shell = Shell.win32_new (display, handle);
+//	parent.addComponentListener(new ComponentAdapter () {
+//		public void componentResized (ComponentEvent e) {
+//			display.syncExec (new Runnable () {
+//				public void run () {
+//					Dimension dim = parent.getSize ();
+//					shell.setSize (dim.width, dim.height);
+//				}
+//			});
+//		}
+//	});
+//	shell.setVisible (true);
+//	return shell;
 }
 }

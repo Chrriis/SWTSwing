@@ -36,12 +36,12 @@ import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.swing.CControl;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -2188,7 +2188,7 @@ public Color getBackground() {
  */
 public Pattern getBackgroundPattern() {
   Graphics2D handle = getGraphics();
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data.backgroundPattern;
 }
 
@@ -2440,20 +2440,21 @@ public GCData getGCData() {
  */
 public int getInterpolation() {
   Graphics2D handle = getGraphics();
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (data.gdipGraphics == 0) return SWT.DEFAULT;
-  int mode = Gdip.Graphics_GetInterpolationMode(data.gdipGraphics);
-  switch (mode) {
-    case Gdip.InterpolationModeDefault: return SWT.DEFAULT;
-    case Gdip.InterpolationModeNearestNeighbor: return SWT.NONE;
-    case Gdip.InterpolationModeBilinear:
-    case Gdip.InterpolationModeLowQuality: return SWT.LOW;
-    case Gdip.InterpolationModeBicubic:
-    case Gdip.InterpolationModeHighQualityBilinear:
-    case Gdip.InterpolationModeHighQualityBicubic:
-    case Gdip.InterpolationModeHighQuality: return SWT.HIGH;
-  }
-  return SWT.DEFAULT;
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  Utils.notImplemented(); return SWT.DEFAULT;
+//  if (data.gdipGraphics == 0) return SWT.DEFAULT;
+//  int mode = Gdip.Graphics_GetInterpolationMode(data.gdipGraphics);
+//  switch (mode) {
+//    case Gdip.InterpolationModeDefault: return SWT.DEFAULT;
+//    case Gdip.InterpolationModeNearestNeighbor: return SWT.NONE;
+//    case Gdip.InterpolationModeBilinear:
+//    case Gdip.InterpolationModeLowQuality: return SWT.LOW;
+//    case Gdip.InterpolationModeBicubic:
+//    case Gdip.InterpolationModeHighQualityBilinear:
+//    case Gdip.InterpolationModeHighQualityBicubic:
+//    case Gdip.InterpolationModeHighQuality: return SWT.HIGH;
+//  }
+//  return SWT.DEFAULT;
 }
 
 /** 
@@ -2987,16 +2988,17 @@ public void setBackground (Color color) {
  */
 public void setBackgroundPattern (Pattern pattern) {
   Graphics2D handle = getGraphics();
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  if (data.gdipGraphics == 0 && pattern == null) return;
-  initGdip(false, false);
-  if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
-  if (pattern != null) {
-    data.gdipBrush = Gdip.Brush_Clone(pattern.handle);
-  } else {
-    data.gdipBrush = 0;
-  }
+  Utils.notImplemented();
+//  if (data.gdipGraphics == 0 && pattern == null) return;
+//  initGdip(false, false);
+//  if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
+//  if (pattern != null) {
+//    data.gdipBrush = Gdip.Brush_Clone(pattern.handle);
+//  } else {
+//    data.gdipBrush = 0;
+//  }
   data.backgroundPattern = pattern;
 }
 
@@ -3221,18 +3223,19 @@ public void setForeground (Color color) {
  */
 public void setForegroundPattern (Pattern pattern) {
   Graphics2D handle = getGraphics();
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  if (data.gdipGraphics == 0 && pattern == null) return;
-  initGdip(false, false);
-  if (pattern != null) {
-    if (data.gdipPen != 0) Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
-  } else {
-    if (data.gdipPen != 0) {
-      Gdip.Pen_delete(data.gdipPen);
-      data.gdipPen = 0;
-    }
-  }
+  Utils.notImplemented();
+//  if (data.gdipGraphics == 0 && pattern == null) return;
+//  initGdip(false, false);
+//  if (pattern != null) {
+//    if (data.gdipPen != 0) Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
+//  } else {
+//    if (data.gdipPen != 0) {
+//      Gdip.Pen_delete(data.gdipPen);
+//      data.gdipPen = 0;
+//    }
+//  }
   data.foregroundPattern = pattern;
 }
 
@@ -3255,19 +3258,20 @@ public void setForegroundPattern (Pattern pattern) {
  */
 public void setInterpolation(int interpolation) {
   Graphics2D handle = getGraphics();
-  if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (data.gdipGraphics == 0 && interpolation == SWT.DEFAULT) return;
-  int mode = 0;
-  switch (interpolation) {
-    case SWT.DEFAULT: mode = Gdip.InterpolationModeDefault; break;
-    case SWT.NONE: mode = Gdip.InterpolationModeNearestNeighbor; break;
-    case SWT.LOW: mode = Gdip.InterpolationModeLowQuality; break;
-    case SWT.HIGH: mode = Gdip.InterpolationModeHighQuality; break;
-    default:
-      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  }
-  initGdip(false, false);
-  Gdip.Graphics_SetInterpolationMode(data.gdipGraphics, mode);
+  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+  Utils.notImplemented();
+//  if (data.gdipGraphics == 0 && interpolation == SWT.DEFAULT) return;
+//  int mode = 0;
+//  switch (interpolation) {
+//    case SWT.DEFAULT: mode = Gdip.InterpolationModeDefault; break;
+//    case SWT.NONE: mode = Gdip.InterpolationModeNearestNeighbor; break;
+//    case SWT.LOW: mode = Gdip.InterpolationModeLowQuality; break;
+//    case SWT.HIGH: mode = Gdip.InterpolationModeHighQuality; break;
+//    default:
+//      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+//  }
+//  initGdip(false, false);
+//  Gdip.Graphics_SetInterpolationMode(data.gdipGraphics, mode);
 }
 
 /** 

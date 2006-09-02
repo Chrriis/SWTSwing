@@ -13,7 +13,7 @@ package org.eclipse.swt.dnd;
  
 import java.awt.datatransfer.DataFlavor;
 
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 
@@ -149,11 +149,12 @@ abstract protected void javaToNative (Object object, TransferData transferData);
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName) {
+  Utils.notImplemented(); return formatName.hashCode();
 	// Look name up in the registry
 	// If name is not in registry, add it and return assigned value.
 	// If name already exists in registry, return its assigned value
-	TCHAR chFormatName = new TCHAR(0, formatName, true);
-	return OS.RegisterClipboardFormat(chFormatName);
+//	TCHAR chFormatName = new TCHAR(0, formatName, true);
+//	return OS.RegisterClipboardFormat(chFormatName);
 }
 
 /**

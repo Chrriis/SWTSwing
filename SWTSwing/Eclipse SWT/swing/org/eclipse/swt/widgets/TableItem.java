@@ -12,17 +12,16 @@ package org.eclipse.swt.widgets;
 
  
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTableItem;
-import org.eclipse.swt.internal.swing.CTree;
-import org.eclipse.swt.internal.swing.CTreeItem;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -229,9 +228,10 @@ public Rectangle getBounds () {
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   int itemIndex = parent.indexOf (this);
   if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-  RECT rect = getBounds (itemIndex, 0, true, false, false);
-  int width = rect.right - rect.left, height = rect.bottom - rect.top;
-  return new Rectangle (rect.left, rect.top, width, height);
+  Utils.notImplemented(); return new Rectangle (0, 0, 0, 0);
+//  RECT rect = getBounds (itemIndex, 0, true, false, false);
+//  int width = rect.right - rect.left, height = rect.bottom - rect.top;
+//  return new Rectangle (rect.left, rect.top, width, height);
 }
 
 /**
@@ -402,10 +402,11 @@ public Image getImage (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
-	if (images != null) {
-		if (0 <= index && index < images.length) return images [index];
-	}
-	return null;
+  Utils.notImplemented(); return null;
+//	if (images != null) {
+//		if (0 <= index && index < images.length) return images [index];
+//	}
+//	return null;
 }
 
 /**
@@ -427,9 +428,10 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	RECT rect = getBounds (itemIndex, index, false, true);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+  Utils.notImplemented(); return new Rectangle (0, 0, 0, 0);
+//	RECT rect = getBounds (itemIndex, index, false, true);
+//	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+//	return new Rectangle (rect.left, rect.top, width, height);
 }
 
 /**
@@ -445,7 +447,8 @@ public Rectangle getImageBounds (int index) {
 public int getImageIndent () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return imageIndent;
+  Utils.notImplemented(); return 0;
+//	return imageIndent;
 }
 
 /**
@@ -842,23 +845,24 @@ public void setImage (Image image) {
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
-	if (imageIndent == indent) return;
-	imageIndent = indent;
-  if ((parent.style & SWT.VIRTUAL) != 0) {
-    cached = true;
-  } else {
-		int index = parent.indexOf (this);
-		if (index != -1) {
-			int hwnd = parent.handle;
-			LVITEM lvItem = new LVITEM ();
-			lvItem.mask = OS.LVIF_INDENT;
-			lvItem.iItem = index;
-			lvItem.iIndent = indent;
-			OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-		}
-	}
-	parent.setScrollWidth (this, false);
-	redraw ();
+  Utils.notImplemented();
+//	if (imageIndent == indent) return;
+//	imageIndent = indent;
+//  if ((parent.style & SWT.VIRTUAL) != 0) {
+//    cached = true;
+//  } else {
+//		int index = parent.indexOf (this);
+//		if (index != -1) {
+//			int hwnd = parent.handle;
+//			LVITEM lvItem = new LVITEM ();
+//			lvItem.mask = OS.LVIF_INDENT;
+//			lvItem.iItem = index;
+//			lvItem.iIndent = indent;
+//			OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+//		}
+//	}
+//	parent.setScrollWidth (this, false);
+//	redraw ();
 }
 
 /**

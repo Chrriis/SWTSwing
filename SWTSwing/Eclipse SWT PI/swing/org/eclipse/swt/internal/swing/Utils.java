@@ -255,6 +255,10 @@ public class Utils {
     return (int)(System.currentTimeMillis() - timeStamp);
   }
 
+  /**
+   * Indicates that the method is not implemented. It prints the corresponding frame from
+   * the stack trace to the standard error if the "swt.swing.debug" property is defined.
+   */
   public static void notImplemented() {
     if(System.getProperty("swt.swing.debug") == null) {
       return;
@@ -268,6 +272,7 @@ public class Utils {
         break;
       }
     }
+    return;
   }
 
 }

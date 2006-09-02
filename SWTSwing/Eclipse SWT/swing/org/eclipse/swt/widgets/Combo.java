@@ -21,8 +21,7 @@ import javax.swing.JButton;
 import javax.swing.RootPaneContainer;
 
 import org.eclipse.swt.internal.swing.CCombo;
-import org.eclipse.swt.internal.swing.CText;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -437,9 +436,10 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	int result = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
-	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-	return result;
+  Utils.notImplemented(); return 15;
+//	int result = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
+//	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
+//	return result;
 }
 
 /**
@@ -1070,10 +1070,11 @@ public void setVisibleItemCount (int count) {
 
 boolean traverseEscape () {
 	if ((style & SWT.DROP_DOWN) != 0) {
-		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
-			OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
-			return true;
-		}
+    Utils.notImplemented();
+//		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+//			OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
+//			return true;
+//		}
 	}
 	return super.traverseEscape ();
 }

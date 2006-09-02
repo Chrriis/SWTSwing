@@ -11,21 +11,21 @@
 package org.eclipse.swt.widgets;
 
  
-import java.awt.Container;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.eclipse.swt.internal.swing.CTable;
-import org.eclipse.swt.internal.swing.CToolItem;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -257,18 +257,19 @@ CTreeItem createHandle () {
  */
 public void clear (int index, boolean all) {
   checkWidget ();
-  int hwnd = parent.handle;
-  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  hItem = parent.findItem (hItem, index);
-  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  TVITEM tvItem = new TVITEM ();
-  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-  parent.clear (hItem, tvItem);
-  if (all) {
-    hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-    parent.clearAll (hItem, tvItem, all);
-  }
+  Utils.notImplemented();
+//  int hwnd = parent.handle;
+//  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  hItem = parent.findItem (hItem, index);
+//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  TVITEM tvItem = new TVITEM ();
+//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//  parent.clear (hItem, tvItem);
+//  if (all) {
+//    hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+//    parent.clearAll (hItem, tvItem, all);
+//  }
 }
 
 /**
@@ -292,12 +293,13 @@ public void clear (int index, boolean all) {
  */
 public void clearAll (boolean all) {
   checkWidget ();
-  int hwnd = parent.handle;
-  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-  if (hItem == 0) return;
-  TVITEM tvItem = new TVITEM ();
-  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-  parent.clearAll (hItem, tvItem, all);
+  Utils.notImplemented();
+//  int hwnd = parent.handle;
+//  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//  if (hItem == 0) return;
+//  TVITEM tvItem = new TVITEM ();
+//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//  parent.clearAll (hItem, tvItem, all);
 }
 
 void destroyWidget () {
@@ -568,12 +570,13 @@ public TreeItem getItem (int index) {
   checkWidget ();
   if (index < 0) error (SWT.ERROR_INVALID_RANGE);
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  int hwnd = parent.handle;
-  int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  int hItem = parent.findItem (hFirstItem, index);
-  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  return parent._getItem (hItem);
+  Utils.notImplemented(); return null;
+//  int hwnd = parent.handle;
+//  int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  int hItem = parent.findItem (hFirstItem, index);
+//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  return parent._getItem (hItem);
 }
 
 /**
@@ -639,10 +642,11 @@ public Image getImage (int index) {
   checkWidget();
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
-	if (images != null) {
-		if (0 <= index && index < images.length) return images [index];
-	}
-	return null;
+  Utils.notImplemented(); return null;
+//	if (images != null) {
+//		if (0 <= index && index < images.length) return images [index];
+//	}
+//	return null;
 }
 
 /**
@@ -663,9 +667,10 @@ public Image getImage (int index) {
 public Rectangle getImageBounds (int index) {
   checkWidget();
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	RECT rect = getBounds (index, false, true, false);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+  Utils.notImplemented(); return new Rectangle(0, 0, 0, 0);
+//	RECT rect = getBounds (index, false, true, false);
+//	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+//	return new Rectangle (rect.left, rect.top, width, height);
 }
 
 /**
@@ -781,21 +786,22 @@ void releaseHandle () {
  */
 public void removeAll () {
   checkWidget ();
-  int hwnd = parent.handle;
-  TVITEM tvItem = new TVITEM ();
-  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-  tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-  while (tvItem.hItem != 0) {
-    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-    TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
-    if (item != null && !item.isDisposed ()) {
-      item.dispose ();
-    } else {
-      parent.releaseItem (tvItem.hItem, tvItem, false);
-      parent.destroyItem (null, tvItem.hItem);
-    }
-    tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-  }
+  Utils.notImplemented();
+//  int hwnd = parent.handle;
+//  TVITEM tvItem = new TVITEM ();
+//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//  tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//  while (tvItem.hItem != 0) {
+//    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+//    TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
+//    if (item != null && !item.isDisposed ()) {
+//      item.dispose ();
+//    } else {
+//      parent.releaseItem (tvItem.hItem, tvItem, false);
+//      parent.destroyItem (null, tvItem.hItem);
+//    }
+//    tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//  }
 }
 
 /**
@@ -1111,9 +1117,10 @@ public void setImage (Image image) {
 public void setItemCount (int count) {
   checkWidget ();
   count = Math.max (0, count);
-  int hwnd = parent.handle;
-  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-  parent.setItemCount (count, handle, hItem);
+  Utils.notImplemented();
+//  int hwnd = parent.handle;
+//  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//  parent.setItemCount (count, handle, hItem);
 }
 
 /**

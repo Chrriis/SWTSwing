@@ -16,7 +16,6 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.util.EventObject;
 
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 
 import org.eclipse.swt.SWT;
@@ -24,7 +23,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.internal.swing.CList;
-import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.swing.Utils;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -265,12 +264,13 @@ public void deselectAll () {
  */
 public int getFocusIndex () {
 	checkWidget ();
-	int result = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
-	if (result == 0) {
-		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-		if (count == 0) return -1;
-	}
-	return result;
+  Utils.notImplemented(); return -1;
+//	int result = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+//	if (result == 0) {
+//		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+//		if (count == 0) return -1;
+//	}
+//	return result;
 }
 
 /**
@@ -326,9 +326,10 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	int result = OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
-	if (result == OS.LB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-	return result;
+  Utils.notImplemented(); return 15;
+//	int result = OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
+//	if (result == OS.LB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
+//	return result;
 }
 
 /**

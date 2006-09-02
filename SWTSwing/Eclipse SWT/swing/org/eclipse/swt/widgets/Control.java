@@ -53,7 +53,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
 import org.eclipse.swt.internal.swing.Utils;
-import org.eclipse.swt.internal.win32.OS;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -2183,13 +2182,14 @@ public void setBounds (Rectangle rect) {
  */
 public void setCapture (boolean capture) {
 	checkWidget ();
-	if (capture) {
-		OS.SetCapture (handle);
-	} else {
-		if (OS.GetCapture () == handle) {
-			OS.ReleaseCapture ();
-		}
-	}
+  Utils.notImplemented();
+//	if (capture) {
+//		OS.SetCapture (handle);
+//	} else {
+//		if (OS.GetCapture () == handle) {
+//			OS.ReleaseCapture ();
+//		}
+//	}
 }
 
 //void setCursor () {

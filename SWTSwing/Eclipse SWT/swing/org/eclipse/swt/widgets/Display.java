@@ -137,8 +137,6 @@ public class Display extends Device {
 	Event [] eventQueue;
 	EventTable eventTable, filterTable;
   Vector timerList = new Vector();
-  boolean runMessages = true, runMessagesInIdle = false;
-  static final String RUN_MESSAGES_IN_IDLE_KEY = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	
 	/* Menus */
 	Menu [] bars, popups;
@@ -951,9 +949,9 @@ static boolean isValidClass (Class clazz) {
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
-    return new Boolean (runMessagesInIdle);
-  }
+//  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
+//    return new Boolean (runMessagesInIdle);
+//  }
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -2254,11 +2252,11 @@ public void setCursorLocation (Point point) {
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
-    Boolean data = (Boolean) value;
-    runMessagesInIdle = data != null && data.booleanValue ();
-    return;
-  }
+//  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
+//    Boolean data = (Boolean) value;
+//    runMessagesInIdle = data != null && data.booleanValue ();
+//    return;
+//  }
 	
 	/* Remove the key/value pair */
 	if (value == null) {

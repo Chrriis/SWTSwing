@@ -20,13 +20,9 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTableColumn;
-import org.eclipse.swt.internal.win32.LVCOLUMN;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.RECT;
-import org.eclipse.swt.internal.win32.TCHAR;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent a column in a table widget.
@@ -300,7 +296,8 @@ public boolean getResizable () {
  */
 public String getToolTipText () {
   checkWidget();
-  return toolTipText;
+  Utils.notImplemented(); return null;
+//  return toolTipText;
 }
 
 /**
@@ -551,7 +548,8 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
 	checkWidget ();
-	this.moveable = moveable;
+  Utils.notImplemented();
+//	this.moveable = moveable;
 }
 
 /**
@@ -599,12 +597,13 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
   checkWidget();
-  toolTipText = string;
-  int hwndHeaderToolTip = parent.headerToolTipHandle;
-  if (hwndHeaderToolTip == 0) {
-    parent.createHeaderToolTips ();
-    parent.updateHeaderToolTips ();
-  }
+  Utils.notImplemented();
+//  toolTipText = string;
+//  int hwndHeaderToolTip = parent.headerToolTipHandle;
+//  if (hwndHeaderToolTip == 0) {
+//    parent.createHeaderToolTips ();
+//    parent.updateHeaderToolTips ();
+//  }
 }
 
 /**

@@ -19,6 +19,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent paths through the two-dimensional
@@ -273,12 +274,11 @@ public void getBounds(float[] bounds) {
   if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  RectF rect = new RectF();
-  Gdip.GraphicsPath_GetBounds(handle, rect, 0, 0);
-  bounds[0] = rect.X;
-  bounds[1] = rect.Y;
-  bounds[2] = rect.Width;
-  bounds[3] = rect.Height;
+  Rectangle2D boundingBox = handle.getBounds2D();
+  bounds[0] = (float)boundingBox.getX();
+  bounds[1] = (float)boundingBox.getY();
+  bounds[2] = (float)boundingBox.getWidth();
+  bounds[3] = (float)boundingBox.getHeight();
 }
 
 /**
@@ -317,48 +317,49 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
   if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  int count = Gdip.GraphicsPath_GetPointCount(handle);
-  byte[] gdipTypes = new byte[count];
-  float[] points = new float[count * 2];
-  Gdip.GraphicsPath_GetPathTypes(handle, gdipTypes, count);
-  Gdip.GraphicsPath_GetPathPoints(handle, points, count);
-  byte[] types = new byte[count * 2];
-  int index = 0, typesIndex = 0;
-  while (index < count) {
-    byte type = gdipTypes[index];
-    boolean close = false;
-    switch (type & Gdip.PathPointTypePathTypeMask) {
-      case Gdip.PathPointTypeStart:
-        types[typesIndex++] = SWT.PATH_MOVE_TO;
-        close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
-        index += 1;
-        break;
-      case Gdip.PathPointTypeLine:
-        types[typesIndex++] = SWT.PATH_LINE_TO;
-        close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
-        index += 1;
-        break;
-      case Gdip.PathPointTypeBezier:
-        types[typesIndex++] = SWT.PATH_CUBIC_TO;
-        close = (gdipTypes[index + 2] & Gdip.PathPointTypeCloseSubpath) != 0;
-        index += 3;
-        break;
-      default:
-        index++;
-    }
-    if (close) {
-      types[typesIndex++] = SWT.PATH_CLOSE;
-    }
-  }
-  if (typesIndex != types.length) {
-    byte[] newTypes = new byte[typesIndex];
-    System.arraycopy(types, 0, newTypes, 0, typesIndex);
-    types = newTypes;
-  }
-  PathData result = new PathData();
-  result.types = types;
-  result.points = points;
-  return result;
+  Utils.notImplemented(); return null;
+//  int count = Gdip.GraphicsPath_GetPointCount(handle);
+//  byte[] gdipTypes = new byte[count];
+//  float[] points = new float[count * 2];
+//  Gdip.GraphicsPath_GetPathTypes(handle, gdipTypes, count);
+//  Gdip.GraphicsPath_GetPathPoints(handle, points, count);
+//  byte[] types = new byte[count * 2];
+//  int index = 0, typesIndex = 0;
+//  while (index < count) {
+//    byte type = gdipTypes[index];
+//    boolean close = false;
+//    switch (type & Gdip.PathPointTypePathTypeMask) {
+//      case Gdip.PathPointTypeStart:
+//        types[typesIndex++] = SWT.PATH_MOVE_TO;
+//        close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
+//        index += 1;
+//        break;
+//      case Gdip.PathPointTypeLine:
+//        types[typesIndex++] = SWT.PATH_LINE_TO;
+//        close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
+//        index += 1;
+//        break;
+//      case Gdip.PathPointTypeBezier:
+//        types[typesIndex++] = SWT.PATH_CUBIC_TO;
+//        close = (gdipTypes[index + 2] & Gdip.PathPointTypeCloseSubpath) != 0;
+//        index += 3;
+//        break;
+//      default:
+//        index++;
+//    }
+//    if (close) {
+//      types[typesIndex++] = SWT.PATH_CLOSE;
+//    }
+//  }
+//  if (typesIndex != types.length) {
+//    byte[] newTypes = new byte[typesIndex];
+//    System.arraycopy(types, 0, newTypes, 0, typesIndex);
+//    types = newTypes;
+//  }
+//  PathData result = new PathData();
+//  result.types = types;
+//  result.points = points;
+//  return result;
 }
 
 /**

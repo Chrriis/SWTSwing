@@ -18,9 +18,6 @@ import java.awt.Toolkit;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-//import org.eclipse.swt.internal.*;
-//import org.eclipse.swt.internal.gdip.*;
-//import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
 /**

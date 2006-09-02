@@ -13,16 +13,14 @@ package org.eclipse.swt.widgets;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Insets;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
 import org.eclipse.swt.internal.swing.CCoolBar;
 import org.eclipse.swt.internal.swing.CCoolItem;
-import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.JCoolBarItem;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -418,23 +416,24 @@ public int getItemCount () {
  */
 public int [] getItemOrder () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	int [] indices = new int [count];
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_ID;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		CoolItem item = items [rbBand.wID];
-		int index = 0;
-		while (index<originalItems.length) {
-			if (originalItems [index] == item) break;
-			index++;
-		}
-		if (index == originalItems.length) error (SWT.ERROR_CANNOT_GET_ITEM);
-		indices [i] = index;
-	}
-	return indices;
+  Utils.notImplemented(); return null;
+//	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+//	int [] indices = new int [count];
+//	REBARBANDINFO rbBand = new REBARBANDINFO ();
+//	rbBand.cbSize = REBARBANDINFO.sizeof;
+//	rbBand.fMask = OS.RBBIM_ID;
+//	for (int i=0; i<count; i++) {
+//		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+//		CoolItem item = items [rbBand.wID];
+//		int index = 0;
+//		while (index<originalItems.length) {
+//			if (originalItems [index] == item) break;
+//			index++;
+//		}
+//		if (index == originalItems.length) error (SWT.ERROR_CANNOT_GET_ITEM);
+//		indices [i] = index;
+//	}
+//	return indices;
 }
 
 /**
@@ -736,10 +735,11 @@ void removeControl (Control control) {
 public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
 	checkWidget ();
 	setRedraw (false);
-	setItemOrder (itemOrder);
-	setWrapIndices (wrapIndices);
-	setItemSizes (sizes);
-	setRedraw (true);
+  Utils.notImplemented();
+//	setItemOrder (itemOrder);
+//	setWrapIndices (wrapIndices);
+//	setItemSizes (sizes);
+//	setRedraw (true);
 }
 
 ///*

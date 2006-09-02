@@ -13,8 +13,6 @@ package org.eclipse.swt.graphics;
  
 import java.awt.Component;
 
-import org.eclipse.swt.internal.win32.*;
-
 /**
  * Instances of this class are descriptions of GCs in terms
  * of unallocated platform-specific data fields.
@@ -39,7 +37,6 @@ public final class GCData {
 	public java.awt.Font hFont;
 	public int hNullBitmap;
 	public Component hwnd;
-	public PAINTSTRUCT ps;
 	public boolean layout = true;
 	public int alpha = 0xFF;
   public boolean advanced;

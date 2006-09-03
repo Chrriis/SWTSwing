@@ -196,100 +196,6 @@ public DragSource(Control control, int style) {
   } catch(Throwable e) {
     isPropertySet = false;
   }
-  DragGestureListener dragGestureListener = new DragGestureListener() {
-    public void dragGestureRecognized(DragGestureEvent e) {
-      if (DragSource.this.isDisposed()) {
-        return;
-      }
-      java.awt.Point dragOrigin = e.getDragOrigin();
-      DNDEvent event = new DNDEvent();
-      event.widget = DragSource.this;
-      event.x = dragOrigin.x;
-      event.y = dragOrigin.y;
-      event.time = Utils.getCurrentTime();
-      event.doit = true;
-      notifyListeners(DND.DragStart,event);
-      if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
-      TransferData transferData = new TransferData();
-      event = new DNDEvent();
-      event.widget = DragSource.this;
-      event.time = Utils.getCurrentTime();
-      event.dataType = transferData;
-      notifyListeners(DND.DragSetData,event);
-      // START - copy from clipboard
-      // TODO: refactor to share code?
-      ArrayList transferableList = new ArrayList();
-      ArrayList flavorList = new ArrayList();
-      for(int i=0; i<transferAgents.length; i++) {
-        transferData = new TransferData();
-        Transfer transfer = transferAgents[i];
-        transferData.dataFlavor = transfer.getDataFlavor();
-        transfer.javaToNative(event.data, transferData);
-        flavorList.add(transferData.dataFlavor);
-        transferableList.add(transferData.transferable);
-      }
-      final Transferable[] transferables = (Transferable[])transferableList.toArray(new Transferable[0]);
-      final DataFlavor[] flavors = (DataFlavor[])flavorList.toArray(new DataFlavor[0]);
-      Transferable transferable = new Transferable() {
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-          for(int i=0; i<flavors.length; i++) {
-            if(flavors[i].equals(flavor)) {
-              try {
-                return transferables[i].getTransferData(flavor);
-              } catch(IOException e) {
-              } catch(UnsupportedFlavorException e) {
-              }
-            }
-          }
-          throw new UnsupportedFlavorException(flavor);
-        }
-        public DataFlavor[] getTransferDataFlavors() {
-          return (DataFlavor[])flavors.clone();
-        }
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
-          for(int i=0; i<flavors.length; i++) {
-            if(flavors[i].equals(flavor)) {
-              return true;
-            }
-          }
-          return false;
-        }
-      };
-      // END - copy from clipboard
-//      int operations = Utils.convertDnDActionsToSwing(getStyle());
-      Display display = DragSource.this.control.getDisplay();
-      ImageData imageData = effect.getDragSourceImage(dragOrigin.x, dragOrigin.y);
-      dragCursor = null;
-      if (imageData != null) {
-        dragCursor = new Image(display, imageData);
-      }
-      e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
-        int action;
-        public void dragEnter(DragSourceDragEvent e) {
-          action = e.getDropAction();
-        }
-        public void dragOver(DragSourceDragEvent e) {
-          action = e.getDropAction();
-          // TODO: set the cursor with given image
-//          e.getDragSourceContext().setCursor(dragCursor);
-        }
-        public void dropActionChanged(DragSourceDragEvent e) {
-          action = e.getDropAction();
-        }
-        public void dragExit(java.awt.dnd.DragSourceEvent e) {
-        }
-        public void dragDropEnd(DragSourceDropEvent e) {
-          DNDEvent event = new DNDEvent();
-          event.widget = DragSource.this;
-          event.time = Utils.getCurrentTime();
-          event.doit = e.getDropSuccess() || action == 0;
-          event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
-          notifyListeners(DND.DragEnd,event);
-          dataEffect = DND.DROP_NONE;
-        }
-      });
-    }
-  };
   Container swingComponent = ((CControl)control.handle).getSwingComponent();
   // We need to be first to process the mouse event.
   MouseListener[] mouseListeners = swingComponent.getMouseListeners();
@@ -301,10 +207,10 @@ public DragSource(Control control, int style) {
     swingComponent.removeMouseMotionListener(mouseMotionListeners[i]);
   }
   if(isPropertySet) {
-    java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), dragGestureListener);
+    java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
   } else {
-    // We don't use the default drag recognizer which is platform independant, because SWT wants no threshold and we failed to set it.
-    new DragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), dragGestureListener);
+    // We don't use the default cross platform drag recognizer, because SWT does not wants a threshold, and we failed to set it to 0.
+    new SWTDragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
   }
   for(int i=0; i<mouseListeners.length; i++) {
     swingComponent.addMouseListener(mouseListeners[i]);
@@ -443,8 +349,8 @@ public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 }
 
-class DragGestureRecognizer extends MouseDragGestureRecognizer {
-  protected DragGestureRecognizer(java.awt.dnd.DragSource dragsource, Component component, int actions, DragGestureListener draggesturelistener) {
+class SWTDragGestureRecognizer extends MouseDragGestureRecognizer {
+  protected SWTDragGestureRecognizer(java.awt.dnd.DragSource dragsource, Component component, int actions, DragGestureListener draggesturelistener) {
     super(dragsource, component, actions, draggesturelistener);
   }
   public void mouseClicked(MouseEvent e) {
@@ -521,23 +427,102 @@ class DragGestureRecognizer extends MouseDragGestureRecognizer {
     }
     return dropAction & sourceActions;
   }
-//  protected void registerListeners() {
-//    MouseListener[] mouseListeners = component.getMouseListeners();
-//    for(int i=0; i<mouseListeners.length; i++) {
-//      component.removeMouseListener(mouseListeners[i]);
-//    }
-//    MouseMotionListener[] mouseMotionListeners = component.getMouseMotionListeners();
-//    for(int i=0; i<mouseMotionListeners.length; i++) {
-//      component.removeMouseMotionListener(mouseMotionListeners[i]);
-//    }
-//    super.registerListeners();
-//    for(int i=0; i<mouseListeners.length; i++) {
-//      component.addMouseListener(mouseListeners[i]);
-//    }
-//    for(int i=0; i<mouseMotionListeners.length; i++) {
-//      component.addMouseMotionListener(mouseMotionListeners[i]);
-//    }
-//  }
 }
+
+class SWTDragGestureListener implements DragGestureListener {
+  public void dragGestureRecognized(DragGestureEvent e) {
+    if (DragSource.this.isDisposed()) {
+      return;
+    }
+    java.awt.Point dragOrigin = e.getDragOrigin();
+    DNDEvent event = new DNDEvent();
+    event.widget = DragSource.this;
+    event.x = dragOrigin.x;
+    event.y = dragOrigin.y;
+    event.time = Utils.getCurrentTime();
+    event.doit = true;
+    notifyListeners(DND.DragStart,event);
+    if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
+    TransferData transferData = new TransferData();
+    event = new DNDEvent();
+    event.widget = DragSource.this;
+    event.time = Utils.getCurrentTime();
+    event.dataType = transferData;
+    notifyListeners(DND.DragSetData,event);
+    // START - copy from clipboard
+    // TODO: refactor to share code?
+    ArrayList transferableList = new ArrayList();
+    ArrayList flavorList = new ArrayList();
+    for(int i=0; i<transferAgents.length; i++) {
+      transferData = new TransferData();
+      Transfer transfer = transferAgents[i];
+      transferData.dataFlavor = transfer.getDataFlavor();
+      transfer.javaToNative(event.data, transferData);
+      flavorList.add(transferData.dataFlavor);
+      transferableList.add(transferData.transferable);
+    }
+    final Transferable[] transferables = (Transferable[])transferableList.toArray(new Transferable[0]);
+    final DataFlavor[] flavors = (DataFlavor[])flavorList.toArray(new DataFlavor[0]);
+    Transferable transferable = new Transferable() {
+      public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+        for(int i=0; i<flavors.length; i++) {
+          if(flavors[i].equals(flavor)) {
+            try {
+              return transferables[i].getTransferData(flavor);
+            } catch(IOException e) {
+            } catch(UnsupportedFlavorException e) {
+            }
+          }
+        }
+        throw new UnsupportedFlavorException(flavor);
+      }
+      public DataFlavor[] getTransferDataFlavors() {
+        return (DataFlavor[])flavors.clone();
+      }
+      public boolean isDataFlavorSupported(DataFlavor flavor) {
+        for(int i=0; i<flavors.length; i++) {
+          if(flavors[i].equals(flavor)) {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+    // END - copy from clipboard
+//    int operations = Utils.convertDnDActionsToSwing(getStyle());
+    Display display = DragSource.this.control.getDisplay();
+    ImageData imageData = effect.getDragSourceImage(dragOrigin.x, dragOrigin.y);
+    dragCursor = null;
+    if (imageData != null) {
+      dragCursor = new Image(display, imageData);
+    }
+    e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
+      int action;
+      public void dragEnter(DragSourceDragEvent e) {
+        action = e.getDropAction();
+      }
+      public void dragOver(DragSourceDragEvent e) {
+        action = e.getDropAction();
+        // TODO: set the cursor with given image
+//        e.getDragSourceContext().setCursor(dragCursor);
+      }
+      public void dropActionChanged(DragSourceDragEvent e) {
+        action = e.getDropAction();
+      }
+      public void dragExit(java.awt.dnd.DragSourceEvent e) {
+      }
+      public void dragDropEnd(DragSourceDropEvent e) {
+        DNDEvent event = new DNDEvent();
+        event.widget = DragSource.this;
+        event.time = Utils.getCurrentTime();
+        event.doit = e.getDropSuccess() || action == 0;
+        event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+        notifyListeners(DND.DragEnd,event);
+        dataEffect = DND.DROP_NONE;
+      }
+    });
+  }
+};
+
 
 }

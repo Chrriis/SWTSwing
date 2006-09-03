@@ -180,7 +180,7 @@ public DragSource(Control control, int style) {
 		}
 	};
 	control.addListener(SWT.Dispose, controlListener);
-	control.addListener(SWT.DragDetect, controlListener);
+//	control.addListener(SWT.DragDetect, controlListener);
 	this.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event e) {
 			DragSource.this.onDispose();
@@ -304,7 +304,7 @@ private void onDispose() {
 	if (control == null) return;
 	if (controlListener != null){
 		control.removeListener(SWT.Dispose, controlListener);
-		control.removeListener(SWT.DragDetect, controlListener);
+//		control.removeListener(SWT.DragDetect, controlListener);
 	}
 	controlListener = null;
 	control.setData(DRAGSOURCEID, null);

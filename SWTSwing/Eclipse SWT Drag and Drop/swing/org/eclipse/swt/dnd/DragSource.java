@@ -12,6 +12,8 @@ package org.eclipse.swt.dnd;
 
  
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -25,6 +27,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -178,16 +181,22 @@ public DragSource(Control control, int style) {
 	};
 	control.addListener(SWT.Dispose, controlListener);
 	control.addListener(SWT.DragDetect, controlListener);
-	
 	this.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event e) {
 			DragSource.this.onDispose();
 		}
 	});
-  
-//  java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new DragGestureListener() {
-  // We don't use the default drag recognizer which is platform independant, because SWT wants the action to be immediate, i.e. no threshold...
-  new DragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), ((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new DragGestureListener() {
+  boolean isPropertySet = true;
+  try {
+    System.setProperty("awt.dnd.drag.threshold", "0");
+    Method method = Toolkit.class.getDeclaredMethod("setDesktopProperty", new Class[] {String.class, Object.class});
+    method.setAccessible(true);
+    method.invoke(Toolkit.getDefaultToolkit(), new Object[] {"DnD.gestureMotionThreshold", new Integer(0)});
+    method.setAccessible(false);
+  } catch(Throwable e) {
+    isPropertySet = false;
+  }
+  DragGestureListener dragGestureListener = new DragGestureListener() {
     public void dragGestureRecognized(DragGestureEvent e) {
       if (DragSource.this.isDisposed()) {
         return;
@@ -280,7 +289,29 @@ public DragSource(Control control, int style) {
         }
       });
     }
-  });
+  };
+  Container swingComponent = ((CControl)control.handle).getSwingComponent();
+  // We need to be first to process the mouse event.
+  MouseListener[] mouseListeners = swingComponent.getMouseListeners();
+  for(int i=0; i<mouseListeners.length; i++) {
+    swingComponent.removeMouseListener(mouseListeners[i]);
+  }
+  MouseMotionListener[] mouseMotionListeners = swingComponent.getMouseMotionListeners();
+  for(int i=0; i<mouseMotionListeners.length; i++) {
+    swingComponent.removeMouseMotionListener(mouseMotionListeners[i]);
+  }
+  if(isPropertySet) {
+    java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), dragGestureListener);
+  } else {
+    // We don't use the default drag recognizer which is platform independant, because SWT wants no threshold and we failed to set it.
+    new DragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), dragGestureListener);
+  }
+  for(int i=0; i<mouseListeners.length; i++) {
+    swingComponent.addMouseListener(mouseListeners[i]);
+  }
+  for(int i=0; i<mouseMotionListeners.length; i++) {
+    swingComponent.addMouseMotionListener(mouseMotionListeners[i]);
+  }
   // TODO: implement
 //	if (control instanceof Tree) {
 //		effect = new TreeDragAndDropEffect((Tree)control);
@@ -490,23 +521,23 @@ class DragGestureRecognizer extends MouseDragGestureRecognizer {
     }
     return dropAction & sourceActions;
   }
-  protected void registerListeners() {
-    MouseListener[] mouseListeners = component.getMouseListeners();
-    for(int i=0; i<mouseListeners.length; i++) {
-      component.removeMouseListener(mouseListeners[i]);
-    }
-    MouseMotionListener[] mouseMotionListeners = component.getMouseMotionListeners();
-    for(int i=0; i<mouseMotionListeners.length; i++) {
-      component.removeMouseMotionListener(mouseMotionListeners[i]);
-    }
-    super.registerListeners();
-    for(int i=0; i<mouseListeners.length; i++) {
-      component.addMouseListener(mouseListeners[i]);
-    }
-    for(int i=0; i<mouseMotionListeners.length; i++) {
-      component.addMouseMotionListener(mouseMotionListeners[i]);
-    }
-  }
+//  protected void registerListeners() {
+//    MouseListener[] mouseListeners = component.getMouseListeners();
+//    for(int i=0; i<mouseListeners.length; i++) {
+//      component.removeMouseListener(mouseListeners[i]);
+//    }
+//    MouseMotionListener[] mouseMotionListeners = component.getMouseMotionListeners();
+//    for(int i=0; i<mouseMotionListeners.length; i++) {
+//      component.removeMouseMotionListener(mouseMotionListeners[i]);
+//    }
+//    super.registerListeners();
+//    for(int i=0; i<mouseListeners.length; i++) {
+//      component.addMouseListener(mouseListeners[i]);
+//    }
+//    for(int i=0; i<mouseMotionListeners.length; i++) {
+//      component.addMouseMotionListener(mouseMotionListeners[i]);
+//    }
+//  }
 }
 
 }

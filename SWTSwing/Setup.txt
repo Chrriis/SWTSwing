@@ -43,7 +43,7 @@ and without SWTSwing (this example is for win32):
 - With SWTSwing:
   Project: SWTSwingTests
   Main class: chrriis.swtswing.SnippetLauncher
-  VM Arguments: -Dswt.swing.laf=javax.swing.plaf.metal.MetalLookAndFeel -Dswt.swing.snippets=defined
+  VM Arguments: -Dswt.swing.laf=javax.swing.plaf.metal.MetalLookAndFeel -Dswt.swing.debug=defined -Dswt.swing.snippets=defined
   
 ... then open the "chrriis.swtswing.SnippetLauncher" class and change the snippet number
-that is located below the snippet definitions, to whatever snippet number.
+that is located below the snippet definitions to whatever snippet number.

@@ -11,13 +11,19 @@
 package org.eclipse.swt.dnd;
 
  
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.MouseDragGestureRecognizer;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -168,11 +174,6 @@ public DragSource(Control control, int style) {
 					DragSource.this.dispose();
 				}
 			}
-//			if (event.type == SWT.DragDetect) {
-//				if (!DragSource.this.isDisposed()) {
-//					DragSource.this.drag(event);
-//				}
-//			}
 		}
 	};
 	control.addListener(SWT.Dispose, controlListener);
@@ -183,7 +184,10 @@ public DragSource(Control control, int style) {
 			DragSource.this.onDispose();
 		}
 	});
-  java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new DragGestureListener() {
+  
+//  java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new DragGestureListener() {
+  // We don't use the default drag recognizer which is platform independant, because SWT wants the action to be immediate, i.e. no threshold...
+  new DragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), ((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new DragGestureListener() {
     public void dragGestureRecognized(DragGestureEvent e) {
       if (DragSource.this.isDisposed()) {
         return;
@@ -406,6 +410,103 @@ public void removeDragListener(DragSourceListener listener) {
  */
 public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
+}
+
+class DragGestureRecognizer extends MouseDragGestureRecognizer {
+  protected DragGestureRecognizer(java.awt.dnd.DragSource dragsource, Component component, int actions, DragGestureListener draggesturelistener) {
+    super(dragsource, component, actions, draggesturelistener);
+  }
+  public void mouseClicked(MouseEvent e) {
+  }
+  public void mousePressed(MouseEvent e) {
+    events.clear();
+    if(getDragAction(e) != 0) {
+      appendEvent(e);
+    }
+  }
+  public void mouseReleased(MouseEvent e) {
+    events.clear();
+  }
+  public void mouseEntered(MouseEvent e) {
+    events.clear();
+  }
+  public void mouseExited(MouseEvent e) {
+    if(!events.isEmpty()) {
+      int dragAction = getDragAction(e);
+      if(dragAction == 0) {
+        events.clear();
+      }
+    }
+  }
+  public void mouseDragged(MouseEvent e) {
+    if(!events.isEmpty()) {
+      int dragAction = getDragAction(e);
+      if(dragAction == 0) {
+        return;
+      }
+//      MouseEvent me = (MouseEvent)events.get(0);
+//      Point p1 = e.getPoint();
+//      Point p2 = me.getPoint();
+//      int j = Math.abs(p2.x - p1.x);
+//      int k = Math.abs(p2.y - p1.y);
+//      if(j > 0 || k > 0) {
+        fireDragGestureRecognized(dragAction, ((MouseEvent)getTriggerEvent()).getPoint());
+//      } else {
+//        appendEvent(e);
+//      }
+    }
+  }
+  public void mouseMoved(MouseEvent mouseevent) {
+  }
+  protected int getDragAction(MouseEvent e) {
+    int modifiers = e.getModifiersEx();
+    if((modifiers & MouseEvent.BUTTON1_DOWN_MASK) == 0) {
+      return 0;
+    }
+    int dropAction = 0;
+    int sourceActions = getSourceActions();
+    switch(modifiers & (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK)) {
+    case MouseEvent.CTRL_DOWN_MASK: 
+      dropAction = DnDConstants.ACTION_COPY;
+      break;
+    case MouseEvent.SHIFT_DOWN_MASK: 
+      dropAction = DnDConstants.ACTION_MOVE;
+      break;
+    case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+      dropAction = DnDConstants.ACTION_LINK;
+      break;
+    default:
+      if((sourceActions & DnDConstants.ACTION_COPY) != 0) {
+        dropAction = DnDConstants.ACTION_COPY;
+        break;
+      }
+      if((sourceActions & DnDConstants.ACTION_MOVE) != 0) {
+        dropAction = DnDConstants.ACTION_MOVE;
+        break;
+      }
+      if((sourceActions & DnDConstants.ACTION_LINK) != 0)
+        dropAction = DnDConstants.ACTION_LINK;
+      break;
+    }
+    return dropAction & sourceActions;
+  }
+  protected void registerListeners() {
+    MouseListener[] mouseListeners = component.getMouseListeners();
+    for(int i=0; i<mouseListeners.length; i++) {
+      component.removeMouseListener(mouseListeners[i]);
+    }
+    MouseMotionListener[] mouseMotionListeners = component.getMouseMotionListeners();
+    for(int i=0; i<mouseMotionListeners.length; i++) {
+      component.removeMouseMotionListener(mouseMotionListeners[i]);
+    }
+    super.registerListeners();
+    for(int i=0; i<mouseListeners.length; i++) {
+      component.addMouseListener(mouseListeners[i]);
+    }
+    for(int i=0; i<mouseMotionListeners.length; i++) {
+      component.addMouseMotionListener(mouseMotionListeners[i]);
+    }
+  }
 }
 
 }

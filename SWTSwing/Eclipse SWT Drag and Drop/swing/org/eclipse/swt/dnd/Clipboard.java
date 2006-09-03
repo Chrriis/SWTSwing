@@ -292,11 +292,12 @@ public Object getContents(Transfer transfer, int clipboards) {
     java.awt.datatransfer.Clipboard clipboard = (java.awt.datatransfer.Clipboard)clipboardList.get(i);
     TransferData[] supportedTypes = transfer.getSupportedTypes();
     for(int j=0; j<supportedTypes.length; j++) {
-      DataFlavor flavor = supportedTypes[j].dataFlavor;
+      TransferData transferData = supportedTypes[j];
+      DataFlavor flavor = transferData.dataFlavor;
       if(clipboard.isDataFlavorAvailable(flavor)) {
         try {
-          supportedTypes[j].transferable = clipboard.getContents(null);
-          return transfer.nativeToJava(supportedTypes[j]);
+          transferData.transferable = clipboard.getContents(null);
+          return transfer.nativeToJava(transferData);
         } catch(Exception e) {
         }
       }

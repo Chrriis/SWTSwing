@@ -295,7 +295,8 @@ public Object getContents(Transfer transfer, int clipboards) {
       DataFlavor flavor = supportedTypes[j].dataFlavor;
       if(clipboard.isDataFlavorAvailable(flavor)) {
         try {
-          return clipboard.getData(flavor);
+          supportedTypes[j].transferable = clipboard.getContents(null);
+          return transfer.nativeToJava(supportedTypes[j]);
         } catch(Exception e) {
         }
       }

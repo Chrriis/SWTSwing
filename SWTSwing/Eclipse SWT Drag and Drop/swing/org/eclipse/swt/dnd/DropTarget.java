@@ -185,8 +185,18 @@ public DropTarget(Control control, int style) {
       DNDEvent event = new DNDEvent();
       if(setDropEventData(event, e)) {
         int allowedOperations = event.operations;
+        Object object = null;
+        for (int i = 0; i < transferAgents.length; i++){
+          if (transferAgents[i].isSupportedType(event.dataType)){
+            object = transferAgents[i].nativeToJava(event.dataType);
+            break;
+          }
+        }
+        if (object == null){
+          event.detail = DND.DROP_NONE;
+        }
         try {
-          event.data = event.dataType.transferable.getTransferData(event.dataType.dataFlavor);
+          event.data = object;
         } catch(Exception ex) {
           ex.printStackTrace();
         }

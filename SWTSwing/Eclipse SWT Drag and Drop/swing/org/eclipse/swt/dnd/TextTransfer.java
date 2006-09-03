@@ -59,6 +59,18 @@ public void javaToNative (Object object, TransferData transferData){
   transferData.transferable = new StringSelection((String)object);
 }
 
+/**
+ * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * representation of plain text to a java <code>String</code>.
+ * 
+ * @param transferData the platform specific representation of the data to be converted
+ * @return a java <code>String</code> containing text if the conversion was successful; otherwise null
+ * 
+ * @see Transfer#nativeToJava
+ */
+public Object nativeToJava(TransferData transferData){
+  return super.nativeToJava(transferData);
+}
 boolean checkText(Object object) {
 	return (object != null  && object instanceof String && ((String)object).length() > 0);
 }

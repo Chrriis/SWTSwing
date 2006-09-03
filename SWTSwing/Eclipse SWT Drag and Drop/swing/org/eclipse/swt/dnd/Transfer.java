@@ -12,8 +12,8 @@ package org.eclipse.swt.dnd;
 
  
 import java.awt.datatransfer.DataFlavor;
-
-import org.eclipse.swt.internal.swing.Utils;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 
@@ -63,14 +63,21 @@ public boolean isSupportedType(TransferData transferData) {
   return false;
 }
 
-///**
-// * Returns the platform specfic ids of the  data types that can be converted using 
-// * this transfer agent.
-// * 
-// * @return the platform specfic ids of the data types that can be converted using 
-// * this transfer agent
-// */
-//abstract protected int[] getTypeIds();
+/**
+ * Returns the platform specfic ids of the  data types that can be converted using 
+ * this transfer agent.
+ * 
+ * @return the platform specfic ids of the data types that can be converted using 
+ * this transfer agent
+ */
+protected int[] getTypeIds() {
+  TransferData[] supportedTyes = getSupportedTypes();
+  int[] ids = new int[supportedTyes.length];
+  for(int i=0; i<supportedTyes.length; i++) {
+    ids[i] = getTypeID(supportedTyes[i].dataFlavor.getHumanPresentableName());
+  }
+  return ids;
+}
 
 /**
  * Returns the platform specfic names of the  data types that can be converted 
@@ -121,18 +128,25 @@ protected String[] getTypeNames() {
  */
 abstract protected void javaToNative (Object object, TransferData transferData);
 
-///**
-// * Converts a platform specific representation of data to a java representation.
-// * 
-// * @param transferData the platform specific representation of the data to be 
-// * converted
-// *
-// * @return a java representation of the converted data if the conversion was 
-// * successful; otherwise null.  If transferData is <code>null</code> then
-// * <code>null</code> is returned.  The type of Object that is returned is 
-// * dependant on the <code>Transfer</code> subclass.
-// */
-//abstract protected Object nativeToJava(TransferData transferData);
+/**
+ * Converts a platform specific representation of data to a java representation.
+ * 
+ * @param transferData the platform specific representation of the data to be 
+ * converted
+ *
+ * @return a java representation of the converted data if the conversion was 
+ * successful; otherwise null.  If transferData is <code>null</code> then
+ * <code>null</code> is returned.  The type of Object that is returned is 
+ * dependant on the <code>Transfer</code> subclass.
+ */
+protected Object nativeToJava(TransferData transferData){
+  if (!isSupportedType(transferData) || transferData.transferable == null) return null;
+  try {
+    return transferData.transferable.getTransferData(getDataFlavor());
+  } catch(UnsupportedFlavorException e) {
+  } catch(IOException e) {}
+  return null;
+}
 
 /**
  * Registers a name for a data type and returns the associated unique identifier.
@@ -149,12 +163,20 @@ abstract protected void javaToNative (Object object, TransferData transferData);
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName) {
-  Utils.notImplemented(); return formatName.hashCode();
-	// Look name up in the registry
-	// If name is not in registry, add it and return assigned value.
-	// If name already exists in registry, return its assigned value
-//	TCHAR chFormatName = new TCHAR(0, formatName, true);
-//	return OS.RegisterClipboardFormat(chFormatName);
+  return getTypeID(formatName);
+}
+
+static int getTypeID(String formatName) {
+  // copied from the Carbon's port Transfer class
+  int length = formatName.length();
+  // TODO - hashcode may not be unique - need another way
+  if (length > 4) return formatName.hashCode();
+  int type = 0;
+  if (length > 0) type |= (formatName.charAt(0) & 0xff) << 24;
+  if (length > 1) type |= (formatName.charAt(1) & 0xff) << 16;
+  if (length > 2) type |= (formatName.charAt(2) & 0xff) << 8;
+  if (length > 3) type |= formatName.charAt(3) & 0xff;
+  return type;
 }
 
 /**

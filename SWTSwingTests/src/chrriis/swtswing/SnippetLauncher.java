@@ -121,8 +121,8 @@ public class SnippetLauncher {
 /**/      new UnsupportedSnippet(148, "check if the browser is available or not"),
 /**/      new UnsupportedSnippet(128, "bring up a browser (single window)"),
 /**/      new UnsupportedSnippet(173, "bring up a browser (support for new windows and pop-up filter)"),
-/**/      new UnsupportedSnippet(136, "render HTML from memory"),
-/**/      new UnsupportedSnippet(137, "render HTML that includes relative links from memory"),
+      new Snippet(136, "render HTML from memory"),
+      new Snippet(137, "render HTML that includes relative links from memory"),
 /**/      new UnsupportedSnippet(161, "modify DOM (execute javascript)"),
 /**/      new UnsupportedSnippet(160, "query DOM node value"),
 /**/      new UnsupportedSnippet(159, "modify HTML title tag"),
@@ -182,12 +182,12 @@ public class SnippetLauncher {
       new Snippet(142, "post mouse events (UI testing tools only)"),
       new Snippet(146, "post key events (UI testing tools only)"),
     }), new SnippetCategory("Drag and Drop", new Snippet[] {
-/**/      new NotWorkingSnippet(78, "drag text between two labels"),
+      new Snippet(78, "drag text between two labels"),
 /**/      new NotWorkingSnippet(91, "drag leaf items in a tree"),
-/**/      new NotWorkingSnippet(79, "define my own data transfer type"),
+      new Snippet(79, "define my own data transfer type"),
 /**/      new NotWorkingSnippet(84, "define a default operation (in this example, Copy)"),
-/**/      new NotWorkingSnippet(83, "determine data types available (win32 only)"),
-/**/      new NotWorkingSnippet(158, "determine data types available (motif only)"),
+/**/      new UnsupportedSnippet(83, "determine data types available (win32 only)"),
+/**/      new UnsupportedSnippet(158, "determine data types available (motif only)"),
 /**/      new NotWorkingSnippet(185, "Dropped data type depends on target item in table"),
 /**/      new NotWorkingSnippet(210, "dragging text from a StyledText widget"),
     }), new SnippetCategory("ExpandBar", new Snippet[] {
@@ -217,7 +217,7 @@ public class SnippetLauncher {
     }), new SnippetCategory("Image", new Snippet[] {
       new Snippet(112, "display an image in a group"),
       new Snippet(139, "rotate and flip an image"),
-/**/      new NotWorkingSnippet(141, "display an animated GIF"),
+      new Snippet(141, "display an animated GIF"),
 /**/      new NotWorkingSnippet(194, "write an animated GIF"),
     }), new SnippetCategory("Label", new Snippet[] {
       new Snippet(34, "create a label (with an image)"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 46;
+  protected static int snippetNumber = 210;
 
   protected static boolean isRealDispatch = true;
 

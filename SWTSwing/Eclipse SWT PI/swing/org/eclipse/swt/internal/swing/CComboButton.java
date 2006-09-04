@@ -13,10 +13,13 @@ import java.awt.Insets;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
-public class CComboButton extends JPanel {
+public class CComboButton extends JPanel implements SwingConstants {
 
-  JButton pushButton = new JButton() {
+  protected JButton dropButton = new ArrowButton(ArrowButton.SOUTH);
+
+  protected JButton pushButton = new JButton() {
     protected void paintBorder(java.awt.Graphics g) {
       java.awt.Insets i = getBorder().getBorderInsets(this);
       int width = this.getWidth();
@@ -35,7 +38,37 @@ public class CComboButton extends JPanel {
     }
   };
 
-  JButton dropButton = new ArrowButton(ArrowButton.SOUTH);
+  public CComboButton(boolean isFlat) {
+    setLayout(new java.awt.BorderLayout(0, 0) {
+      public java.awt.Dimension minimumLayoutSize(Container target) {
+        return preferredLayoutSize(target);
+      }
+      public java.awt.Dimension maximumLayoutSize(Container target) {
+        return preferredLayoutSize(target);
+      }
+    });
+    if(isFlat) {
+      pushButton.setBorderPainted(false);
+      dropButton.setBorderPainted(false);
+      java.awt.event.MouseAdapter flatListener = new java.awt.event.MouseAdapter() {
+        public void mouseEntered(java.awt.event.MouseEvent e) {
+          pushButton.setBorderPainted(pushButton.isEnabled());
+          dropButton.setBorderPainted(pushButton.isEnabled());
+        }
+        public void mouseExited(java.awt.event.MouseEvent e) {
+          pushButton.setBorderPainted(pushButton.isSelected());
+          dropButton.setBorderPainted(pushButton.isSelected());
+        }
+      };
+      pushButton.addMouseListener(flatListener);
+      dropButton.addMouseListener(flatListener);
+    }
+    dropButton.setPreferredSize(new java.awt.Dimension(16, 20));
+    pushButton.setMargin(new Insets(0, 0, 0, 0));
+    dropButton.setMargin(new Insets(0, 0, 0, 0));
+    add(pushButton, java.awt.BorderLayout.CENTER);
+    add(dropButton, java.awt.BorderLayout.EAST);
+  }
 
   public JButton getPushButton() {
     return pushButton;
@@ -82,36 +115,11 @@ public class CComboButton extends JPanel {
     pushButton.setMnemonic(mnemonic);
   }
 
-  public CComboButton(boolean isFlat) {
-    setLayout(new java.awt.BorderLayout(0, 0) {
-      public java.awt.Dimension minimumLayoutSize(Container target) {
-        return preferredLayoutSize(target);
-      }
-      public java.awt.Dimension maximumLayoutSize(Container target) {
-        return preferredLayoutSize(target);
-      }
-    });
-    if(isFlat) {
-      pushButton.setBorderPainted(false);
-      dropButton.setBorderPainted(false);
-      java.awt.event.MouseAdapter flatListener = new java.awt.event.MouseAdapter() {
-        public void mouseEntered(java.awt.event.MouseEvent e) {
-          pushButton.setBorderPainted(pushButton.isEnabled());
-          dropButton.setBorderPainted(pushButton.isEnabled());
-        }
-        public void mouseExited(java.awt.event.MouseEvent e) {
-          pushButton.setBorderPainted(pushButton.isSelected());
-          dropButton.setBorderPainted(pushButton.isSelected());
-        }
-      };
-      pushButton.addMouseListener(flatListener);
-      dropButton.addMouseListener(flatListener);
-    }
-    dropButton.setPreferredSize(new java.awt.Dimension(16, 20));
-    pushButton.setMargin(new Insets(0, 0, 0, 0));
-    dropButton.setMargin(new Insets(0, 0, 0, 0));
-    add(pushButton, java.awt.BorderLayout.CENTER);
-    add(dropButton, java.awt.BorderLayout.EAST);
+  public void setHorizontalTextPosition(int textPosition) {
+    pushButton.setHorizontalTextPosition(textPosition);
+  }
+  public void setVerticalTextPosition(int textPosition) {
+    pushButton.setVerticalTextPosition(textPosition);
   }
 
 }

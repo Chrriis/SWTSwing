@@ -106,6 +106,8 @@ class CToolItemDropDown extends CComboButton implements CToolItem {
   }
 
   protected void init(int style) {
+    setHorizontalTextPosition(CENTER);
+    setVerticalTextPosition(BOTTOM);
     getPushButton().addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         handle.processEvent(e);

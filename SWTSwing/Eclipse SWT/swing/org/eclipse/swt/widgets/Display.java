@@ -30,6 +30,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -401,6 +402,21 @@ static void popQueue() {
       exclusiveSectionCount--;
     }
   }
+}
+
+public static void main(final String[] args) {
+  swtExec(new Runnable() {
+    public void run() {
+      try {
+        Method method = Class.forName(args[0]).getDeclaredMethod("main", new Class[] {String[].class});
+        String[] newArgs = new String[args.length - 1];
+        System.arraycopy(args, 1, newArgs, 0, newArgs.length);
+        method.invoke(null, new Object[] {newArgs});
+      } catch(Throwable t) {
+        t.printStackTrace();
+      }
+    }
+  });
 }
 
 public static void swtExec(Runnable runnable) {

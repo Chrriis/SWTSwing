@@ -32,7 +32,7 @@ If everything is OK, your application runs using Swing's widgets.
 If you have the possibility, let SWTSwing run your UI code in its UI thread. To
 do this, place your UI code in a Runnable object, and invoke
 Display.swtExec(runnable)
-If this is isn't possible, the library works with much decreased performance.
+If this is isn't possible, the library works with decreased performance.
 
 You can set the Look And Feel of your application by setting the system property
 "swt.swing.laf" to the name of the Look And Feel class. For example, to use the

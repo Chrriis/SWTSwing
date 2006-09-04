@@ -90,7 +90,6 @@ import org.eclipse.swt.internal.swing.Utils;
  * </p>
  */
 public class Tree extends Composite {
-//	TreeItem [] items;
   ArrayList itemList;
   ArrayList columnList;
   TreeItem currentItem;
@@ -783,12 +782,8 @@ public TreeColumn [] getColumns () {
 public TreeItem getItem (int index) {
   checkWidget ();
   if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-  Utils.notImplemented(); return null;
-//  int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-//  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  int hItem = findItem (hFirstItem, index);
-//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  return _getItem (hItem);
+  if (index >= itemList.size()) error (SWT.ERROR_INVALID_RANGE);
+  return (TreeItem)itemList.get(index);
 }
 
 /**

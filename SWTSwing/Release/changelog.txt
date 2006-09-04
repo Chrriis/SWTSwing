@@ -5,8 +5,9 @@ Licence terms: EPL 1.0 (see licence.html)
 
 ---------------------------------- Change log ----------------------------------
 
-* Version 3.2.0002 (xxxxxxxxxxxxxxx):
+* Version 3.2.0002 (September 4, 2006):
 
+- Code compiles without errors. Not implemented areas are marked as such.
 - Drop down tool item with text and icon are now layed out correctly.
 - Addition of a script to get and build the sources from the CVS repositories.
 - Wrapping is now honored in multi line Text widget.
@@ -14,15 +15,15 @@ Licence terms: EPL 1.0 (see licence.html)
 - Vertical style for ToolBar is honored.
 - Selection event is now sent upon selection of a combo item.
 - Fixed a problem when some events were sent and the tree was empty.
-- removeXXX() methods are implemented.
+- Table's removeXXX() methods are implemented.
 - Some fixes to the clipping of the GC.
 - syncExec() and asyncExec() were flawed and should be fixed now.
 - The TabFolder Selection event now sets the item the event structure.
 - Multi file extensions in a single filter is now supported.
-- Image bug realted with transparency is fixed.
+- Image bug related with transparency is fixed.
 - Preferred width of a wrapping label is fixed.
 - Preferred width of a list is fixed.
-- Browser is added using the really-limited JEditorPane class.
+- Browser widget is added using the really-limited JEditorPane class.
 - Border style is now supported for scale.
 - SnippetLauncher now offers a filter box.
 - Combo box size is constrained in height.

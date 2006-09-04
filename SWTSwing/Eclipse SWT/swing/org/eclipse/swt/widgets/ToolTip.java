@@ -12,7 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
@@ -76,7 +76,8 @@ public ToolTip (Shell parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	checkOrientation (parent);
-	parent.createToolTip (this);
+  Utils.notImplemented();
+//	parent.createToolTip (this);
 }
 
 static int checkStyle (int style) {
@@ -114,7 +115,8 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void destroyWidget () {
-	if (parent != null) parent.destroyToolTip (this);
+  Utils.notImplemented();
+//	if (parent != null) parent.destroyToolTip (this);
 	releaseHandle ();
 }
 
@@ -201,22 +203,23 @@ public String getText () {
  */
 public boolean getVisible () {
 	checkWidget();
-	if (OS.IsWinCE) return false;
-	if (item != null) return visible;
-	int hwndToolTip = hwndToolTip ();
-	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
-		TOOLINFO lpti = new TOOLINFO ();
-		lpti.cbSize = TOOLINFO.sizeof;
-		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			return (lpti.uFlags & OS.TTF_IDISHWND) == 0 && lpti.uId == id;
-		}
-	}
-	return false;
+  Utils.notImplemented(); return false;
+//	if (OS.IsWinCE) return false;
+//	if (item != null) return visible;
+//	int hwndToolTip = hwndToolTip ();
+//	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+//		TOOLINFO lpti = new TOOLINFO ();
+//		lpti.cbSize = TOOLINFO.sizeof;
+//		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+//			return (lpti.uFlags & OS.TTF_IDISHWND) == 0 && lpti.uId == id;
+//		}
+//	}
+//	return false;
 }
 
-int hwndToolTip () {
-	return (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
-}
+//int hwndToolTip () {
+//	return (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
+//}
 
 /**
  * Returns <code>true</code> if the receiver is visible and all
@@ -249,16 +252,17 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (item == null) {
 		if (autoHide) {
-			int hwndToolTip = hwndToolTip ();
-			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
-				TOOLINFO lpti = new TOOLINFO ();
-				lpti.cbSize = TOOLINFO.sizeof;
-				if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-					if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
-						if (lpti.uId == id) OS.KillTimer (hwndToolTip, TIMER_ID);
-					}
-				}
-			}
+      Utils.notImplemented();
+//			int hwndToolTip = hwndToolTip ();
+//			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+//				TOOLINFO lpti = new TOOLINFO ();
+//				lpti.cbSize = TOOLINFO.sizeof;
+//				if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+//					if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+//						if (lpti.uId == id) OS.KillTimer (hwndToolTip, TIMER_ID);
+//					}
+//				}
+//			}
 		}
 	}
 	if (item != null && item.toolTip == this) {
@@ -424,117 +428,118 @@ public void setText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (OS.IsWinCE) return;
-	if (visible == getVisible ()) return;
-	if (item == null) {
-		int hwnd = parent.handle;
-		TOOLINFO lpti = new TOOLINFO ();
-		lpti.cbSize = TOOLINFO.sizeof;
-		lpti.uId = id;
-		lpti.hwnd = hwnd;
-		int hwndToolTip = hwndToolTip ();
-		if (text.length () != 0) {
-			int icon = OS.TTI_NONE;
-			if ((style & SWT.ICON_INFORMATION) != 0) icon = OS.TTI_INFO;
-			if ((style & SWT.ICON_WARNING) != 0) icon = OS.TTI_WARNING;
-			if ((style & SWT.ICON_ERROR) != 0) icon = OS.TTI_ERROR;
-			TCHAR pszTitle = new TCHAR (parent.getCodePage (), text, true);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
-		} else {
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
-		}
-		int maxWidth = 0;
-		if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-			RECT rect = new RECT ();
-			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-			maxWidth = (rect.right - rect.left) / 4;
-		} else {
-			int hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
-			MONITORINFO lpmi = new MONITORINFO ();
-			lpmi.cbSize = MONITORINFO.sizeof;
-			OS.GetMonitorInfo (hmonitor, lpmi);
-			maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
-		}
-		OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, maxWidth);
-		if (visible) {
-			int nX = x, nY = y;
-			if (!hasLocation) {
-				POINT pt = new POINT ();
-				if (OS.GetCursorPos (pt)) {
-					nX = pt.x;
-					nY = pt.y;
-				}
-			}
-			int lParam = nX | (nY << 16);
-			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
-			
-			/*
-			* Feature in Windows.  Windows will not show a tool tip
-			* if the cursor is outside the parent window (even on XP,
-			* TTM_POPUP will not do this).  The fix is to temporarily
-			* move the cursor into the tool window, show the tool tip,
-			* and then restore the cursor.
-			*/
-			POINT pt = new POINT ();
-			OS.GetCursorPos (pt);
-			RECT rect = new RECT ();
-			OS.GetClientRect (hwnd, rect);
-			OS.MapWindowPoints (hwnd, 0, rect, 2);
-			if (!OS.PtInRect (rect, pt)) {
-				int hCursor = OS.GetCursor ();
-				OS.SetCursor (0);
-				OS.SetCursorPos (rect.left, rect.top);
-				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
-				OS.SetCursorPos (pt.x, pt.y);
-				OS.SetCursor (hCursor);
-			} else {
-				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
-			}
-			
-			int time = OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
-			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
-		} else {
-			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-			OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
-			OS.KillTimer (hwndToolTip, TIMER_ID);
-		}
-		return;
-	}
-	if (item != null && OS.SHELL32_MAJOR >= 5) {
-		if (visible) {
-			NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-			TCHAR buffer1 = new TCHAR (0, text, true);
-			TCHAR buffer2 = new TCHAR (0, message, true);
-			if (OS.IsUnicode) {
-				char [] szInfoTitle = ((NOTIFYICONDATAW) iconData).szInfoTitle;
-				int length1 = Math.min (szInfoTitle.length - 1, buffer1.length ());
-				System.arraycopy (buffer1.chars, 0, szInfoTitle, 0, length1);
-				char [] szInfo = ((NOTIFYICONDATAW) iconData).szInfo;
-				int length2 = Math.min (szInfo.length - 1, buffer2.length ());
-				System.arraycopy (buffer2.chars, 0, szInfo, 0, length2);
-			} else {
-				byte [] szInfoTitle = ((NOTIFYICONDATAA) iconData).szInfoTitle;
-				int length = Math.min (szInfoTitle.length - 1, buffer1.length ());
-				System.arraycopy (buffer1.bytes, 0, szInfoTitle, 0, length);
-				byte [] szInfo = ((NOTIFYICONDATAA) iconData).szInfo;
-				int length2 = Math.min (szInfo.length - 1, buffer2.length ());
-				System.arraycopy (buffer2.bytes, 0, szInfo, 0, length2);
-			}
-			Display display = item.getDisplay ();
-			iconData.cbSize = NOTIFYICONDATA.sizeof;
-			iconData.uID = item.id;
-			iconData.hWnd = display.hwndMessage;
-			iconData.uFlags = OS.NIF_INFO;
-			if ((style & SWT.ICON_INFORMATION) != 0) iconData.dwInfoFlags = OS.NIIF_INFO;
-			if ((style & SWT.ICON_WARNING) != 0) iconData.dwInfoFlags = OS.NIIF_WARNING;
-			if ((style & SWT.ICON_ERROR) != 0) iconData.dwInfoFlags = OS.NIIF_ERROR;
-			sendEvent (SWT.Show);
-			this.visible = OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-		} else {
-			//TODO - hide the tray item
-		}
-	}
+  Utils.notImplemented();
+//	if (OS.IsWinCE) return;
+//	if (visible == getVisible ()) return;
+//	if (item == null) {
+//		int hwnd = parent.handle;
+//		TOOLINFO lpti = new TOOLINFO ();
+//		lpti.cbSize = TOOLINFO.sizeof;
+//		lpti.uId = id;
+//		lpti.hwnd = hwnd;
+//		int hwndToolTip = hwndToolTip ();
+//		if (text.length () != 0) {
+//			int icon = OS.TTI_NONE;
+//			if ((style & SWT.ICON_INFORMATION) != 0) icon = OS.TTI_INFO;
+//			if ((style & SWT.ICON_WARNING) != 0) icon = OS.TTI_WARNING;
+//			if ((style & SWT.ICON_ERROR) != 0) icon = OS.TTI_ERROR;
+//			TCHAR pszTitle = new TCHAR (parent.getCodePage (), text, true);
+//			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
+//		} else {
+//			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+//		}
+//		int maxWidth = 0;
+//		if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
+//			RECT rect = new RECT ();
+//			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+//			maxWidth = (rect.right - rect.left) / 4;
+//		} else {
+//			int hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
+//			MONITORINFO lpmi = new MONITORINFO ();
+//			lpmi.cbSize = MONITORINFO.sizeof;
+//			OS.GetMonitorInfo (hmonitor, lpmi);
+//			maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
+//		}
+//		OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, maxWidth);
+//		if (visible) {
+//			int nX = x, nY = y;
+//			if (!hasLocation) {
+//				POINT pt = new POINT ();
+//				if (OS.GetCursorPos (pt)) {
+//					nX = pt.x;
+//					nY = pt.y;
+//				}
+//			}
+//			int lParam = nX | (nY << 16);
+//			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
+//			
+//			/*
+//			* Feature in Windows.  Windows will not show a tool tip
+//			* if the cursor is outside the parent window (even on XP,
+//			* TTM_POPUP will not do this).  The fix is to temporarily
+//			* move the cursor into the tool window, show the tool tip,
+//			* and then restore the cursor.
+//			*/
+//			POINT pt = new POINT ();
+//			OS.GetCursorPos (pt);
+//			RECT rect = new RECT ();
+//			OS.GetClientRect (hwnd, rect);
+//			OS.MapWindowPoints (hwnd, 0, rect, 2);
+//			if (!OS.PtInRect (rect, pt)) {
+//				int hCursor = OS.GetCursor ();
+//				OS.SetCursor (0);
+//				OS.SetCursorPos (rect.left, rect.top);
+//				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
+//				OS.SetCursorPos (pt.x, pt.y);
+//				OS.SetCursor (hCursor);
+//			} else {
+//				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
+//			}
+//			
+//			int time = OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
+//			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
+//		} else {
+//			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
+//			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+//			OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+//			OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
+//			OS.KillTimer (hwndToolTip, TIMER_ID);
+//		}
+//		return;
+//	}
+//	if (item != null && OS.SHELL32_MAJOR >= 5) {
+//		if (visible) {
+//			NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+//			TCHAR buffer1 = new TCHAR (0, text, true);
+//			TCHAR buffer2 = new TCHAR (0, message, true);
+//			if (OS.IsUnicode) {
+//				char [] szInfoTitle = ((NOTIFYICONDATAW) iconData).szInfoTitle;
+//				int length1 = Math.min (szInfoTitle.length - 1, buffer1.length ());
+//				System.arraycopy (buffer1.chars, 0, szInfoTitle, 0, length1);
+//				char [] szInfo = ((NOTIFYICONDATAW) iconData).szInfo;
+//				int length2 = Math.min (szInfo.length - 1, buffer2.length ());
+//				System.arraycopy (buffer2.chars, 0, szInfo, 0, length2);
+//			} else {
+//				byte [] szInfoTitle = ((NOTIFYICONDATAA) iconData).szInfoTitle;
+//				int length = Math.min (szInfoTitle.length - 1, buffer1.length ());
+//				System.arraycopy (buffer1.bytes, 0, szInfoTitle, 0, length);
+//				byte [] szInfo = ((NOTIFYICONDATAA) iconData).szInfo;
+//				int length2 = Math.min (szInfo.length - 1, buffer2.length ());
+//				System.arraycopy (buffer2.bytes, 0, szInfo, 0, length2);
+//			}
+//			Display display = item.getDisplay ();
+//			iconData.cbSize = NOTIFYICONDATA.sizeof;
+//			iconData.uID = item.id;
+//			iconData.hWnd = display.hwndMessage;
+//			iconData.uFlags = OS.NIF_INFO;
+//			if ((style & SWT.ICON_INFORMATION) != 0) iconData.dwInfoFlags = OS.NIIF_INFO;
+//			if ((style & SWT.ICON_WARNING) != 0) iconData.dwInfoFlags = OS.NIIF_WARNING;
+//			if ((style & SWT.ICON_ERROR) != 0) iconData.dwInfoFlags = OS.NIIF_ERROR;
+//			sendEvent (SWT.Show);
+//			this.visible = OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+//		} else {
+//			//TODO - hide the tray item
+//		}
+//	}
 }
 }

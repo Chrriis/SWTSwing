@@ -15,17 +15,18 @@ import java.awt.Container;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListSelectionModel;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
-import javax.swing.tree.MutableTreeNode;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
-import org.eclipse.swt.internal.swing.CTree;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.swing.Utils;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -213,35 +214,36 @@ protected void checkSubclass () {
  */
 public void clear (int index) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	TableItem item = items [index];
-	if (item != null) {
-		if (item != currentItem) item.clear ();
-		/*
-		* Bug in Windows.  Despite the fact that every item in the
-		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-		* bounds for the selected items.  This means that 
-		* when you change the string to be something else, Windows
-		* correctly asks you for the new string but when the item
-		* is selected, the selection draws using the bounds of the
-		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-		* even though it has not changed, causing Windows to flush
-		* cached bounds.
-		*/
-		if ((style & SWT.VIRTUAL) == 0 && item.cached) {
-			LVITEM lvItem = new LVITEM ();
-			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
-			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-			lvItem.iItem = index;
-			OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
-			item.cached = false;
-		}
-		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
-			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
-		}
-		setScrollWidth (item, false);
-	}
+  Utils.notImplemented();
+//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+//	TableItem item = items [index];
+//	if (item != null) {
+//		if (item != currentItem) item.clear ();
+//		/*
+//		* Bug in Windows.  Despite the fact that every item in the
+//		* table always has LPSTR_TEXTCALLBACK, Windows caches the
+//		* bounds for the selected items.  This means that 
+//		* when you change the string to be something else, Windows
+//		* correctly asks you for the new string but when the item
+//		* is selected, the selection draws using the bounds of the
+//		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+//		* even though it has not changed, causing Windows to flush
+//		* cached bounds.
+//		*/
+//		if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+//			LVITEM lvItem = new LVITEM ();
+//			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+//			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+//			lvItem.iItem = index;
+//			OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+//			item.cached = false;
+//		}
+//		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+//			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
+//		}
+//		setScrollWidth (item, false);
+//	}
 }
 
 /**
@@ -270,53 +272,54 @@ public void clear (int index) {
 public void clear (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (!(0 <= start && start <= end && end < count)) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
-	if (start == 0 && end == count - 1) {
-		clearAll ();
-	} else {
-		LVITEM lvItem = null;
-		boolean cleared = false;
-		for (int i=start; i<=end; i++) {
-			TableItem item = items [i];
-			if (item != null) {
-				if (item != currentItem) {
-					cleared = true;
-					item.clear ();
-				}
-				/*
-				* Bug in Windows.  Despite the fact that every item in the
-				* table always has LPSTR_TEXTCALLBACK, Windows caches the
-				* bounds for the selected items.  This means that 
-				* when you change the string to be something else, Windows
-				* correctly asks you for the new string but when the item
-				* is selected, the selection draws using the bounds of the
-				* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-				* even though it has not changed, causing Windows to flush
-				* cached bounds.
-				*/
-				if ((style & SWT.VIRTUAL) == 0 && item.cached) {
-					if (lvItem == null) {
-						lvItem = new LVITEM ();
-						lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
-						lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-					}
-					lvItem.iItem = i;
-					OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
-					item.cached = false;
-				}
-			}
-		}
-		if (cleared) {
-			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
-				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
-			}
-			TableItem item = start == end ? items [start] : null; 
-			setScrollWidth (item, false);
-		}
-	}
+  Utils.notImplemented();
+//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	if (!(0 <= start && start <= end && end < count)) {
+//		error (SWT.ERROR_INVALID_RANGE);
+//	}
+//	if (start == 0 && end == count - 1) {
+//		clearAll ();
+//	} else {
+//		LVITEM lvItem = null;
+//		boolean cleared = false;
+//		for (int i=start; i<=end; i++) {
+//			TableItem item = items [i];
+//			if (item != null) {
+//				if (item != currentItem) {
+//					cleared = true;
+//					item.clear ();
+//				}
+//				/*
+//				* Bug in Windows.  Despite the fact that every item in the
+//				* table always has LPSTR_TEXTCALLBACK, Windows caches the
+//				* bounds for the selected items.  This means that 
+//				* when you change the string to be something else, Windows
+//				* correctly asks you for the new string but when the item
+//				* is selected, the selection draws using the bounds of the
+//				* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+//				* even though it has not changed, causing Windows to flush
+//				* cached bounds.
+//				*/
+//				if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+//					if (lvItem == null) {
+//						lvItem = new LVITEM ();
+//						lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+//						lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+//					}
+//					lvItem.iItem = i;
+//					OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+//					item.cached = false;
+//				}
+//			}
+//		}
+//		if (cleared) {
+//			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+//				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
+//			}
+//			TableItem item = start == end ? items [start] : null; 
+//			setScrollWidth (item, false);
+//		}
+//	}
 }
 
 /**
@@ -345,49 +348,50 @@ public void clear (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<indices.length; i++) {
-		if (!(0 <= indices [i] && indices [i] < count)) {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
-	}
-	LVITEM lvItem = null;
-	boolean cleared = false;
-	for (int i=0; i<indices.length; i++) {
-		int index = indices [i];
-		TableItem item = items [index];
-		if (item != null) {
-			if (item != currentItem) {
-				cleared = true;
-				item.clear ();
-			}
-			/*
-			* Bug in Windows.  Despite the fact that every item in the
-			* table always has LPSTR_TEXTCALLBACK, Windows caches the
-			* bounds for the selected items.  This means that 
-			* when you change the string to be something else, Windows
-			* correctly asks you for the new string but when the item
-			* is selected, the selection draws using the bounds of the
-			* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-			* even though it has not changed, causing Windows to flush
-			* cached bounds.
-			*/
-			if ((style & SWT.VIRTUAL) == 0 && item.cached) {
-				if (lvItem == null) {
-					lvItem = new LVITEM ();
-					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
-					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-				}
-				lvItem.iItem = i;
-				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
-				item.cached = false;
-			}
-			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
-				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
-			}
-		}
-	}
-	if (cleared) setScrollWidth (null, false);
+  Utils.notImplemented();
+//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	for (int i=0; i<indices.length; i++) {
+//		if (!(0 <= indices [i] && indices [i] < count)) {
+//			error (SWT.ERROR_INVALID_RANGE);
+//		}
+//	}
+//	LVITEM lvItem = null;
+//	boolean cleared = false;
+//	for (int i=0; i<indices.length; i++) {
+//		int index = indices [i];
+//		TableItem item = items [index];
+//		if (item != null) {
+//			if (item != currentItem) {
+//				cleared = true;
+//				item.clear ();
+//			}
+//			/*
+//			* Bug in Windows.  Despite the fact that every item in the
+//			* table always has LPSTR_TEXTCALLBACK, Windows caches the
+//			* bounds for the selected items.  This means that 
+//			* when you change the string to be something else, Windows
+//			* correctly asks you for the new string but when the item
+//			* is selected, the selection draws using the bounds of the
+//			* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+//			* even though it has not changed, causing Windows to flush
+//			* cached bounds.
+//			*/
+//			if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+//				if (lvItem == null) {
+//					lvItem = new LVITEM ();
+//					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+//					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+//				}
+//				lvItem.iItem = i;
+//				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+//				item.cached = false;
+//			}
+//			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+//				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
+//			}
+//		}
+//	}
+//	if (cleared) setScrollWidth (null, false);
 }
 
 /**
@@ -408,45 +412,46 @@ public void clear (int [] indices) {
  */
 public void clearAll () {
 	checkWidget ();
-	LVITEM lvItem = null;
-	boolean cleared = false;
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
-		TableItem item = items [i];
-		if (item != null) {
-			if (item != currentItem) {
-				cleared = true;
-				item.clear ();
-			}
-			/*
-			* Bug in Windows.  Despite the fact that every item in the
-			* table always has LPSTR_TEXTCALLBACK, Windows caches the
-			* bounds for the selected items.  This means that 
-			* when you change the string to be something else, Windows
-			* correctly asks you for the new string but when the item
-			* is selected, the selection draws using the bounds of the
-			* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-			* even though it has not changed, causing Windows to flush
-			* cached bounds.
-			*/
-			if ((style & SWT.VIRTUAL) == 0 && item.cached) {
-				if (lvItem == null) {
-					lvItem = new LVITEM ();
-					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
-					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-				}
-				lvItem.iItem = i;
-				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
-				item.cached = false;
-			}
-		}
-	}
-	if (cleared) {
-		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
-			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, 0, count - 1);
-		}
-		setScrollWidth (null, false);
-	}
+  Utils.notImplemented();
+//	LVITEM lvItem = null;
+//	boolean cleared = false;
+//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	for (int i=0; i<count; i++) {
+//		TableItem item = items [i];
+//		if (item != null) {
+//			if (item != currentItem) {
+//				cleared = true;
+//				item.clear ();
+//			}
+//			/*
+//			* Bug in Windows.  Despite the fact that every item in the
+//			* table always has LPSTR_TEXTCALLBACK, Windows caches the
+//			* bounds for the selected items.  This means that 
+//			* when you change the string to be something else, Windows
+//			* correctly asks you for the new string but when the item
+//			* is selected, the selection draws using the bounds of the
+//			* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+//			* even though it has not changed, causing Windows to flush
+//			* cached bounds.
+//			*/
+//			if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+//				if (lvItem == null) {
+//					lvItem = new LVITEM ();
+//					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+//					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+//				}
+//				lvItem.iItem = i;
+//				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+//				item.cached = false;
+//			}
+//		}
+//	}
+//	if (cleared) {
+//		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
+//			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, 0, count - 1);
+//		}
+//		setScrollWidth (null, false);
+//	}
 }
 
 //public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -560,19 +565,20 @@ public void deselect (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	for (int i=0; i<indices.length; i++) {
-		/*
-		* An index of -1 will apply the change to all
-		* items.  Ensure that indices are greater than -1.
-		*/
-		if (indices [i] >= 0) {
-			ignoreSelect = true;
-			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
-			ignoreSelect = false;
-		}
-	}
+  Utils.notImplemented();
+//	LVITEM lvItem = new LVITEM ();
+//	lvItem.stateMask = OS.LVIS_SELECTED;
+//	for (int i=0; i<indices.length; i++) {
+//		/*
+//		* An index of -1 will apply the change to all
+//		* items.  Ensure that indices are greater than -1.
+//		*/
+//		if (indices [i] >= 0) {
+//			ignoreSelect = true;
+//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
+//			ignoreSelect = false;
+//		}
+//	}
 }
 
 /**
@@ -594,11 +600,12 @@ public void deselect (int index) {
 	* items.  Ensure that index is greater than -1.
 	*/
 	if (index < 0) return;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
-	ignoreSelect = false;
+  Utils.notImplemented();
+//	LVITEM lvItem = new LVITEM ();
+//	lvItem.stateMask = OS.LVIS_SELECTED;
+//	ignoreSelect = true;
+//	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
+//	ignoreSelect = false;
 }
 
 /**
@@ -618,23 +625,24 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (start == 0 && end == count - 1) {
-		deselectAll ();
-	} else {
-		LVITEM lvItem = new LVITEM ();
-		lvItem.stateMask = OS.LVIS_SELECTED;
-		/*
-		* An index of -1 will apply the change to all
-		* items.  Ensure that indices are greater than -1.
-		*/
-		start = Math.max (0, start);
-		for (int i=start; i<=end; i++) {
-			ignoreSelect = true;
-			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
-			ignoreSelect = false;
-		}
-	}
+  Utils.notImplemented();
+//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	if (start == 0 && end == count - 1) {
+//		deselectAll ();
+//	} else {
+//		LVITEM lvItem = new LVITEM ();
+//		lvItem.stateMask = OS.LVIS_SELECTED;
+//		/*
+//		* An index of -1 will apply the change to all
+//		* items.  Ensure that indices are greater than -1.
+//		*/
+//		start = Math.max (0, start);
+//		for (int i=start; i<=end; i++) {
+//			ignoreSelect = true;
+//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
+//			ignoreSelect = false;
+//		}
+//	}
 }
 
 /**
@@ -757,12 +765,13 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
-	if (count == 1 && columns [0] == null) return new int [0];
-	int [] order = new int [count];
-	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
-	return order;
+  Utils.notImplemented(); return null;
+//	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
+//	if (count == 1 && columns [0] == null) return new int [0];
+//	int [] order = new int [count];
+//	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
+//	return order;
 }
 
 /**
@@ -909,11 +918,12 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-	pinfo.x = point.x;  pinfo.y = point.y;
-	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	if (pinfo.iItem != -1) return _getItem (pinfo.iItem);
-	return null;
+  Utils.notImplemented(); return null;
+//	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
+//	pinfo.x = point.x;  pinfo.y = point.y;
+//	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
+//	if (pinfo.iItem != -1) return _getItem (pinfo.iItem);
+//	return null;
 }
 
 /**
@@ -944,9 +954,10 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
-	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-	return (oneItem >> 16) - (empty >> 16);
+  Utils.notImplemented(); return 15;
+//	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
+//	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
+//	return (oneItem >> 16) - (empty >> 16);
 }
 
 /**
@@ -1124,7 +1135,8 @@ public int [] getSelectionIndices () {
  */
 public TableColumn getSortColumn () {
   checkWidget ();
-  return sortColumn;
+  Utils.notImplemented(); return null;
+//  return sortColumn;
 }
 
 /**
@@ -1145,7 +1157,8 @@ public TableColumn getSortColumn () {
  */
 public int getSortDirection () {
   checkWidget ();
-  return sortDirection;
+  Utils.notImplemented(); return SWT.NONE;
+//  return sortDirection;
 }
 
 /**
@@ -1162,45 +1175,46 @@ public int getSortDirection () {
  */
 public int getTopIndex () {
 	checkWidget ();
-	/*
-	* Bug in Windows.  Under rare circumstances, LVM_GETTOPINDEX
-	* can return a negative number.  When this happens, the table
-	* is displaying blank lines at the top of the controls.  The
-	* fix is to check for a negative number and return zero instead.
-	*/
-	return Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
+  Utils.notImplemented(); return 0;
+//	/*
+//	* Bug in Windows.  Under rare circumstances, LVM_GETTOPINDEX
+//	* can return a negative number.  When this happens, the table
+//	* is displaying blank lines at the top of the controls.  The
+//	* fix is to check for a negative number and return zero instead.
+//	*/
+//	return Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
 }
 
-int imageIndex (Image image) {
-	if (image == null) return OS.I_IMAGENONE;
-	if (imageList == null) {
-		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (new Point (bounds.width, bounds.height));
-		int index = imageList.indexOf (image);
-		if (index == -1) index = imageList.add (image);
-		int hImageList = imageList.getHandle ();
-		/*
-		* Bug in Windows.  Making any change to an item that
-		* changes the item height of a table while the table
-		* is scrolled can cause the lines to draw incorrectly.
-		* This happens even when the lines are not currently
-		* visible and are shown afterwards.  The fix is to
-		* save the top index, scroll to the top of the table
-		* and then restore the original top index.
-		*/
-		int topIndex = getTopIndex ();
-		setRedraw (false);
-		setTopIndex (0);
-		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-		setTopIndex (topIndex);
-		fixCheckboxImageList ();
-		setRedraw (true);
-		return index;
-	}
-	int index = imageList.indexOf (image);
-	if (index != -1) return index;
-	return imageList.add (image);
-}
+//int imageIndex (Image image) {
+//	if (image == null) return OS.I_IMAGENONE;
+//	if (imageList == null) {
+//		Rectangle bounds = image.getBounds ();
+//		imageList = display.getImageList (new Point (bounds.width, bounds.height));
+//		int index = imageList.indexOf (image);
+//		if (index == -1) index = imageList.add (image);
+//		int hImageList = imageList.getHandle ();
+//		/*
+//		* Bug in Windows.  Making any change to an item that
+//		* changes the item height of a table while the table
+//		* is scrolled can cause the lines to draw incorrectly.
+//		* This happens even when the lines are not currently
+//		* visible and are shown afterwards.  The fix is to
+//		* save the top index, scroll to the top of the table
+//		* and then restore the original top index.
+//		*/
+//		int topIndex = getTopIndex ();
+//		setRedraw (false);
+//		setTopIndex (0);
+//		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+//		setTopIndex (topIndex);
+//		fixCheckboxImageList ();
+//		setRedraw (true);
+//		return index;
+//	}
+//	int index = imageList.indexOf (image);
+//	if (index != -1) return index;
+//	return imageList.add (image);
+//}
 
 /**
  * Searches the receiver's list starting at the first column
@@ -1279,12 +1293,13 @@ public int indexOf (TableItem item) {
  */
 public boolean isSelected (int index) {
 	checkWidget ();
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	lvItem.iItem = index;
-	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-	return (result != 0) && ((lvItem.state & OS.LVIS_SELECTED) != 0);
+  Utils.notImplemented(); return false;
+//	LVITEM lvItem = new LVITEM ();
+//	lvItem.mask = OS.LVIF_STATE;
+//	lvItem.stateMask = OS.LVIS_SELECTED;
+//	lvItem.iItem = index;
+//	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+//	return (result != 0) && ((lvItem.state & OS.LVIS_SELECTED) != 0);
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
@@ -1511,20 +1526,21 @@ public void select (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.state = OS.LVIS_SELECTED;
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	for (int i=length-1; i>=0; --i) {
-		/*
-		* An index of -1 will apply the change to all
-	 	* items.  Ensure that indices are greater than -1.
-	 	*/
-		if (indices [i] >= 0) {
-			ignoreSelect = true;
-			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
-			ignoreSelect = false;
-		}
-	}
+  Utils.notImplemented();
+//	LVITEM lvItem = new LVITEM ();
+//	lvItem.state = OS.LVIS_SELECTED;
+//	lvItem.stateMask = OS.LVIS_SELECTED;
+//	for (int i=length-1; i>=0; --i) {
+//		/*
+//		* An index of -1 will apply the change to all
+//	 	* items.  Ensure that indices are greater than -1.
+//	 	*/
+//		if (indices [i] >= 0) {
+//			ignoreSelect = true;
+//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
+//			ignoreSelect = false;
+//		}
+//	}
 }
 
 /**
@@ -1571,26 +1587,27 @@ public void select (int index) {
 public void select (int start, int end) {
 	checkWidget ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (count == 0 || start >= count) return;
-	start = Math.max (0, start);
-	end = Math.min (end, count - 1);
-	if (start == 0 && end == count - 1) {
-		selectAll ();
-	} else {
-		/*
-		* An index of -1 will apply the change to all
-		* items.  Indices must be greater than -1.
-		*/
-		LVITEM lvItem = new LVITEM ();
-		lvItem.state = OS.LVIS_SELECTED;
-		lvItem.stateMask = OS.LVIS_SELECTED;
-		for (int i=start; i<=end; i++) {
-			ignoreSelect = true;
-			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
-			ignoreSelect = false;
-		}
-	}
+  Utils.notImplemented();
+//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	if (count == 0 || start >= count) return;
+//	start = Math.max (0, start);
+//	end = Math.min (end, count - 1);
+//	if (start == 0 && end == count - 1) {
+//		selectAll ();
+//	} else {
+//		/*
+//		* An index of -1 will apply the change to all
+//		* items.  Indices must be greater than -1.
+//		*/
+//		LVITEM lvItem = new LVITEM ();
+//		lvItem.state = OS.LVIS_SELECTED;
+//		lvItem.stateMask = OS.LVIS_SELECTED;
+//		for (int i=start; i<=end; i++) {
+//			ignoreSelect = true;
+//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
+//			ignoreSelect = false;
+//		}
+//	}
 }
 
 /**
@@ -1607,13 +1624,14 @@ public void select (int start, int end) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
-	lvItem.state = OS.LVIS_SELECTED;
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	ignoreSelect = true;
-	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, lvItem);
-	ignoreSelect = false;
+  Utils.notImplemented();
+//	LVITEM lvItem = new LVITEM ();
+//	lvItem.mask = OS.LVIF_STATE;
+//	lvItem.state = OS.LVIS_SELECTED;
+//	lvItem.stateMask = OS.LVIS_SELECTED;
+//	ignoreSelect = true;
+//	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, lvItem);
+//	ignoreSelect = false;
 }
 
 //LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lParam) {
@@ -1733,110 +1751,111 @@ public void selectAll () {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
-	if (count == 1 && columns [0] == null) {
-		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
-		return;
-	}
-	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
-	int [] oldOrder = new int [count];
-	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, oldOrder);
-	boolean reorder = false;
-	boolean [] seen = new boolean [count];
-	for (int i=0; i<order.length; i++) {
-		int index = order [i];
-		if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
-		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
-		seen [index] = true;
-		if (index != oldOrder [i]) reorder = true;
-	}
-	if (reorder) {
-		RECT [] oldRects = new RECT [count];
-		for (int i=0; i<count; i++) {
-			oldRects [i] = new RECT ();
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
-		}
-		OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, order.length, order);
-		/*
-		* Bug in Windows.  When LVM_SETCOLUMNORDERARRAY is used to change
-		* the column order, the header redraws correctly but the table does
-		* not.  The fix is to force a redraw.
-		*/
-		OS.InvalidateRect (handle, null, true);
-		TableColumn[] newColumns = new TableColumn [count];
-		System.arraycopy (columns, 0, newColumns, 0, count);
-		for (int i=0; i<count; i++) {
-			TableColumn column = newColumns [oldOrder [i]];
-			if (!column.isDisposed ()) {
-				if (order [i] != oldOrder [i]) {
-					column.sendEvent (SWT.Move);
-				}
-			}
-		}
-	}
+  Utils.notImplemented();
+//	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
+//	if (count == 1 && columns [0] == null) {
+//		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+//		return;
+//	}
+//	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+//	int [] oldOrder = new int [count];
+//	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, oldOrder);
+//	boolean reorder = false;
+//	boolean [] seen = new boolean [count];
+//	for (int i=0; i<order.length; i++) {
+//		int index = order [i];
+//		if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+//		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+//		seen [index] = true;
+//		if (index != oldOrder [i]) reorder = true;
+//	}
+//	if (reorder) {
+//		RECT [] oldRects = new RECT [count];
+//		for (int i=0; i<count; i++) {
+//			oldRects [i] = new RECT ();
+//			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
+//		}
+//		OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, order.length, order);
+//		/*
+//		* Bug in Windows.  When LVM_SETCOLUMNORDERARRAY is used to change
+//		* the column order, the header redraws correctly but the table does
+//		* not.  The fix is to force a redraw.
+//		*/
+//		OS.InvalidateRect (handle, null, true);
+//		TableColumn[] newColumns = new TableColumn [count];
+//		System.arraycopy (columns, 0, newColumns, 0, count);
+//		for (int i=0; i<count; i++) {
+//			TableColumn column = newColumns [oldOrder [i]];
+//			if (!column.isDisposed ()) {
+//				if (order [i] != oldOrder [i]) {
+//					column.sendEvent (SWT.Move);
+//				}
+//			}
+//		}
+//	}
 }
 
-void setCheckboxImageListColor () {
-	if ((style & SWT.CHECK) == 0) return;
-	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	if (hOldStateList == 0) return;
-	int [] cx = new int [1], cy = new int [1];
-	OS.ImageList_GetIconSize (hOldStateList, cx, cy);
-	setCheckboxImageList (cx [0], cy [0]);
-}
-
-void setCheckboxImageList (int width, int height) {
-	if ((style & SWT.CHECK) == 0) return;
-	int count = 4;
-	int flags = ImageList.COLOR_FLAGS;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
-	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
-	int hDC = OS.GetDC (handle);
-	int memDC = OS.CreateCompatibleDC (hDC);
-	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
-	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
-	RECT rect = new RECT ();
-	OS.SetRect (rect, 0, 0, width * count, height);
-	int hBrush = OS.CreateSolidBrush (getBackgroundPixel ());
-	OS.FillRect (memDC, rect, hBrush);
-	OS.DeleteObject (hBrush);
-	int oldFont = OS.SelectObject (hDC, defaultFont ());
-	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-	OS.GetTextMetrics (hDC, tm);
-	OS.SelectObject (hDC, oldFont);
-	int itemWidth = Math.min (tm.tmHeight, width);
-	int itemHeight = Math.min (tm.tmHeight, height);
-	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
-	OS.SetRect (rect, left, top, left + itemWidth, top + itemHeight);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int hTheme = OS.OpenThemeData (handle, BUTTON);
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
-		rect.left += width;  rect.right += width;
-		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
-		OS.CloseThemeData (hTheme);
-	} else {
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-		rect.left += width;  rect.right += width;
-		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-	}
-	OS.SelectObject (memDC, hOldBitmap);
-	OS.DeleteDC (memDC);
-	OS.ReleaseDC (handle, hDC);
-	OS.ImageList_Add (hImageList, hBitmap, 0);
-	OS.DeleteObject (hBitmap);
-	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
-	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
-}
+//void setCheckboxImageListColor () {
+//	if ((style & SWT.CHECK) == 0) return;
+//	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+//	if (hOldStateList == 0) return;
+//	int [] cx = new int [1], cy = new int [1];
+//	OS.ImageList_GetIconSize (hOldStateList, cx, cy);
+//	setCheckboxImageList (cx [0], cy [0]);
+//}
+//
+//void setCheckboxImageList (int width, int height) {
+//	if ((style & SWT.CHECK) == 0) return;
+//	int count = 4;
+//	int flags = ImageList.COLOR_FLAGS;
+//	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
+//	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
+//	int hDC = OS.GetDC (handle);
+//	int memDC = OS.CreateCompatibleDC (hDC);
+//	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
+//	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
+//	RECT rect = new RECT ();
+//	OS.SetRect (rect, 0, 0, width * count, height);
+//	int hBrush = OS.CreateSolidBrush (getBackgroundPixel ());
+//	OS.FillRect (memDC, rect, hBrush);
+//	OS.DeleteObject (hBrush);
+//	int oldFont = OS.SelectObject (hDC, defaultFont ());
+//	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+//	OS.GetTextMetrics (hDC, tm);
+//	OS.SelectObject (hDC, oldFont);
+//	int itemWidth = Math.min (tm.tmHeight, width);
+//	int itemHeight = Math.min (tm.tmHeight, height);
+//	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
+//	OS.SetRect (rect, left, top, left + itemWidth, top + itemHeight);
+//	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+//		int hTheme = OS.OpenThemeData (handle, BUTTON);
+//		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+//		rect.left += width;  rect.right += width;
+//		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
+//		rect.left += width;  rect.right += width;
+//		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
+//		rect.left += width;  rect.right += width;
+//		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
+//		OS.CloseThemeData (hTheme);
+//	} else {
+//		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
+//		rect.left += width;  rect.right += width;
+//		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
+//		rect.left += width;  rect.right += width;
+//		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
+//		rect.left += width;  rect.right += width;
+//		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
+//	}
+//	OS.SelectObject (memDC, hOldBitmap);
+//	OS.DeleteDC (memDC);
+//	OS.ReleaseDC (handle, hDC);
+//	OS.ImageList_Add (hImageList, hBitmap, 0);
+//	OS.DeleteObject (hBitmap);
+//	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+//	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
+//	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
+//}
 
 void setFocusIndex (int index) {
 //	checkWidget ();	
@@ -1862,21 +1881,21 @@ public void setFont (Font font) {
 	setTopIndex (0);
 	super.setFont (font);
 	setTopIndex (topIndex);
-	setScrollWidth (null, true);
-	setRedraw (true);
-	
-	/*
-	* Bug in Windows.  Setting the font will cause the table
-	* to be redrawn but not the column headers.  The fix is
-	* to force a redraw of the column headers.
-	*/
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
-	OS.InvalidateRect (hwndHeader, null, true);
-	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
-	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
-	setItemHeight ();
+  Utils.notImplemented();
+//	setScrollWidth (null, true);
+//	setRedraw (true);
+//	/*
+//	* Bug in Windows.  Setting the font will cause the table
+//	* to be redrawn but not the column headers.  The fix is
+//	* to force a redraw of the column headers.
+//	*/
+//	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
+//	OS.InvalidateRect (hwndHeader, null, true);
+//	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+//	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
+//	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
+//	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
+//	setItemHeight ();
 }
 
 /**
@@ -1925,7 +1944,7 @@ public void setItemCount (int count) {
 		if (!isVirtual) {
       //TODO: notify item deleted?
 		}
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
+		if (item != null && !item.isDisposed ()) item.release (false);
 		index++;
 	}
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -1959,9 +1978,10 @@ public void setItemCount (int count) {
 /*public*/ void setItemHeight (int itemHeight) {
   checkWidget ();
   if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
-  this.itemHeight = itemHeight;
-  setItemHeight (true);
-  setScrollWidth (null, true);
+  Utils.notImplemented();
+//  this.itemHeight = itemHeight;
+//  setItemHeight (true);
+//  setScrollWidth (null, true);
 }
 
 /**
@@ -1985,172 +2005,172 @@ public void setLinesVisible (boolean show) {
   ((CTable)handle).setGridVisible(show);
 }
 
-public void setRedraw (boolean redraw) {
-	checkWidget ();
-	/*
-	 * Feature in Windows.  When WM_SETREDRAW is used to turn
-	 * off drawing in a widget, it clears the WS_VISIBLE bits
-	 * and then sets them when redraw is turned back on.  This
-	 * means that WM_SETREDRAW will make a widget unexpectedly
-	 * visible.  The fix is to track the visibility state while
-	 * drawing is turned off and restore it when drawing is turned
-	 * back on.
-	 */
-	if (drawCount == 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits & OS.WS_VISIBLE) == 0) state |= HIDDEN;
-	}
-	if (redraw) {
-		if (--drawCount == 0) {
-			/*
-			* When many items are added to a table, it is faster to
-			* temporarily unsubclass the window proc so that messages
-			* are dispatched directly to the table.
-			*
-			* NOTE: This is optimization somewhat dangerous because any
-			* operation can occur when redraw is turned off, even operations
-			* where the table must be subclassed in order to have the correct
-			* behavior or work around a Windows bug.
-			* 
-			* This code is intentionally commented. 
-			*/
-//			subclass ();
-			
-			/* Set the width of the horizontal scroll bar */
-			setScrollWidth (null, true);
+//public void setRedraw (boolean redraw) {
+//	checkWidget ();
+//	/*
+//	 * Feature in Windows.  When WM_SETREDRAW is used to turn
+//	 * off drawing in a widget, it clears the WS_VISIBLE bits
+//	 * and then sets them when redraw is turned back on.  This
+//	 * means that WM_SETREDRAW will make a widget unexpectedly
+//	 * visible.  The fix is to track the visibility state while
+//	 * drawing is turned off and restore it when drawing is turned
+//	 * back on.
+//	 */
+//	if (drawCount == 0) {
+//		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//		if ((bits & OS.WS_VISIBLE) == 0) state |= HIDDEN;
+//	}
+//	if (redraw) {
+//		if (--drawCount == 0) {
+//			/*
+//			* When many items are added to a table, it is faster to
+//			* temporarily unsubclass the window proc so that messages
+//			* are dispatched directly to the table.
+//			*
+//			* NOTE: This is optimization somewhat dangerous because any
+//			* operation can occur when redraw is turned off, even operations
+//			* where the table must be subclassed in order to have the correct
+//			* behavior or work around a Windows bug.
+//			* 
+//			* This code is intentionally commented. 
+//			*/
+////			subclass ();
+//			
+//			/* Set the width of the horizontal scroll bar */
+//			setScrollWidth (null, true);
+//
+//			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+//			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+//			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
+//			if ((state & HIDDEN) != 0) {
+//				state &= ~HIDDEN;
+//				OS.ShowWindow (handle, OS.SW_HIDE);
+//			} else {
+//				if (OS.IsWinCE) {
+//					OS.InvalidateRect (handle, null, false);
+//					if (hwndHeader != 0) {
+//						OS.InvalidateRect (hwndHeader, null, false);
+//					}
+//				} else {
+//					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+//					OS.RedrawWindow (handle, null, 0, flags);
+//				}
+//			}
+//		}
+//	} else {
+//		if (drawCount++ == 0) {
+//			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+//			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+//			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 0, 0);
+//			
+//			/*
+//			* When many items are added to a table, it is faster to
+//			* temporarily unsubclass the window proc so that messages
+//			* are dispatched directly to the table.
+//			*
+//			* NOTE: This is optimization somewhat dangerous because any
+//			* operation can occur when redraw is turned off, even operations
+//			* where the table must be subclassed in order to have the correct
+//			* behavior or work around a Windows bug.
+//			*
+//			* This code is intentionally commented. 
+//			*/
+////			unsubclass ();
+//		}
+//	}
+//}
 
-			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
-			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
-			if ((state & HIDDEN) != 0) {
-				state &= ~HIDDEN;
-				OS.ShowWindow (handle, OS.SW_HIDE);
-			} else {
-				if (OS.IsWinCE) {
-					OS.InvalidateRect (handle, null, false);
-					if (hwndHeader != 0) {
-						OS.InvalidateRect (hwndHeader, null, false);
-					}
-				} else {
-					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (handle, null, 0, flags);
-				}
-			}
-		}
-	} else {
-		if (drawCount++ == 0) {
-			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 0, 0);
-			
-			/*
-			* When many items are added to a table, it is faster to
-			* temporarily unsubclass the window proc so that messages
-			* are dispatched directly to the table.
-			*
-			* NOTE: This is optimization somewhat dangerous because any
-			* operation can occur when redraw is turned off, even operations
-			* where the table must be subclassed in order to have the correct
-			* behavior or work around a Windows bug.
-			*
-			* This code is intentionally commented. 
-			*/
-//			unsubclass ();
-		}
-	}
-}
-
-boolean setScrollWidth (TableItem item, boolean force) {
-	if (currentItem != null) {
-		if (currentItem != item) fixScrollWidth = true;
-		return false;
-	}
-	if (!force && (drawCount != 0 || !OS.IsWindowVisible (handle))) {
-		fixScrollWidth = true;
-		return false;
-	}
-	fixScrollWidth = false;
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	/*
-	* NOTE: It is much faster to measure the strings and compute the
-	* width of the scroll bar in non-virtual table rather than using
-	* LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE.
-	*/
-	if (count == 1 && columns [0] == null) {
-		int newWidth = 0;
-		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		int index = 0;
-		int imageIndent = 0;
-		while (index < count) {
-			String string = null;
-			int font = -1;
-			if (item != null) {
-				string = item.text;
-				imageIndent = Math.max (imageIndent, item.imageIndent);
-				if (item.cellFont != null) font = item.cellFont [0];
-				if (font == -1) font = item.font;
-			} else {
-				if (items [index] != null) {
-					TableItem tableItem = items [index];
-					string = tableItem.text;
-					imageIndent = Math.max (imageIndent, tableItem.imageIndent);
-					if (tableItem.cellFont != null) font = tableItem.cellFont [0];
-					if (font == -1) font = tableItem.font;
-				}
-			}
-			if (string != null && string.length () != 0) {
-				if (font != -1) {
-					int hDC = OS.GetDC (handle);
-					int oldFont = OS.SelectObject (hDC, font);
-					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-					TCHAR buffer = new TCHAR (getCodePage (), string, false);
-					RECT rect = new RECT ();
-					OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-					OS.SelectObject (hDC, oldFont);
-					OS.ReleaseDC (handle, hDC);
-					newWidth = Math.max (newWidth, rect.right - rect.left);
-				} else {
-					TCHAR buffer = new TCHAR (getCodePage (), string, true);
-					newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
-				}
-			}
-			if (item != null) break;
-			index++;
-		}
-		int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-		if (hStateList != 0) {
-			int [] cx = new int [1], cy = new int [1];
-			OS.ImageList_GetIconSize (hStateList, cx, cy);
-			newWidth += cx [0] + INSET;
-		}
-		int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-		if (hImageList != 0) {
-			int [] cx = new int [1], cy = new int [1];
-			OS.ImageList_GetIconSize (hImageList, cx, cy);
-			newWidth += (imageIndent + 1) * cx [0];
-		} else {
-			/*
-			* Bug in Windows.  When LVM_SETIMAGELIST is used to remove the
-			* image list by setting it to NULL, the item width and height
-			* is not changed and space is reserved for icons despite the
-			* fact that there are none.  The fix is to set the image list
-			* to be very small before setting it to NULL.  This causes
-			* Windows to reserve the smallest possible space when an image
-			* list is removed.  In this case, the scroll width must be one
-			* pixel larger.
-			*/
-			newWidth++;
-		}
-		newWidth += INSET * 2;
-		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-		if (newWidth > oldWidth) {
-			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
-			return true;
-		}
-	}
-	return false;
-}
+//boolean setScrollWidth (TableItem item, boolean force) {
+//	if (currentItem != null) {
+//		if (currentItem != item) fixScrollWidth = true;
+//		return false;
+//	}
+//	if (!force && (drawCount != 0 || !OS.IsWindowVisible (handle))) {
+//		fixScrollWidth = true;
+//		return false;
+//	}
+//	fixScrollWidth = false;
+//	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+//	/*
+//	* NOTE: It is much faster to measure the strings and compute the
+//	* width of the scroll bar in non-virtual table rather than using
+//	* LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE.
+//	*/
+//	if (count == 1 && columns [0] == null) {
+//		int newWidth = 0;
+//		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//		int index = 0;
+//		int imageIndent = 0;
+//		while (index < count) {
+//			String string = null;
+//			int font = -1;
+//			if (item != null) {
+//				string = item.text;
+//				imageIndent = Math.max (imageIndent, item.imageIndent);
+//				if (item.cellFont != null) font = item.cellFont [0];
+//				if (font == -1) font = item.font;
+//			} else {
+//				if (items [index] != null) {
+//					TableItem tableItem = items [index];
+//					string = tableItem.text;
+//					imageIndent = Math.max (imageIndent, tableItem.imageIndent);
+//					if (tableItem.cellFont != null) font = tableItem.cellFont [0];
+//					if (font == -1) font = tableItem.font;
+//				}
+//			}
+//			if (string != null && string.length () != 0) {
+//				if (font != -1) {
+//					int hDC = OS.GetDC (handle);
+//					int oldFont = OS.SelectObject (hDC, font);
+//					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+//					TCHAR buffer = new TCHAR (getCodePage (), string, false);
+//					RECT rect = new RECT ();
+//					OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+//					OS.SelectObject (hDC, oldFont);
+//					OS.ReleaseDC (handle, hDC);
+//					newWidth = Math.max (newWidth, rect.right - rect.left);
+//				} else {
+//					TCHAR buffer = new TCHAR (getCodePage (), string, true);
+//					newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
+//				}
+//			}
+//			if (item != null) break;
+//			index++;
+//		}
+//		int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+//		if (hStateList != 0) {
+//			int [] cx = new int [1], cy = new int [1];
+//			OS.ImageList_GetIconSize (hStateList, cx, cy);
+//			newWidth += cx [0] + INSET;
+//		}
+//		int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+//		if (hImageList != 0) {
+//			int [] cx = new int [1], cy = new int [1];
+//			OS.ImageList_GetIconSize (hImageList, cx, cy);
+//			newWidth += (imageIndent + 1) * cx [0];
+//		} else {
+//			/*
+//			* Bug in Windows.  When LVM_SETIMAGELIST is used to remove the
+//			* image list by setting it to NULL, the item width and height
+//			* is not changed and space is reserved for icons despite the
+//			* fact that there are none.  The fix is to set the image list
+//			* to be very small before setting it to NULL.  This causes
+//			* Windows to reserve the smallest possible space when an image
+//			* list is removed.  In this case, the scroll width must be one
+//			* pixel larger.
+//			*/
+//			newWidth++;
+//		}
+//		newWidth += INSET * 2;
+//		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+//		if (newWidth > oldWidth) {
+//			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
+//			return true;
+//		}
+//	}
+//	return false;
+//}
 
 /**
  * Selects the items at the given zero-relative indices in the receiver.
@@ -2301,13 +2321,14 @@ public void setSelection (int start, int end) {
 	checkWidget ();
 	deselectAll ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (count == 0 || start >= count) return;
-	start = Math.max (0, start);
-	end = Math.min (end, count - 1);
-	select (start, end);
-	setFocusIndex (start);
-	showSelection ();
+  Utils.notImplemented();
+//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	if (count == 0 || start >= count) return;
+//	start = Math.max (0, start);
+//	end = Math.min (end, count - 1);
+//	select (start, end);
+//	setFocusIndex (start);
+//	showSelection ();
 }
 
 /**
@@ -2330,13 +2351,14 @@ public void setSelection (int start, int end) {
 public void setSortColumn (TableColumn column) {
   checkWidget ();
   if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  if (sortColumn != null && !sortColumn.isDisposed ()) {
-    sortColumn.setSortDirection (SWT.NONE);
-  }
-  sortColumn = column;
-  if (sortColumn != null && sortDirection != SWT.NONE) {
-    sortColumn.setSortDirection (sortDirection);
-  }
+  Utils.notImplemented();
+//  if (sortColumn != null && !sortColumn.isDisposed ()) {
+//    sortColumn.setSortDirection (SWT.NONE);
+//  }
+//  sortColumn = column;
+//  if (sortColumn != null && sortDirection != SWT.NONE) {
+//    sortColumn.setSortDirection (sortDirection);
+//  }
 }
 
 /**
@@ -2355,10 +2377,11 @@ public void setSortColumn (TableColumn column) {
 public void setSortDirection (int direction) {
   checkWidget ();
   if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
-  sortDirection = direction;
-  if (sortColumn != null && !sortColumn.isDisposed ()) {
-    sortColumn.setSortDirection (direction);
-  }
+  Utils.notImplemented();
+//  sortDirection = direction;
+//  if (sortColumn != null && !sortColumn.isDisposed ()) {
+//    sortColumn.setSortDirection (direction);
+//  }
 }
 
 /**
@@ -2375,54 +2398,55 @@ public void setSortDirection (int direction) {
  */
 public void setTopIndex (int index) {
 	checkWidget (); 
-	int topIndex = OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
-	if (index == topIndex) return;
-	
-	/*
-	* Bug in Windows.  For some reason, LVM_SCROLL refuses to
-	* scroll a table vertically when the width and height of
-	* the table is smaller than a certain size.  The values
-	* that seem to cause the problem are width=68 and height=6
-	* but there is no guarantee that these values cause the
-	* failure on different machines or on different versions
-	* of Windows.  It may depend on the font and any number
-	* of other factors.  For example, setting the font to
-	* anything but the default sometimes fixes the problem.
-	* The fix is to use LVM_GETCOUNTPERPAGE to detect the
-	* case when the number of visible items is zero and
-	* use LVM_ENSUREVISIBLE to scroll the table to make the
-	* index visible.
-	*/
-
-	/*
-	* Bug in Windows.  When the table header is visible and
-	* there is not enough space to show a single table item,
-	* LVM_GETCOUNTPERPAGE can return a negative number instead
-	* of zero.  The fix is to test for negative or zero.
-	*/
-	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
-		/*
-		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
-		* scroll one item more or one item less when there is not
-		* enough space to show a single table item.  The fix is
-		* to detect the case and call LVM_ENSUREVISIBLE again with
-		* the same arguments.  It seems that once LVM_ENSUREVISIBLE
-		* has scrolled into the general area, it is able to scroll
-		* to the exact item.
-		*/
-		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
-		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
-			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
-		}
-		return;
-	}
-
-	/* Use LVM_SCROLL to scroll the table */
-	RECT rect = new RECT ();
-	rect.left = OS.LVIR_BOUNDS;
-	OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, rect);
-	int dy = (index - topIndex) * (rect.bottom - rect.top);
-	OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
+  Utils.notImplemented();
+//	int topIndex = OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
+//	if (index == topIndex) return;
+//	
+//	/*
+//	* Bug in Windows.  For some reason, LVM_SCROLL refuses to
+//	* scroll a table vertically when the width and height of
+//	* the table is smaller than a certain size.  The values
+//	* that seem to cause the problem are width=68 and height=6
+//	* but there is no guarantee that these values cause the
+//	* failure on different machines or on different versions
+//	* of Windows.  It may depend on the font and any number
+//	* of other factors.  For example, setting the font to
+//	* anything but the default sometimes fixes the problem.
+//	* The fix is to use LVM_GETCOUNTPERPAGE to detect the
+//	* case when the number of visible items is zero and
+//	* use LVM_ENSUREVISIBLE to scroll the table to make the
+//	* index visible.
+//	*/
+//
+//	/*
+//	* Bug in Windows.  When the table header is visible and
+//	* there is not enough space to show a single table item,
+//	* LVM_GETCOUNTPERPAGE can return a negative number instead
+//	* of zero.  The fix is to test for negative or zero.
+//	*/
+//	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
+//		/*
+//		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
+//		* scroll one item more or one item less when there is not
+//		* enough space to show a single table item.  The fix is
+//		* to detect the case and call LVM_ENSUREVISIBLE again with
+//		* the same arguments.  It seems that once LVM_ENSUREVISIBLE
+//		* has scrolled into the general area, it is able to scroll
+//		* to the exact item.
+//		*/
+//		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
+//		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
+//			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
+//		}
+//		return;
+//	}
+//
+//	/* Use LVM_SCROLL to scroll the table */
+//	RECT rect = new RECT ();
+//	rect.left = OS.LVIR_BOUNDS;
+//	OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, rect);
+//	int dy = (index - topIndex) * (rect.bottom - rect.top);
+//	OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
 }
 
 /**
@@ -2450,72 +2474,73 @@ public void showColumn (TableColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (index == -1) return;
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count <= 1 || !(0 <= index && index < count)) return;
-	/*
-	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with -1 for the
-	* row number gives the bounds of the item that would be above the
-	* first row in the table.  This is undocumented and does not work
-	* for the first column. In this case, to get the bounds of the
-	* first column, get the bounds of the second column and subtract
-	* the width of the first. The left edge of the second column is
-	* also used as the right edge of the first.
-	*/
-	RECT rect = new RECT ();
-	rect.left = OS.LVIR_BOUNDS;
-	if (index == 0) {
-		rect.top = 1;
-		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
-		rect.right = rect.left;
-		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-		rect.left = rect.right - width;
-	} else {
-		rect.top = index;
-		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
-	}
-	RECT area = new RECT ();
-	OS.GetClientRect (handle, area);
-	if (rect.left < area.left) {
-		int dx = rect.left - area.left;
-		OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
-	} else {
-		int width = Math.min (area.right - area.left, rect.right - rect.left);
-		if (rect.left + width > area.right) {
-			int dx = rect.left + width - area.right;
-			OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
-		}
-	}
+  Utils.notImplemented();
+//	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+//	if (count <= 1 || !(0 <= index && index < count)) return;
+//	/*
+//	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with -1 for the
+//	* row number gives the bounds of the item that would be above the
+//	* first row in the table.  This is undocumented and does not work
+//	* for the first column. In this case, to get the bounds of the
+//	* first column, get the bounds of the second column and subtract
+//	* the width of the first. The left edge of the second column is
+//	* also used as the right edge of the first.
+//	*/
+//	RECT rect = new RECT ();
+//	rect.left = OS.LVIR_BOUNDS;
+//	if (index == 0) {
+//		rect.top = 1;
+//		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
+//		rect.right = rect.left;
+//		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+//		rect.left = rect.right - width;
+//	} else {
+//		rect.top = index;
+//		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
+//	}
+//	RECT area = new RECT ();
+//	OS.GetClientRect (handle, area);
+//	if (rect.left < area.left) {
+//		int dx = rect.left - area.left;
+//		OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
+//	} else {
+//		int width = Math.min (area.right - area.left, rect.right - rect.left);
+//		if (rect.left + width > area.right) {
+//			int dx = rect.left + width - area.right;
+//			OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
+//		}
+//	}
 }
 
-void showItem (int index) {
-	/*
-	* Bug in Windows.  For some reason, when there is insufficient space
-	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
-	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
-	* return a negative number (this is an impossible result).  The fix 
-	* is to use LVM_GETCOUNTPERPAGE to detect the case when the number 
-	* of visible items is zero and use LVM_ENSUREVISIBLE with the
-	* fPartialOK flag set to true to scroll the table.
-	*/
-	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
-		/*
-		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
-		* scroll one item more or one item less when there is not
-		* enough space to show a single table item.  The fix is
-		* to detect the case and call LVM_ENSUREVISIBLE again with
-		* the same arguments.  It seems that once LVM_ENSUREVISIBLE
-		* has scrolled into the general area, it is able to scroll
-		* to the exact item.
-		*/
-		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
-		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
-			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
-		}		
-	} else {
-		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
-	}
-}
+//void showItem (int index) {
+//	/*
+//	* Bug in Windows.  For some reason, when there is insufficient space
+//	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
+//	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
+//	* return a negative number (this is an impossible result).  The fix 
+//	* is to use LVM_GETCOUNTPERPAGE to detect the case when the number 
+//	* of visible items is zero and use LVM_ENSUREVISIBLE with the
+//	* fPartialOK flag set to true to scroll the table.
+//	*/
+//	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
+//		/*
+//		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
+//		* scroll one item more or one item less when there is not
+//		* enough space to show a single table item.  The fix is
+//		* to detect the case and call LVM_ENSUREVISIBLE again with
+//		* the same arguments.  It seems that once LVM_ENSUREVISIBLE
+//		* has scrolled into the general area, it is able to scroll
+//		* to the exact item.
+//		*/
+//		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
+//		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
+//			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
+//		}		
+//	} else {
+//		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+//	}
+//}
 
 /**
  * Shows the item.  If the item is already showing in the receiver,
@@ -2539,8 +2564,9 @@ public void showItem (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	int index = indexOf (item);
-	if (index != -1) showItem (index);
+	Utils.notImplemented();
+//	int index = indexOf (item);
+//	if (index != -1) showItem (index);
 }
 
 /**

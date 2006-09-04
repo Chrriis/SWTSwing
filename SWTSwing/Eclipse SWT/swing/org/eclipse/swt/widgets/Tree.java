@@ -13,13 +13,10 @@ package org.eclipse.swt.widgets;
 
 import java.awt.AWTEvent;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.EventObject;
 
-import javax.swing.JButton;
-import javax.swing.RootPaneContainer;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.table.JTableHeader;
@@ -29,16 +26,17 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.eclipse.swt.internal.swing.CTable;
-import org.eclipse.swt.internal.swing.CText;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TreeListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.swing.DefaultMutableTreeTableNode;
-import org.eclipse.swt.internal.swing.CTreeItem.TreeItemObject;
-import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -279,17 +277,18 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
  */
 public void clear (int index, boolean all) {
   checkWidget ();
-  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  hItem = findItem (hItem, index);
-  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  TVITEM tvItem = new TVITEM ();
-  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-  clear (hItem, tvItem);
-  if (all) {
-    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-    clearAll (hItem, tvItem, all);
-  }
+  Utils.notImplemented();
+//  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  hItem = findItem (hItem, index);
+//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  TVITEM tvItem = new TVITEM ();
+//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//  clear (hItem, tvItem);
+//  if (all) {
+//    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+//    clearAll (hItem, tvItem, all);
+//  }
 }
 
 /**
@@ -313,11 +312,12 @@ public void clear (int index, boolean all) {
  */
 public void clearAll (boolean all) {
   checkWidget ();
-  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-  if (hItem == 0) return;
-  TVITEM tvItem = new TVITEM ();
-  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-  clearAll (hItem, tvItem, all);
+  Utils.notImplemented();
+//  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//  if (hItem == 0) return;
+//  TVITEM tvItem = new TVITEM ();
+//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//  clearAll (hItem, tvItem, all);
 }
 
 public Rectangle computeTrim(int x, int y, int width, int height) {
@@ -556,16 +556,16 @@ void destroyItem (TreeItem item) {
 //	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
 //}
 
-Widget findItem (int id) {
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = id;
-	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
-		int lParam = tvItem.lParam;
-		if (0 <= lParam && lParam < items.length) return items [lParam];
-	}
-	return null;
-}
+//Widget findItem (int id) {
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//	tvItem.hItem = id;
+//	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
+//		int lParam = tvItem.lParam;
+//		if (0 <= lParam && lParam < items.length) return items [lParam];
+//	}
+//	return null;
+//}
 
 /**
  * Returns the width in pixels of a grid line.
@@ -720,11 +720,12 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
   checkWidget ();
-  if (hwndHeader == 0) return new int [0];
-  int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-  int [] order = new int [count];
-  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-  return order;
+  Utils.notImplemented(); return null;
+//  if (hwndHeader == 0) return new int [0];
+//  int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+//  int [] order = new int [count];
+//  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+//  return order;
 }
 
 /**
@@ -782,11 +783,12 @@ public TreeColumn [] getColumns () {
 public TreeItem getItem (int index) {
   checkWidget ();
   if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-  int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  int hItem = findItem (hFirstItem, index);
-  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-  return _getItem (hItem);
+  Utils.notImplemented(); return null;
+//  int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  int hItem = findItem (hFirstItem, index);
+//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//  return _getItem (hItem);
 }
 
 /**
@@ -863,7 +865,8 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
+  Utils.notImplemented(); return 15;
+//	return OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
 }
 
 /**
@@ -1021,7 +1024,8 @@ public int getSelectionCount () {
  */
 public TreeColumn getSortColumn () {
   checkWidget ();
-  return sortColumn;
+  Utils.notImplemented(); return null;
+//  return sortColumn;
 }
 
 /**
@@ -1042,7 +1046,8 @@ public TreeColumn getSortColumn () {
  */
 public int getSortDirection () {
   checkWidget ();
-  return sortDirection;
+  Utils.notImplemented(); return SWT.NONE;
+//  return sortDirection;
 }
 
 /**
@@ -1061,13 +1066,14 @@ public int getSortDirection () {
  */
 public TreeItem getTopItem () {
 	checkWidget ();
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
-	if (hItem == 0) return null;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM;
-	tvItem.hItem = hItem;
-	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0) return null;
-	return items [tvItem.lParam];
+  Utils.notImplemented(); return null;
+//	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+//	if (hItem == 0) return null;
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_PARAM;
+//	tvItem.hItem = hItem;
+//	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0) return null;
+//	return items [tvItem.lParam];
 }
 
 //int imageIndex (Image image) {
@@ -1092,14 +1098,14 @@ public TreeItem getTopItem () {
 //	return imageList.add (image);
 //}
 
-int indexOf (int hItem, int hChild) {
-	int index = 0;
-	while (hItem != 0 && hItem != hChild) {
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-		index++;
-	}
-	return hItem == hChild ? index : -1;
-}
+//int indexOf (int hItem, int hChild) {
+//	int index = 0;
+//	while (hItem != 0 && hItem != hChild) {
+//		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+//		index++;
+//	}
+//	return hItem == hChild ? index : -1;
+//}
 
 /**
  * Searches the receiver's list starting at the first column
@@ -1330,12 +1336,13 @@ public void removeTreeListener(TreeListener listener) {
  */
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
-	int hItem = 0;
-	if (item != null) {
-		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		hItem = item.handle;
-	}
-	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
+  Utils.notImplemented();
+//	int hItem = 0;
+//	if (item != null) {
+//		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+//		hItem = item.handle;
+//	}
+//	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
 }
 
 /**
@@ -1353,54 +1360,55 @@ public void setInsertMark (TreeItem item, boolean before) {
 public void setItemCount (int count) {
   checkWidget ();
   count = Math.max (0, count);
-  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-  setItemCount (count, OS.TVGN_ROOT, hItem);
+  Utils.notImplemented();
+//  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//  setItemCount (count, OS.TVGN_ROOT, hItem);
 }
 
-void setItemCount (int count, int hParent, int hItem) {
-  boolean redraw = false;
-  if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
-    redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-    if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-  }
-  int itemCount = 0;
-  while (hItem != 0 && itemCount < count) {
-    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-    itemCount++;
-  }
-  TVITEM tvItem = new TVITEM ();
-  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-  while (hItem != 0) {
-    tvItem.hItem = hItem;
-    OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-    TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
-    if (item != null && !item.isDisposed ()) {
-      item.dispose ();
-    } else {
-      releaseItem (tvItem.hItem, tvItem, false);
-      destroyItem (null, tvItem.hItem);
-    }
-  }
-  if ((style & SWT.VIRTUAL) != 0) {
-    for (int i=itemCount; i<count; i++) {
-      createItem (null, hParent, OS.TVI_LAST, 0);
-    }
-  } else {
-    shrink = true;
-    int extra = Math.max (4, (count + 3) / 4 * 4);
-    TreeItem [] newItems = new TreeItem [items.length + extra];
-    System.arraycopy (items, 0, newItems, 0, items.length);
-    items = newItems;
-    for (int i=itemCount; i<count; i++) {
-      new TreeItem (this, SWT.NONE, hParent, OS.TVI_LAST, 0);
-    }
-  }
-  if (redraw) {
-    OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-    OS.InvalidateRect (handle, null, true);
-  }
-}
+//void setItemCount (int count, int hParent, int hItem) {
+//  boolean redraw = false;
+//  if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
+//    redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+//    if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+//  }
+//  int itemCount = 0;
+//  while (hItem != 0 && itemCount < count) {
+//    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+//    itemCount++;
+//  }
+//  TVITEM tvItem = new TVITEM ();
+//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//  while (hItem != 0) {
+//    tvItem.hItem = hItem;
+//    OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+//    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+//    TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
+//    if (item != null && !item.isDisposed ()) {
+//      item.dispose ();
+//    } else {
+//      releaseItem (tvItem.hItem, tvItem, false);
+//      destroyItem (null, tvItem.hItem);
+//    }
+//  }
+//  if ((style & SWT.VIRTUAL) != 0) {
+//    for (int i=itemCount; i<count; i++) {
+//      createItem (null, hParent, OS.TVI_LAST, 0);
+//    }
+//  } else {
+//    shrink = true;
+//    int extra = Math.max (4, (count + 3) / 4 * 4);
+//    TreeItem [] newItems = new TreeItem [items.length + extra];
+//    System.arraycopy (items, 0, newItems, 0, items.length);
+//    items = newItems;
+//    for (int i=itemCount; i<count; i++) {
+//      new TreeItem (this, SWT.NONE, hParent, OS.TVI_LAST, 0);
+//    }
+//  }
+//  if (redraw) {
+//    OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+//    OS.InvalidateRect (handle, null, true);
+//  }
+//}
 
 /**
  * Sets the height of the area which would be used to
@@ -1418,7 +1426,8 @@ void setItemCount (int count, int hParent, int hItem) {
 /*public*/ void setItemHeight (int itemHeight) {
   checkWidget ();
   if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
-  OS.SendMessage (handle, OS.TVM_SETITEMHEIGHT, itemHeight, 0);
+  Utils.notImplemented();
+//  OS.SendMessage (handle, OS.TVM_SETITEMHEIGHT, itemHeight, 0);
 }
 
 /**
@@ -1581,48 +1590,49 @@ public void setColumnOrder (int [] order) {
   checkWidget ();
   if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
   int count = 0;
-  if (hwndHeader != 0) {
-    count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-  }
-  if (count == 0) {
-    if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
-    return;
-  }
-  if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
-  int [] oldOrder = new int [count];
-  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
-  boolean reorder = false;
-  boolean [] seen = new boolean [count];
-  for (int i=0; i<order.length; i++) {
-    int index = order [i];
-    if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
-    if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
-    seen [index] = true;
-    if (index != oldOrder [i]) reorder = true;
-  }
-  if (reorder) {
-    RECT [] oldRects = new RECT [count];
-    for (int i=0; i<count; i++) {
-      oldRects [i] = new RECT ();
-      OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
-    }
-    OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
-    OS.InvalidateRect (handle, null, true);
-    updateImageList ();
-    TreeColumn [] newColumns = new TreeColumn [count];
-    System.arraycopy (columns, 0, newColumns, 0, count);
-    RECT newRect = new RECT ();
-    for (int i=0; i<count; i++) {
-      TreeColumn column = newColumns [i];
-      if (!column.isDisposed ()) {
-        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
-        if (newRect.left != oldRects [i].left) {
-          column.updateToolTip (i);
-          column.sendEvent (SWT.Move);
-        }
-      }
-    }
-  }
+  Utils.notImplemented();
+//  if (hwndHeader != 0) {
+//    count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+//  }
+//  if (count == 0) {
+//    if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+//    return;
+//  }
+//  if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+//  int [] oldOrder = new int [count];
+//  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
+//  boolean reorder = false;
+//  boolean [] seen = new boolean [count];
+//  for (int i=0; i<order.length; i++) {
+//    int index = order [i];
+//    if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+//    if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+//    seen [index] = true;
+//    if (index != oldOrder [i]) reorder = true;
+//  }
+//  if (reorder) {
+//    RECT [] oldRects = new RECT [count];
+//    for (int i=0; i<count; i++) {
+//      oldRects [i] = new RECT ();
+//      OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
+//    }
+//    OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
+//    OS.InvalidateRect (handle, null, true);
+//    updateImageList ();
+//    TreeColumn [] newColumns = new TreeColumn [count];
+//    System.arraycopy (columns, 0, newColumns, 0, count);
+//    RECT newRect = new RECT ();
+//    for (int i=0; i<count; i++) {
+//      TreeColumn column = newColumns [i];
+//      if (!column.isDisposed ()) {
+//        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
+//        if (newRect.left != oldRects [i].left) {
+//          column.updateToolTip (i);
+//          column.sendEvent (SWT.Move);
+//        }
+//      }
+//    }
+//  }
 }
 
 /**
@@ -1783,13 +1793,14 @@ public void setSelection (TreeItem [] items) {
 public void setSortColumn (TreeColumn column) {
   checkWidget ();
   if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  if (sortColumn != null && !sortColumn.isDisposed ()) {
-    sortColumn.setSortDirection (SWT.NONE);
-  }
-  sortColumn = column;
-  if (sortColumn != null && sortDirection != SWT.NONE) {
-    sortColumn.setSortDirection (sortDirection);
-  }
+  Utils.notImplemented();
+//  if (sortColumn != null && !sortColumn.isDisposed ()) {
+//    sortColumn.setSortDirection (SWT.NONE);
+//  }
+//  sortColumn = column;
+//  if (sortColumn != null && sortDirection != SWT.NONE) {
+//    sortColumn.setSortDirection (sortDirection);
+//  }
 }
 
 /**
@@ -1808,10 +1819,11 @@ public void setSortColumn (TreeColumn column) {
 public void setSortDirection (int direction) {
   checkWidget ();
   if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
-  sortDirection = direction;
-  if (sortColumn != null && !sortColumn.isDisposed ()) {
-    sortColumn.setSortDirection (direction);
-  }
+  Utils.notImplemented();
+//  sortDirection = direction;
+//  if (sortColumn != null && !sortColumn.isDisposed ()) {
+//    sortColumn.setSortDirection (direction);
+//  }
 }
 
 /**
@@ -1838,18 +1850,19 @@ public void setTopItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	int hItem = item.handle;
-	boolean fixScroll = checkScroll (hItem);
-	if (fixScroll) {
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-	}
-	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-	if (fixScroll) {
-		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-	}
-	updateScrollBar ();
+  Utils.notImplemented();
+//	int hItem = item.handle;
+//	boolean fixScroll = checkScroll (hItem);
+//	if (fixScroll) {
+//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+//		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+//	}
+//	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+//	if (fixScroll) {
+//		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+//		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+//	}
+//	updateScrollBar ();
 }
 
 //void showItem (int hItem) {
@@ -1955,33 +1968,34 @@ public void showColumn (TreeColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (index == -1) return;
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (0 <= index && index < count) {
-		if (hwndParent != 0) {
-			forceResize ();
-			RECT rect = new RECT ();
-			OS.GetClientRect (hwndParent, rect);
-			OS.MapWindowPoints (hwndParent, handle, rect, 2);
-			int x = 0;
-			HDITEM hdItem = new HDITEM ();
-			for (int i=0; i<index; i++) {
-				hdItem.mask = OS.HDI_WIDTH;
-				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
-				x += hdItem.cxy;
-			}
-			POINT pt = new POINT ();
-			pt.x = x;
-			pt.y = rect.top;
-			if (!OS.PtInRect (rect, pt)) {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
-				info.fMask = OS.SIF_POS;
-				info.nPos = Math.max (0, pt.x - Tree.INSET / 2);
-				OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-				setScrollWidth ();
-			}
-		}
-	}
+  Utils.notImplemented();
+//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+//	if (0 <= index && index < count) {
+//		if (hwndParent != 0) {
+//			forceResize ();
+//			RECT rect = new RECT ();
+//			OS.GetClientRect (hwndParent, rect);
+//			OS.MapWindowPoints (hwndParent, handle, rect, 2);
+//			int x = 0;
+//			HDITEM hdItem = new HDITEM ();
+//			for (int i=0; i<index; i++) {
+//				hdItem.mask = OS.HDI_WIDTH;
+//				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+//				x += hdItem.cxy;
+//			}
+//			POINT pt = new POINT ();
+//			pt.x = x;
+//			pt.y = rect.top;
+//			if (!OS.PtInRect (rect, pt)) {
+//				SCROLLINFO info = new SCROLLINFO ();
+//				info.cbSize = SCROLLINFO.sizeof;
+//				info.fMask = OS.SIF_POS;
+//				info.nPos = Math.max (0, pt.x - Tree.INSET / 2);
+//				OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+//				setScrollWidth ();
+//			}
+//		}
+//	}
 }
 
 /**
@@ -2006,7 +2020,8 @@ public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-	showItem (item.handle);
+  Utils.notImplemented();
+//	showItem (item.handle);
 }
 
 /**
@@ -2023,36 +2038,37 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
-	int hItem = 0;
-	if ((style & SWT.SINGLE) != 0) {	
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem == 0) return;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return;
-	} else {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
-		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-		int index = 0;
-		while (index <items.length) {
-			TreeItem item = items [index];
-			if (item != null) {
-				tvItem.hItem = item.handle;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-					hItem = tvItem.hItem;
-					break;
-				}
-			}
-			index++;
-		}
-		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	}
-	if (hItem != 0) showItem (hItem);
+  Utils.notImplemented();
+//	int hItem = 0;
+//	if ((style & SWT.SINGLE) != 0) {	
+//		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+//		if (hItem == 0) return;
+//		TVITEM tvItem = new TVITEM ();
+//		tvItem.mask = OS.TVIF_STATE;
+//		tvItem.hItem = hItem;
+//		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+//		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return;
+//	} else {
+//		TVITEM tvItem = new TVITEM ();
+//		tvItem.mask = OS.TVIF_STATE;
+//		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
+//		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
+//		int index = 0;
+//		while (index <items.length) {
+//			TreeItem item = items [index];
+//			if (item != null) {
+//				tvItem.hItem = item.handle;
+//				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+//				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+//					hItem = tvItem.hItem;
+//					break;
+//				}
+//			}
+//			index++;
+//		}
+//		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
+//	}
+//	if (hItem != 0) showItem (hItem);
 }
 
 //void showWidget (boolean visible) {

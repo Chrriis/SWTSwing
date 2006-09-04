@@ -4,7 +4,7 @@
   <target name="init">
     <mkdir dir="bin" />
     <mkdir dir="bin/swtswing" />
-  <mkdir dir="bin/swt" />
+    <mkdir dir="bin/swt" />
   </target>
 
   <target name="clean">
@@ -12,18 +12,18 @@
   </target>
 
   <target name="getSWT" description="Get latest stable SWT">
-  <echo>Checking out SWT</echo>
-  <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
-    package="org.eclipse.swt"
-    tag="R3_2"
-    dest="." />
-  <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
-    package="org.eclipse.swt.examples"
-    tag="R3_2"
-    dest="." />
-  <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
-    package="org.eclipse.swt.snippets"
-    dest="." />
+    <echo>Checking out SWT</echo>
+    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+      package="org.eclipse.swt"
+      tag="R3_2"
+      dest="." />
+    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+      package="org.eclipse.swt.examples"
+      tag="R3_2"
+      dest="." />
+    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+      package="org.eclipse.swt.snippets"
+      dest="." />
   </target>
 
   <target name="compileSWT" description="Compile SWT" depends="init">

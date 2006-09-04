@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<project name="SWTSwing Build Script" default="createJar">
+
+  <target name="init">
+    <mkdir dir="bin" />
+    <mkdir dir="bin/swtswing" />
+  <mkdir dir="bin/swt" />
+  </target>
+
+  <target name="clean">
+    <delete dir="bin"/>
+  </target>
+
+  <target name="getSWT" description="Get latest stable SWT">
+  <echo>Checking out SWT</echo>
+  <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+    package="org.eclipse.swt"
+    tag="R3_2"
+    dest="." />
+  <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+    package="org.eclipse.swt.examples"
+    tag="R3_2"
+    dest="." />
+  <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+    package="org.eclipse.swt.snippets"
+    dest="." />
+  </target>
+
+  <target name="compileSWT" description="Compile SWT" depends="init">
+    <javac source="1.4" target="1.4" destdir="bin/swt">
+      <src path="org.eclipse.swt/Eclipse SWT/common" />
+      <src path="org.eclipse.swt/Eclipse SWT/common_j2se" />
+      <src path="org.eclipse.swt/Eclipse SWT/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT Accessibility/common" />
+      <src path="org.eclipse.swt/Eclipse SWT Accessibility/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT AWT/common" />
+      <src path="org.eclipse.swt/Eclipse SWT AWT/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT Browser/common" />
+      <src path="org.eclipse.swt/Eclipse SWT Browser/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT Custom Widgets/common" />
+      <src path="org.eclipse.swt/Eclipse SWT Drag and Drop/common" />
+      <src path="org.eclipse.swt/Eclipse SWT Drag and Drop/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT OLE Win32/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT OpenGL/common" />
+      <src path="org.eclipse.swt/Eclipse SWT OpenGL/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT PI/common" />
+      <src path="org.eclipse.swt/Eclipse SWT PI/common_j2se" />
+      <src path="org.eclipse.swt/Eclipse SWT PI/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT Printing/common" />
+      <src path="org.eclipse.swt/Eclipse SWT Printing/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT Program/common" />
+      <src path="org.eclipse.swt/Eclipse SWT Program/win32" />
+      <src path="org.eclipse.swt/Eclipse SWT Theme/win32" />
+    </javac>
+  </target>
+
+  <target name="compile" description="Compile SWTSwing" depends="compileSWT">
+    <javac target="1.4" source="1.4" destdir="bin/swtswing">
+      <classpath>
+        <path location="bin/swt"/>
+      </classpath>
+      <src path="Eclipse SWT/common" />
+      <src path="Eclipse SWT/swing" />
+      <src path="Eclipse SWT Accessibility/swing" />
+      <src path="Eclipse SWT AWT/swing" />
+      <src path="Eclipse SWT Browser/swing" />
+      <src path="Eclipse SWT Custom Widgets/swing" />
+      <src path="Eclipse SWT Drag and Drop/swing" />
+      <src path="Eclipse SWT PI/swing" />
+      <src path="Eclipse SWT Printing/swing" />
+      <src path="Eclipse SWT Program/swing" />
+    </javac>
+  </target>
+
+  <target name="createJar" description="Create the Jar files" depends="compile">
+    <delete file="SWTSwing.jar"/>
+    <copy todir="bin/swtswing/org/eclipse/swt/graphics/resources">
+      <fileset dir="Eclipse SWT/swing/org/eclipse/swt/graphics/resources" />
+    </copy>
+    <jar duplicate="preserve" destfile="SWTSwing.jar">
+      <fileset dir="bin/swtswing"/>
+      <fileset dir="bin/swt">
+        <exclude name="library/**"/>
+        <exclude name="org/eclipse/swt/ole/**"/>
+        <exclude name="org/eclipse/swt/internal/ole/**"/>
+        <exclude name="org/eclipse/swt/internal/win32/**"/>
+      </fileset>
+    </jar>
+  </target>
+
+</project>

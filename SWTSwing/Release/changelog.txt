@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0002 (xxxxxxxxxxxxxxx):
 
+- Drop down tool item with text and icon are now layed out correctly.
+- Addition of a script to get and build the sources from the CVS repositories.
 - Wrapping is now honored in multi line Text widget.
 - Word wraps in MessageBox after a maximum predefined length.
 - Vertical style for ToolBar is honored.

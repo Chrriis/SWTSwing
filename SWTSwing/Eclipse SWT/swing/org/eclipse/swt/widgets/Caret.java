@@ -101,7 +101,8 @@ void createWidget () {
           // XXX redraw rect is not correct. for now, redraw all.
           // Rectangle r = Caret.this.getBounds();
           // Caret.this.parent.redraw(x, r.y, r.width, r.height, true);
-          Caret.this.parent.redraw ();
+          // redraw causes GC to throw exceptions in some conditions. Let's directly call the Swing component
+          Caret.this.parent.handle.repaint();
         } else {
           timer.stop();
         }
@@ -111,7 +112,8 @@ void createWidget () {
         super.stop();
         blink = true;
         if(Caret.this.parent != null) {
-          Caret.this.parent.redraw ();
+//          Caret.this.parent.redraw ();
+          Caret.this.parent.handle.repaint();
         }
       }
     };

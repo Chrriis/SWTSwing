@@ -277,7 +277,11 @@ class CTableImplementation extends JScrollPane implements CTable {
     if((style & SWT.MULTI) == 0) {
       table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
-    // TODO: continue initialisation with event handling
+    // TODO: Map other events for table header click etc.
+    Utils.installMouseListener(table, handle);
+    Utils.installKeyListener(table, handle);
+    Utils.installFocusListener(table, handle);
+    Utils.installComponentListener(table, handle);
   }
 
   public Container getClientArea() {

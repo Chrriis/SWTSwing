@@ -17,8 +17,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.EventObject;
@@ -401,11 +399,6 @@ class CTextField extends JScrollPane implements CText {
         handle.processEvent(e);
       }
       public void removeUpdate(DocumentEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    passwordField.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
         handle.processEvent(e);
       }
     });

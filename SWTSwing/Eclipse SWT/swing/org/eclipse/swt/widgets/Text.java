@@ -11,10 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
-import java.awt.AWTEvent;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
 import java.util.EventObject;
 
 import javax.swing.JButton;
@@ -1720,43 +1718,54 @@ public void processEvent(EventObject e) {
   display.stopExclusiveSection();
 }
 
-public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
+protected int getTraversalKeyDetail(java.awt.event.KeyEvent ke) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_ENTER:
+    return SWT.TRAVERSE_RETURN;
   }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
+  return super.getTraversalKeyDetail(ke);
+}
+
+protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_TAB:
+  case java.awt.event.KeyEvent.VK_ENTER:
+    return (style & SWT.MULTI) == 0;
+  default:
+    return super.getTraversalKeyDefault(ke);
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
-  if(isDisposed()) {
-    display.stopExclusiveSection();
-    super.processEvent(e);
-    return;
+}
+
+protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_ENTER:
+    return (style & SWT.MULTI) == 0 || ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton() != null;
   }
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED:
-    Event event = new Event();
-    event.detail = SWT.TRAVERSE_RETURN;
-    sendEvent(SWT.Traverse, event);
-    boolean isSending = true;
-    if(event.doit) {
-      JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
-      if(defaultButton != null) {
-        isSending = false;
-        defaultButton.doClick();
+  return super.isTraversalKey(ke);
+}
+
+protected void validateTraversalKey(java.awt.event.KeyEvent ke, boolean isSelected) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_ENTER:
+    if(isSelected) {
+      if(!hooks(SWT.DefaultSelection)) {
+        JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+        if(defaultButton != null) {
+          defaultButton.requestFocus();
+          defaultButton.doClick();
+        }
+      } else {
+        sendEvent(SWT.DefaultSelection);
       }
+      ke.consume();
+    } else if((style & SWT.MULTI) == 0) {
+      ke.consume();
     }
-    if(isSending) {
-      sendEvent(SWT.DefaultSelection);
-    }
-//    return;
+    break;
+  default:
+    super.validateTraversalKey(ke, isSelected);
+    break;
   }
-  super.processEvent(e);
-  display.stopExclusiveSection();
 }
 
 public void processEvent(DocumentEvent e) {

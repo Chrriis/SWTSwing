@@ -29,178 +29,178 @@ import javax.swing.text.JTextComponent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 
-public interface CCombo extends CComposite {
+class CComboImplementation extends JComboBox implements CCombo {
 
-  class CComboBox extends JComboBox implements CCombo {
+  protected Combo handle;
 
-    protected Combo handle;
-
-    public Container getSwingComponent() {
-      return this;
-    }
-
-    public CComboBox(Combo combo, int style) {
-      this.handle = combo;
-      init(style);
-    }
-
-    protected boolean isDefaultButtonHackActive;
-    
-    public boolean isPopupVisible() {
-      boolean isPopupVisible = super.isPopupVisible();
-      if(!isPopupVisible) {
-        return isDefaultButtonHackActive;
-      }
-      return isPopupVisible;
-    }
-
-    protected void init(int style) {
-      setEditable((style & SWT.READ_ONLY) == 0);
-      JTextField textField = (JTextField)getEditor().getEditorComponent();
-      // We put a listener before and after all existing listeners to place and remove the hack
-      // The hack is there because the combo notifies the default button of the rootpane when its popup is not visible 
-      ActionListener[] actionListeners = textField.getActionListeners();
-      for(int i=actionListeners.length-1; i>=0; i--) {
-        textField.removeActionListener(actionListeners[i]);
-      }
-      textField.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          isDefaultButtonHackActive = false;
-        }
-      });
-      for(int i=0; i<actionListeners.length; i++) {
-        textField.addActionListener(actionListeners[i]);
-      }
-      textField.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          isDefaultButtonHackActive = true;
-          handle.processEvent(e);
-        }
-      });
-      ((AbstractDocument)((JTextComponent)getEditor().getEditorComponent()).getDocument()).setDocumentFilter(new DocumentFilter() {
-//        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-//        }
-        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-          if(getEditorText().length() - length + text.length() > getEditorTextLimit()) {
-            return;
-          }
-          super.replace(fb, offset, length, text, attrs);
-        }
-//        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-//        }
-      });
-      addItemListener(new ItemListener() {
-        public void itemStateChanged(ItemEvent e) {
-          handle.processEvent(e);
-        }
-      });
-    }
-
-    public JScrollBar getHorizontalScrollBar() {
-      // TODO: implement
-      return null;
-    }
-
-    public JScrollBar getVerticalScrollBar() {
-      // TODO: implement
-      return null;
-    }
-
-    public Container getClientArea() {
-      return this;
-    }
-
-    public void insertElementAt(Object anObject, int index) {
-      ((DefaultComboBoxModel)getModel()).insertElementAt(anObject, index);
-    }
-
-    public String getEditorText() {
-      return ((JTextComponent)getEditor().getEditorComponent()).getText();
-    }
-
-    public void setEditorText(String text) {
-      ((JTextComponent)getEditor().getEditorComponent()).setText(text);
-    }
-
-    public void copyEditor() {
-      ((JTextComponent)getEditor().getEditorComponent()).copy();
-    }
-
-    public void cutEditor() {
-      ((JTextComponent)getEditor().getEditorComponent()).cut();
-    }
-
-    public void pasteEditor() {
-      ((JTextComponent)getEditor().getEditorComponent()).paste();
-    }
-
-    public void setEditorCaretPosition(int index) {
-      ((JTextComponent)getEditor().getEditorComponent()).setCaretPosition(index);
-    }
-
-    public int getEditorSelectionStart() {
-      return ((JTextComponent)getEditor().getEditorComponent()).getSelectionStart();
-    }
-
-    public void setEditorSelectionStart(int selectionStart) {
-      ((JTextComponent)getEditor().getEditorComponent()).setSelectionStart(selectionStart);
-    }
-
-    public int getEditorSelectionEnd() {
-      return ((JTextComponent)getEditor().getEditorComponent()).getSelectionEnd();
-    }
-
-    public void setEditorSelectionEnd(int selectionEnd) {
-      ((JTextComponent)getEditor().getEditorComponent()).setSelectionEnd(selectionEnd);
-    }
-
-    public void clearEditorSelection() {
-      JTextComponent textComponent = (JTextComponent)getEditor().getEditorComponent();
-      textComponent.setSelectionStart(textComponent.getSelectionEnd());
-    }
-
-    public void setEditorTextLimit(int limit) {
-      textLimit = limit;
-      String text = getEditorText();
-      if(text.length() > limit) {
-        setEditorText(text.substring(0, limit));
-      }
-    }
-
-    protected int textLimit = Combo.LIMIT;
-
-    public int getEditorTextLimit() {
-      return textLimit;
-    }
-
-    public Dimension getEditorSize() {
-      return ((JTextComponent)getEditor().getEditorComponent()).getSize();
-    }
-
-    public void reshape(int x, int y, int w, int h) {
-      super.reshape(x, y, w, getPreferredSize().height);
-    }
-
-    public void setBackgroundImage(Image backgroundImage) {
-      // TODO: implement
-    }
-
-    public void setBackgroundInheritance(int backgroundInheritanceType) {
-      switch(backgroundInheritanceType) {
-      case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
-      case PREFERRED_BACKGROUND_INHERITANCE:
-      case BACKGROUND_INHERITANCE: setOpaque(false); break;
-      }
-    }
-
+  public Container getSwingComponent() {
+    return this;
   }
+
+  public CComboImplementation(Combo combo, int style) {
+    this.handle = combo;
+    init(style);
+  }
+
+  protected boolean isDefaultButtonHackActive;
+  
+  public boolean isPopupVisible() {
+    boolean isPopupVisible = super.isPopupVisible();
+    if(!isPopupVisible) {
+      return isDefaultButtonHackActive;
+    }
+    return isPopupVisible;
+  }
+
+  protected void init(int style) {
+    setEditable((style & SWT.READ_ONLY) == 0);
+    JTextField textField = (JTextField)getEditor().getEditorComponent();
+    // We put a listener before and after all existing listeners to place and remove the hack
+    // The hack is there because the combo notifies the default button of the rootpane when its popup is not visible 
+    ActionListener[] actionListeners = textField.getActionListeners();
+    for(int i=actionListeners.length-1; i>=0; i--) {
+      textField.removeActionListener(actionListeners[i]);
+    }
+    textField.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        isDefaultButtonHackActive = false;
+      }
+    });
+    for(int i=0; i<actionListeners.length; i++) {
+      textField.addActionListener(actionListeners[i]);
+    }
+    textField.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        isDefaultButtonHackActive = true;
+        handle.processEvent(e);
+      }
+    });
+    ((AbstractDocument)((JTextComponent)getEditor().getEditorComponent()).getDocument()).setDocumentFilter(new DocumentFilter() {
+//      public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+//      }
+      public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+        if(getEditorText().length() - length + text.length() > getEditorTextLimit()) {
+          return;
+        }
+        super.replace(fb, offset, length, text, attrs);
+      }
+//      public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+//      }
+    });
+    addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        handle.processEvent(e);
+      }
+    });
+  }
+
+  public JScrollBar getHorizontalScrollBar() {
+    // TODO: implement
+    return null;
+  }
+
+  public JScrollBar getVerticalScrollBar() {
+    // TODO: implement
+    return null;
+  }
+
+  public Container getClientArea() {
+    return this;
+  }
+
+  public void insertElementAt(Object anObject, int index) {
+    ((DefaultComboBoxModel)getModel()).insertElementAt(anObject, index);
+  }
+
+  public String getEditorText() {
+    return ((JTextComponent)getEditor().getEditorComponent()).getText();
+  }
+
+  public void setEditorText(String text) {
+    ((JTextComponent)getEditor().getEditorComponent()).setText(text);
+  }
+
+  public void copyEditor() {
+    ((JTextComponent)getEditor().getEditorComponent()).copy();
+  }
+
+  public void cutEditor() {
+    ((JTextComponent)getEditor().getEditorComponent()).cut();
+  }
+
+  public void pasteEditor() {
+    ((JTextComponent)getEditor().getEditorComponent()).paste();
+  }
+
+  public void setEditorCaretPosition(int index) {
+    ((JTextComponent)getEditor().getEditorComponent()).setCaretPosition(index);
+  }
+
+  public int getEditorSelectionStart() {
+    return ((JTextComponent)getEditor().getEditorComponent()).getSelectionStart();
+  }
+
+  public void setEditorSelectionStart(int selectionStart) {
+    ((JTextComponent)getEditor().getEditorComponent()).setSelectionStart(selectionStart);
+  }
+
+  public int getEditorSelectionEnd() {
+    return ((JTextComponent)getEditor().getEditorComponent()).getSelectionEnd();
+  }
+
+  public void setEditorSelectionEnd(int selectionEnd) {
+    ((JTextComponent)getEditor().getEditorComponent()).setSelectionEnd(selectionEnd);
+  }
+
+  public void clearEditorSelection() {
+    JTextComponent textComponent = (JTextComponent)getEditor().getEditorComponent();
+    textComponent.setSelectionStart(textComponent.getSelectionEnd());
+  }
+
+  public void setEditorTextLimit(int limit) {
+    textLimit = limit;
+    String text = getEditorText();
+    if(text.length() > limit) {
+      setEditorText(text.substring(0, limit));
+    }
+  }
+
+  protected int textLimit = Combo.LIMIT;
+
+  public int getEditorTextLimit() {
+    return textLimit;
+  }
+
+  public Dimension getEditorSize() {
+    return ((JTextComponent)getEditor().getEditorComponent()).getSize();
+  }
+
+  public void reshape(int x, int y, int w, int h) {
+    super.reshape(x, y, w, getPreferredSize().height);
+  }
+
+  public void setBackgroundImage(Image backgroundImage) {
+    // TODO: implement
+  }
+
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+    switch(backgroundInheritanceType) {
+    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+    case PREFERRED_BACKGROUND_INHERITANCE:
+    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    }
+  }
+
+}
+
+public interface CCombo extends CComposite {
 
   public static class Instanciator {
     private Instanciator() {}
 
     public static CCombo createInstance(Combo combo, int style) {
 //      if ((style & SWT.SIMPLE) != 0) {
-      return new CComboBox(combo, style);
+      return new CComboImplementation(combo, style);
     }
 
   }

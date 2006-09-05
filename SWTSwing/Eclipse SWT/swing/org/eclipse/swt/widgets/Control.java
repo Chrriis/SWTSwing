@@ -22,6 +22,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
+import java.util.Collections;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
@@ -540,16 +541,19 @@ void createWidget () {
       handle.requestFocus();
     }
   }
-    // TODO: should have a fixInitSize like in old implementation
+  handle.setFocusTraversalKeysEnabled(false);
+  handle.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+  handle.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+    // TODO: should have a fixInitSize like in old implementation <- Note it seems to be fixed now, but have to check
 //    if(handle.getSize().equals(new java.awt.Dimension(0, 0))) {
 //      handle.setSize(handle.getPreferredSize());
-      if(handle instanceof JComponent) {
-        JComponent component = (JComponent)handle;
-//        component.setOpaque(true);
-//        component.revalidate();
-//      } else {
-//        handle.validate();
-      }
+//      if(handle instanceof JComponent) {
+//        JComponent component = (JComponent)handle;
+////        component.setOpaque(true);
+////        component.revalidate();
+////      } else {
+////        handle.validate();
+//      }
 //    }
     register ();
 //	subclass ();
@@ -705,7 +709,14 @@ public boolean forceFocus () {
 	if (!isEnabled () || !isVisible () /*|| !isActive ()*/) return false;
 	if (isFocusControl ()) return true;
 //	shell.setSavedFocus (null);
-  return handle.requestFocusInWindow();
+  // return handle.requestFocusInWindow();
+  if (handle instanceof JComponent) {
+    ((javax.swing.JComponent) handle).grabFocus();
+  } else {
+    handle.requestFocus();
+  }
+  return handle.isFocusOwner();
+  
 //  return handle.hasFocus();
 //	/*
 //	* This code is intentionally commented.
@@ -4044,6 +4055,8 @@ private java.awt.event.MouseEvent mouseHoverEvent;
 public void processEvent(EventObject e) {
 }
 
+boolean isTraversing;
+
 /**
  * The entry point for callbacks 
  * (Warning: This method is platform dependent)
@@ -4078,8 +4091,13 @@ public void processEvent(AWTEvent e) {
   }
   case java.awt.event.MouseEvent.MOUSE_WHEEL: if(!hooks(SWT.MouseWheel)) return; break;
   case java.awt.event.MouseEvent.MOUSE_ENTERED: if(!hooks(SWT.MouseEnter)) return; break;
-  case java.awt.event.MouseEvent.MOUSE_EXITED: if(!hooks(SWT.MouseExit)) return; break;
-  case java.awt.event.KeyEvent.KEY_PRESSED: if(!hooks(SWT.KeyDown)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_EXITED: if(!hooks(SWT.MouseExit)) {mouseHoverThread = null; return;} break;
+  case java.awt.event.KeyEvent.KEY_PRESSED: {
+    if(!hooks(SWT.KeyDown) && !hooks(SWT.Traverse) && !isTraversalKey((java.awt.event.KeyEvent)e)) {
+      return;
+    }
+    break;
+  }
   case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyUp)) return; break;
   case java.awt.event.KeyEvent.KEY_TYPED: if(!hooks(SWT.KeyDown)) return; break;
   case ComponentEvent.COMPONENT_RESIZED: if(!hooks(SWT.Resize)) return; break;
@@ -4181,7 +4199,7 @@ public void processEvent(AWTEvent e) {
     }
     break;
   }
-  case java.awt.event.MouseEvent.MOUSE_RELEASED:
+  case java.awt.event.MouseEvent.MOUSE_RELEASED: {
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
     Event event = createMouseEvent(me, true);
     sendEvent(SWT.MouseUp, event);
@@ -4194,6 +4212,7 @@ public void processEvent(AWTEvent e) {
       showPopup(me);
     }
     break;
+  }
   case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
   case java.awt.event.MouseEvent.MOUSE_WHEEL: sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
   case java.awt.event.MouseEvent.MOUSE_ENTERED: sendEvent(SWT.MouseEnter, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
@@ -4201,15 +4220,32 @@ public void processEvent(AWTEvent e) {
     mouseHoverThread = null;
     sendEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
     break;
-  case java.awt.event.KeyEvent.KEY_PRESSED:
-    sendEvent(SWT.KeyDown, createKeyEvent((java.awt.event.KeyEvent)e));
-    lastPressed = ((java.awt.event.KeyEvent) e).getWhen ();
+  case java.awt.event.KeyEvent.KEY_PRESSED: {
+    java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+    if(isTraversalKey(ke)) {
+      isTraversing = processTraversalKey(ke);
+    }
+    if(!isTraversing) {
+      if(hooks(SWT.KeyDown)) {
+        sendEvent(SWT.KeyDown, createKeyEvent(ke));
+      }
+      lastPressed = ((java.awt.event.KeyEvent) e).getWhen ();
+    }
     break;
-  case java.awt.event.KeyEvent.KEY_RELEASED: sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e)); break;
+  }
+  case java.awt.event.KeyEvent.KEY_RELEASED: {
+    if(!isTraversing) {
+      sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e));
+    }
+    break;
+  }
   case java.awt.event.KeyEvent.KEY_TYPED:
-    if (((java.awt.event.KeyEvent) e).getWhen () > lastPressed) {
-      sendEvent (SWT.KeyDown, createKeyEvent ((java.awt.event.KeyEvent) e));
-      sendEvent (SWT.KeyUp, createKeyEvent ((java.awt.event.KeyEvent) e));
+    if(!isTraversing) {
+      if (((java.awt.event.KeyEvent) e).getWhen () > lastPressed) {
+        Event event = createKeyEvent ((java.awt.event.KeyEvent) e);
+        sendEvent (SWT.KeyDown, event);
+        sendEvent (SWT.KeyUp, event);
+      }
     }
     break;
   case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
@@ -4234,6 +4270,65 @@ public void processEvent(AWTEvent e) {
   }
   }
   display.stopExclusiveSection();
+}
+
+protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_TAB:
+    return true;
+  }
+  return false;
+}
+
+private boolean processTraversalKey(java.awt.event.KeyEvent ke) {
+  Event event = createKeyEvent(ke);
+  event.detail = getTraversalKeyDetail(ke);
+  if(event.detail < 0) {
+    throw new IllegalArgumentException("The traversal key does not define its action type!");
+  }
+  event.doit = getTraversalKeyDefault(ke);
+  if(hooks(SWT.Traverse)) {
+    sendEvent(SWT.Traverse, event);
+  }
+  validateTraversalKey(ke, event.doit);
+  return event.doit;
+}
+
+protected int getTraversalKeyDetail(java.awt.event.KeyEvent ke) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_TAB:
+    if ((ke.getModifiersEx() & java.awt.event.KeyEvent.SHIFT_DOWN_MASK) != 0) {
+      return SWT.TRAVERSE_TAB_PREVIOUS;
+    }
+    return SWT.TRAVERSE_TAB_NEXT;
+  default:
+    return -1;
+  }
+}
+
+protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_TAB:
+    return true;
+  default:
+    return false;
+  }
+}
+
+protected void validateTraversalKey(java.awt.event.KeyEvent ke, boolean isSelected) {
+  if(!isSelected) {
+    return;
+  }
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_TAB:
+    ke.consume();
+    if ((ke.getModifiersEx() & java.awt.event.KeyEvent.SHIFT_DOWN_MASK) != 0) {
+      traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+    } else {
+      traverse(SWT.TRAVERSE_TAB_NEXT);
+    }
+    break;
+  }
 }
 
 private void showPopup(java.awt.event.MouseEvent e) {

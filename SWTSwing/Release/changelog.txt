@@ -5,6 +5,12 @@ Licence terms: EPL 1.0 (see licence.html)
 
 ---------------------------------- Change log ----------------------------------
 
+* Version 3.2.0003 (xxxxxxxxxxxxxxxxx):
+
+- Basic Table event handling is added.
+- Traversal keys general implementation is in place.
+
+
 * Version 3.2.0002 (September 4, 2006):
 
 - Code compiles without errors. Not implemented areas are marked as such.

@@ -861,6 +861,8 @@ public void open () {
 //	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
   if (!traverseGroup (true)) setFocus ();
 	setVisible (true);
+  // This is to ensure that splashscreens that do not dispatch the events from the queue have some display.
+  handle.paint(handle.getGraphics());
 	if (isDisposed ()) return;
 //	/*
 //	* Bug in Windows XP.  Despite the fact that an icon has been

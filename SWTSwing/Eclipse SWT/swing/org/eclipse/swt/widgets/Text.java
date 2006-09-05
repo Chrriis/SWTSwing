@@ -1718,6 +1718,14 @@ public void processEvent(EventObject e) {
   display.stopExclusiveSection();
 }
 
+protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
+  switch(ke.getKeyCode()) {
+  case java.awt.event.KeyEvent.VK_ENTER:
+    return (style & SWT.MULTI) == 0 || ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton() != null;
+  }
+  return super.isTraversalKey(ke);
+}
+
 protected int getTraversalKeyDetail(java.awt.event.KeyEvent ke) {
   switch(ke.getKeyCode()) {
   case java.awt.event.KeyEvent.VK_ENTER:
@@ -1736,23 +1744,17 @@ protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
   }
 }
 
-protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
+protected void validateTraversalKey(java.awt.event.KeyEvent ke, Event event) {
   switch(ke.getKeyCode()) {
   case java.awt.event.KeyEvent.VK_ENTER:
-    return (style & SWT.MULTI) == 0 || ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton() != null;
-  }
-  return super.isTraversalKey(ke);
-}
-
-protected void validateTraversalKey(java.awt.event.KeyEvent ke, boolean isSelected) {
-  switch(ke.getKeyCode()) {
-  case java.awt.event.KeyEvent.VK_ENTER:
-    if(isSelected) {
+    if(event.doit) {
       if(!hooks(SWT.DefaultSelection)) {
-        JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
-        if(defaultButton != null) {
-          defaultButton.requestFocus();
-          defaultButton.doClick();
+        if(event.detail == SWT.TRAVERSE_RETURN) {
+          JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+          if(defaultButton != null) {
+            defaultButton.requestFocus();
+            defaultButton.doClick();
+          }
         }
       } else {
         sendEvent(SWT.DefaultSelection);
@@ -1763,7 +1765,7 @@ protected void validateTraversalKey(java.awt.event.KeyEvent ke, boolean isSelect
     }
     break;
   default:
-    super.validateTraversalKey(ke, isSelected);
+    super.validateTraversalKey(ke, event);
     break;
   }
 }

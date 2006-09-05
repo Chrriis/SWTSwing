@@ -4280,20 +4280,6 @@ protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
   return false;
 }
 
-private boolean processTraversalKey(java.awt.event.KeyEvent ke) {
-  Event event = createKeyEvent(ke);
-  event.detail = getTraversalKeyDetail(ke);
-  if(event.detail < 0) {
-    throw new IllegalArgumentException("The traversal key does not define its action type!");
-  }
-  event.doit = getTraversalKeyDefault(ke);
-  if(hooks(SWT.Traverse)) {
-    sendEvent(SWT.Traverse, event);
-  }
-  validateTraversalKey(ke, event.doit);
-  return event.doit;
-}
-
 protected int getTraversalKeyDetail(java.awt.event.KeyEvent ke) {
   switch(ke.getKeyCode()) {
   case java.awt.event.KeyEvent.VK_TAB:
@@ -4315,8 +4301,22 @@ protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
   }
 }
 
-protected void validateTraversalKey(java.awt.event.KeyEvent ke, boolean isSelected) {
-  if(!isSelected) {
+private boolean processTraversalKey(java.awt.event.KeyEvent ke) {
+  Event event = createKeyEvent(ke);
+  event.detail = getTraversalKeyDetail(ke);
+  if(event.detail < 0) {
+    throw new IllegalArgumentException("The traversal key does not define its action type!");
+  }
+  event.doit = getTraversalKeyDefault(ke);
+  if(hooks(SWT.Traverse)) {
+    sendEvent(SWT.Traverse, event);
+  }
+  validateTraversalKey(ke, event);
+  return event.doit;
+}
+
+protected void validateTraversalKey(java.awt.event.KeyEvent ke, Event event) {
+  if(!event.doit) {
     return;
   }
   switch(ke.getKeyCode()) {

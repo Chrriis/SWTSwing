@@ -259,7 +259,7 @@ public Table getParent () {
  */
 public boolean getMoveable () {
 	checkWidget ();
-  return false;
+  Utils.notImplemented(); return false;
   // TODO: check how to change this per column
 //  return ((javax.swing.table.TableColumn)handle).getResizable();
 }
@@ -296,8 +296,7 @@ public boolean getResizable () {
  */
 public String getToolTipText () {
   checkWidget();
-  Utils.notImplemented(); return null;
-//  return toolTipText;
+  return handle.getToolTipText();
 }
 
 /**
@@ -597,13 +596,7 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
   checkWidget();
-  Utils.notImplemented();
-//  toolTipText = string;
-//  int hwndHeaderToolTip = parent.headerToolTipHandle;
-//  if (hwndHeaderToolTip == 0) {
-//    parent.createHeaderToolTips ();
-//    parent.updateHeaderToolTips ();
-//  }
+  handle.setToolTipText(string);
 }
 
 /**

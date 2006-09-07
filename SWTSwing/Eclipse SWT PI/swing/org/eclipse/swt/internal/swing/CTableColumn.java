@@ -53,6 +53,16 @@ class CTableColumnImplementation extends TableColumn implements CTableColumn {
     return alignment;
   }
 
+  protected String toolTipText;
+
+  public void setToolTipText(String toolTipText) {
+    this.toolTipText = toolTipText;
+  }
+  
+  public String getToolTipText() {
+    return toolTipText;
+  }
+
 }
 
 public interface CTableColumn {
@@ -73,5 +83,9 @@ public interface CTableColumn {
   public void setAlignment(int alignment);
 
   public int getAlignment();
+
+  public void setToolTipText(String toolTipText);
+  
+  public String getToolTipText();
 
 }

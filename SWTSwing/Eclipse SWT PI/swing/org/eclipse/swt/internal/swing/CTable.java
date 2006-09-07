@@ -16,6 +16,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListSelectionModel;
@@ -200,6 +201,17 @@ class CTableImplementation extends JScrollPane implements CTable {
       };
       public TableCellRenderer getCellRenderer(int row, int column) {
         return renderer;
+      }
+      protected JTableHeader createDefaultTableHeader() {
+        return new JTableHeader(columnModel) {
+          public String getToolTipText(MouseEvent e) {
+            int index = columnModel.getColumnIndexAtX(e.getX());
+            if(index < 0) {
+              return null;
+            }
+            return ((CTableColumn)columnModel.getColumn(index)).getToolTipText();
+          }
+        };
       }
     };
     this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

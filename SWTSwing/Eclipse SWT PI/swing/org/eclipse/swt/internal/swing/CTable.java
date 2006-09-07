@@ -229,6 +229,8 @@ class CTableImplementation extends JScrollPane implements CTable {
     JViewport viewport = getViewport();
     viewport.setView(this.table);
     viewport.setBackground(this.table.getBackground());
+    setColumnHeader(createViewport());
+    setHeaderVisible(false);
     init(style);
   }
 
@@ -381,6 +383,11 @@ class CTableImplementation extends JScrollPane implements CTable {
     table.scrollRectToVisible(bounds);
   }
 
+  public void setHeaderVisible(boolean isHeaderVisible) {
+    getColumnHeader().setVisible(isHeaderVisible);
+    table.getTableHeader().setVisible(isHeaderVisible);
+  }
+
 }
 
 public interface CTable extends CComposite {
@@ -417,5 +424,7 @@ public interface CTable extends CComposite {
   public int getPreferredColumnWidth(int columnIndex);
 
   public void ensureRowVisible(int index);
+
+  public void setHeaderVisible(boolean isColumnHeaderVisible);
 
 }

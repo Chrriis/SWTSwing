@@ -1021,7 +1021,6 @@ public boolean getLinesVisible () {
  */
 public TableItem [] getSelection () {
 	checkWidget ();
-  CTable table = (CTable)handle;
   DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
   int minSelectionIndex = selectionModel.getMinSelectionIndex();
   int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
@@ -1916,7 +1915,7 @@ public void setFont (Font font) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-  ((CTable)handle).getTableHeader().setVisible(show);
+  ((CTable)handle).setHeaderVisible(show);
 }
 
 /**

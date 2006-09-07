@@ -40,8 +40,6 @@ import org.eclipse.swt.*;
 
 public final class FontData {
 	
-  java.awt.Font handle;
-  
 	/**
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)

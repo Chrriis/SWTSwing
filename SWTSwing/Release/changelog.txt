@@ -7,7 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0003 (xxxxxxxxxxxxxxxxx):
 
-- More methods are now implemented for the Table widget.
+- Font chooser is implemented.
+- More methods are implemented for the Table and Tree widget.
 - Table header visibility and height are now working as expected.
 - Shells are forced to paint when they are shown to fix splashscreen issues.
 - Basic Table event handling is added.

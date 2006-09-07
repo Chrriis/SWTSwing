@@ -205,6 +205,9 @@ class CTableImplementation extends JScrollPane implements CTable {
     final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();
     tableHeader.setDefaultRenderer(new TableCellRenderer() {
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        if(value == null || "".equals(value)) {
+          value = " ";
+        }
         Component c = headerRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if(c instanceof JLabel) {
           TableColumn tableColumn = CTableImplementation.this.table.getColumnModel().getColumn(column);

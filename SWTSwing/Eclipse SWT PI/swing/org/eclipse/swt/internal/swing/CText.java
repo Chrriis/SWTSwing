@@ -7,6 +7,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
@@ -320,6 +321,20 @@ class CTextMulti extends JScrollPane implements CText {
     }
   }
 
+  public void setForeground(Color foreground) {
+    super.setForeground(foreground);
+    if(textArea != null) {
+      textArea.setForeground(foreground);
+    }
+  }
+
+  public void setBackground(Color background) {
+    super.setBackground(background);
+    if(textArea != null) {
+      textArea.setBackground(background);
+    }
+  }
+  
 }
 
 class CTextField extends JScrollPane implements CText {
@@ -584,6 +599,20 @@ class CTextField extends JScrollPane implements CText {
     }
   }
 
+  public void setForeground(Color foreground) {
+    super.setForeground(foreground);
+    if(passwordField != null) {
+      passwordField.setForeground(foreground);
+    }
+  }
+
+  public void setBackground(Color background) {
+    super.setBackground(background);
+    if(passwordField != null) {
+      passwordField.setBackground(background);
+    }
+  }
+ 
 }
 
 /**

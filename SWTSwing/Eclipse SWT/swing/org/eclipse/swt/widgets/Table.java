@@ -22,7 +22,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
@@ -565,20 +564,11 @@ public void deselect (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
-  Utils.notImplemented();
-//	LVITEM lvItem = new LVITEM ();
-//	lvItem.stateMask = OS.LVIS_SELECTED;
-//	for (int i=0; i<indices.length; i++) {
-//		/*
-//		* An index of -1 will apply the change to all
-//		* items.  Ensure that indices are greater than -1.
-//		*/
-//		if (indices [i] >= 0) {
-//			ignoreSelect = true;
-//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
-//			ignoreSelect = false;
-//		}
-//	}
+	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  for(int i=0; i<indices.length; i++) {
+    int index = indices[i];
+    selectionModel.removeSelectionInterval(index, index);
+  }
 }
 
 /**
@@ -595,17 +585,8 @@ public void deselect (int [] indices) {
  */
 public void deselect (int index) {
 	checkWidget ();
-	/*
-	* An index of -1 will apply the change to all
-	* items.  Ensure that index is greater than -1.
-	*/
 	if (index < 0) return;
-  Utils.notImplemented();
-//	LVITEM lvItem = new LVITEM ();
-//	lvItem.stateMask = OS.LVIS_SELECTED;
-//	ignoreSelect = true;
-//	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
-//	ignoreSelect = false;
+  ((CTable)handle).getSelectionModel().removeSelectionInterval(index, index);
 }
 
 /**
@@ -625,24 +606,7 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget ();
-  Utils.notImplemented();
-//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-//	if (start == 0 && end == count - 1) {
-//		deselectAll ();
-//	} else {
-//		LVITEM lvItem = new LVITEM ();
-//		lvItem.stateMask = OS.LVIS_SELECTED;
-//		/*
-//		* An index of -1 will apply the change to all
-//		* items.  Ensure that indices are greater than -1.
-//		*/
-//		start = Math.max (0, start);
-//		for (int i=start; i<=end; i++) {
-//			ignoreSelect = true;
-//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
-//			ignoreSelect = false;
-//		}
-//	}
+  ((CTable)handle).getSelectionModel().removeSelectionInterval(start, end);
 }
 
 /**
@@ -655,8 +619,7 @@ public void deselect (int start, int end) {
  */
 public void deselectAll () {
 	checkWidget ();
-  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  selectionModel.clearSelection();
+  ((CTable)handle).getSelectionModel().clearSelection();
 }
 
 void destroyItem (TableColumn column) {
@@ -918,12 +881,9 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-  Utils.notImplemented(); return null;
-//	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-//	pinfo.x = point.x;  pinfo.y = point.y;
-//	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-//	if (pinfo.iItem != -1) return _getItem (pinfo.iItem);
-//	return null;
+  int row = ((CTable)handle).rowAtPoint(new java.awt.Point(point.x, point.y));
+  if(row < -1) return null;
+  return (TableItem)itemList.get(row);
 }
 
 /**
@@ -954,10 +914,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-  Utils.notImplemented(); return 15;
-//	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
-//	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-//	return (oneItem >> 16) - (empty >> 16);
+  return ((CTable)handle).getRowHeight();
 }
 
 /**
@@ -1174,14 +1131,8 @@ public int getSortDirection () {
  */
 public int getTopIndex () {
 	checkWidget ();
-  Utils.notImplemented(); return 0;
-//	/*
-//	* Bug in Windows.  Under rare circumstances, LVM_GETTOPINDEX
-//	* can return a negative number.  When this happens, the table
-//	* is displaying blank lines at the top of the controls.  The
-//	* fix is to check for a negative number and return zero instead.
-//	*/
-//	return Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
+  // Should we return -1 or 0 when there are no items?
+  return Math.max(0, ((CTable)handle).getTopIndex());
 }
 
 //int imageIndex (Image image) {
@@ -1292,13 +1243,7 @@ public int indexOf (TableItem item) {
  */
 public boolean isSelected (int index) {
 	checkWidget ();
-  Utils.notImplemented(); return false;
-//	LVITEM lvItem = new LVITEM ();
-//	lvItem.mask = OS.LVIF_STATE;
-//	lvItem.stateMask = OS.LVIS_SELECTED;
-//	lvItem.iItem = index;
-//	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-//	return (result != 0) && ((lvItem.state & OS.LVIS_SELECTED) != 0);
+  return ((CTable)handle).getSelectionModel().isSelectedIndex(index);
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
@@ -1525,21 +1470,11 @@ public void select (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-  Utils.notImplemented();
-//	LVITEM lvItem = new LVITEM ();
-//	lvItem.state = OS.LVIS_SELECTED;
-//	lvItem.stateMask = OS.LVIS_SELECTED;
-//	for (int i=length-1; i>=0; --i) {
-//		/*
-//		* An index of -1 will apply the change to all
-//	 	* items.  Ensure that indices are greater than -1.
-//	 	*/
-//		if (indices [i] >= 0) {
-//			ignoreSelect = true;
-//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
-//			ignoreSelect = false;
-//		}
-//	}
+	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  for(int i=0; i<indices.length; i++) {
+    int index = indices[i];
+    selectionModel.addSelectionInterval(index, index);
+  }
 }
 
 /**
@@ -1556,8 +1491,7 @@ public void select (int [] indices) {
  */
 public void select (int index) {
 	checkWidget ();
-  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  selectionModel.addSelectionInterval(index, index);
+  ((CTable)handle).getSelectionModel().addSelectionInterval(index, index);
 }
 
 /**
@@ -1586,27 +1520,7 @@ public void select (int index) {
 public void select (int start, int end) {
 	checkWidget ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-  Utils.notImplemented();
-//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-//	if (count == 0 || start >= count) return;
-//	start = Math.max (0, start);
-//	end = Math.min (end, count - 1);
-//	if (start == 0 && end == count - 1) {
-//		selectAll ();
-//	} else {
-//		/*
-//		* An index of -1 will apply the change to all
-//		* items.  Indices must be greater than -1.
-//		*/
-//		LVITEM lvItem = new LVITEM ();
-//		lvItem.state = OS.LVIS_SELECTED;
-//		lvItem.stateMask = OS.LVIS_SELECTED;
-//		for (int i=start; i<=end; i++) {
-//			ignoreSelect = true;
-//			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
-//			ignoreSelect = false;
-//		}
-//	}
+  ((CTable)handle).getSelectionModel().addSelectionInterval(start, end);
 }
 
 /**
@@ -1623,14 +1537,9 @@ public void select (int start, int end) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-  Utils.notImplemented();
-//	LVITEM lvItem = new LVITEM ();
-//	lvItem.mask = OS.LVIF_STATE;
-//	lvItem.state = OS.LVIS_SELECTED;
-//	lvItem.stateMask = OS.LVIS_SELECTED;
-//	ignoreSelect = true;
-//	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, lvItem);
-//	ignoreSelect = false;
+  if(!itemList.isEmpty()) {
+    ((CTable)handle).getSelectionModel().addSelectionInterval(0, itemList.size() - 1);
+  }
 }
 
 //LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lParam) {
@@ -1864,39 +1773,6 @@ void setFocusIndex (int index) {
   selectionModel.setLeadSelectionIndex(index);
 }
 
-public void setFont (Font font) {
-	checkWidget ();
-	/*
-	* Bug in Windows.  Making any change to an item that
-	* changes the item height of a table while the table
-	* is scrolled can cause the lines to draw incorrectly.
-	* This happens even when the lines are not currently
-	* visible and are shown afterwards.  The fix is to
-	* save the top index, scroll to the top of the table
-	* and then restore the original top index.
-	*/
-	int topIndex = getTopIndex ();
-	setRedraw (false);
-	setTopIndex (0);
-	super.setFont (font);
-	setTopIndex (topIndex);
-  Utils.notImplemented();
-//	setScrollWidth (null, true);
-//	setRedraw (true);
-//	/*
-//	* Bug in Windows.  Setting the font will cause the table
-//	* to be redrawn but not the column headers.  The fix is
-//	* to force a redraw of the column headers.
-//	*/
-//	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
-//	OS.InvalidateRect (hwndHeader, null, true);
-//	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-//	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
-//	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-//	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
-//	setItemHeight ();
-}
-
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -1977,10 +1853,7 @@ public void setItemCount (int count) {
 /*public*/ void setItemHeight (int itemHeight) {
   checkWidget ();
   if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
-//  this.itemHeight = itemHeight;
-//  setItemHeight (true);
-//  setScrollWidth (null, true);
+  ((CTable)handle).setRowHeight(itemHeight);
 }
 
 /**
@@ -2320,14 +2193,8 @@ public void setSelection (int start, int end) {
 	checkWidget ();
 	deselectAll ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-  Utils.notImplemented();
-//	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-//	if (count == 0 || start >= count) return;
-//	start = Math.max (0, start);
-//	end = Math.min (end, count - 1);
-//	select (start, end);
-//	setFocusIndex (start);
-//	showSelection ();
+  ((CTable)handle).getSelectionModel().setSelectionInterval(start, end);
+	showSelection ();
 }
 
 /**
@@ -2396,56 +2263,8 @@ public void setSortDirection (int direction) {
  * </ul>
  */
 public void setTopIndex (int index) {
-	checkWidget (); 
-  Utils.notImplemented();
-//	int topIndex = OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
-//	if (index == topIndex) return;
-//	
-//	/*
-//	* Bug in Windows.  For some reason, LVM_SCROLL refuses to
-//	* scroll a table vertically when the width and height of
-//	* the table is smaller than a certain size.  The values
-//	* that seem to cause the problem are width=68 and height=6
-//	* but there is no guarantee that these values cause the
-//	* failure on different machines or on different versions
-//	* of Windows.  It may depend on the font and any number
-//	* of other factors.  For example, setting the font to
-//	* anything but the default sometimes fixes the problem.
-//	* The fix is to use LVM_GETCOUNTPERPAGE to detect the
-//	* case when the number of visible items is zero and
-//	* use LVM_ENSUREVISIBLE to scroll the table to make the
-//	* index visible.
-//	*/
-//
-//	/*
-//	* Bug in Windows.  When the table header is visible and
-//	* there is not enough space to show a single table item,
-//	* LVM_GETCOUNTPERPAGE can return a negative number instead
-//	* of zero.  The fix is to test for negative or zero.
-//	*/
-//	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
-//		/*
-//		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
-//		* scroll one item more or one item less when there is not
-//		* enough space to show a single table item.  The fix is
-//		* to detect the case and call LVM_ENSUREVISIBLE again with
-//		* the same arguments.  It seems that once LVM_ENSUREVISIBLE
-//		* has scrolled into the general area, it is able to scroll
-//		* to the exact item.
-//		*/
-//		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
-//		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
-//			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
-//		}
-//		return;
-//	}
-//
-//	/* Use LVM_SCROLL to scroll the table */
-//	RECT rect = new RECT ();
-//	rect.left = OS.LVIR_BOUNDS;
-//	OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, rect);
-//	int dy = (index - topIndex) * (rect.bottom - rect.top);
-//	OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
+	checkWidget ();
+  ((CTable)handle).ensureRowVisible(index);
 }
 
 /**
@@ -2473,43 +2292,7 @@ public void showColumn (TableColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (index == -1) return;
-  Utils.notImplemented();
-//	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-//	if (count <= 1 || !(0 <= index && index < count)) return;
-//	/*
-//	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with -1 for the
-//	* row number gives the bounds of the item that would be above the
-//	* first row in the table.  This is undocumented and does not work
-//	* for the first column. In this case, to get the bounds of the
-//	* first column, get the bounds of the second column and subtract
-//	* the width of the first. The left edge of the second column is
-//	* also used as the right edge of the first.
-//	*/
-//	RECT rect = new RECT ();
-//	rect.left = OS.LVIR_BOUNDS;
-//	if (index == 0) {
-//		rect.top = 1;
-//		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
-//		rect.right = rect.left;
-//		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-//		rect.left = rect.right - width;
-//	} else {
-//		rect.top = index;
-//		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
-//	}
-//	RECT area = new RECT ();
-//	OS.GetClientRect (handle, area);
-//	if (rect.left < area.left) {
-//		int dx = rect.left - area.left;
-//		OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
-//	} else {
-//		int width = Math.min (area.right - area.left, rect.right - rect.left);
-//		if (rect.left + width > area.right) {
-//			int dx = rect.left + width - area.right;
-//			OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
-//		}
-//	}
+  ((CTable)handle).ensureColumnVisible(index);
 }
 
 //void showItem (int index) {
@@ -2563,9 +2346,10 @@ public void showItem (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	Utils.notImplemented();
-//	int index = indexOf (item);
-//	if (index != -1) showItem (index);
+	int index = indexOf (item);
+	if (index != -1) {
+    ((CTable)handle).ensureRowVisible(index);
+  }
 }
 
 /**

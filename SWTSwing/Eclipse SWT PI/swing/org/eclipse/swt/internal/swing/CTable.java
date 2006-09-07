@@ -14,6 +14,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -377,15 +379,67 @@ class CTableImplementation extends JScrollPane implements CTable {
     if(index < 0 || index >= table.getRowCount()) {
       return;
     }
-    Rectangle bounds = getCellRect(0, 0, true);
+    Rectangle bounds = getCellRect(index, 0, true);
     bounds.width = table.getWidth();
-    bounds.height = table.getHeight();
+    bounds.height = table.getRowHeight(index);
     table.scrollRectToVisible(bounds);
   }
 
+  public void ensureColumnVisible(int index) {
+    if(index < 0 || index >= table.getColumnCount()) {
+      return;
+    }
+    Rectangle bounds = new Rectangle();
+    TableColumnModel columnModel = getColumnModel();
+    for(int i=0; i<index; i++) {
+      bounds.x += columnModel.getColumn(i).getPreferredWidth();
+    }
+    bounds.width = columnModel.getColumn(index).getPreferredWidth();
+    bounds.height = table.getHeight();
+    table.scrollRectToVisible(bounds);
+  }
+  
   public void setHeaderVisible(boolean isHeaderVisible) {
     getColumnHeader().setVisible(isHeaderVisible);
     table.getTableHeader().setVisible(isHeaderVisible);
+  }
+
+  public int getRowHeight() {
+    return table.getRowHeight();
+  }
+
+  public void setRowHeight(int rowHeight) {
+    table.setRowHeight(rowHeight);
+  }
+
+  public int rowAtPoint(Point point) {
+    point = SwingUtilities.convertPoint(this, point.x, point.y, table);
+    return table.rowAtPoint(point);
+  }
+
+  public int getTopIndex() {
+    return rowAtPoint(new Point(0, 0));
+  }
+
+  public void setFont(Font font) {
+    super.setFont(font);
+    if(table != null) {
+      table.setFont(font);
+    }
+  }
+
+  public void setForeground(Color foreground) {
+    super.setForeground(foreground);
+    if(table != null) {
+      table.setForeground(foreground);
+    }
+  }
+
+  public void setBackground(Color background) {
+    super.setBackground(background);
+    if(table != null) {
+      table.setBackground(background);
+    }
   }
 
 }
@@ -425,6 +479,16 @@ public interface CTable extends CComposite {
 
   public void ensureRowVisible(int index);
 
+  public void ensureColumnVisible(int index);
+
   public void setHeaderVisible(boolean isColumnHeaderVisible);
+
+  public int getRowHeight();
+
+  public void setRowHeight(int rowHeight);
+
+  public int rowAtPoint(Point point);
+
+  public int getTopIndex();
 
 }

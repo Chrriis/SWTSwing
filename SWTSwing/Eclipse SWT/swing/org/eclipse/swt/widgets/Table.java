@@ -2264,7 +2264,7 @@ public void setSortDirection (int direction) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
-  ((CTable)handle).ensureRowVisible(index);
+  ((CTable)handle).setTopIndex(index);
 }
 
 /**
@@ -2366,7 +2366,11 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget (); 
-  ((CTable)handle).ensureRowVisible(getSelectionIndex());
+  int selectionIndex = getSelectionIndex();
+  if(selectionIndex == -1) {
+    return;
+  }
+  ((CTable)handle).ensureRowVisible(selectionIndex);
 }
 
 static int checkStyle (int style) {

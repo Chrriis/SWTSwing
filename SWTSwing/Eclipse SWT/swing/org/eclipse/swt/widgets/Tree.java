@@ -860,8 +860,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-  Utils.notImplemented(); return 15;
-//	return OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
+  return ((CTree)handle).getRowHeight();
 }
 
 /**
@@ -1061,14 +1060,9 @@ public int getSortDirection () {
  */
 public TreeItem getTopItem () {
 	checkWidget ();
-  Utils.notImplemented(); return null;
-//	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
-//	if (hItem == 0) return null;
-//	TVITEM tvItem = new TVITEM ();
-//	tvItem.mask = OS.TVIF_PARAM;
-//	tvItem.hItem = hItem;
-//	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0) return null;
-//	return items [tvItem.lParam];
+  int index = ((CTree)handle).getTopIndex();
+  if(index < 0) return null;
+  return ((CTreeItem)((CTree)handle).getPathForRow(index).getLastPathComponent()).getTreeItem();
 }
 
 //int imageIndex (Image image) {
@@ -1421,8 +1415,7 @@ public void setItemCount (int count) {
 /*public*/ void setItemHeight (int itemHeight) {
   checkWidget ();
   if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
-//  OS.SendMessage (handle, OS.TVM_SETITEMHEIGHT, itemHeight, 0);
+  ((CTree)handle).setRowHeight(itemHeight);
 }
 
 /**
@@ -1845,19 +1838,11 @@ public void setTopItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
-//	int hItem = item.handle;
-//	boolean fixScroll = checkScroll (hItem);
-//	if (fixScroll) {
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-//		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-//	}
-//	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-//	if (fixScroll) {
-//		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-//	}
-//	updateScrollBar ();
+  int row = ((CTree)handle).getRowForPath(new TreePath(item.handle.getPath()));
+  if(row < 0) {
+    return;
+  }
+  ((CTree)handle).setTopIndex(row);
 }
 
 //void showItem (int hItem) {
@@ -1963,34 +1948,7 @@ public void showColumn (TreeColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (index == -1) return;
-  Utils.notImplemented();
-//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-//	if (0 <= index && index < count) {
-//		if (hwndParent != 0) {
-//			forceResize ();
-//			RECT rect = new RECT ();
-//			OS.GetClientRect (hwndParent, rect);
-//			OS.MapWindowPoints (hwndParent, handle, rect, 2);
-//			int x = 0;
-//			HDITEM hdItem = new HDITEM ();
-//			for (int i=0; i<index; i++) {
-//				hdItem.mask = OS.HDI_WIDTH;
-//				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
-//				x += hdItem.cxy;
-//			}
-//			POINT pt = new POINT ();
-//			pt.x = x;
-//			pt.y = rect.top;
-//			if (!OS.PtInRect (rect, pt)) {
-//				SCROLLINFO info = new SCROLLINFO ();
-//				info.cbSize = SCROLLINFO.sizeof;
-//				info.fMask = OS.SIF_POS;
-//				info.nPos = Math.max (0, pt.x - Tree.INSET / 2);
-//				OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-//				setScrollWidth ();
-//			}
-//		}
-//	}
+  ((CTree)handle).ensureColumnVisible(index);
 }
 
 /**
@@ -2015,8 +1973,11 @@ public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
-//	showItem (item.handle);
+  int row = ((CTree)handle).getRowForPath(new TreePath(item.handle.getPath()));
+  if(row < 0) {
+    return;
+  }
+  ((CTree)handle).ensureRowVisible(row);
 }
 
 /**
@@ -2033,37 +1994,11 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
-  Utils.notImplemented();
-//	int hItem = 0;
-//	if ((style & SWT.SINGLE) != 0) {	
-//		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-//		if (hItem == 0) return;
-//		TVITEM tvItem = new TVITEM ();
-//		tvItem.mask = OS.TVIF_STATE;
-//		tvItem.hItem = hItem;
-//		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-//		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return;
-//	} else {
-//		TVITEM tvItem = new TVITEM ();
-//		tvItem.mask = OS.TVIF_STATE;
-//		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-//		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-//		int index = 0;
-//		while (index <items.length) {
-//			TreeItem item = items [index];
-//			if (item != null) {
-//				tvItem.hItem = item.handle;
-//				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-//				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-//					hItem = tvItem.hItem;
-//					break;
-//				}
-//			}
-//			index++;
-//		}
-//		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-//	}
-//	if (hItem != 0) showItem (hItem);
+  int minSelectionRow = ((CTree)handle).getSelectionModel().getMinSelectionRow();
+  if(minSelectionRow == -1) {
+    return;
+  }
+  ((CTree)handle).ensureRowVisible(minSelectionRow);
 }
 
 //void showWidget (boolean visible) {

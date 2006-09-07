@@ -689,4 +689,24 @@ public class JTreeTable extends JPanel implements Scrollable {
     return newWidth;
   }
 
+  public int getRowHeight() {
+    return table.getRowHeight();
+  }
+
+  public int getRowHeight(int index) {
+    return table.getRowHeight(index);
+  }
+  
+  public void setRowHeight(int rowHeight) {
+    table.setRowHeight(rowHeight);
+  }
+
+  public int getColumnCount() {
+    return table.getColumnCount();
+  }
+
+  public int rowAtPoint(Point point) {
+    return table.rowAtPoint(point);
+  }
+
 }

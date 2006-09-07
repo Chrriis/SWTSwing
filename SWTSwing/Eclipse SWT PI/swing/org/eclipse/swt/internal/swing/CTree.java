@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
@@ -379,6 +380,58 @@ class CTreeImplementation extends JScrollPane implements CTree {
     }
   }
 
+  public int getRowHeight() {
+    return treeTable.getRowHeight();
+  }
+
+  public void setRowHeight(int rowHeight) {
+    treeTable.setRowHeight(rowHeight);
+  }
+
+  public void ensureRowVisible(int index) {
+    if(index < 0 || index >= treeTable.getRowCount()) {
+      return;
+    }
+    Rectangle bounds = getCellRect(index, 0, true);
+    bounds.width = treeTable.getWidth();
+    bounds.height = treeTable.getRowHeight(index);
+    treeTable.scrollRectToVisible(bounds);
+  }
+
+  public void ensureColumnVisible(int index) {
+    if(index < 0 || index >= treeTable.getColumnCount()) {
+      return;
+    }
+    Rectangle bounds = new Rectangle();
+    TableColumnModel columnModel = getColumnModel();
+    for(int i=0; i<index; i++) {
+      bounds.x += columnModel.getColumn(i).getPreferredWidth();
+    }
+    bounds.width = columnModel.getColumn(index).getPreferredWidth();
+    bounds.height = treeTable.getHeight();
+    treeTable.scrollRectToVisible(bounds);
+  }
+  
+  public int rowAtPoint(Point point) {
+    point = SwingUtilities.convertPoint(this, point.x, point.y, treeTable);
+    return treeTable.rowAtPoint(point);
+  }
+
+  public int getTopIndex() {
+    return rowAtPoint(new Point(0, 0));
+  }
+  
+  public void setTopIndex(int index) {
+    ensureRowVisible(index);
+    if(index != 0) {
+      ensureRowVisible(index);
+    }
+  }
+
+  public TreePath getPathForRow(int index) {
+    return treeTable.getPathForRow(index);
+  }
+
 }
 
 public interface CTree extends CComposite {
@@ -423,5 +476,19 @@ public interface CTree extends CComposite {
   public TreePath getPathForLocation(int x, int y);
 
   public int getPreferredColumnWidth(int columnIndex);
+
+  public int getRowHeight();
+
+  public void setRowHeight(int rowHeight);
+
+  public void ensureRowVisible(int index);
+
+  public void ensureColumnVisible(int index);
+
+  public int getTopIndex();
+
+  public void setTopIndex(int index);
+
+  public TreePath getPathForRow(int index);
 
 }

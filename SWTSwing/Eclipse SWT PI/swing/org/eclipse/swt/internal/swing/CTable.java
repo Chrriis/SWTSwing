@@ -429,6 +429,13 @@ class CTableImplementation extends JScrollPane implements CTable {
     return table.rowAtPoint(point);
   }
 
+  public void setTopIndex(int index) {
+    ensureRowVisible(index);
+    if(index != 0) {
+      ensureRowVisible(index);
+    }
+  }
+
   public int getTopIndex() {
     return rowAtPoint(new Point(0, 0));
   }
@@ -500,6 +507,8 @@ public interface CTable extends CComposite {
   public void setRowHeight(int rowHeight);
 
   public int rowAtPoint(Point point);
+
+  public void setTopIndex(int index);
 
   public int getTopIndex();
 

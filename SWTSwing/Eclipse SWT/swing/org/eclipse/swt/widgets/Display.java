@@ -2383,7 +2383,6 @@ public void setSynchronizer (Synchronizer synchronizer) {
 }
 
 volatile Thread fakeDispatchingEDT;
-long lastSleepTime;
 
 /**
  * Causes the user-interface thread to <em>sleep</em> (that is,
@@ -2401,21 +2400,8 @@ long lastSleepTime;
  */
 public boolean sleep () {
 	checkDevice ();
-  long now = System.currentTimeMillis();
-  if(now - lastSleepTime > 100) {
-    try {
-      Thread.sleep(100);
-    } catch(Exception e) {
-    }
-    lastSleepTime = now;
-  }
   if(isRealDispatch()) {
-    boolean result = swingEventQueue.sleep();
-    long newSleepTime = System.currentTimeMillis();
-    if(newSleepTime - now > 100) {
-      lastSleepTime = newSleepTime;
-    }
-    return result;
+    return swingEventQueue.sleep();
   }
   if(SwingUtilities.isEventDispatchThread()) {
     boolean result = true;
@@ -2424,10 +2410,6 @@ public boolean sleep () {
       event = Toolkit.getDefaultToolkit().getSystemEventQueue().getNextEvent();
     } catch(InterruptedException e) {
       result = false;
-    }
-    long newSleepTime = System.currentTimeMillis();
-    if(newSleepTime - now > 100) {
-      lastSleepTime = newSleepTime;
     }
     fakeDispatchingEDT = null;
     return result;
@@ -2438,10 +2420,6 @@ public boolean sleep () {
         UI_LOCK.wait();
       } catch(Exception e) {
       }
-    }
-    long newSleepTime = System.currentTimeMillis();
-    if(newSleepTime - now > 100) {
-      lastSleepTime = newSleepTime;
     }
     return exclusiveSectionCount > 0;
   }

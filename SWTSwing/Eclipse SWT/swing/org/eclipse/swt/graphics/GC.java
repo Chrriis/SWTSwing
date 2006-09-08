@@ -3669,6 +3669,8 @@ public Point stringExtent(String string) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
   java.awt.FontMetrics fm = handle.getFontMetrics();
+  // TODO: check why the StyledText queries the stringExtent and this is null sometimes (cf RSSOwl)
+  if(fm == null) return new Point(0, 0);
   return new Point(fm.stringWidth(string), fm.getMaxAscent() + fm.getMaxDescent());
 }
 

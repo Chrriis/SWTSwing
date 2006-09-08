@@ -334,7 +334,11 @@ static class SwingEventQueue extends EventQueue {
     if(event != null) {
       AWTEvent theEvent = event;
       event = null;
-      dispatchEvent(theEvent);
+      try {
+        dispatchEvent(theEvent);
+      } catch(Throwable t) {
+        t.printStackTrace();
+      }
     }
     return false;
   }
@@ -1961,8 +1965,8 @@ public boolean readAndDispatch () {
       } else if(source instanceof MenuComponent) {
         ((MenuComponent)source).dispatchEvent(event);
       }
-    } catch(Exception e) {
-      e.printStackTrace();
+    } catch(Throwable t) {
+      t.printStackTrace();
     }
     event = null;
     return true;

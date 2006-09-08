@@ -2511,6 +2511,7 @@ static int translateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
 		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
 	}
+  // TODO: return translateChar or something
 	return 0;
 }
 
@@ -2518,7 +2519,7 @@ static int untranslateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
 		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
 	}
-	return 0;
+	return untranslateChar((char)key);
 }
 
 static int untranslateChar(char c) {

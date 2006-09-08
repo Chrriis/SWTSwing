@@ -93,31 +93,6 @@ void createWidget () {
         paintCaret (e.gc);
       }
     });
-    final int delay = UIManager.getInt ("TextArea.caretBlinkRate");
-    timer = new Timer (delay, new ActionListener () {
-      public void actionPerformed (ActionEvent e) {
-        Caret.this.blink = !Caret.this.blink;
-        if (Caret.this.parent != null) {
-          // XXX redraw rect is not correct. for now, redraw all.
-          // Rectangle r = Caret.this.getBounds();
-          // Caret.this.parent.redraw(x, r.y, r.width, r.height, true);
-          // redraw causes GC to throw exceptions in some conditions. Let's directly call the Swing component
-          Caret.this.parent.handle.repaint();
-        } else {
-          timer.stop();
-        }
-      }
-    }) {
-      public void stop() {
-        super.stop();
-        blink = true;
-        if(Caret.this.parent != null) {
-//          Caret.this.parent.redraw ();
-          Caret.this.parent.handle.repaint();
-        }
-      }
-    };
-    timer.start ();
   }
 //  isVisible = true;
 //  if (parent.getCaret () == null) {
@@ -125,7 +100,29 @@ void createWidget () {
 //  }
 }
 
-Timer timer;
+Timer timer = new Timer (UIManager.getInt ("TextArea.caretBlinkRate"), new ActionListener () {
+  public void actionPerformed (ActionEvent e) {
+    Caret.this.blink = !Caret.this.blink;
+    if (Caret.this.parent != null) {
+      // XXX redraw rect is not correct. for now, redraw all.
+      // Rectangle r = Caret.this.getBounds();
+      // Caret.this.parent.redraw(x, r.y, r.width, r.height, true);
+      // redraw causes GC to throw exceptions in some conditions. Let's directly call the Swing component
+      Caret.this.parent.handle.repaint();
+    } else {
+      timer.stop();
+    }
+  }
+}) {
+  public void stop() {
+    super.stop();
+    blink = true;
+    if(Caret.this.parent != null) {
+//      Caret.this.parent.redraw ();
+      Caret.this.parent.handle.repaint();
+    }
+  }
+};
 
 private boolean blink;
 
@@ -316,6 +313,7 @@ public boolean isVisible () {
 }
 
 void killFocus () {
+  timer.stop ();
 //	OS.DestroyCaret ();
 //	if (font != null) restoreIMEFont ();
 }
@@ -448,6 +446,7 @@ public void setBounds (Rectangle rect) {
 }
 
 void setFocus () {
+  timer.start ();
 //TODO
 //	int hwnd = parent.handle;
 //	int hBitmap = 0;

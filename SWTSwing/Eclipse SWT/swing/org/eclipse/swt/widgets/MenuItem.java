@@ -968,6 +968,7 @@ void createHandle() {
       public void popupMenuCanceled(PopupMenuEvent e) {
       }
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        if(menu == null) return;
         if(!menu.hooks(SWT.Hide)) return;
         Display display = getDisplay();
         display.startExclusiveSection();
@@ -981,6 +982,7 @@ void createHandle() {
         display.stopExclusiveSection();
       }
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        if(menu == null) return;
         if(!menu.hooks(SWT.Show)) return;
         Display display = getDisplay();
         display.startExclusiveSection();

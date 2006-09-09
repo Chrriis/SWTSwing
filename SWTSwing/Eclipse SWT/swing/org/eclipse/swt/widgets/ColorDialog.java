@@ -11,14 +11,10 @@
 package org.eclipse.swt.widgets;
 
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 import javax.swing.JColorChooser;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 
@@ -119,19 +115,24 @@ public RGB getRGB () {
  * </ul>
  */
 public RGB open () {
-  boolean isModal = (style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
-  JColorChooser cc = new JColorChooser();
-  cc.addPropertyChangeListener(new PropertyChangeListener() {
-    public void propertyChange(PropertyChangeEvent e) {
-      if("color".equals(e.getPropertyName())) {
-        Color color = (Color)e.getNewValue();
-        if(color != null) {
-          rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
-        }
-      }
-    }
-  });
-  JColorChooser.createDialog(getParent().handle, null, isModal, cc, null, null);
+//  JColorChooser cc = new JColorChooser();
+//  cc.addPropertyChangeListener(new PropertyChangeListener() {
+//    public void propertyChange(PropertyChangeEvent e) {
+//      if("color".equals(e.getPropertyName())) {
+//        Color color = (Color)e.getNewValue();
+//        if(color != null) {
+//          rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
+//        }
+//      }
+//    }
+//  });
+  java.awt.Color color = null;
+  if(rgb != null) {
+    color = new java.awt.Color(rgb.red, rgb.green, rgb.blue);
+  }
+  color = JColorChooser.showDialog(getParent().handle, null, color);
+  if(color == null) return null;
+  rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
   return rgb;
 }
 

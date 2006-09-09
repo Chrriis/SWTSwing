@@ -342,9 +342,6 @@ static class SwingEventQueue extends EventQueue {
     }
     return false;
   }
-  public synchronized void push(EventQueue newEventQueue) {
-    super.push(newEventQueue);
-  }
   public void pop() {
     super.pop();
   }

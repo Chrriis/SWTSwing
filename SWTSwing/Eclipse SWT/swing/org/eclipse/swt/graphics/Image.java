@@ -1066,6 +1066,7 @@ static int[] init(Device device, Image image, ImageData i) {
     RGB[] rgbs = i.getRGBs();
     if(rgbs == null) {
       // This case is needed to avoid exceptions, but does not work. cf RSSOwl: "View > Customize Toolbar..."
+      // TODO: make it work! something related to the transparency mask?
       argb = i.palette.getRGB(i.transparentPixel);
     } else {
       argb = rgbs[i.transparentPixel];

@@ -278,6 +278,14 @@ public Image(Device device, Rectangle bounds) {
 public Image(Device device, ImageData data) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+  // This case is found in RSSOwl: "View > Customize Toolbar..." (cf init(Device, Image, ImageData))
+  if(data.transparentPixel >= 0) {
+    for(int x=0; x<data.width; x++) {
+      for(int j=0; j<data.height; j++) {
+        data.setPixel(x, j, data.transparentPixel);
+      }
+    }
+  }
 	init(device, data);
 	if (device.tracking) device.new_Object(this);	
 }
@@ -1053,36 +1061,33 @@ void init(Device device, int width, int height) {
   handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 }
 
-static int[] init(Device device, Image image, ImageData i) {
+static int[] init(Device device, Image image, ImageData data) {
   if (image != null) image.device = device;
-  image.handle = new BufferedImage(i.width, i.height, BufferedImage.TYPE_INT_ARGB);
-  ImageData transparencyMask = i.getTransparencyMask();
-  
-//  RGB argb = i.transparentPixel<0 ? null : i.getRGBs()[i.transparentPixel];
+  image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
+  ImageData transparencyMask = data.getTransparencyMask();
   RGB argb;
-  if(i.transparentPixel < 0) {
+  if(data.transparentPixel < 0) {
     argb = null;
   } else {
-    RGB[] rgbs = i.getRGBs();
+    RGB[] rgbs = data.getRGBs();
     if(rgbs == null) {
-      // This case is needed to avoid exceptions, but does not work. cf RSSOwl: "View > Customize Toolbar..."
-      // TODO: make it work! something related to the transparency mask?
-      argb = i.palette.getRGB(i.transparentPixel);
+      // This case is found in RSSOwl: "View > Customize Toolbar..."
+      argb = data.palette.getRGB(data.transparentPixel);
     } else {
-      argb = rgbs[i.transparentPixel];
+      argb = rgbs[data.transparentPixel];
     }
   }
   for(int x=image.handle.getWidth()-1; x >= 0; x--) {
-    for(int j=image.handle.getHeight()-1; j >= 0; j--) {
+    for(int y=image.handle.getHeight()-1; y >= 0; y--) {
       boolean hasAlphaMask = false;
       if(transparencyMask != null) {
-    	  RGB alphaMask = i.palette.getRGB(transparencyMask.getPixel(x, j));
+    	  RGB alphaMask = data.palette.getRGB(transparencyMask.getPixel(x, y));
     	  hasAlphaMask = alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0;
       }
-      RGB rgb = i.palette.getRGB(i.getPixel(x, j));
+      RGB rgb = data.palette.getRGB(data.getPixel(x, y));
       boolean equalArgb = argb != null && argb.red == rgb.red && argb.green == rgb.green && argb.blue == rgb.blue;
-	  int alpha =  (hasAlphaMask || equalArgb) ? 0 : i.getAlpha(x, j);
-      image.handle.setRGB(x, j, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
+	  int alpha =  (hasAlphaMask || equalArgb) ? 0 : data.getAlpha(x, y);
+      image.handle.setRGB(x, y, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
     }
   }
   return null;

@@ -7,6 +7,10 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0003 (xxxxxxxxxxxxxxxxx):
 
+- Duplicate monitors are filtered out and their client area is now correct.
+- Setting an icon on a radio button does not remove the radio icon.
+- null text is never returned for a Button.
+- Some timers are removed to restore original performance.
 - Background and foreground are supported for Text.
 - Font chooser is implemented.
 - More methods are implemented for the Table and Tree widget.

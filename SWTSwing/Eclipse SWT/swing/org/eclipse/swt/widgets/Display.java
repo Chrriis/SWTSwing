@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.Icon;
@@ -1158,6 +1159,7 @@ public Monitor [] getMonitors () {
   GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
   GraphicsDevice[] gs = ge.getScreenDevices();
   ArrayList monitorsList = new ArrayList();
+  Set boundsSet = new HashSet();
   for (int j = 0; j < gs.length; j++) {
     GraphicsDevice gd = gs[j];
     // Always true isnt'it?
@@ -1168,16 +1170,18 @@ public Monitor [] getMonitors () {
         Monitor monitor = new Monitor();
         monitor.handle = gc;
         java.awt.Rectangle bounds = gc.getBounds();
-        monitor.x = bounds.x;
-        monitor.y = bounds.y;
-        monitor.width = bounds.width;
-        monitor.height = bounds.height;
-        java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
-        monitor.clientX = bounds.x + insets.left;
-        monitor.clientY = bounds.y + insets.top;
-        monitor.clientWidth = bounds.x - insets.left - insets.right;
-        monitor.clientHeight = bounds.y - insets.top - insets.bottom;
-        monitorsList.add(monitor);
+        if(boundsSet.add(bounds)) {
+          monitor.x = bounds.x;
+          monitor.y = bounds.y;
+          monitor.width = bounds.width;
+          monitor.height = bounds.height;
+          java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+          monitor.clientX = bounds.x + insets.left;
+          monitor.clientY = bounds.y + insets.top;
+          monitor.clientWidth = bounds.width - insets.left - insets.right;
+          monitor.clientHeight = bounds.height - insets.top - insets.bottom;
+          monitorsList.add(monitor);
+        }
       }
 //    }
   }

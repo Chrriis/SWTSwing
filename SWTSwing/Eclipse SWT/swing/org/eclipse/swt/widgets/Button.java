@@ -359,7 +359,7 @@ public boolean getSelection () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) return "";
-	return text;
+	return text == null? "": text;
 }
 
 boolean isTabItem () {

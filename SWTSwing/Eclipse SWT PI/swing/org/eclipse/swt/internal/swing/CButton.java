@@ -237,7 +237,7 @@ class CButtonToggle extends JToggleButton implements CButton {
 
 }
 
-class CButtonRadio extends JRadioButton implements CButton {
+class CButtonRadio extends JIconRadioButton implements CButton {
 
   protected Button handle;
 

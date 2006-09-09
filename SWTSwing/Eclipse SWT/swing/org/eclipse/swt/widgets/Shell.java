@@ -908,6 +908,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	activeMenu = null;
     final Window window = (Window)handle;
+    window.setVisible(false);
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         window.dispose();

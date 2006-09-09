@@ -1085,7 +1085,7 @@ static int[] init(Device device, Image image, ImageData data) {
       }
       RGB rgb = data.palette.getRGB(data.getPixel(x, y));
       boolean equalArgb = argb != null && argb.red == rgb.red && argb.green == rgb.green && argb.blue == rgb.blue;
-	  int alpha =  (hasAlphaMask || equalArgb) ? 0 : data.getAlpha(x, y);
+	    int alpha = (hasAlphaMask || equalArgb) ? 0 : data.getAlpha(x, y);
       image.handle.setRGB(x, y, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
     }
   }

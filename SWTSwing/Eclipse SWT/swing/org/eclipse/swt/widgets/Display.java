@@ -1208,8 +1208,8 @@ public Monitor getPrimaryMonitor () {
   java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
   monitor.clientX = bounds.x + insets.left;
   monitor.clientY = bounds.y + insets.top;
-  monitor.clientWidth = bounds.x - insets.left - insets.right;
-  monitor.clientHeight = bounds.y - insets.top - insets.bottom;
+  monitor.clientWidth = bounds.width - insets.left - insets.right;
+  monitor.clientHeight = bounds.height - insets.top - insets.bottom;
 	return monitor;		
 }
 

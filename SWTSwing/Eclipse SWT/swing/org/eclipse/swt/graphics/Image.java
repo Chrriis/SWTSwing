@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import javax.swing.GrayFilter;
 import javax.swing.ImageIcon;
@@ -278,14 +279,6 @@ public Image(Device device, Rectangle bounds) {
 public Image(Device device, ImageData data) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  // This case is found in RSSOwl: "View > Customize Toolbar..." (cf init(Device, Image, ImageData))
-  if(data.transparentPixel >= 0) {
-    for(int x=0; x<data.width; x++) {
-      for(int j=0; j<data.height; j++) {
-        data.setPixel(x, j, data.transparentPixel);
-      }
-    }
-  }
 	init(device, data);
 	if (device.tracking) device.new_Object(this);	
 }
@@ -1073,6 +1066,10 @@ static int[] init(Device device, Image image, ImageData data) {
     if(rgbs == null) {
       // This case is found in RSSOwl: "View > Customize Toolbar..."
       argb = data.palette.getRGB(data.transparentPixel);
+      // The data of the image does not seem to exist, so we initialize all the pixels (default to [0,0,0]) to the transparent color.
+      int[] pixels = new int[data.width * data.height];
+      Arrays.fill(pixels, data.transparentPixel);
+      data.setPixels(0, 0, pixels.length, pixels, 0);
     } else {
       argb = rgbs[data.transparentPixel];
     }
@@ -1080,6 +1077,8 @@ static int[] init(Device device, Image image, ImageData data) {
   for(int x=image.handle.getWidth()-1; x >= 0; x--) {
     for(int y=image.handle.getHeight()-1; y >= 0; y--) {
       boolean hasAlphaMask = false;
+      // RSSOwl: Tools > Preference, some icons are not visible if the following test is not commented out.
+      // Snippet119: The cursor is not transparent if the following lines are commented out.
       if(transparencyMask != null) {
     	  RGB alphaMask = data.palette.getRGB(transparencyMask.getPixel(x, y));
     	  hasAlphaMask = alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0;

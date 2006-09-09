@@ -1057,7 +1057,20 @@ static int[] init(Device device, Image image, ImageData i) {
   if (image != null) image.device = device;
   image.handle = new BufferedImage(i.width, i.height, BufferedImage.TYPE_INT_ARGB);
   ImageData transparencyMask = i.getTransparencyMask();
-  RGB argb = i.transparentPixel<0 ? null : i.getRGBs()[i.transparentPixel];
+  
+//  RGB argb = i.transparentPixel<0 ? null : i.getRGBs()[i.transparentPixel];
+  RGB argb;
+  if(i.transparentPixel < 0) {
+    argb = null;
+  } else {
+    RGB[] rgbs = i.getRGBs();
+    if(rgbs == null) {
+      // This case is needed to avoid exceptions, but does not work. cf RSSOwl: "View > Customize Toolbar..."
+      argb = i.palette.getRGB(i.transparentPixel);
+    } else {
+      argb = rgbs[i.transparentPixel];
+    }
+  }
   for(int x=image.handle.getWidth()-1; x >= 0; x--) {
     for(int j=image.handle.getHeight()-1; j >= 0; j--) {
       boolean hasAlphaMask = false;

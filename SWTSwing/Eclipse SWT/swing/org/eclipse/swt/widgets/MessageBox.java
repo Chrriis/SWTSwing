@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class are used to inform or warn the user.
@@ -107,6 +106,8 @@ public String getMessage () {
 	return message;
 }
 
+static final int MAX_WIDTH = 120;
+
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -126,31 +127,41 @@ public int open () {
 	if ((style & SWT.ICON_QUESTION) != 0) messageType = JOptionPane.QUESTION_MESSAGE;
 	if ((style & SWT.ICON_WARNING) != 0) messageType = JOptionPane.WARNING_MESSAGE;
 	if ((style & SWT.ICON_WORKING) != 0) messageType = JOptionPane.INFORMATION_MESSAGE;
-  
-  String[] messageTokens = this.message.split(" ");
+  String[] messageTokens = this.message.split("\n");
   StringBuffer sb = new StringBuffer(this.message.length());
-  int count = 0;
   for(int i=0; i<messageTokens.length; i++) {
+    if(i > 0) {
+      sb.append('\n');
+    }
     String token = messageTokens[i];
-    if(count > 0 && count + token.length() > 120) {
-      sb.append("<br>");
-      count = 0;
-    }
-    int splitCount = Math.max(0, (token.length() - 1)) / 120 + 1;
-    for(int j=0; j<splitCount; j++) {
-      if(j<splitCount - 1) {
-        sb.append(Utils.escapeXML(token.substring(j * 120, (j + 1) * 120)));
-        sb.append("<br>");
-      } else {
-        sb.append(Utils.escapeXML(token.substring(j * 120)));
+    if(token.length() > MAX_WIDTH) {
+      String[] subTokens = token.split(" ");
+      int count = 0;
+      for(int j=0; j<subTokens.length; j++) {
+        String subToken = subTokens[j];
+        if(count > 0 && count + subToken.length() > MAX_WIDTH) {
+          sb.append('\n');
+          count = 0;
+        }
+        int splitCount = Math.max(0, (subToken.length() - 1)) / MAX_WIDTH + 1;
+        for(int k=0; k<splitCount; k++) {
+          if(k<splitCount - 1) {
+            sb.append(subToken.substring(k * MAX_WIDTH, (k + 1) * MAX_WIDTH));
+            sb.append('\n');
+          } else {
+            sb.append(subToken.substring(k * MAX_WIDTH));
+          }
+        }
+        if(j < subTokens.length - 1) {
+          sb.append(' ');
+        }
+        count += subToken.length();
       }
+    } else {
+      sb.append(token);
     }
-    if(i < messageTokens.length - 1) {
-      sb.append(" ");
-    }
-    count += token.length();
   }
-  String message = "<html>" + sb.toString() + "</html>";
+  String message = sb.toString();
   if((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) {
     int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK", "Cancel"}, null);
     if(result == JOptionPane.CLOSED_OPTION) {

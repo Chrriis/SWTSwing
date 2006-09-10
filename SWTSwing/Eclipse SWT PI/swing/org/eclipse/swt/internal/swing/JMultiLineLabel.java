@@ -8,43 +8,39 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Dimension;
+import java.awt.Insets;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.plaf.basic.BasicHTML;
+import javax.swing.text.View;
 
 public class JMultiLineLabel extends JPanel implements SwingConstants {
 
   protected class InnerLabel extends JLabel {
 
-//    public String getText() {
-//      if(getIcon() != null) {
-//        return "";
-//      }
-//      return super.getText();
-//    }
-
     public Dimension getPreferredSize() {
-//      if(isWrapping) {
-//        Dimension preferredSize = super.getPreferredSize();
-//        View view = ((View)getClientProperty(BasicHTML.propertyKey)).getView(0);
-//        Dimension size = super.getSize();
-//        view.setSize(size.width, 0);
-//        preferredSize.height = super.getPreferredSize().height;
-//        return preferredSize;
-//      }
-      Dimension size = super.getPreferredSize();
+      Dimension preferredSize = super.getPreferredSize();
       if(getIcon() == null && getText().length() == 0) {
-        size.height += getFontMetrics(getFont()).getHeight();
+        preferredSize.height += getFontMetrics(getFont()).getHeight();
       }
-      return size;
+      return preferredSize;
     }
     public Dimension getMaximumSize() {
       return new Dimension(Integer.MAX_VALUE, super.getMaximumSize().height);
     }
 
+    public void reshape(int x, int y, int w, int h) {
+      super.reshape(x, y, w, h);
+      View globalView = (View)getClientProperty(BasicHTML.propertyKey);
+      if(globalView != null) {
+        globalView.setSize(w, h);
+      }
+    }
+    
   }
 
   public JMultiLineLabel() {
@@ -118,6 +114,35 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
     if(getComponentCount() > 0) {
       ((InnerLabel)getComponent(0)).setIcon(icon);
     }
+  }
+
+//  public void reshape(int x, int y, int w, int h) {
+//    super.reshape(x, y, w, h);
+//    for(int i=getComponentCount()-1; i>=0; i--) {
+//      getComponent(i).invalidate();
+//    }
+//    validate();
+//  }
+  
+  public void reshape(int x, int y, int w, int h) {
+    super.reshape(x, y, w, h);
+    for(int i=getComponentCount()-1; i>=0; i--) {
+      getComponent(i).invalidate();
+    }
+    validate();
+  }
+
+  public Dimension getPreferredSize() {
+    Dimension d = new Dimension(0, 0);
+    for(int i=getComponentCount()-1; i>=0; i--) {
+      Dimension preferredSize = getComponent(i).getPreferredSize();
+      d.height += preferredSize.height;
+      d.width = Math.max(d.width, preferredSize.width);
+    }
+    Insets insets = getInsets();
+    d.width += insets.left + insets.right;
+    d.height += insets.top + insets.bottom;
+    return d;
   }
 
 }

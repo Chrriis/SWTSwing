@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 
@@ -294,8 +295,12 @@ public void clearSelection () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
+  Dimension preferredSize = handle.getPreferredSize();
+  if(wHint == -1) {
+    return new Point(preferredSize.width, preferredSize.height);
+  }
   Point p = super.computeSize(wHint, hHint, changed);
-  return new Point(p.x, handle.getPreferredSize().height);
+  return new Point(p.x, preferredSize.height);
 }
 
 /**

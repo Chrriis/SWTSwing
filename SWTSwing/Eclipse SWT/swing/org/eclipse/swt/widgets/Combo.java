@@ -131,7 +131,9 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+  isAdjustingSelection = true;
   ((CCombo)handle).addItem(string);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -160,7 +162,9 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+  isAdjustingSelection = true;
   ((CCombo)handle).insertElementAt(string, index);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -353,7 +357,9 @@ public void deselect (int index) {
 	checkWidget ();
   CCombo cCombo = (CCombo)handle;
   if(index == cCombo.getSelectedIndex()) {
+    isAdjustingSelection = true;
     cCombo.setSelectedIndex(-1);
+    isAdjustingSelection = false;
     sendEvent (SWT.Modify);
   }
 	// widget could be disposed at this point
@@ -375,7 +381,9 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CCombo)handle).clearEditorSelection();
+  isAdjustingSelection = false;
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
 }
@@ -699,7 +707,9 @@ public void remove (int index) {
 	checkWidget ();
   int count = getItemCount();
   if (!(0 <= index && index < count)) error (SWT.ERROR_ITEM_NOT_REMOVED);
+  isAdjustingSelection = true;
   ((CCombo)handle).removeItemAt(index);
+  isAdjustingSelection = false;
   sendEvent (SWT.Modify);
 }
 
@@ -726,10 +736,12 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+  isAdjustingSelection = true;
   CCombo cCombo = (CCombo)handle;
   for (int i=start; i<=end; i++) {
     cCombo.removeItemAt(i);
   }
+  isAdjustingSelection = false;
 }
 
 /**
@@ -767,7 +779,9 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CCombo)handle).removeAllItems();
+  isAdjustingSelection = false;
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
 }
@@ -847,6 +861,8 @@ public void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
+boolean isAdjustingSelection;
+
 /**
  * Selects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already selected, it remains
@@ -865,7 +881,9 @@ public void select (int index) {
 	if (0 <= index && index < count) {
     CCombo cCombo = (CCombo)handle;
     if(index != cCombo.getSelectedIndex()) {
+      isAdjustingSelection = true;
       cCombo.setSelectedIndex(index);
+      isAdjustingSelection = false;
       sendEvent (SWT.Modify);
     }
 	}
@@ -923,11 +941,13 @@ public void setItems (String [] items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+  isAdjustingSelection = true;
   CCombo cCombo = (CCombo)handle;
   cCombo.removeAllItems();
   for (int i=0; i<items.length; i++) {
     cCombo.addItem(items[i]);
   }
+  isAdjustingSelection = false;
 	// widget could be disposed at this point
 	sendEvent (SWT.Modify);
 }
@@ -1083,7 +1103,7 @@ public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
   case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; } break;
-  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {

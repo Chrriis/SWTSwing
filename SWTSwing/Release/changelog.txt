@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0003 (xxxxxxxxxxxxxxxxx):
 
+- Combo and List selection events are not sent when initiated programmaticaly.
+- Multi line messages are now supported in the MessageBox.
 - Color dialog is now working as expected.
 - Fixed an application freeze when closing a dialog in real dispatching mode.
 - Duplicate monitors are filtered out when getting the monitors.

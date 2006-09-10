@@ -665,6 +665,8 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+boolean isAdjustingSelection;
+
 /**
  * Selects the items at the given zero-relative indices in the receiver.
  * The current selection is not cleared before the new items are selected.
@@ -692,10 +694,12 @@ public void select (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+  isAdjustingSelection = true;
   for(int i=0; i<indices.length; i++) {
     int index = indices[i];
     ((CList)handle).addSelectionInterval(index, index);
   }
+  isAdjustingSelection = false;
 }
 
 /**
@@ -712,7 +716,9 @@ public void select (int [] indices) {
  */
 public void select (int index) {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CList)handle).addSelectionInterval(index, index);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -742,9 +748,11 @@ public void select (int start, int end) {
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	int count = getItemCount();
 	if (count == 0 || start >= count) return;
+  isAdjustingSelection = true;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
   ((CList)handle).addSelectionInterval(start, end);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -762,7 +770,9 @@ public void selectAll () {
 	if ((style & SWT.SINGLE) != 0) return;
   int count = getItemCount();
   if(count == 0) return;
+  isAdjustingSelection = true;
   ((CList)handle).setSelectionInterval(0, count - 1);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -839,10 +849,12 @@ public void setSelection(int [] indices) {
 	deselectAll ();
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+  isAdjustingSelection = true;
   for(int i=0; i<indices.length; i++) {
     int index = indices[i];
     ((CList)handle).addSelectionInterval(index, index);
   }
+  isAdjustingSelection = false;
 }
 
 /**
@@ -870,10 +882,13 @@ public void setSelection(int [] indices) {
 public void setSelection (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+  isAdjustingSelection = true;
 	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-  ((CList)handle).setSelectedElements(items);
+	if (length != 0 && ((style & SWT.SINGLE) == 0 || length <= 1)) {
+	  ((CList)handle).setSelectedElements(items);
+  }
+  isAdjustingSelection = false;
 }
 
 /**
@@ -893,7 +908,9 @@ public void setSelection (String [] items) {
  */
 public void setSelection (int index) {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CList)handle).setSelectionInterval(index, index);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -923,9 +940,11 @@ public void setSelection (int start, int end) {
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	int count = getItemCount();
 	if (count == 0 || start >= count) return;
+  isAdjustingSelection = true;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
   ((CList)handle).setSelectionInterval(start, end);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -962,7 +981,7 @@ public void showSelection () {
 
 public void processEvent(EventObject e) {
   if(e instanceof ListSelectionEvent) {
-    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+    if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; }
   } else { super.processEvent(e); return; }
   Display display = getDisplay();
   display.startExclusiveSection();

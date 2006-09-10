@@ -77,6 +77,9 @@ class CShellFrame extends JFrame implements CShell {
         setUndecorated(!isDecorated);
       }
     } else {
+      if(JFrame.isDefaultLookAndFeelDecorated()) {
+        getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+      }
       setUndecorated(!isDecorated);
     }
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
@@ -319,6 +322,9 @@ class CShellDialog extends JDialog implements CShell {
         setUndecorated(!isDecorated);
       }
     } else {
+      if(JDialog.isDefaultLookAndFeelDecorated()) {
+        getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+      }
       setUndecorated(!isDecorated);
     }
     contentPane = getContentPane();

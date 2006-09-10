@@ -882,7 +882,7 @@ public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
   int row = ((CTable)handle).rowAtPoint(new java.awt.Point(point.x, point.y));
-  if(row < -1) return null;
+  if(row < 0) return null;
   return (TableItem)itemList.get(row);
 }
 
@@ -1253,9 +1253,9 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 
 void releaseChildren (boolean destroy) {
   if(itemList != null) {
-    for (int i=0; i<itemList.size(); i++) {
+    for (int i=itemList.size()-1; i>=0; i--) {
       TableItem item = (TableItem)itemList.get(i);
-      if (!item.isDisposed ()) item.release (false);
+      if (item != null && !item.isDisposed ()) item.release (false);
     }
     itemList = null;
   }
@@ -1852,7 +1852,7 @@ public void setItemCount (int count) {
  */
 /*public*/ void setItemHeight (int itemHeight) {
   checkWidget ();
-  if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
+  if (itemHeight < 0) error (SWT.ERROR_INVALID_ARGUMENT);
   ((CTable)handle).setRowHeight(itemHeight);
 }
 

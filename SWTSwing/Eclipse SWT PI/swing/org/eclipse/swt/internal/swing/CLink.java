@@ -41,7 +41,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
     if(globalView == null) {
       return super.getPreferredSize();
     }
-    View view = (globalView).getView(0);
+    View view = globalView.getView(0);
     Dimension size = super.getSize();
     view.setSize(size.width, 0);
     preferredSize.height = super.getPreferredSize().height;

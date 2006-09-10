@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0003 (xxxxxxxxxxxxxxxxx):
 
+- The "swt.swing.laf.decorated" can force L&F decorations with "true"/"false".
 - Default combo box size is fixed.
 - Label wrapping is fixed.
 - Combo and List selection events are not sent when initiated programmaticaly.

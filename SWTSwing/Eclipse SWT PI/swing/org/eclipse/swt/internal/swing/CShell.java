@@ -34,6 +34,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
@@ -67,7 +68,17 @@ class CShellFrame extends JFrame implements CShell {
     if((style & SWT.RESIZE) == 0) {
       setResizable(false);
     }
-    setUndecorated((style & SWT.TITLE) == 0);
+    boolean isDecorated = (style & SWT.TITLE) != 0;
+    if(isDecorated) {
+      if(JFrame.isDefaultLookAndFeelDecorated()) {
+        setUndecorated(true);
+        getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+      } else {
+        setUndecorated(!isDecorated);
+      }
+    } else {
+      setUndecorated(!isDecorated);
+    }
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
@@ -299,7 +310,17 @@ class CShellDialog extends JDialog implements CShell {
     if((style & SWT.RESIZE) == 0) {
       setResizable(false);
     }
-    setUndecorated((style & SWT.TITLE) == 0);
+    boolean isDecorated = (style & SWT.TITLE) != 0;
+    if(isDecorated) {
+      if(JDialog.isDefaultLookAndFeelDecorated()) {
+        setUndecorated(true);
+        getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+      } else {
+        setUndecorated(!isDecorated);
+      }
+    } else {
+      setUndecorated(!isDecorated);
+    }
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
       protected Graphics graphics;

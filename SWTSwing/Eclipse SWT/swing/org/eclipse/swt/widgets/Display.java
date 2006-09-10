@@ -40,6 +40,8 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -321,6 +323,7 @@ public Display () {
 }
 
 static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
+static final String LOOK_AND_FEEL_DECORATED_PROPERTY = "swt.swing.laf.decorated";
 
 static class SwingEventQueue extends EventQueue {
   protected AWTEvent event;
@@ -367,6 +370,12 @@ public Display (DeviceData data) {
     try {
       javax.swing.UIManager.setLookAndFeel(lafName);
       isLookAndFeelInstalled = true;
+      String lafDecoration = System.getProperty(LOOK_AND_FEEL_DECORATED_PROPERTY);
+      if(lafDecoration != null) {
+        boolean isLafDecrated = Boolean.parseBoolean(lafDecoration);
+        JFrame.setDefaultLookAndFeelDecorated(isLafDecrated);
+        JDialog.setDefaultLookAndFeelDecorated(isLafDecrated);
+      }
     } catch(Exception e) {e.printStackTrace();}
   }
   // If no look and feel is specified, install one that looks native.

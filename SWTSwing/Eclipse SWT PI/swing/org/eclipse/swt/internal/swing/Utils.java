@@ -115,7 +115,7 @@ public class Utils {
     });
   }
 
-  public static String escapeXML(String s) {
+  public static String escapeSwingXML(String s) {
     if(s == null) {
       return s;
     }
@@ -136,9 +136,9 @@ public class Utils {
         case '&':
           sb.append("&amp;");
           break;
-        case '\'':
-          sb.append("&apos;");
-          break;
+//        case '\'':
+//          sb.append("&apos;");
+//          break;
         case '\"':
           sb.append("&quot;");
           break;
@@ -207,7 +207,7 @@ public class Utils {
         sb.append("<p>");
         break;
       default:
-        sb.append(Utils.escapeXML(String.valueOf(c)));
+        sb.append(Utils.escapeSwingXML(String.valueOf(c)));
         break;
       }
     }

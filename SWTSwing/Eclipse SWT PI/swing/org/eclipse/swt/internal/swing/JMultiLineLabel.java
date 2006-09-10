@@ -74,7 +74,7 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
     for(int i=0; i<labels.length; i++) {
       String label = labels[i];
       if(isWrapping()) {
-        label = "<html>" + Utils.escapeXML(label) + "</html>";
+        label = "<html>" + Utils.escapeSwingXML(label) + "</html>";
       }
       InnerLabel innerLabel = new InnerLabel();
       innerLabel.setHorizontalAlignment(alignment);

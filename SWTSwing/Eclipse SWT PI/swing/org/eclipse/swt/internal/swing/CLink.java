@@ -101,7 +101,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
             String lTag = tag.toLowerCase(Locale.ENGLISH);
             if(lTag.equals("</a")) {
               if(lastEndTag >= 0) {
-                String content = Utils.escapeXML(s.substring(lastEndTag + 1, i - 3));
+                String content = Utils.escapeSwingXML(s.substring(lastEndTag + 1, i - 3));
                 sb.append("<a href=\"" + content + "\">" + content + "</a>");
                 lastEndTag = -1;
                 start = -1;
@@ -147,7 +147,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
       }
     }
     if(start >= 0) {
-      sb.append(Utils.escapeXML(s.substring(start, s.length())));
+      sb.append(Utils.escapeSwingXML(s.substring(start, s.length())));
     }
     return sb.toString();
   }

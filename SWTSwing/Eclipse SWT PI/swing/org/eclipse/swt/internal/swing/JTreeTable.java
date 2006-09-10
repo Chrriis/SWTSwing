@@ -331,6 +331,10 @@ public class JTreeTable extends JPanel implements Scrollable {
     add(table, BorderLayout.CENTER);
     tree = new JTree() {
       public boolean hasFocus() {
+        // this happens when the look and feel queries the focus owner and the object is not yet constructed.
+        if(JTreeTable.this == null) {
+          return false;
+        }
         return table.hasFocus();
       }
     };

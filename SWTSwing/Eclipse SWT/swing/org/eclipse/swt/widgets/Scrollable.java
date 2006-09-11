@@ -164,9 +164,13 @@ public Rectangle getClientArea () {
     }
     Container parent = clientArea.getParent();
     bounds = SwingUtilities.convertRectangle(parent, bounds, handle);
-    Insets insets = parent.getInsets();
-    bounds.x -= insets.left;
-    bounds.y -= insets.top;
+    Container handleParent = handle.getParent();
+    while(parent != handleParent) {
+      Insets insets = parent.getInsets();
+      bounds.x -= insets.left;
+      bounds.y -= insets.top;
+      parent = parent.getParent();
+    }
     return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 //    forceResize ();
 //	RECT rect = new RECT ();

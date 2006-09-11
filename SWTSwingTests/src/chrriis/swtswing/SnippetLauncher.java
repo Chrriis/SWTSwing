@@ -313,8 +313,8 @@ public class SnippetLauncher {
       new Snippet(129, "color cells and rows in table"),
       new Snippet(35, "create a table (no columns, no headers)"),
       new Snippet(38, "create a table (columns, headers, lines)"),
-/**/      new NotWorkingSnippet(144, "create a table with 1,000,000 items (lazy)"),
-/**/      new NotWorkingSnippet(201, "create a table with 1,000,000 items (lazy, page size 64)"),
+      new Snippet(144, "create a table with 1,000,000 items (lazy)"),
+      new Snippet(201, "create a table with 1,000,000 items (lazy, page size 64)"),
       new Snippet(7, "create a table (lazy with a thread)"),
 /**/      new NotWorkingSnippet(113, "detect a selection or check event in a table (SWT.CHECK)"),
 /**/      new NotWorkingSnippet(3, "find a table cell from mouse down (SWT.FULL_SELECTION)"),
@@ -326,8 +326,8 @@ public class SnippetLauncher {
 /**/      new NotWorkingSnippet(64, "print selected items in a table"),
 /**/      new NotWorkingSnippet(53, "remove selected items"),
 /**/      new NotWorkingSnippet(77, "resize columns as table resizes"),
-/**/      new NotWorkingSnippet(51, "scroll a table (set the top index)"),
-/**/      new NotWorkingSnippet(52, "select an index (select and scroll)"),
+      new Snippet(51, "scroll a table (set the top index)"),
+/**/      new PartiallyWorkingSnippet(52, "select an index (select and scroll)"),
 /**/      new NotWorkingSnippet(2, "sort a table by column"),
 /**/      new NotWorkingSnippet(192, "sort a table by column (virtual table, sort indicator)"),
       new Snippet(103, "update table item text"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 210;
+  protected static int snippetNumber = 51;
 
   protected static boolean isRealDispatch = true;
 

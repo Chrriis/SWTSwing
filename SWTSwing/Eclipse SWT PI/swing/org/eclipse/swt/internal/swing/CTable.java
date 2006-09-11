@@ -468,6 +468,10 @@ class CTableImplementation extends JScrollPane implements CTable {
     }
   }
 
+  public void requestFocus() {
+    table.requestFocus();
+  }
+
 }
 
 public interface CTable extends CComposite {

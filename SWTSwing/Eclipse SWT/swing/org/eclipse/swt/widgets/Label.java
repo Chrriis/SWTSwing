@@ -256,7 +256,7 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return "";
-	return text;
+	return text == null? "": text;
 }
 
 //boolean mnemonicHit (char key) {

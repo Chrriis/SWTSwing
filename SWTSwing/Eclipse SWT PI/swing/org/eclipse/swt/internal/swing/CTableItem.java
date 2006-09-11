@@ -161,7 +161,7 @@ public interface CTableItem {
     }
 
     public String getText() {
-      return text;
+      return text == null? "": text;
     }
 
     protected Icon icon;
@@ -205,6 +205,8 @@ public interface CTableItem {
     }
 
     public String toString() {
+      // Ensures data is present for virtual tables
+      ((CTableItemImplementation)tableItem).handle.getText();
       return getText();
     }
 

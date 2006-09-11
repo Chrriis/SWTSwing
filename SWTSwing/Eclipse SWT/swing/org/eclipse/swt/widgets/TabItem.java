@@ -221,8 +221,8 @@ public void setControl (Control control) {
 	}
 	if (this.control != null && this.control.isDisposed ()) {
 		this.control = null;
+		handle.remove(this.control.handle);
 	}
-  handle.remove(control.handle);
   this.control = control;
   if(control != null) {
     handle.add(control.handle, BorderLayout.CENTER);

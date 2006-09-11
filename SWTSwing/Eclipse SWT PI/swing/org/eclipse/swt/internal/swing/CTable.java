@@ -17,7 +17,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
@@ -70,13 +69,13 @@ class CTableImplementation extends JScrollPane implements CTable {
       this.table = table;
     }
     public int getRowCount() {
-      return itemList.size();
+      return handle.getItemCount();
     }
     public int getColumnCount() {
       return table.getColumnCount();
     }
     public Object getValueAt(int rowIndex, int columnIndex) {
-      return ((CTableItem)itemList.get(rowIndex)).getTableItemObject(columnIndex);
+      return table.getItem(rowIndex).handle.getTableItemObject(columnIndex);
     }
   }
 
@@ -341,15 +340,15 @@ class CTableImplementation extends JScrollPane implements CTable {
     return table.getColumnModel();
   }
 
-  protected ArrayList itemList = new ArrayList();
+//  protected ArrayList itemList = new ArrayList();
 
   public void addItem(CTableItem tableItem, int index) {
-    itemList.add(index, tableItem);
+//    itemList.add(index, tableItem);
     getModel().fireTableRowsInserted(index, index);
   }
 
   public void removeItem(int index) {
-    itemList.remove(index);
+//    itemList.remove(index);
     getModel().fireTableRowsDeleted(index, index);
   }
   
@@ -358,8 +357,12 @@ class CTableImplementation extends JScrollPane implements CTable {
   }
 
   public int getPreferredColumnWidth(int columnIndex) {
-    int count = itemList.size();
+    int count = handle.getItemCount();
     int newWidth = Math.max(table.getColumnModel().getColumn(columnIndex).getMinWidth(), 10);
+    if((handle.getStyle() & SWT.VIRTUAL) != 0) {
+      // TODO: is there a way to know the preferred size? The method below generates an exception (cf Snippet144)
+      return newWidth;
+    }
     // TODO: is there a better way than this hack?
     for(int i=0; i<count; i++) {
       javax.swing.table.TableCellRenderer renderer = getCellRenderer(i, columnIndex);

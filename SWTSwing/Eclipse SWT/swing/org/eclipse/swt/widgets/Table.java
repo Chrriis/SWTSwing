@@ -168,22 +168,28 @@ public void addSelectionListener (SelectionListener listener) {
 
 boolean checkData (TableItem item, boolean redraw) {
   if ((style & SWT.VIRTUAL) == 0) return true;
-	if (!item.cached) {
-		item.cached = true;
-		Event event = new Event ();
-		event.item = item;
-		currentItem = item;
-		sendEvent (SWT.SetData, event);
-		//widget could be disposed at this point
-		currentItem = null;
-		if (isDisposed () || item.isDisposed ()) return false;
-//		if (redraw) {
-//			if (!setScrollWidth (item, false)) {
-//				item.redraw ();
-//			}
-//		}
-	}
-	return true;
+  return checkData (item, indexOf (item), redraw);
+}
+
+boolean checkData (TableItem item, int index, boolean redraw) {
+  if ((style & SWT.VIRTUAL) == 0) return true;
+  if (!item.cached) {
+    item.cached = true;
+    Event event = new Event ();
+    event.item = item;
+    event.index = index;
+    currentItem = item;
+    sendEvent (SWT.SetData, event);
+    //widget could be disposed at this point
+    currentItem = null;
+    if (isDisposed () || item.isDisposed ()) return false;
+//    if (redraw) {
+//      if (!setScrollWidth (item, false)) {
+//        item.redraw ();
+//      }
+//    }
+  }
+  return true;
 }
 
 protected void checkSubclass () {
@@ -511,10 +517,12 @@ protected Container createHandle () {
 void createItem (TableColumn column, int index) {
   for (int i=0; i<itemList.size(); i++) {
     TableItem item = (TableItem)itemList.get(i);
-    item.handle.insertColumn(index);
-    if (index == 0) {
-      item.text = "";
-      item.image = null;
+    if(item != null) {
+      item.handle.insertColumn(index);
+      if (index == 0) {
+        item.text = "";
+        item.image = null;
+      }
     }
   }
   TableColumnModel columnModel = ((CTable)handle).getColumnModel();
@@ -626,7 +634,9 @@ void destroyItem (TableColumn column) {
   int index = columnList.indexOf(column);
   for (int i=0; i<itemList.size(); i++) {
     TableItem item = (TableItem)itemList.get(i);
-    item.handle.removeColumn(index);
+    if(item != null) {
+      item.handle.removeColumn(index);
+    }
   }
   columnList.remove(index);
   if(columnList.isEmpty()) {
@@ -728,7 +738,7 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-  Utils.notImplemented(); return null;
+  Utils.notImplemented(); int[] order = new int[getColumnCount()]; for(int i=0; i<order.length; i++) {order[i] = i;} return order;
 //	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 //	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
 //	if (count == 1 && columns [0] == null) return new int [0];
@@ -852,7 +862,7 @@ public TableItem getItem (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	return (TableItem)itemList.get(index);
+	return _getItem(index);
 }
 
 /**
@@ -883,7 +893,16 @@ public TableItem getItem (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
   int row = ((CTable)handle).rowAtPoint(new java.awt.Point(point.x, point.y));
   if(row < 0) return null;
-  return (TableItem)itemList.get(row);
+  return _getItem(row);
+}
+
+TableItem _getItem (int index) {
+  TableItem tableItem = (TableItem)itemList.get(index);
+  if ((style & SWT.VIRTUAL) == 0) return tableItem;
+  if (tableItem != null) return tableItem;
+  tableItem = new TableItem (this, SWT.NONE, -1, false);
+  itemList.set(index, tableItem);
+  return tableItem;
 }
 
 /**
@@ -935,6 +954,13 @@ public int getItemHeight () {
  */
 public TableItem [] getItems () {
 	checkWidget ();
+  if ((style & SWT.VIRTUAL) != 0) {
+    TableItem[] items = new TableItem[getItemCount()];
+    for(int i=0; i<items.length; i++) {
+      items[i] = _getItem(i);
+    }
+    return items;
+  }
   return (TableItem[])itemList.toArray(new TableItem[0]);
 }
 
@@ -988,7 +1014,7 @@ public TableItem [] getSelection () {
   int count = 0;
   for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
     if(selectionModel.isSelectedIndex(i)) {
-      selectedIndices_[count++] = (TableItem)itemList.get(i);
+      selectedIndices_[count++] = _getItem(i);
     }
   }
   TableItem[] selectedIndices = new TableItem[count];
@@ -1349,7 +1375,14 @@ public void remove (int [] indices) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
   for(int i=newIndices.length-1; i>=0; i--) {
-    ((TableItem)itemList.get(newIndices[i])).dispose();
+    int index = newIndices[i];
+    TableItem tableItem = (TableItem)itemList.get(index);
+    if(tableItem != null) {
+      tableItem.dispose();
+    } else {
+      itemList.remove(index);
+      ((CTable)handle).removeItem(index);
+    }
   }
 }
 
@@ -1371,7 +1404,13 @@ public void remove (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	((TableItem)itemList.get(index)).dispose();
+  TableItem tableItem = (TableItem)itemList.get(index);
+  if(tableItem != null) {
+    tableItem.dispose();
+  } else {
+    itemList.remove(index);
+    ((CTable)handle).removeItem(index);
+  }
 }
 
 /**
@@ -1398,7 +1437,13 @@ public void remove (int start, int end) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
   for(int i=end; i>=start; i--) {
-    ((TableItem)itemList.get(i)).dispose();
+    TableItem tableItem = (TableItem)itemList.get(i);
+    if(tableItem != null) {
+      tableItem.dispose();
+    } else {
+      itemList.remove(i);
+      ((CTable)handle).removeItem(i);
+    }
   }
 }
 
@@ -1413,7 +1458,13 @@ public void remove (int start, int end) {
 public void removeAll () {
 	checkWidget ();
   for(int i=itemList.size()-1; i>=0; i--) {
-    ((TableItem)itemList.get(i)).dispose();
+    TableItem tableItem = (TableItem)itemList.get(i);
+    if(tableItem != null) {
+      tableItem.dispose();
+    } else {
+      itemList.remove(i);
+      ((CTable)handle).removeItem(i);
+    }
   }
 }
 
@@ -1834,6 +1885,7 @@ public void setItemCount (int count) {
 			itemList.set(i, new TableItem (this, SWT.NONE, i, true));
 		}
 	}
+  ((CTable)handle).getModel().fireTableDataChanged();
 //	if (!isVirtual) setRedraw (true);
 }
 

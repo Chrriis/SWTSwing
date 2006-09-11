@@ -48,7 +48,7 @@ public class TableItem extends Item {
    * platforms and should never be accessed from application code.
    * </p>
    */ 
-  CTableItem handle;
+  public CTableItem handle;
 	Table parent;
 //	String [] strings;
 //	Image [] images;
@@ -801,7 +801,7 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
-  handle.getTableItemObject(index).setIcon(new ImageIcon(image.handle));
+  handle.getTableItemObject(index).setIcon(image != null? new ImageIcon(image.handle): null);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTable)parent.handle).getModel().fireTableCellUpdated(index, index);
   parent.adjustColumnWidth();

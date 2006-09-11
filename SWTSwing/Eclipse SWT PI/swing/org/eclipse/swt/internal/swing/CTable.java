@@ -433,7 +433,11 @@ class CTableImplementation extends JScrollPane implements CTable {
   }
 
   public void setTopIndex(int index) {
-    ensureRowVisible(index);
+    int rowCount = table.getRowCount();
+    if(rowCount == 0) {
+      return;
+    }
+    ensureRowVisible(rowCount - 1);
     if(index != 0) {
       ensureRowVisible(index);
     }

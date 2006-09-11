@@ -131,6 +131,7 @@ class CShellFrame extends JFrame implements CShell {
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
+      scrollPane.setBorder(null);
       contentPane.add(scrollPane, BorderLayout.CENTER);
       scrollPane.getViewport().setView(panel);
     } else {
@@ -375,6 +376,7 @@ class CShellDialog extends JDialog implements CShell {
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
+      scrollPane.setBorder(null);
       contentPane.add(scrollPane, BorderLayout.CENTER);
       scrollPane.getViewport().setView(panel);
     } else {

@@ -81,6 +81,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
+      scrollPane.setBorder(null);
       add(scrollPane, BorderLayout.CENTER);
       scrollPane.getViewport().setView(panel);
     } else {

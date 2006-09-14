@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
  
 import java.awt.Container;
 import java.util.ArrayList;
+import java.util.EventObject;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.table.JTableHeader;
@@ -22,10 +23,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.Utils;
+import org.eclipse.swt.internal.swing.CTable.CellPaintEvent;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -542,7 +545,7 @@ void createItem (TableItem item, int index) {
 	int count = getItemCount();
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
   itemList.add(index, item);
-  ((CTable)handle).addItem(item.handle, index);
+  ((CTable)handle).addItem(index);
 }
 
 void createWidget () {
@@ -1877,6 +1880,7 @@ public void setItemCount (int count) {
   itemList.ensureCapacity(count);
   for(int i=itemCount; i<count; i++) {
     itemList.add(null);
+    ((CTable)handle).addItem(index);
   }
 	if (isVirtual) {
 //  TODO: notify item deleted?
@@ -3235,5 +3239,108 @@ static int checkStyle (int style) {
 //	}
 //	return super.wmNotifyChild (wParam, lParam);
 //}
+
+protected Point getInternalOffset() {
+  JTableHeader tableHeader = ((CTable)handle).getTableHeader();
+  if(tableHeader.isVisible()) {
+    return new Point(super.getInternalOffset().x, tableHeader.getHeight());
+  }
+  return super.getInternalOffset();
+}
+
+public void processEvent(EventObject e) {
+  if(e instanceof CellPaintEvent) {
+    switch(((CellPaintEvent)e).getType()) {
+    case CellPaintEvent.ERASE_TYPE: if(!hooks(SWT.EraseItem)) { super.processEvent(e); return; } break;
+    case CellPaintEvent.PAINT_TYPE: if(!hooks(SWT.PaintItem)) { super.processEvent(e); return; } break;
+    case CellPaintEvent.MEASURE_TYPE: if(!hooks(SWT.MeasureItem)) { super.processEvent(e); return; } break;
+    default: super.processEvent(e); return;
+    }
+  } else { super.processEvent(e); return; }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  if(e instanceof CellPaintEvent) {
+    CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
+    switch(cellPaintEvent.getType()) {
+    case CellPaintEvent.ERASE_TYPE: {
+      TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+      Event event = new Event();
+      event.x = cellBounds.x;
+      event.y = cellBounds.y;
+      event.width = cellBounds.width;
+      event.height = cellBounds.height;
+      event.item = tableItem;
+      event.index = cellPaintEvent.column;
+      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+      event.gc = new GC(this);
+      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+//      event.gc.isSwingPainting = true;
+      sendEvent(SWT.EraseItem, event);
+      if(event.doit) {
+        cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
+        cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+        cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+        cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
+      } else {
+        cellPaintEvent.ignoreDrawForeground = true;
+        cellPaintEvent.ignoreDrawBackground = true;
+        cellPaintEvent.ignoreDrawSelection = true;
+        cellPaintEvent.ignoreDrawFocused = true;
+      }
+//      event.gc.isSwingPainting = false; 
+      break;
+    }
+    case CellPaintEvent.PAINT_TYPE: {
+      TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+      Event event = new Event();
+      event.x = cellBounds.x;
+      event.y = cellBounds.y;
+      event.width = cellBounds.width;
+      event.height = cellBounds.height;
+      event.item = tableItem;
+      event.index = cellPaintEvent.column;
+      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+      event.gc = new GC(this);
+      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+      event.gc.isSwingPainting = true;
+      sendEvent(SWT.PaintItem, event);
+      event.gc.isSwingPainting = false; 
+      break;
+    }
+    case CellPaintEvent.MEASURE_TYPE:
+      TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+//      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+      Event event = new Event();
+//      event.x = cellBounds.x;
+//      event.y = cellBounds.y;
+//      event.width = cellBounds.width;
+//      event.height = cellBounds.height;
+      event.height = cellPaintEvent.rowHeight;
+      event.item = tableItem;
+      event.index = cellPaintEvent.column;
+      event.gc = new GC(this);
+//      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+      sendEvent(SWT.MeasureItem, event);
+//      cellPaintEvent.rowHeight -= event.height - cellBounds.height;
+      cellPaintEvent.rowHeight = event.height;
+      break;
+    }
+  }
+  super.processEvent(e);
+  display.stopExclusiveSection();
+}
 
 }

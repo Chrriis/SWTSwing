@@ -18,6 +18,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTableItem;
@@ -250,7 +251,8 @@ public Rectangle getBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   java.awt.Rectangle rect = ((CTable)parent.handle).getCellRect(parent.indexOf(this), index, false);
-  return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+  Point offset = parent.getInternalOffset();
+  return new Rectangle(rect.x + offset.x, rect.y + offset.y, rect.width, rect.height);
 }
 
 /**

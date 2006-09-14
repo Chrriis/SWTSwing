@@ -162,7 +162,7 @@ public GC(Drawable drawable, int style) {
   if(handle == null) {
     // When the component gets hidden, the graphics would be null. In that case we return a bogus graphics.
     handle = createDefaultGraphics();
-    isValid = true;
+    isSwingPainting = true;
   }
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
@@ -1548,14 +1548,25 @@ public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
-  // TODO: find how to really implement this method (for now, just do not handle delimiters...
+  String[] tokens = string.replaceAll("\t", "    ") .split("\n");
   boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
+  java.awt.FontMetrics fm = handle.getFontMetrics();
+  int fmHeight = fm.getHeight();
   if(!isTransparent) {
-    Point extent = stringExtent(string);
-    fillRectangle(x, y, extent.x, extent.y);
+    int width = 0;
+    int height = tokens.length * fmHeight;
+    for(int i=0; i<tokens.length; i++) {
+      width = Math.max(width, fm.stringWidth(tokens[i]));
+    }
+    java.awt.Color oldColor = handle.getColor();
+    handle.setColor(data.background);
+    fillRectangle(x, y, width, height);
+    handle.setColor(oldColor);
   }
-  // TODO: modify or draw the text according to the flags.
-  drawString(string, x, y, isTransparent);
+  for(int i=0; i<tokens.length; i++) {
+    int maxAscent = fm.getMaxAscent();
+    handle.drawString(tokens[i], x, y + maxAscent + i * fmHeight);
+  }
 //	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 //	int length = buffer.length();
 //	if (length == 0) return;
@@ -3732,8 +3743,17 @@ public Point textExtent(String string, int flags) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  // TODO: Implement this method properly
-  return stringExtent(string);
+  String[] tokens = string.replaceAll("\t", "    ") .split("\n");
+  java.awt.FontMetrics fm = handle.getFontMetrics();
+  // TODO: check why the CTabFolder queries the textExtent and this is null sometimes (cf Azureus, Details>Peers)
+  if(fm == null) return new Point(0, 0);
+  int fmHeight = fm.getHeight();
+  int width = 0;
+  int height = tokens.length * fmHeight;
+  for(int i=0; i<tokens.length; i++) {
+    width = Math.max(width, fm.stringWidth(tokens[i]));
+  }
+  return new Point(width, height);
 }
 
 /**
@@ -3805,12 +3825,12 @@ BasicStroke getCurrentBasicStroke() {
   return new BasicStroke();
 }
 
-public boolean isValid = false;
+public boolean isSwingPainting = false;
 Graphics2D validGraphics;
 
 Graphics2D getGraphics() {
   if(handle == null) return null;
-  if(isValid || !(drawable instanceof Control)) return handle;
+  if(isSwingPainting || !(drawable instanceof Control)) return handle;
   // TODO: check that this optimization is correct.
   if(validGraphics != null) return validGraphics;
   Container container = ((Control)drawable).handle;

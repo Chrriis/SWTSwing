@@ -129,11 +129,11 @@ class CLinkImplementation extends JEditorPane implements CLink {
             sb.append("&amp;");
           }
           break;
-        case '\'':
-          if(start < 0) {
-            sb.append("&apos;");
-          }
-          break;
+//        case '\'':
+//          if(start < 0) {
+//            sb.append("&apos;");
+//          }
+//          break;
         case '\"':
           if(start < 0) {
             sb.append("&quot;");

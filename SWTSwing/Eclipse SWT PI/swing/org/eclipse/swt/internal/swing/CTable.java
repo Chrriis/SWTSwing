@@ -13,10 +13,13 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.awt.event.PaintEvent;
+import java.util.EventObject;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
@@ -69,7 +72,9 @@ class CTableImplementation extends JScrollPane implements CTable {
       this.table = table;
     }
     public int getRowCount() {
-      return handle.getItemCount();
+//      if(table.isDisposed()) return 0;
+//      return table.getItemCount();
+      return rowCount;
     }
     public int getColumnCount() {
       return table.getColumnCount();
@@ -83,9 +88,15 @@ class CTableImplementation extends JScrollPane implements CTable {
     handle = table;
     this.table = new JTable(new CTableModel(table)) {
       public boolean getScrollableTracksViewportWidth() {
+        if(handle.isDisposed()) {
+          return false;
+        }
         return handle.getColumnCount() == 0 && getPreferredSize().width < getParent().getWidth();
       }
       public boolean getScrollableTracksViewportHeight() {
+        if(handle.isDisposed()) {
+          return false;
+        }
         return getPreferredSize().height < getParent().getHeight();
       }
       public Dimension getPreferredScrollableViewportSize() {
@@ -105,6 +116,7 @@ class CTableImplementation extends JScrollPane implements CTable {
         width += columnCount;
         return new Dimension(width, getPreferredSize().height);
       }
+      final JTable table = this;
       protected TableCellRenderer renderer = new DefaultTableCellRenderer() {
         protected boolean isInitialized;
         protected boolean isOpaque;
@@ -115,6 +127,23 @@ class CTableImplementation extends JScrollPane implements CTable {
         protected Color selectionBackground;
         protected Font selectionFont;
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+          if(value instanceof CTableItem.TableItemObject) {
+            CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.ERASE_TYPE);
+            event.row = row;
+            event.column = column;
+            event.tableItem = ((CTableItem.TableItemObject)value).getTableItem();
+            event.ignoreDrawSelection = !isSelected;
+            event.ignoreDrawFocused = !hasFocus;
+            handle.processEvent(event);
+            ignoreDrawForeground = event.ignoreDrawForeground;
+            ignoreDrawBackground = event.ignoreDrawBackground;
+            ignoreDrawSelection = event.ignoreDrawSelection;
+            ignoreDrawFocused = event.ignoreDrawFocused;
+            isSelected = !event.ignoreDrawSelection;
+            hasFocus = !event.ignoreDrawFocused;
+          }
+          this.row = row;
+          this.column = column;
           if(!isInitialized) {
             Component c = super.getTableCellRendererComponent(CTableImplementation.this.table, "", true, false, 0, 0);
             if(c instanceof JComponent) {
@@ -137,13 +166,13 @@ class CTableImplementation extends JScrollPane implements CTable {
           if(!(value instanceof CTableItem.TableItemObject)) {
             return c;
           }
+          CTableItem.TableItemObject tableItemObject = (CTableItem.TableItemObject)value;
           c.setForeground(isSelected? selectionForeground: defaultForeground);
           c.setBackground(isSelected? selectionBackground: defaultBackground);
           c.setFont(isSelected? selectionFont: defaultFont);
           if(c instanceof JComponent) {
             ((JComponent)c).setOpaque(isOpaque);
           }
-          CTableItem.TableItemObject tableItemObject = (CTableItem.TableItemObject)value;
           if(tableItemObject != null) {
             if(c instanceof JLabel) {
               TableColumn tableColumn = table.getColumnModel().getColumn(table.convertColumnIndexToView(column));
@@ -154,11 +183,12 @@ class CTableImplementation extends JScrollPane implements CTable {
               }
               label.setIcon(tableItemObject.getIcon());
             }
+            CTableItem cTableItem = tableItemObject.getTableItem();
             Color foreground = tableItemObject.getForeground();
             if(foreground != null) {
               c.setForeground(foreground);
             } else {
-              foreground = tableItemObject.getTableItem().getForeground();
+              foreground = cTableItem.getForeground();
               if(foreground != null) {
                 c.setForeground(foreground);
               }
@@ -171,7 +201,7 @@ class CTableImplementation extends JScrollPane implements CTable {
                 }
                 c.setBackground(background);
               } else {
-                background = tableItemObject.getTableItem().getBackground();
+                background = cTableItem.getBackground();
                 if(background != null) {
                   c.setBackground(background);
                 }
@@ -181,7 +211,7 @@ class CTableImplementation extends JScrollPane implements CTable {
             if(font != null) {
               c.setFont(font);
             } else {
-              font = tableItemObject.getTableItem().getFont();
+              font = cTableItem.getFont();
               if(font != null) {
                 c.setFont(font);
               }
@@ -196,6 +226,44 @@ class CTableImplementation extends JScrollPane implements CTable {
             checkBoxCellRenderer.getStateCheckBox().setSelected(tableItemObject.isChecked());
           }
           return checkBoxCellRenderer;
+        }
+        protected int row;
+        protected int column;
+        protected boolean ignoreDrawForeground;
+        protected boolean ignoreDrawBackground;
+        protected boolean ignoreDrawSelection;
+        protected boolean ignoreDrawFocused;
+        protected Graphics graphics;
+        public Graphics getGraphics() {
+          if(graphics != null) {
+            Graphics g = graphics.create();
+            g.setClip(new Rectangle(getSize()));
+            return g;
+          }
+          return super.getGraphics();
+        }
+        protected void paintComponent (Graphics g) {
+          if(ignoreDrawForeground) {
+            setText(null);
+          }
+          if(ignoreDrawBackground) {
+            setOpaque(false);
+          }
+          graphics = g;
+          super.paintComponent(g);
+          Object value = getValueAt(row, column);
+          if(value instanceof CTableItem.TableItemObject) {
+            CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.PAINT_TYPE);
+            event.row = row;
+            event.column = column;
+            event.tableItem = ((CTableItem.TableItemObject)value).getTableItem();
+            event.ignoreDrawForeground = this.ignoreDrawForeground;
+            event.ignoreDrawBackground = this.ignoreDrawBackground;
+            event.ignoreDrawSelection = this.ignoreDrawSelection;
+            event.ignoreDrawFocused = this.ignoreDrawFocused;
+            handle.processEvent(event);
+          }
+          graphics = null;
         }
       };
       public TableCellRenderer getCellRenderer(int row, int column) {
@@ -212,6 +280,56 @@ class CTableImplementation extends JScrollPane implements CTable {
           }
         };
       }
+      protected Graphics graphics;
+      public Graphics getGraphics() {
+        if(graphics != null) {
+          Graphics g = graphics.create();
+          g.setClip(new Rectangle(getSize()));
+          return g;
+        }
+        return super.getGraphics();
+      }
+      protected void paintComponent (Graphics g) {
+        graphics = g;
+        super.paintComponent(g);
+//        if(backgroundImageIcon != null) {
+//          Dimension size = getSize();
+//          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
+//        }
+        handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+        graphics = null;
+      }
+//      protected Set validItemSet = new HashSet();
+//      public int getRowHeight(int row) {
+//        int rowHeight = super.getRowHeight(row);
+//        int columnCount = getColumnCount();
+//        if(columnCount == 0 || handle.isDisposed()) {
+//          return rowHeight;
+//        }
+//        if(adjustItemHeight) {
+//          adjustItemHeight = false;
+//          validItemSet.clear();
+//        }
+//        if(validItemSet.contains(new Integer(row))) {
+//          return rowHeight;
+//        }
+//        validItemSet.add(new Integer(row));
+//        int maxHeight = 0;
+//        for(int column=0; column<columnCount; column++) {
+//          Object value = handle.getItem(row).handle.getTableItemObject(column);
+//          if(value instanceof CTableItem.TableItemObject) {
+//            CellPaintEvent event = new CellPaintEvent(this, CellPaintEvent.MEASURE_TYPE);
+//            event.row = row;
+//            event.column = column;
+//            event.tableItem = ((CTableItem.TableItemObject)value).getTableItem();
+//            event.rowHeight = rowHeight;
+//            handle.processEvent(event);
+//            maxHeight = Math.max(event.rowHeight, maxHeight);
+//          }
+//        }
+//        setRowHeight(row, maxHeight);
+//        return maxHeight;
+//      }
     };
     this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     JTableHeader tableHeader = this.table.getTableHeader();
@@ -340,15 +458,18 @@ class CTableImplementation extends JScrollPane implements CTable {
     return table.getColumnModel();
   }
 
-//  protected ArrayList itemList = new ArrayList();
+//  protected boolean adjustItemHeight;
+  protected int rowCount;
 
-  public void addItem(CTableItem tableItem, int index) {
-//    itemList.add(index, tableItem);
+  public void addItem(int index) {
+    rowCount++;
+//    adjustItemHeight = true;
     getModel().fireTableRowsInserted(index, index);
   }
 
   public void removeItem(int index) {
-//    itemList.remove(index);
+//    adjustItemHeight = true;
+    rowCount--;
     getModel().fireTableRowsDeleted(index, index);
   }
   
@@ -476,6 +597,33 @@ class CTableImplementation extends JScrollPane implements CTable {
 
 public interface CTable extends CComposite {
 
+  public static class CellPaintEvent extends EventObject {
+  
+    public static final int ERASE_TYPE = 1;
+    public static final int PAINT_TYPE = 2;
+    public static final int MEASURE_TYPE = 3;
+    protected int type;
+    public int row;
+    public int column;
+    public CTableItem tableItem;
+    public boolean ignoreDrawForeground;
+    public boolean ignoreDrawBackground;
+    public boolean ignoreDrawSelection;
+    public boolean ignoreDrawFocused;
+    public int rowHeight;
+
+    CellPaintEvent(Object source, int type) {
+      super(source);
+      this.type = type;
+    }
+
+    public int getType() {
+      return type;
+    }
+    
+  }
+  
+  
   public static class Instanciator {
     private Instanciator() {}
 
@@ -499,7 +647,7 @@ public interface CTable extends CComposite {
 
   public TableColumnModel getColumnModel();
 
-  public void addItem(CTableItem tableItem, int index);
+  public void addItem(int index);
 
   public void removeItem(int index);
 

@@ -255,4 +255,6 @@ public interface CTableItem {
 
   public Font getFont();
 
+  public TableItem getTableItem();
+
 }

@@ -4118,11 +4118,10 @@ public void processEvent(AWTEvent e) {
     return;
   }
   switch(id) {
-  // TODO: only send some of the events if they are hooked
   case java.awt.event.PaintEvent.PAINT: {
     Event event = new Event();
     event.gc = new GC(this);
-    event.gc.isValid = true;
+    event.gc.isSwingPainting = true;
     Rectangle r = this.getBounds ();
     event.width = r.width;
     event.height = r.height;
@@ -4133,7 +4132,7 @@ public void processEvent(AWTEvent e) {
         canvas.caret.paintCaret (event.gc);
       }
     }
-    event.gc.isValid = false;
+    event.gc.isSwingPainting = false;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_DRAGGED:
@@ -4272,6 +4271,12 @@ public void processEvent(AWTEvent e) {
   display.stopExclusiveSection();
 }
 
+protected static final Point DEFAULT_EVENT_OFFSET = new Point(0, 0);
+
+protected Point getInternalOffset() {
+  return DEFAULT_EVENT_OFFSET;
+}
+
 protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
   switch(ke.getKeyCode()) {
   case java.awt.event.KeyEvent.VK_TAB:
@@ -4353,8 +4358,9 @@ Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputStat
   } else {
     point = SwingUtilities.convertPoint(me.getComponent(), point, ((CControl)handle).getClientArea());
   }
-  event.x = point.x;
-  event.y = point.y;
+  Point offset = getInternalOffset();
+  event.x = point.x + offset.x;
+  event.y = point.y + offset.y;
   if (SwingUtilities.isLeftMouseButton (me)) {
     event.button = 1;
   } else if (SwingUtilities.isRightMouseButton (me)) {

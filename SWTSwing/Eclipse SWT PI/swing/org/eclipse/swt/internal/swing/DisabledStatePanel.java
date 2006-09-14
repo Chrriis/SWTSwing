@@ -106,6 +106,9 @@ public class DisabledStatePanel extends JPanel {
   }
 
   protected void processEvent(AWTEvent e) {
+    if(control.isDisposed()) {
+      return;
+    }
     Composite parent = control.getParent();
     if(e instanceof MouseEvent) {
       MouseEvent me = (MouseEvent)e;

@@ -1965,7 +1965,7 @@ public boolean readAndDispatch () {
   if(isRealDispatch()) {
     boolean result = swingEventQueue.dispatchEvent();
     runDeferredEvents ();
-    return result;
+    return result || isDisposed();
   }
   if(event != null) {
     try {
@@ -1984,11 +1984,11 @@ public boolean readAndDispatch () {
     return true;
   }
   if(SwingUtilities.isEventDispatchThread()) {
-    return false;
+    return isDisposed();
   }
   synchronized(UI_LOCK) {
     if(exclusiveSectionCount == 0) {
-      return false;
+      return isDisposed();
     }
     try {
       UI_LOCK.notify();

@@ -34,6 +34,23 @@ public class Utils {
 
   protected Utils() {}
 
+  protected static final String LIGHTPOPUPS_PROPERTY = "swt.swing.lightpopups";
+  protected static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
+  protected static final String LOOK_AND_FEEL_DECORATED_PROPERTY = "swt.swing.laf.decorated";
+
+  public static boolean isLightweightPopups() {
+    return "true".equals(System.getProperty(LIGHTPOPUPS_PROPERTY));
+  }
+
+  public static String getLookAndFeel() {
+    return System.getProperty(LOOK_AND_FEEL_PROPERTY);
+  }
+
+  public static Boolean isLookAndFeelDecorated() {
+    String value = System.getProperty(LOOK_AND_FEEL_DECORATED_PROPERTY);
+    return value == null? null: new Boolean(value);
+  }
+
   protected static Canvas panel = new Canvas();
 
   public static Component getDefaultComponent() {

@@ -39,6 +39,7 @@ class CComboImplementation extends JComboBox implements CCombo {
 
   public CComboImplementation(Combo combo, int style) {
     this.handle = combo;
+    setLightWeightPopupEnabled(Utils.isLightweightPopups());
     init(style);
   }
 

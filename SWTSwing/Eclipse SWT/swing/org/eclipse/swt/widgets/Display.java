@@ -42,8 +42,10 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
@@ -322,9 +324,6 @@ public Display () {
 	this (null);
 }
 
-static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
-static final String LOOK_AND_FEEL_DECORATED_PROPERTY = "swt.swing.laf.decorated";
-
 static class SwingEventQueue extends EventQueue {
   protected AWTEvent event;
   public boolean sleep() {
@@ -365,14 +364,17 @@ static boolean isRealDispatch() {
 public Display (DeviceData data) {
 	super (data);
   boolean isLookAndFeelInstalled = false;
-  String lafName = System.getProperty(LOOK_AND_FEEL_PROPERTY);
+  boolean lightweightPopups = Utils.isLightweightPopups();
+  ToolTipManager.sharedInstance().setLightWeightPopupEnabled(lightweightPopups);
+  JPopupMenu.setDefaultLightWeightPopupEnabled(lightweightPopups);
+  String lafName = Utils.getLookAndFeel();
   if(lafName != null) {
     try {
       javax.swing.UIManager.setLookAndFeel(lafName);
       isLookAndFeelInstalled = true;
-      String lafDecoration = System.getProperty(LOOK_AND_FEEL_DECORATED_PROPERTY);
-      if(lafDecoration != null) {
-        boolean isLafDecrated = Boolean.parseBoolean(lafDecoration);
+      Boolean isLookAndFeelDecorated = Utils.isLookAndFeelDecorated();
+      if(isLookAndFeelDecorated != null) {
+        boolean isLafDecrated = isLookAndFeelDecorated.booleanValue();
         JFrame.setDefaultLookAndFeelDecorated(isLafDecrated);
         JDialog.setDefaultLookAndFeelDecorated(isLafDecrated);
       }

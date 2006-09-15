@@ -175,7 +175,10 @@ public void clearContents(int clipboards) {
       Toolkit.getDefaultToolkit().getSystemClipboard().setContents(null, null);
     }
     if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-      Toolkit.getDefaultToolkit().getSystemSelection().setContents(null, null);
+      java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+      if(systemSelection != null) {
+        systemSelection.setContents(null, null);
+      }
     }
   } catch(Exception e) {
     DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
@@ -283,7 +286,10 @@ public Object getContents(Transfer transfer, int clipboards) {
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
   ArrayList clipboardList = new ArrayList();
   if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-    clipboardList.add(Toolkit.getDefaultToolkit().getSystemSelection());
+    java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+    if(systemSelection != null) {
+      clipboardList.add(systemSelection);
+    }
   }
   if ((clipboards & DND.CLIPBOARD) != 0) {
     clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
@@ -481,7 +487,10 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
   };
   ArrayList clipboardList = new ArrayList();
   if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-    clipboardList.add(Toolkit.getDefaultToolkit().getSystemSelection());
+    java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+    if(systemSelection != null) {
+      clipboardList.add(systemSelection);
+    }
   }
   if ((clipboards & DND.CLIPBOARD) != 0) {
     clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
@@ -539,7 +548,10 @@ public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
   ArrayList clipboardList = new ArrayList();
   if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-    clipboardList.add(Toolkit.getDefaultToolkit().getSystemSelection());
+    java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+    if(systemSelection != null) {
+      clipboardList.add(systemSelection);
+    }
   }
   if ((clipboards & DND.CLIPBOARD) != 0) {
     clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());

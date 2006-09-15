@@ -32,6 +32,9 @@ If everything is OK, your application runs using Swing's widgets.
 If you have the possibility, let SWTSwing run your UI code in its UI thread. To
 do this, place your UI code in a Runnable object, and invoke
 Display.swtExec(runnable)
+Alternatively, if your application uses the main thread as the UI thread, you
+can use the special Display.main(String[]) method, with the first parameter
+being the main class of your application, followed by the normal parameters.
 If this is isn't possible, the library works with decreased performance.
 
 You can set the Look And Feel of your application by setting the system property

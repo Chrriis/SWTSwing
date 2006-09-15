@@ -1206,8 +1206,10 @@ public Graphics2D internal_new_GC (GCData data) {
   }
   Component component = ((CControl)handle).getClientArea();
   Graphics2D g2D = (Graphics2D)component.getGraphics();
-  Point internalOffset = getInternalOffset();
-  g2D.translate(-internalOffset.x, -internalOffset.y);
+  if(g2D != null) {
+    Point internalOffset = getInternalOffset();
+    g2D.translate(-internalOffset.x, -internalOffset.y);
+  }
 //  java.awt.Point point = new java.awt.Point(0, 0);
 //  point = SwingUtilities.convertPoint(component, point, handle);
 //  g2D.translate(-point.x, -point.y);

@@ -205,8 +205,10 @@ public interface CTableItem {
     }
 
     public String toString() {
-      // Ensures data is present for virtual tables
-      ((CTableItemImplementation)tableItem).handle.getText();
+      if(!((CTableItemImplementation)tableItem).handle.isDisposed()) {
+        // Ensures data is present for virtual tables
+        ((CTableItemImplementation)tableItem).handle.getText();
+      }
       return getText();
     }
 

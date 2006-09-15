@@ -36,6 +36,8 @@ import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -3834,7 +3836,8 @@ Graphics2D getGraphics() {
   // TODO: check that this optimization is correct.
   if(validGraphics != null) return validGraphics;
   Container container = ((Control)drawable).handle;
-  Graphics2D g = (Graphics2D)((CControl)container).getClientArea().getGraphics();
+  Container clientArea = ((CControl)container).getClientArea();
+  Graphics2D g = (Graphics2D)clientArea.getGraphics();
   int offsetX = 0;
   int offsetY = 0;
   for(Container parent = container; parent != null && parent.isLightweight(); parent = parent.getParent()) {
@@ -3848,6 +3851,15 @@ Graphics2D getGraphics() {
     offsetY += parent.getY();
   }
   validGraphics = g;
+  // Duplicate from Control.getInternalOffset()
+  if(clientArea != container) {
+    if(clientArea.getParent() instanceof JViewport) {
+      JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
+      if(columnHeader != null && columnHeader.isVisible()) {
+        g.translate(0, -columnHeader.getHeight());
+      }
+    }
+  }
   return g;
 }
 

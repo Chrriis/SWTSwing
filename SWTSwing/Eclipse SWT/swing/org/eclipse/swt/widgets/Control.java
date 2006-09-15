@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -1204,6 +1206,8 @@ public Graphics2D internal_new_GC (GCData data) {
   }
   Component component = ((CControl)handle).getClientArea();
   Graphics2D g2D = (Graphics2D)component.getGraphics();
+  Point internalOffset = getInternalOffset();
+  g2D.translate(-internalOffset.x, -internalOffset.y);
 //  java.awt.Point point = new java.awt.Point(0, 0);
 //  point = SwingUtilities.convertPoint(component, point, handle);
 //  g2D.translate(-point.x, -point.y);
@@ -4271,9 +4275,19 @@ public void processEvent(AWTEvent e) {
   display.stopExclusiveSection();
 }
 
-protected static final Point DEFAULT_EVENT_OFFSET = new Point(0, 0);
+static final Point DEFAULT_EVENT_OFFSET = new Point(0, 0);
 
-protected Point getInternalOffset() {
+Point getInternalOffset() {
+  Component clientArea = ((CControl)handle).getClientArea();
+  // Code is duplicated in GC.getGraphics()
+  if(clientArea != handle) {
+    if(clientArea.getParent() instanceof JViewport) {
+      JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
+      if(columnHeader != null && columnHeader.isVisible()) {
+        return new Point(0, columnHeader.getHeight());
+      }
+    }
+  }
   return DEFAULT_EVENT_OFFSET;
 }
 

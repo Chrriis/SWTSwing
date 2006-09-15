@@ -3240,14 +3240,6 @@ static int checkStyle (int style) {
 //	return super.wmNotifyChild (wParam, lParam);
 //}
 
-protected Point getInternalOffset() {
-  JTableHeader tableHeader = ((CTable)handle).getTableHeader();
-  if(tableHeader.isVisible()) {
-    return new Point(super.getInternalOffset().x, tableHeader.getHeight());
-  }
-  return super.getInternalOffset();
-}
-
 public void processEvent(EventObject e) {
   if(e instanceof CellPaintEvent) {
     switch(((CellPaintEvent)e).getType()) {

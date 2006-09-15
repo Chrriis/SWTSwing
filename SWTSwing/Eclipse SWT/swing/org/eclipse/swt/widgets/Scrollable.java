@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 
@@ -156,22 +157,22 @@ void createWidget () {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-
-    Container clientArea = ((CControl)handle).getClientArea();
-    java.awt.Rectangle bounds = clientArea.getBounds();
-    if(handle instanceof Window) {
-      return new Rectangle(0, 0, bounds.width, bounds.height);
-    }
-    Container parent = clientArea.getParent();
-    bounds = SwingUtilities.convertRectangle(parent, bounds, handle);
-    Container handleParent = handle.getParent();
-    while(parent != handleParent) {
-      Insets insets = parent.getInsets();
-      bounds.x -= insets.left;
-      bounds.y -= insets.top;
-      parent = parent.getParent();
-    }
-    return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+  Container clientArea = ((CControl)handle).getClientArea();
+  java.awt.Rectangle bounds = clientArea.getBounds();
+  if(handle instanceof Window) {
+    return new Rectangle(0, 0, bounds.width, bounds.height);
+  }
+  Container parent = clientArea.getParent();
+  bounds = SwingUtilities.convertRectangle(parent, bounds, handle);
+  Container handleParent = handle.getParent();
+  while(parent != handleParent) {
+    Insets insets = parent.getInsets();
+    bounds.x -= insets.left;
+    bounds.y -= insets.top;
+    parent = parent.getParent();
+  }
+  Point internalOffset = getInternalOffset();
+  return new Rectangle(bounds.x - internalOffset.x, bounds.y - internalOffset.y, bounds.width + internalOffset.x, bounds.height + internalOffset.y);
 //    forceResize ();
 //	RECT rect = new RECT ();
 //	int scrolledHandle = scrolledHandle ();

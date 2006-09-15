@@ -1871,7 +1871,7 @@ public void setItemCount (int count) {
 	while (index < itemCount) {
 		TableItem item = (TableItem)itemList.get(index);
 		if (!isVirtual) {
-      //TODO: notify item deleted?
+      ((CTable)handle).removeItem(index);
 		}
 		if (item != null && !item.isDisposed ()) item.release (false);
 		index++;

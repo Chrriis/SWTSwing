@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0003 (xxxxxxxxxxxxxxxxx):
 
+- Display does not tell to sleep if it is disposed.
 - Addition of "swt.swing.lightpopups" to enable lightweight popups.
 - Client area omited some insets, which is now fixed.
 - Table's VIRTUAL style is mostly supported.

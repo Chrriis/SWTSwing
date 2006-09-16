@@ -32,7 +32,7 @@ public class JCoolBar extends JPanel {
   protected boolean isLocked;
 
   public boolean isLocked() {
-    return isLocked();
+    return isLocked;
   }
 
   public void setLocked(boolean isLocked) {

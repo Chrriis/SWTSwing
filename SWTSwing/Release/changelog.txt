@@ -5,6 +5,11 @@ Licence terms: EPL 1.0 (see licence.html)
 
 ---------------------------------- Change log ----------------------------------
 
+* Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
+
+- JCoolBar.isLocked() does not call itself anymore.
+
+
 * Version 3.2.0003 (September 15, 2006):
 
 - SystemSelection clipboard does not throw NPE if not supported.

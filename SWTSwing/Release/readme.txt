@@ -24,7 +24,7 @@ The current version is Java 5.0.
 2. How to use it?
 
 Remove the SWT jars and native libraries from your application's class path, and
-put add SWTSwing.jar. A usual way to proceed is to rename "SWTSwing.jar" to
+add SWTSwing.jar. A usual way to proceed is to rename "SWTSwing.jar" to
 "swt.jar" and replace the original "swt.jar" with the new one.
 
 If everything is OK, your application runs using Swing's widgets.

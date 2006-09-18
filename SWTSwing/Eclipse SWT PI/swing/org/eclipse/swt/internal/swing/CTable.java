@@ -417,7 +417,7 @@ class CTableImplementation extends JScrollPane implements CTable {
     Utils.installMouseListener(table, handle);
     Utils.installKeyListener(table, handle);
     Utils.installFocusListener(table, handle);
-    Utils.installComponentListener(table, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {

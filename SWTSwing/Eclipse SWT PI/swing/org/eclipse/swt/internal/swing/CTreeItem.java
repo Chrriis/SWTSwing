@@ -27,6 +27,13 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
     init(style);
   }
 
+  public int getChildCount() {
+    if(handle.isDisposed()) {
+      return 0;
+    }
+    return handle.getItemCount();
+  }
+
   public TreeItem getTreeItem() {
     return handle;
   }
@@ -133,7 +140,7 @@ public interface CTreeItem {
     }
 
     public String getText() {
-      return text;
+      return text == null? "": text;
     }
 
     protected Icon icon;
@@ -177,6 +184,10 @@ public interface CTreeItem {
     }
 
     public String toString() {
+      if(!((CTreeItemImplementation)treeItem).handle.isDisposed()) {
+        // Ensures data is present for virtual tables
+        ((CTreeItemImplementation)treeItem).handle.getText();
+      }
       return getText();
     }
 

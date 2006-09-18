@@ -128,10 +128,11 @@ class CTableImplementation extends JScrollPane implements CTable {
         protected Font selectionFont;
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
           if(value instanceof CTableItem.TableItemObject) {
+            tableItemObject = (CTableItem.TableItemObject)value;
             CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.ERASE_TYPE);
             event.row = row;
             event.column = column;
-            event.tableItem = ((CTableItem.TableItemObject)value).getTableItem();
+            event.tableItem = tableItemObject.getTableItem();
             event.ignoreDrawSelection = !isSelected;
             event.ignoreDrawFocused = !hasFocus;
             handle.processEvent(event);
@@ -141,9 +142,11 @@ class CTableImplementation extends JScrollPane implements CTable {
             ignoreDrawFocused = event.ignoreDrawFocused;
             isSelected = !event.ignoreDrawSelection;
             hasFocus = !event.ignoreDrawFocused;
+            this.row = row;
+            this.column = column;
+          } else {
+            tableItemObject = null;
           }
-          this.row = row;
-          this.column = column;
           if(!isInitialized) {
             Component c = super.getTableCellRendererComponent(CTableImplementation.this.table, "", true, false, 0, 0);
             if(c instanceof JComponent) {
@@ -227,21 +230,13 @@ class CTableImplementation extends JScrollPane implements CTable {
           }
           return checkBoxCellRenderer;
         }
+        protected CTableItem.TableItemObject tableItemObject;
         protected int row;
         protected int column;
         protected boolean ignoreDrawForeground;
         protected boolean ignoreDrawBackground;
         protected boolean ignoreDrawSelection;
         protected boolean ignoreDrawFocused;
-        protected Graphics graphics;
-        public Graphics getGraphics() {
-          if(graphics != null) {
-            Graphics g = graphics.create();
-            g.setClip(new Rectangle(getSize()));
-            return g;
-          }
-          return super.getGraphics();
-        }
         protected void paintComponent (Graphics g) {
           if(ignoreDrawForeground) {
             setText(null);
@@ -249,21 +244,20 @@ class CTableImplementation extends JScrollPane implements CTable {
           if(ignoreDrawBackground) {
             setOpaque(false);
           }
-          graphics = g;
+//          graphics = g;
           super.paintComponent(g);
-          Object value = getValueAt(row, column);
-          if(value instanceof CTableItem.TableItemObject) {
+          if(tableItemObject != null) {
             CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.PAINT_TYPE);
             event.row = row;
             event.column = column;
-            event.tableItem = ((CTableItem.TableItemObject)value).getTableItem();
+            event.tableItem = tableItemObject.getTableItem();
             event.ignoreDrawForeground = this.ignoreDrawForeground;
             event.ignoreDrawBackground = this.ignoreDrawBackground;
             event.ignoreDrawSelection = this.ignoreDrawSelection;
             event.ignoreDrawFocused = this.ignoreDrawFocused;
             handle.processEvent(event);
           }
-          graphics = null;
+//          graphics = null;
         }
       };
       public TableCellRenderer getCellRenderer(int row, int column) {

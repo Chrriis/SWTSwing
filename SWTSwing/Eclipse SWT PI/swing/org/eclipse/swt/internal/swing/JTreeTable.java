@@ -48,6 +48,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.eclipse.swt.internal.swing.DefaultTreeTableCellRenderer.CellPainter;
+
 public class JTreeTable extends JPanel implements Scrollable {
 
   protected JTable table;
@@ -176,13 +178,24 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   protected TreeTableModel tableModel = new TreeTableModel();
 
+  protected void paintCellRenderer(Graphics g, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+    
+  }
+
   protected TableCellRenderer tableCellRenderer = new TableCellRenderer() {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       final TreePath path = tree.getPathForRow(row);
       column = table.convertColumnIndexToModel(column);
       if(column == 0) {
-        JComponent c = new JComponent() {
-          public void paint(Graphics g) {
+        class FirstColumnComponent extends JComponent implements CellPainter {
+          public void paintComponent(Graphics g) {
+            if(renderer instanceof DefaultTreeTableCellRenderer) {
+              ((DefaultTreeTableCellRenderer)renderer).paintComponent(this, g);
+            } else {
+              paintCell(g);
+            }
+          }
+          public void paintCell(Graphics g) {
             int row = tree.getRowForPath(path);
             Rectangle rowBounds = tree.getRowBounds(row);
             rowBounds.width += rowBounds.x;
@@ -198,8 +211,9 @@ public class JTreeTable extends JPanel implements Scrollable {
             tree.paint(g);
             g.dispose();
           }
-        };
-        return c;
+        }
+        FirstColumnComponent firstColumnComponent = new FirstColumnComponent();
+        return firstColumnComponent;
       }
       TreeNode node = (TreeNode)path.getLastPathComponent();
       if(node instanceof TreeTableNode) {

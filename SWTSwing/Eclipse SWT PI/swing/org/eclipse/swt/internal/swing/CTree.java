@@ -13,12 +13,14 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
+import java.util.EventObject;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -130,6 +132,15 @@ class CTreeImplementation extends JScrollPane implements CTree {
         }
         return super.processMouseOnTreeRenderer(row, e, cellSize);
       }
+      protected Graphics graphics;
+      public Graphics getGraphics() {
+        if(graphics != null) {
+          Graphics g = graphics.create();
+          g.setClip(new Rectangle(getSize()));
+          return g;
+        }
+        return super.getGraphics();
+      }
     };
     treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     treeTable.setCellRenderer(new DefaultTreeTableCellRenderer() {
@@ -142,6 +153,26 @@ class CTreeImplementation extends JScrollPane implements CTree {
       protected Color selectionBackground;
       protected Font selectionFont;
       public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean isSelected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
+        if(value instanceof CTreeItem.TreeItemObject) {
+          treeItemObject = (CTreeItem.TreeItemObject)value;
+          CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.ERASE_TYPE);
+          event.row = row;
+          event.column = column;
+          event.treeItem = treeItemObject.getTreeItem();
+          event.ignoreDrawSelection = !isSelected;
+          event.ignoreDrawFocused = !hasFocus;
+          handle.processEvent(event);
+          ignoreDrawForeground = event.ignoreDrawForeground;
+          ignoreDrawBackground = event.ignoreDrawBackground;
+          ignoreDrawSelection = event.ignoreDrawSelection;
+          ignoreDrawFocused = event.ignoreDrawFocused;
+          isSelected = !event.ignoreDrawSelection;
+          hasFocus = !event.ignoreDrawFocused;
+          this.row = row;
+          this.column = column;
+        } else {
+          treeItemObject = null;
+        }
         if(!isInitialized) {
           Component c = super.getTreeTableCellRendererComponent(treeTable, "", isSelected, expanded, leaf, row, column, hasFocus);
           if(c instanceof JComponent) {
@@ -221,6 +252,37 @@ class CTreeImplementation extends JScrollPane implements CTree {
         }
         return checkBoxCellRenderer;
       }
+      protected CTreeItem.TreeItemObject treeItemObject;
+      protected int row;
+      protected int column;
+      protected boolean ignoreDrawForeground;
+      protected boolean ignoreDrawBackground;
+      protected boolean ignoreDrawSelection;
+      protected boolean ignoreDrawFocused;
+      protected void paintComponent(CellPainter c, Graphics g) {
+        if(ignoreDrawForeground) {
+          if(c instanceof JLabel) {
+            ((JLabel)c).setText(null);;
+          }
+        }
+        if(ignoreDrawBackground) {
+          setOpaque(false);
+        }
+//        graphics = g;
+        super.paintComponent(c, g);
+        if(treeItemObject != null) {
+          CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.PAINT_TYPE);
+          event.row = row;
+          event.column = column;
+          event.treeItem = treeItemObject.getTreeItem();
+          event.ignoreDrawForeground = this.ignoreDrawForeground;
+          event.ignoreDrawBackground = this.ignoreDrawBackground;
+          event.ignoreDrawSelection = this.ignoreDrawSelection;
+          event.ignoreDrawFocused = this.ignoreDrawFocused;
+          handle.processEvent(event);
+        }
+//        graphics = null;
+      }
     });
     JTableHeader tableHeader = treeTable.getTableHeader();
     final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();
@@ -288,7 +350,12 @@ class CTreeImplementation extends JScrollPane implements CTree {
         handle.processEvent(e);
       }
     });
-    Utils.installMouseListener(treeTable.getInnerTable(), handle);
+    // TODO: Map other events for table header click etc.
+    JTable innerTable = treeTable.getInnerTable();
+    Utils.installMouseListener(innerTable, handle);
+    Utils.installKeyListener(innerTable, handle);
+    Utils.installFocusListener(innerTable, handle);
+    Utils.installComponentListener(this, handle);
   }
 
   public Container getClientArea() {
@@ -436,6 +503,32 @@ class CTreeImplementation extends JScrollPane implements CTree {
 
 public interface CTree extends CComposite {
 
+  public static class CellPaintEvent extends EventObject {
+    
+    public static final int ERASE_TYPE = 1;
+    public static final int PAINT_TYPE = 2;
+    public static final int MEASURE_TYPE = 3;
+    protected int type;
+    public int row;
+    public int column;
+    public CTreeItem treeItem;
+    public boolean ignoreDrawForeground;
+    public boolean ignoreDrawBackground;
+    public boolean ignoreDrawSelection;
+    public boolean ignoreDrawFocused;
+    public int rowHeight;
+
+    CellPaintEvent(Object source, int type) {
+      super(source);
+      this.type = type;
+    }
+
+    public int getType() {
+      return type;
+    }
+    
+  }
+  
   public static class Instanciator {
     private Instanciator() {}
 

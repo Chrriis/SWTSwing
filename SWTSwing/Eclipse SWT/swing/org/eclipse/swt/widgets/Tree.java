@@ -31,12 +31,15 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TreeListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.swing.DefaultMutableTreeTableNode;
 import org.eclipse.swt.internal.swing.Utils;
+import org.eclipse.swt.internal.swing.CTree.CellPaintEvent;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -835,7 +838,7 @@ public TreeItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget ();
-  return itemList.size();
+  return itemList == null? 0: itemList.size();
 }
 
 //int getItemCount (int hItem) {
@@ -1349,12 +1352,66 @@ public void setInsertMark (TreeItem item, boolean before) {
 public void setItemCount (int count) {
   checkWidget ();
   count = Math.max (0, count);
-  Utils.notImplemented();
+  setItemCount (null, itemList, count);
+
+//  itemList.add(index, item);
+//  ((CTree)handle).getRoot().insert((MutableTreeNode)item.handle, index);
+  
+//  Utils.notImplemented();
 //  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 //  setItemCount (count, OS.TVGN_ROOT, hItem);
 }
 
-//void setItemCount (int count, int hParent, int hItem) {
+void setItemCount (TreeItem treeItem, int count) {
+  if(treeItem.itemList == null) {
+    treeItem.itemList = new ArrayList();
+  }
+  setItemCount (treeItem, treeItem.itemList, count);
+}
+
+void setItemCount (TreeItem parentItem, ArrayList itemList, int count) {
+  count = Math.max (0, count);
+  for(int i=itemList.size()-1; i>= count; i--) {
+    TreeItem item = (TreeItem)itemList.get(i);
+    if (item != null && !item.isDisposed ()) {
+      item.release (false);
+    }
+    if(parentItem == null) {
+      ((CTree)handle).getRoot().remove(i);
+    } else {
+      ((DefaultMutableTreeTableNode)parentItem.handle).remove(i);
+    }
+  }
+  int itemCount = count - itemList.size();
+  if(itemCount <= 0) {
+    return;
+  }
+  itemList.ensureCapacity(count);
+  for(int i=0; i<itemCount; i++) {
+//    childIndices[i] = itemCount;
+    if(parentItem != null) {
+      new TreeItem(parentItem, SWT.NONE);
+    } else {
+      new TreeItem(this, SWT.NONE);
+    }
+  }
+//  if(isVirtual) {
+//    if(parentItem != null) {
+//      ((CTree)handle).getModel().nodeStructureChanged(((DefaultMutableTreeTableNode)parentItem.handle));
+////      ((CTree)handle).getModel().nodesWereInserted(((DefaultMutableTreeTableNode)parentItem.handle), childIndices);
+////    } else {
+////      ((CTree)handle).getModel().nodeStructureChanged(((CTree)handle).getRoot());
+//////      ((CTree)handle).getModel().nodesWereInserted(((CTree)handle).getRoot(), childIndices);
+//    }
+//  }
+  
+//  if(parentItem.itemList == null) {
+//    parentItem.itemList = new ArrayList();
+//  }
+//  parentItem.itemList.add(index, item);
+//  ((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
+//  ((CTree)handle).getModel().nodesWereInserted((MutableTreeNode)parentItem.handle, new int[] {index});
+
 //  boolean redraw = false;
 //  if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
 //    redraw = drawCount == 0 && OS.IsWindowVisible (handle);
@@ -1397,7 +1454,7 @@ public void setItemCount (int count) {
 //    OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 //    OS.InvalidateRect (handle, null, true);
 //  }
-//}
+}
 
 /**
  * Sets the height of the area which would be used to
@@ -1577,7 +1634,7 @@ public void selectAll () {
 public void setColumnOrder (int [] order) {
   checkWidget ();
   if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-  int count = 0;
+//  int count = 0;
   Utils.notImplemented();
 //  if (hwndHeader != 0) {
 //    count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -3486,36 +3543,118 @@ public void processEvent(EventObject e) {
       return;
     }
     if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+  } else if(e instanceof CellPaintEvent) {
+      switch(((CellPaintEvent)e).getType()) {
+      case CellPaintEvent.ERASE_TYPE: if(!hooks(SWT.EraseItem)) { super.processEvent(e); return; } break;
+      case CellPaintEvent.PAINT_TYPE: if(!hooks(SWT.PaintItem)) { super.processEvent(e); return; } break;
+      case CellPaintEvent.MEASURE_TYPE: if(!hooks(SWT.MeasureItem)) { super.processEvent(e); return; } break;
+      default: super.processEvent(e); return;
+      }
   } else {
     super.processEvent(e);
     return;
   }
-    if(isDisposed()) {
-      super.processEvent(e);
-      return;
-    }
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
-    if(e instanceof TreeExpansionEvent) {
-      TreePath path = ((TreeExpansionEvent)e).getPath();
-      boolean isExpanded = ((CTree)handle).isExpanded(path);
-      Event event = new Event();
-      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-      sendEvent(isExpanded? SWT.Expand: SWT.Collapse, event);
-    } else if(e instanceof TreeSelectionEvent) {
-      TreePath path = ((TreeSelectionEvent)e).getPath();
-      Event event = new Event();
-      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-      sendEvent(SWT.Selection, event);
-    }
+  if(isDisposed()) {
     super.processEvent(e);
-    display.stopExclusiveSection();
     return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  if(e instanceof TreeExpansionEvent) {
+    TreePath path = ((TreeExpansionEvent)e).getPath();
+    boolean isExpanded = ((CTree)handle).isExpanded(path);
+    Event event = new Event();
+    event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+    sendEvent(isExpanded? SWT.Expand: SWT.Collapse, event);
+  } else if(e instanceof TreeSelectionEvent) {
+    TreePath path = ((TreeSelectionEvent)e).getPath();
+    Event event = new Event();
+    event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+    sendEvent(SWT.Selection, event);
+  } else   if(e instanceof CellPaintEvent) {
+    CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
+    switch(cellPaintEvent.getType()) {
+    case CellPaintEvent.ERASE_TYPE: {
+      TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+      Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+      Event event = new Event();
+      event.x = cellBounds.x;
+      event.y = cellBounds.y;
+      event.width = cellBounds.width;
+      event.height = cellBounds.height;
+      event.item = treeItem;
+      event.index = cellPaintEvent.column;
+      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+      event.gc = new GC(this);
+      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+//      event.gc.isSwingPainting = true;
+      sendEvent(SWT.EraseItem, event);
+      if(event.doit) {
+        cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
+        cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+        cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+        cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
+      } else {
+        cellPaintEvent.ignoreDrawForeground = true;
+        cellPaintEvent.ignoreDrawBackground = true;
+        cellPaintEvent.ignoreDrawSelection = true;
+        cellPaintEvent.ignoreDrawFocused = true;
+      }
+//      event.gc.isSwingPainting = false; 
+      break;
+    }
+    case CellPaintEvent.PAINT_TYPE: {
+      TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+      Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+      Event event = new Event();
+      event.x = cellBounds.x;
+      event.y = cellBounds.y;
+      event.width = cellBounds.width;
+      event.height = cellBounds.height;
+      event.item = treeItem;
+      event.index = cellPaintEvent.column;
+      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+      event.gc = new GC(this);
+      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+      event.gc.isSwingPainting = true;
+      sendEvent(SWT.PaintItem, event);
+      event.gc.isSwingPainting = false; 
+      break;
+    }
+    case CellPaintEvent.MEASURE_TYPE:
+      TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+//      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+      Event event = new Event();
+//      event.x = cellBounds.x;
+//      event.y = cellBounds.y;
+//      event.width = cellBounds.width;
+//      event.height = cellBounds.height;
+      event.height = cellPaintEvent.rowHeight;
+      event.item = treeItem;
+      event.index = cellPaintEvent.column;
+      event.gc = new GC(this);
+//      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+      sendEvent(SWT.MeasureItem, event);
+//      cellPaintEvent.rowHeight -= event.height - cellBounds.height;
+      cellPaintEvent.rowHeight = event.height;
+      break;
+    }
+  }
+
+  super.processEvent(e);
+  display.stopExclusiveSection();
+  return;
 }
 
 }

@@ -758,7 +758,7 @@ public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-  return parent.indexOf(item);
+  return itemList == null? -1: itemList.indexOf(item);
 }
 
 void releaseChildren (boolean destroy) {
@@ -1117,10 +1117,7 @@ public void setImage (Image image) {
 public void setItemCount (int count) {
   checkWidget ();
   count = Math.max (0, count);
-  Utils.notImplemented();
-//  int hwnd = parent.handle;
-//  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-//  parent.setItemCount (count, handle, hItem);
+  parent.setItemCount (this, count);
 }
 
 /**

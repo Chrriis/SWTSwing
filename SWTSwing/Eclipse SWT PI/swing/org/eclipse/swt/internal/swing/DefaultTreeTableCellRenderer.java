@@ -8,13 +8,31 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Component;
+import java.awt.Graphics;
 
 import javax.swing.JLabel;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 public class DefaultTreeTableCellRenderer implements TreeTableCellRenderer {
 
-  protected DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+  static interface CellPainter {
+    public void paintCell(Graphics g);
+  }
+
+  protected class InnerTreeCellRenderer extends DefaultTreeCellRenderer implements CellPainter{
+    protected void paintComponent(Graphics g) {
+      DefaultTreeTableCellRenderer.this.paintComponent(renderer, g);
+    }
+    public void paintCell(Graphics g) {
+      super.paintComponent(g);
+    }
+  }
+  
+  protected InnerTreeCellRenderer renderer = new InnerTreeCellRenderer();
+
+  protected void paintComponent(CellPainter c, Graphics g) {
+    c.paintCell(g);
+  }
 
   public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean selected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
     Component component = renderer.getTreeCellRendererComponent(treeTable.getInnerTree(), value, selected, expanded, leaf, row, hasFocus);

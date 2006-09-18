@@ -1968,19 +1968,20 @@ public boolean readAndDispatch () {
     return result || isDisposed();
   }
   if(event != null) {
+    AWTEvent awtEvent = event;
+    event = null;
     try {
-      Object source = event.getSource();
-      if (event instanceof ActiveEvent) {
-        ((ActiveEvent)event).dispatch();
+      Object source = awtEvent.getSource();
+      if (awtEvent instanceof ActiveEvent) {
+        ((ActiveEvent)awtEvent).dispatch();
       } else if(source instanceof Component) {
-        ((Component)source).dispatchEvent(event);
+        ((Component)source).dispatchEvent(awtEvent);
       } else if(source instanceof MenuComponent) {
-        ((MenuComponent)source).dispatchEvent(event);
+        ((MenuComponent)source).dispatchEvent(awtEvent);
       }
     } catch(Throwable t) {
       t.printStackTrace();
     }
-    event = null;
     return true;
   }
   if(SwingUtilities.isEventDispatchThread()) {

@@ -570,7 +570,8 @@ public TreeItem getItem (int index) {
   checkWidget ();
   if (index < 0) error (SWT.ERROR_INVALID_RANGE);
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  Utils.notImplemented(); return null;
+  if(index < 0 || index >= getItemCount()) error (SWT.ERROR_INVALID_RANGE);
+  return (TreeItem)itemList.get(index);
 //  int hwnd = parent.handle;
 //  int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 //  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
@@ -786,6 +787,12 @@ void releaseHandle () {
  */
 public void removeAll () {
   checkWidget ();
+  for(int i=getItemCount()-1; i>=0; i--) {
+    TreeItem item = getItem(i);
+    if (item != null && !item.isDisposed ()) {
+      item.dispose ();
+    }
+  }
   Utils.notImplemented();
 //  int hwnd = parent.handle;
 //  TVITEM tvItem = new TVITEM ();

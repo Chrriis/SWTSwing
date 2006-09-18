@@ -722,7 +722,7 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
   checkWidget ();
-  Utils.notImplemented(); return null;
+  Utils.notImplemented(); int[] order = new int[getColumnCount()]; for(int i=0; i<order.length; i++) {order[i] = i;} return order;
 //  if (hwndHeader == 0) return new int [0];
 //  int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 //  int [] order = new int [count];

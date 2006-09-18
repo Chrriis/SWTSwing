@@ -793,7 +793,6 @@ public void removeAll () {
       item.dispose ();
     }
   }
-  Utils.notImplemented();
 //  int hwnd = parent.handle;
 //  TVITEM tvItem = new TVITEM ();
 //  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;

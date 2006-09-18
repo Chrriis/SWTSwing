@@ -2557,7 +2557,7 @@ static int untranslateChar(char c) {
   case '\\': return java.awt.event.KeyEvent.VK_BACK_SLASH;
   case ']': return java.awt.event.KeyEvent.VK_CLOSE_BRACKET;
   case '`': return java.awt.event.KeyEvent.VK_BACK_QUOTE;
-  case '´': return java.awt.event.KeyEvent.VK_QUOTE;
+  case '\u00B4': return java.awt.event.KeyEvent.VK_QUOTE;
   case '&': return java.awt.event.KeyEvent.VK_AMPERSAND;
   case '*': return java.awt.event.KeyEvent.VK_ASTERISK;
   case '"': return java.awt.event.KeyEvent.VK_QUOTEDBL;
@@ -2569,9 +2569,9 @@ static int untranslateChar(char c) {
   case ':': return java.awt.event.KeyEvent.VK_COLON;
   case '^': return java.awt.event.KeyEvent.VK_CIRCUMFLEX;
   case '$': return java.awt.event.KeyEvent.VK_DOLLAR;
-  case '€': return java.awt.event.KeyEvent.VK_EURO_SIGN;
+  case '\u20AC': return java.awt.event.KeyEvent.VK_EURO_SIGN;
   case '!': return java.awt.event.KeyEvent.VK_EXCLAMATION_MARK;
-  case '¡': return java.awt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK;
+  case '\u00A1': return java.awt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK;
   case '(': return java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
   case '#': return java.awt.event.KeyEvent.VK_NUMBER_SIGN;
   case '+': return java.awt.event.KeyEvent.VK_PLUS;

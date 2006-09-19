@@ -312,6 +312,8 @@ class CTreeImplementation extends JScrollPane implements CTree {
     setFocusable(false);
     getViewport().setView(treeTable);
     setGridVisible(false);
+    setColumnHeader(createViewport());
+    setHeaderVisible(false);
     init(style);
   }
 
@@ -499,6 +501,11 @@ class CTreeImplementation extends JScrollPane implements CTree {
     return treeTable.getPathForRow(index);
   }
 
+  public void setHeaderVisible(boolean isHeaderVisible) {
+    getColumnHeader().setVisible(isHeaderVisible);
+    treeTable.getTableHeader().setVisible(isHeaderVisible);
+  }
+
 }
 
 public interface CTree extends CComposite {
@@ -583,5 +590,7 @@ public interface CTree extends CComposite {
   public void setTopIndex(int index);
 
   public TreePath getPathForRow(int index);
+
+  public void setHeaderVisible(boolean isHeaderVisible);
 
 }

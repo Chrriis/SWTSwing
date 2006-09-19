@@ -1700,7 +1700,7 @@ public void setColumnOrder (int [] order) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-  ((CTree)handle).getTableHeader().setVisible(show);
+  ((CTree)handle).setHeaderVisible(show);
 }
 
 //void setScrollWidth () {

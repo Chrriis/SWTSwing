@@ -14,7 +14,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.PaintEvent;
 
 import javax.swing.ImageIcon;
@@ -50,8 +50,6 @@ class CCompositeImplementation extends JPanel implements CComposite {
     contentPane.setCursor(cursor);
   }
 
-  protected Graphics graphics;
-
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
@@ -59,16 +57,23 @@ class CCompositeImplementation extends JPanel implements CComposite {
       setBorder(null);
     }
     JPanel panel = new JPanel(null) {
+      protected Graphics graphics;
+      protected Shape clip;
       public Graphics getGraphics() {
+        Graphics g;
         if(graphics != null) {
-          Graphics g = graphics.create();
-          g.setClip(new Rectangle(getSize()));
-          return g;
+          g = graphics.create();
+        } else {
+          g = super.getGraphics();
         }
-        return super.getGraphics();
+        if(g != null) {
+          g.setClip(clip);
+        }
+        return g;
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
+        clip = graphics.getClip();
         super.paintComponent(g);
         if(backgroundImageIcon != null) {
           Dimension size = getSize();

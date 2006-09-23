@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- Graphic context coordinates are adjusted.
 - Table headers for Tree do not show anymore on some look and feels.
 - The tree widget is mostly implemented.
 - The Table listener for component events is corrected to be the container.

@@ -18,8 +18,10 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
@@ -133,13 +135,29 @@ class CTreeImplementation extends JScrollPane implements CTree {
         return super.processMouseOnTreeRenderer(row, e, cellSize);
       }
       protected Graphics graphics;
+      protected Shape clip;
       public Graphics getGraphics() {
+        Graphics g;
         if(graphics != null) {
-          Graphics g = graphics.create();
-          g.setClip(new Rectangle(getSize()));
-          return g;
+          g = graphics.create();
+        } else {
+          g = super.getGraphics();
         }
-        return super.getGraphics();
+        if(g != null) {
+          g.setClip(clip);
+        }
+        return g;
+      }
+      protected void paintComponent (Graphics g) {
+        graphics = g;
+        clip = graphics.getClip();
+        super.paintComponent(g);
+//        if(backgroundImageIcon != null) {
+//          Dimension size = getSize();
+//          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
+//        }
+        handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+        graphics = null;
       }
     };
     treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

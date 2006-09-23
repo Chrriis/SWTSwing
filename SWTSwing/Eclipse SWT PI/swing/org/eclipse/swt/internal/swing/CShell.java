@@ -15,7 +15,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -86,16 +86,22 @@ class CShellFrame extends JFrame implements CShell {
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
       protected Graphics graphics;
+      protected Shape clip;
       public Graphics getGraphics() {
+        Graphics g;
         if(graphics != null) {
-          Graphics g = graphics.create();
-          g.setClip(new Rectangle(getSize()));
-          return g;
+          g = graphics.create();
+        } else {
+          g = super.getGraphics();
         }
-        return super.getGraphics();
+        if(g != null) {
+          g.setClip(clip);
+        }
+        return g;
       }
-      public void paintComponent(Graphics g) {
+      protected void paintComponent (Graphics g) {
         graphics = g;
+        clip = graphics.getClip();
         super.paintComponent(g);
         if(backgroundImageIcon != null) {
           Dimension size = getSize();
@@ -331,16 +337,22 @@ class CShellDialog extends JDialog implements CShell {
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
       protected Graphics graphics;
+      protected Shape clip;
       public Graphics getGraphics() {
+        Graphics g;
         if(graphics != null) {
-          Graphics g = graphics.create();
-          g.setClip(new Rectangle(getSize()));
-          return g;
+          g = graphics.create();
+        } else {
+          g = super.getGraphics();
         }
-        return super.getGraphics();
+        if(g != null) {
+          g.setClip(clip);
+        }
+        return g;
       }
-      public void paintComponent(Graphics g) {
+      protected void paintComponent (Graphics g) {
         graphics = g;
+        clip = graphics.getClip();
         super.paintComponent(g);
         if(backgroundImageIcon != null) {
           Dimension size = getSize();

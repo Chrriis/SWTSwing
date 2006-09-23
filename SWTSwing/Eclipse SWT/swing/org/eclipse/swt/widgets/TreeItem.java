@@ -1098,7 +1098,7 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
-	handle.getTreeItemObject(index).setIcon(new ImageIcon(image.handle));
+	handle.getTreeItemObject(index).setIcon(image != null? new ImageIcon(image.handle): null);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }

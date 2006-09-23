@@ -93,9 +93,9 @@ class CShellFrame extends JFrame implements CShell {
           g = graphics.create();
         } else {
           g = super.getGraphics();
-        }
-        if(g != null) {
-          g.setClip(clip);
+          if(g != null) {
+            g.setClip(clip);
+          }
         }
         return g;
       }
@@ -344,9 +344,9 @@ class CShellDialog extends JDialog implements CShell {
           g = graphics.create();
         } else {
           g = super.getGraphics();
-        }
-        if(g != null) {
-          g.setClip(clip);
+          if(g != null) {
+            g.setClip(clip);
+          }
         }
         return g;
       }

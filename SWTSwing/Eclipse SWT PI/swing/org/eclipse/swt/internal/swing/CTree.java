@@ -142,9 +142,9 @@ class CTreeImplementation extends JScrollPane implements CTree {
           g = graphics.create();
         } else {
           g = super.getGraphics();
-        }
-        if(g != null) {
-          g.setClip(clip);
+          if(g != null) {
+            g.setClip(clip);
+          }
         }
         return g;
       }

@@ -283,9 +283,9 @@ class CTableImplementation extends JScrollPane implements CTable {
           g = graphics.create();
         } else {
           g = super.getGraphics();
-        }
-        if(g != null) {
-          g.setClip(clip);
+          if(g != null) {
+            g.setClip(clip);
+          }
         }
         return g;
       }

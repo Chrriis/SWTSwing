@@ -65,9 +65,9 @@ class CCompositeImplementation extends JPanel implements CComposite {
           g = graphics.create();
         } else {
           g = super.getGraphics();
-        }
-        if(g != null) {
-          g.setClip(clip);
+          if(g != null) {
+            g.setClip(clip);
+          }
         }
         return g;
       }

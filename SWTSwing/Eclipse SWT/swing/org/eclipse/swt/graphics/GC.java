@@ -3838,6 +3838,13 @@ Graphics2D getGraphics() {
   Container container = ((Control)drawable).handle;
   Container clientArea = ((CControl)container).getClientArea();
   Graphics2D g = (Graphics2D)clientArea.getGraphics();
+//  for(Container parent = container; parent != null && parent.isLightweight(); parent = parent.getParent()) {
+//    if(!parent.isVisible()) {
+//      g.clipRect(0, 0, 0, 0);
+//      break;
+//    }
+//    g.translate(parent.getX(), parent.getY());
+//  }
   validGraphics = g;
   // Duplicate from Control.getInternalOffset()
   if(clientArea != container) {

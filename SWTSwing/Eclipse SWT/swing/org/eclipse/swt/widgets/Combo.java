@@ -296,7 +296,7 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
   Dimension preferredSize = handle.getPreferredSize();
-  if(wHint == -1) {
+  if(wHint == SWT.DEFAULT) {
     return new Point(preferredSize.width, preferredSize.height);
   }
   Point p = super.computeSize(wHint, hHint, changed);

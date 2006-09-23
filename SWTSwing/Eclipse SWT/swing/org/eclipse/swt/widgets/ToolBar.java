@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -126,7 +127,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
     return new Point(cSize.x, hHint != SWT.DEFAULT? hHint: maxHeight);
     // TODO: walk through all the components and compute the size for a fixed width.
   }
-  return cSize;
+  Dimension preferredSize = handle.getPreferredSize();
+  if(wHint == SWT.DEFAULT) {
+    return new Point(preferredSize.width, preferredSize.height);
+  }
+  return new Point(cSize.x, preferredSize.height);
+//  return cSize;
 }
 
 boolean autoAddChildren() {

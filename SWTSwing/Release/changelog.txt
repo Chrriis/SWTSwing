@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- Display's mapping method for rectangle is fixed.
 - Toolbar's height is constrained to its preferred value.
 - Graphic context coordinates are adjusted.
 - Table headers for Tree do not show anymore on some look and feels.

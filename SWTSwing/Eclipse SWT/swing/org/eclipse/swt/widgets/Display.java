@@ -1775,7 +1775,8 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
   java.awt.Point point = SwingUtilities.convertPoint(from == null? null: from.handle, x, y, to == null? null: to.handle);
-  return new Rectangle(point.x, point.y, point.x + width - x, point.y + height - y);
+  // TODO: cehck what the "mirror" stuff mentioned in the comments is about.
+  return new Rectangle(point.x, point.y, width, height);
 }
 
 static int previousModifiersEx;

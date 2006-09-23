@@ -280,8 +280,8 @@ public void setText (String string) {
     mnemonic = '\0';
     cTabFolder.setTitleAt(index, string);
   } else {
-    mnemonic = string.charAt(index);
-    cTabFolder.setTitleAt(index, string.substring(0, index - 1) + string.substring(index));
+    mnemonic = string.charAt(mnemonicIndex);
+    cTabFolder.setTitleAt(index, string.substring(0, mnemonicIndex - 1) + string.substring(mnemonicIndex));
   }
   cTabFolder.setMnemonicAt(index, mnemonic);
 }

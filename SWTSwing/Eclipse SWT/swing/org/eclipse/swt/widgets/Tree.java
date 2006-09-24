@@ -1231,11 +1231,16 @@ void releaseItem (TreeItem treeItem, boolean release) {
   TreeItem parentItem = treeItem.getParentItem();
   if(parentItem == null) {
     ((CTree)handle).getRoot().remove((MutableTreeNode)treeItem.handle);
-    itemList.remove(treeItem);
+    int index = itemList.indexOf(treeItem);
+    itemList.remove(index);
+    ((CTree)handle).getModel().nodesWereRemoved(((CTree)handle).getRoot(), new int[] {index}, new Object[] {treeItem.handle});
   } else {
     ((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)treeItem.handle);
-    parentItem.itemList.remove(treeItem);
+    int index = parentItem.itemList.indexOf(treeItem);
+    parentItem.itemList.remove(index);
+    ((CTree)handle).getModel().nodesWereRemoved((DefaultMutableTreeTableNode)parentItem.handle, new int[] {index}, new Object[] {treeItem.handle});
   }
+  handle.repaint();
   if(release) {
     treeItem.release (false);
   }
@@ -1251,13 +1256,16 @@ void releaseItem (TreeItem treeItem, boolean release) {
  */
 public void removeAll () {
 	checkWidget ();
-  for (int i=0; i<itemList.size(); i++) {
+  for (int i=itemList.size()-1; i>=0; i--) {
     TreeItem item = (TreeItem)itemList.get(i);
     if (item != null && !item.isDisposed ()) {
-      item.release (false);
+      item.dispose();
+//      item.release (false);
+    } else {
+      itemList.remove(i);
     }
   }
-  ((CTree)handle).getRoot().removeAllChildren();
+//  ((CTree)handle).getRoot().removeAllChildren();
 }
 
 /**

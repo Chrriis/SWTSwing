@@ -787,10 +787,15 @@ void releaseHandle () {
  */
 public void removeAll () {
   checkWidget ();
-  for(int i=getItemCount()-1; i>=0; i--) {
-    TreeItem item = getItem(i);
-    if (item != null && !item.isDisposed ()) {
-      item.dispose ();
+  if(itemList != null) {
+    for (int i=itemList.size()-1; i>=0; i--) {
+      TreeItem item = (TreeItem)itemList.get(i);
+      if (item != null && !item.isDisposed ()) {
+        item.dispose();
+//        item.release(false);
+      } else {
+        itemList.remove(i);
+      }
     }
   }
 //  int hwnd = parent.handle;

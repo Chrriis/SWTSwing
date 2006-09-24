@@ -64,84 +64,6 @@ public final class Cursor extends Resource {
 	 */
 	public java.awt.Cursor handle;
 	
-//	/**
-//	 * data used to create a HAND cursor.
-//	 */
-//	static final byte[] HAND_SOURCE = {
-//		(byte)0xf9,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xf0,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xf0,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xf0,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xf0,(byte)0x3f,(byte)0xff,(byte)0xff,
-//		(byte)0xf0,(byte)0x07,(byte)0xff,(byte)0xff,
-//		(byte)0xf0,(byte)0x03,(byte)0xff,(byte)0xff,
-//		(byte)0xf0,(byte)0x00,(byte)0xff,(byte)0xff,
-//
-//		(byte)0x10,(byte)0x00,(byte)0x7f,(byte)0xff,
-//		(byte)0x00,(byte)0x00,(byte)0x7f,(byte)0xff,
-//		(byte)0x80,(byte)0x00,(byte)0x7f,(byte)0xff,
-//		(byte)0xc0,(byte)0x00,(byte)0x7f,(byte)0xff,
-//		(byte)0xe0,(byte)0x00,(byte)0x7f,(byte)0xff,
-//		(byte)0xf0,(byte)0x00,(byte)0x7f,(byte)0xff,
-//		(byte)0xf8,(byte)0x00,(byte)0xff,(byte)0xff,
-//		(byte)0xfc,(byte)0x01,(byte)0xff,(byte)0xff,
-//
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
-//		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff
-//	};
-//	static final byte[] HAND_MASK = {
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x06,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x06,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x06,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x06,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x06,(byte)0xc0,(byte)0x00,(byte)0x00,
-//		(byte)0x06,(byte)0xd8,(byte)0x00,(byte)0x00,
-//		(byte)0x06,(byte)0xd8,(byte)0x00,(byte)0x00,
-//
-//		(byte)0x07,(byte)0xdb,(byte)0x00,(byte)0x00,
-//		(byte)0x67,(byte)0xfb,(byte)0x00,(byte)0x00,
-//		(byte)0x3f,(byte)0xff,(byte)0x00,(byte)0x00,
-//		(byte)0x1f,(byte)0xff,(byte)0x00,(byte)0x00,
-//		(byte)0x0f,(byte)0xff,(byte)0x00,(byte)0x00,
-//		(byte)0x07,(byte)0xff,(byte)0x00,(byte)0x00,
-//		(byte)0x03,(byte)0xfe,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
-//		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00
-//	};
-
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -194,28 +116,30 @@ public Cursor(Device device, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	switch (style) {
-		case SWT.CURSOR_HAND: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR); break;
-		case SWT.CURSOR_ARROW: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR); break;
-		case SWT.CURSOR_WAIT: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR); break;
-		case SWT.CURSOR_CROSS: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.CROSSHAIR_CURSOR); break;
-		case SWT.CURSOR_SIZEALL: 	handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.MOVE_CURSOR); break;
-		case SWT.CURSOR_SIZEN: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.N_RESIZE_CURSOR); break;
-		case SWT.CURSOR_SIZES: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.S_RESIZE_CURSOR); break;
-		case SWT.CURSOR_SIZEE: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.E_RESIZE_CURSOR); break;
-		case SWT.CURSOR_SIZEW: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.W_RESIZE_CURSOR); break;
-		case SWT.CURSOR_SIZENE: 	handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NE_RESIZE_CURSOR); break;
-		case SWT.CURSOR_SIZESE: 	handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.SE_RESIZE_CURSOR); break;
-		case SWT.CURSOR_SIZESW: 	handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.SW_RESIZE_CURSOR); break;
-		case SWT.CURSOR_SIZENW: 	handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NW_RESIZE_CURSOR); break;
-		case SWT.CURSOR_IBEAM: 		handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.TEXT_CURSOR); break;
+		case SWT.CURSOR_HAND: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR); break;
+		case SWT.CURSOR_ARROW: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR); break;
+		case SWT.CURSOR_WAIT: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR); break;
+		case SWT.CURSOR_CROSS: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.CROSSHAIR_CURSOR); break;
+		case SWT.CURSOR_SIZEALL: 	   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.MOVE_CURSOR); break;
+		case SWT.CURSOR_SIZEN: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.N_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZES: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.S_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZEE: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.E_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZEW: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.W_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZENE: 	   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NE_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZESE: 	   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.SE_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZESW: 	   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.SW_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZENW: 	   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NW_RESIZE_CURSOR); break;
+		case SWT.CURSOR_IBEAM: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.TEXT_CURSOR); break;
+    // Cursor that do not fit exactly with the description:
+		case SWT.CURSOR_APPSTARTING: handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR); break;
+		case SWT.CURSOR_SIZEWE:      handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.E_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZENS:      handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.N_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZENESW:    handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NE_RESIZE_CURSOR); break;
+		case SWT.CURSOR_SIZENWSE:    handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NW_RESIZE_CURSOR); break;
+    // Custom cursors
     case SWT.CURSOR_UPARROW:
 		case SWT.CURSOR_NO:
-    case SWT.CURSOR_APPSTARTING:
     case SWT.CURSOR_HELP:
-    case SWT.CURSOR_SIZENESW:
-    case SWT.CURSOR_SIZENS:
-    case SWT.CURSOR_SIZENWSE:
-    case SWT.CURSOR_SIZEWE:
       handle = createCursor(style);
       break;
 		default:
@@ -227,13 +151,8 @@ public Cursor(Device device, int style) {
 java.awt.Cursor createCursor(int type) {
   String name = "";
   switch(type) {
-    case SWT.CURSOR_APPSTARTING: name = "AppCursor"; break;
-    case SWT.CURSOR_NO: name = "NoCursor"; break;
-    case SWT.CURSOR_SIZENESW: name = "NESWCursor"; break;
-    case SWT.CURSOR_SIZENS: name = "DownCursor"; break;
-    case SWT.CURSOR_SIZENWSE: name = "NWSECursor"; break;
-    case SWT.CURSOR_SIZEWE: name = "WECursor"; break;
     case SWT.CURSOR_UPARROW: name = "UpCursor"; break;
+    case SWT.CURSOR_NO: name = "NoCursor"; break;
     case SWT.CURSOR_HELP: name = "HelpCursor"; break;
     default: return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR);
   }

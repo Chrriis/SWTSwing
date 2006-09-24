@@ -467,11 +467,11 @@ public class JCoolBar extends JPanel {
     repaint();
   }
   
-  protected static final Cursor BUMP_CURSOR = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+  protected static final Cursor GRIP_CURSOR = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
 
   public Cursor getCursor() {
     if(!isLocked && isDragging()) {
-      return BUMP_CURSOR;
+      return GRIP_CURSOR;
     }
     return super.getCursor();
   }

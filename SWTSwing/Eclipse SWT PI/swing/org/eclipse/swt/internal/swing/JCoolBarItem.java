@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
@@ -63,13 +64,13 @@ public class JCoolBarItem extends JToolBar {
     // Add custom listeners
     addMouseListener(new MouseAdapter() {
       public void mouseEntered(MouseEvent e) {
-        isInBumps = isInBumps(e.getPoint());
+        isInGrip = isInGrip(e.getPoint());
       }
       public void mouseExited(MouseEvent e) {
-        isInBumps = false;
+        isInGrip = false;
       }
       public void mousePressed(MouseEvent e) {
-        if(!isLocked() && isInBumps && (e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
+        if(!isLocked() && isInGrip && (e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
           isDragging = true;
           if(!isFloating) {
             getCoolBar().processItemMouseEvent(e);
@@ -105,31 +106,36 @@ public class JCoolBarItem extends JToolBar {
         }
       }
       public void mouseMoved(MouseEvent e) {
-        isInBumps = isInBumps(e.getPoint());
+        isInGrip = isInGrip(e.getPoint());
       }
     });
   }
 
-  protected boolean isInBumps;
+  protected boolean isInGrip;
   protected boolean isDragging;
 
   public Cursor getCursor() {
-    if(!isLocked() && (isDragging || isInBumps || getCoolBar().isDragging())) {
-      return JCoolBar.BUMP_CURSOR;
+    if(!isLocked() && (isDragging || isInGrip || getCoolBar().isDragging())) {
+      return JCoolBar.GRIP_CURSOR;
     }
     return super.getCursor();
   }
 
+  private int getGripWidth() {
+    return 14;
+  }
+
   /**
-   * Indicate if the specified point is located in the bumps of the toolbar.
+   * Indicate if the specified point is located in the grip of the toolbar.
    * @param point The point to consider, in toolbar coordinates.
-   * @return True if the point is in the bumps.
+   * @return True if the point is in the grip.
    */
-  private boolean isInBumps(Point point) {
-    Rectangle bumpRect = new Rectangle();
-    int x = getComponentOrientation().isLeftToRight() ? 0 : getWidth() - 14;
-    bumpRect.setBounds(x, 0, 14, getHeight());
-    return bumpRect.contains(point);
+  private boolean isInGrip(Point point) {
+    Rectangle gripRect = new Rectangle();
+    int gripWidth = getGripWidth();
+    int x = getComponentOrientation().isLeftToRight() ? 0 : getWidth() - gripWidth;
+    gripRect.setBounds(x, 0, gripWidth, getHeight());
+    return gripRect.contains(point);
   }
 
   public void setLocked(boolean isLocked) {
@@ -153,6 +159,15 @@ public class JCoolBarItem extends JToolBar {
 //  public void addSeparator() {
 //    
 //  }
+
+  public Dimension getMinimumSize() {
+    Dimension size = super.getMinimumSize();
+    if(!isLocked()) {
+      // TODO: check why this is needed for Eclipse!
+      size.width += getGripWidth() + 2;
+    }
+    return size;
+  }
 
   protected boolean isFloating;
 
@@ -194,5 +209,4 @@ public class JCoolBarItem extends JToolBar {
       }
     }
   }
-
 }

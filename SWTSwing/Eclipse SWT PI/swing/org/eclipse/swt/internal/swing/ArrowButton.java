@@ -20,10 +20,9 @@ import javax.swing.UIManager;
 public class ArrowButton extends JButton {
 
   private int direction;
-  Color background;
-  Color shadow;
-  Color darkShadow;
-  Color highlight;
+  private Color shadow = UIManager.getColor("ComboBox.buttonShadow");
+  private Color darkShadow = UIManager.getColor("ComboBox.buttonDarkShadow");
+  private Color highlight = UIManager.getColor("ComboBox.buttonHighlight");
 
   /**
    * Construct an arrow button using the current look and feel. 
@@ -54,10 +53,6 @@ public class ArrowButton extends JButton {
    */
   public void paint(java.awt.Graphics g) {
     super.paint(g);
-    background = UIManager.getColor("ComboBox.buttonBackground");
-    shadow = UIManager.getColor("ComboBox.buttonShadow");
-    darkShadow = UIManager.getColor("ComboBox.buttonDarkShadow");
-    highlight = UIManager.getColor("ComboBox.buttonHighlight");
     Color origColor;
     boolean isPressed, isEnabled;
     int w, h, size;
@@ -66,7 +61,6 @@ public class ArrowButton extends JButton {
     origColor = g.getColor();
     isPressed = getModel().isPressed();
     isEnabled = this.isEnabled();
-    // Draw the arrow
     size = Math.min((h - 4) / 3, (w - 4) / 3);
     size = Math.max(size, 2);
     paintTriangle(g, (w - size) / 2, (h - size) / 2, size, direction, isEnabled);
@@ -76,7 +70,7 @@ public class ArrowButton extends JButton {
     g.setColor(origColor);
   }
   /**
-   * Actually paint the triangle.
+   * Paint the triangle.
    * @param g The graphic.
    * @param x The starting point x.
    * @param y The starting point y.
@@ -86,17 +80,17 @@ public class ArrowButton extends JButton {
    */
   public void paintTriangle(java.awt.Graphics g, int x, int y, int size, int direction, boolean isEnabled) {
     java.awt.Color oldColor = g.getColor();
-    int mid, i, j;
-    j = 0;
     size = Math.max(size, 2);
-    mid = (size / 2) - 1;
+    int mid = (size / 2) - 1;
     g.translate(x, y);
-    if (isEnabled)
+    if (isEnabled) {
       g.setColor(darkShadow);
-    else
+    } else {
       g.setColor(shadow);
+    }
     switch (direction) {
       case NORTH :
+        int i = 0;
         for (i = 0; i < size; i++) {
           g.drawLine(mid - i, i, mid + i, i);
         }
@@ -105,10 +99,11 @@ public class ArrowButton extends JButton {
           g.drawLine(mid - i + 2, i, mid + i, i);
         }
         break;
-      case SOUTH :
+      case SOUTH : {
         if (!isEnabled) {
           g.translate(1, 1);
           g.setColor(highlight);
+          int j = 0;
           for (i = size - 1; i >= 0; i--) {
             g.drawLine(mid - i, j, mid + i, j);
             j++;
@@ -116,13 +111,13 @@ public class ArrowButton extends JButton {
           g.translate(-1, -1);
           g.setColor(shadow);
         }
-
-        j = 0;
+        int j = 0;
         for (i = size - 1; i >= 0; i--) {
           g.drawLine(mid - i, j, mid + i, j);
           j++;
         }
         break;
+      }
       case WEST :
         for (i = 0; i < size; i++) {
           g.drawLine(i, mid - i, i, mid + i);
@@ -136,6 +131,7 @@ public class ArrowButton extends JButton {
         if (!isEnabled) {
           g.translate(1, 1);
           g.setColor(highlight);
+          int j = 0;
           for (i = size - 1; i >= 0; i--) {
             g.drawLine(j, mid - i, j, mid + i);
             j++;
@@ -143,7 +139,7 @@ public class ArrowButton extends JButton {
           g.translate(-1, -1);
           g.setColor(shadow);
         }
-        j = 0;
+        int j = 0;
         for (i = size - 1; i >= 0; i--) {
           g.drawLine(j, mid - i, j, mid + i);
           j++;

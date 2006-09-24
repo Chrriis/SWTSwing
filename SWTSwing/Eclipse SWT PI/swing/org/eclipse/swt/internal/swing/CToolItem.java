@@ -100,7 +100,6 @@ class CToolItemDropDown extends CComboButton implements CToolItem {
   protected ToolItem handle;
 
   public CToolItemDropDown(ToolItem toolItem, int style) {
-    super((style & SWT.FLAT) != 0);
     handle = toolItem;
     init(style);
   }
@@ -108,14 +107,9 @@ class CToolItemDropDown extends CComboButton implements CToolItem {
   protected void init(int style) {
     setHorizontalTextPosition(CENTER);
     setVerticalTextPosition(BOTTOM);
-    getPushButton().addActionListener(new ActionListener() {
+    addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         handle.processEvent(e);
-      }
-    });
-    getDropButton().addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        handle.processEvent(new ActionEvent(e.getSource(), e.getID(), "Arrow", e.getWhen(), e.getModifiers()));
       }
     });
   }

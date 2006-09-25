@@ -62,7 +62,7 @@ public class CComboButton extends JButton implements SwingConstants {
 
   public CComboButton() {
     setMargin(new Insets(0, 1, 0, 1));
-    setBorder(BorderFactory.createCompoundBorder(originalBorder, BorderFactory.createEmptyBorder(0, 0, 0, ARROW_SPACE_WIDTH)));
+    setBorder(BorderFactory.createCompoundBorder(originalBorder, BorderFactory.createEmptyBorder(0, 0, 0, ARROW_SPACE_WIDTH + 1)));
     setModel(new DefaultButtonModel() {
       public boolean isPressed() {
         return super.isPressed() && !isArrowMouseOver;

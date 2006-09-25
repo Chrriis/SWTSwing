@@ -2067,7 +2067,7 @@ public void setBackgroundImage (Image image) {
   }
   if (backgroundImage == image) return;
   backgroundImage = image;
-  ((CControl)handle).setBackgroundImage(backgroundImage.handle);
+  ((CControl)handle).setBackgroundImage(backgroundImage == null? null: backgroundImage.handle);
   handle.repaint();
 }
 

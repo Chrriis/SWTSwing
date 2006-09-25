@@ -241,7 +241,7 @@ class CShellFrame extends JFrame implements CShell {
   protected ImageIcon backgroundImageIcon;
 
   public void setBackgroundImage(Image backgroundImage) {
-    this.backgroundImageIcon = new ImageIcon(backgroundImage);
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
@@ -503,7 +503,7 @@ class CShellDialog extends JDialog implements CShell {
   protected ImageIcon backgroundImageIcon;
 
   public void setBackgroundImage(Image backgroundImage) {
-    this.backgroundImageIcon = new ImageIcon(backgroundImage);
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {

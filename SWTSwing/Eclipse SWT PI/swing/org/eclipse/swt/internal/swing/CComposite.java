@@ -116,7 +116,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
   protected ImageIcon backgroundImageIcon;
 
   public void setBackgroundImage(Image backgroundImage) {
-    this.backgroundImageIcon = new ImageIcon(backgroundImage);
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {

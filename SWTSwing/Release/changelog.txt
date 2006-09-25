@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- Setting a null background image does not throw an exception.
 - More GC enhancements.
 - Few improvements to the image handling.
 - The look of Toolbar drop-down buttons is reviewed to work across L&Fs.

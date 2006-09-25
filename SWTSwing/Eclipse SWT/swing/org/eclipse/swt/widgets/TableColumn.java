@@ -521,7 +521,7 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-  handle.setIcon(new ImageIcon(image.handle));
+  handle.setIcon(image == null? null: new ImageIcon(image.handle));
 }
 
 /**

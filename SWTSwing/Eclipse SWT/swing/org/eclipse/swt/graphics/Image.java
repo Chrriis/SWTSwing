@@ -1079,7 +1079,7 @@ static int[] init(Device device, Image image, ImageData data) {
       boolean hasAlphaMask = false;
       // RSSOwl: Tools > Preference, some icons are not visible if the following test is not commented out.
       // Snippet119: The cursor is not transparent if the following lines are commented out.
-      if(transparencyMask != null) {
+      if(argb == null && transparencyMask != null) {
     	  RGB alphaMask = data.palette.getRGB(transparencyMask.getPixel(x, y));
     	  hasAlphaMask = alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0;
       }

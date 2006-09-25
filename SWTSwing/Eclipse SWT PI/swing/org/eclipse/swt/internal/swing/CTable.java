@@ -17,7 +17,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
 import java.util.EventObject;
@@ -276,22 +275,17 @@ class CTableImplementation extends JScrollPane implements CTable {
         };
       }
       protected Graphics graphics;
-      protected Shape clip;
       public Graphics getGraphics() {
         Graphics g;
         if(graphics != null) {
           g = graphics.create();
         } else {
           g = super.getGraphics();
-          if(g != null) {
-            g.setClip(clip);
-          }
         }
         return g;
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
-        clip = graphics.getClip();
         super.paintComponent(g);
 //        if(backgroundImageIcon != null) {
 //          Dimension size = getSize();

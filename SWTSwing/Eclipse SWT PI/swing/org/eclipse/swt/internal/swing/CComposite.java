@@ -14,7 +14,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Shape;
 import java.awt.event.PaintEvent;
 
 import javax.swing.ImageIcon;
@@ -58,22 +57,17 @@ class CCompositeImplementation extends JPanel implements CComposite {
     }
     JPanel panel = new JPanel(null) {
       protected Graphics graphics;
-      protected Shape clip;
       public Graphics getGraphics() {
         Graphics g;
         if(graphics != null) {
           g = graphics.create();
         } else {
           g = super.getGraphics();
-          if(g != null) {
-            g.setClip(clip);
-          }
         }
         return g;
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
-        clip = graphics.getClip();
         super.paintComponent(g);
         if(backgroundImageIcon != null) {
           Dimension size = getSize();

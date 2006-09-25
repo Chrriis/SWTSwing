@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- More GC enhancements.
+- Few improvements to the image handling.
 - The look of Toolbar drop-down buttons is reviewed to work across L&Fs.
 - Printing is now a stub, instead of the win32 version.
 - Only 3 cursors use custom images now, the others now use one that resembles.

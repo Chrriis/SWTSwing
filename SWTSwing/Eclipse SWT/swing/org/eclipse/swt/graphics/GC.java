@@ -41,7 +41,9 @@ import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Control;
@@ -163,7 +165,7 @@ public GC(Drawable drawable, int style) {
 	Graphics2D handle = drawable.internal_new_GC(data);
   if(handle == null) {
     // When the component gets hidden, the graphics would be null. In that case we return a bogus graphics.
-    handle = createDefaultGraphics();
+    handle = new NullGraphics();
     isSwingPainting = true;
   }
 	Device device = data.device;
@@ -3832,6 +3834,7 @@ Graphics2D validGraphics;
 
 Graphics2D getGraphics() {
   if(handle == null) return null;
+  // TODO: if the handle is a null graphic, try to reobtain a graphic from the source
   if(isSwingPainting || !(drawable instanceof Control)) return handle;
   // TODO: check that this optimization is correct.
   if(validGraphics != null) return validGraphics;
@@ -3858,172 +3861,170 @@ Graphics2D getGraphics() {
   return g;
 }
 
-Graphics2D createDefaultGraphics() {
-  return new Graphics2D() {
-    public void addRenderingHints(Map arg0) {
-    }
-    public void clip(Shape s) {
-    }
-    public void draw(Shape s) {
-    }
-    public void drawGlyphVector(GlyphVector g, float x, float y) {
-    }
-    public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
-    }
-    public boolean drawImage(java.awt.Image img, AffineTransform xform, ImageObserver obs) {
-      return true;
-    }
-    public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
-    }
-    public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
-    }
-    public void drawString(AttributedCharacterIterator iterator, float x, float y) {
-    }
-    public void drawString(AttributedCharacterIterator iterator, int x, int y) {
-    }
-    public void drawString(String s, float x, float y) {
-    }
-    public void drawString(String str, int x, int y) {
-    }
-    public void fill(Shape s) {
-    }
-    public java.awt.Color getBackground() {
-      return java.awt.Color.BLACK;
-    }
-    public Composite getComposite() {
-      return null;
-    }
-    public GraphicsConfiguration getDeviceConfiguration() {
-      return null;
-    }
-    public FontRenderContext getFontRenderContext() {
-      return null;
-    }
-    public Paint getPaint() {
-      return null;
-    }
-    public Object getRenderingHint(Key hintKey) {
-      return null;
-    }
-    public RenderingHints getRenderingHints() {
-      return null;
-    }
-    public Stroke getStroke() {
-      return null;
-    }
-    public AffineTransform getTransform() {
-      return null;
-    }
-    public boolean hit(java.awt.Rectangle rect, Shape s, boolean onStroke) {
-      return false;
-    }
-    public void rotate(double theta, double x, double y) {
-    }
-    public void rotate(double theta) {
-    }
-    public void scale(double sx, double sy) {
-    }
-    public void setBackground(java.awt.Color color) {
-    }
-    public void setComposite(Composite comp) {
-    }
-    public void setPaint(Paint paint) {
-    }
-    public void setRenderingHint(Key hintKey, Object hintValue) {
-    }
-    public void setRenderingHints(Map arg0) {
-    }
-    public void setStroke(Stroke s) {
-    }
-    public void setTransform(AffineTransform Tx) {
-    }
-    public void shear(double shx, double shy) {
-    }
-    public void transform(AffineTransform Tx) {
-    }
-    public void translate(double tx, double ty) {
-    }
-    public void translate(int x, int y) {
-    }
-    public void clearRect(int x, int y, int width, int height) {
-    }
-    public void clipRect(int x, int y, int width, int height) {
-    }
-    public void copyArea(int x, int y, int width, int height, int dx, int dy) {
-    }
-    public Graphics create() {
-      return this;
-    }
-    public void dispose() {
-    }
-    public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-    }
-    public boolean drawImage(java.awt.Image img, int x, int y, java.awt.Color bgcolor, ImageObserver observer) {
-      return true;
-    }
-    public boolean drawImage(java.awt.Image img, int x, int y, ImageObserver observer) {
-      return true;
-    }
-    public boolean drawImage(java.awt.Image img, int x, int y, int width, int height, java.awt.Color bgcolor, ImageObserver observer) {
-      return true;
-    }
-    public boolean drawImage(java.awt.Image img, int x, int y, int width, int height, ImageObserver observer) {
-      return true;
-    }
-    public boolean drawImage(java.awt.Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, java.awt.Color bgcolor, ImageObserver observer) {
-      return true;
-    }
-    public boolean drawImage(java.awt.Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
-      return true;
-    }
-    public void drawLine(int x1, int y1, int x2, int y2) {
-    }
-    public void drawOval(int x, int y, int width, int height) {
-    }
-    public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-    }
-    public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-    }
-    public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-    }
-    public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-    }
-    public void fillOval(int x, int y, int width, int height) {
-    }
-    public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-    }
-    public void fillRect(int x, int y, int width, int height) {
-    }
-    public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-    }
-    public Shape getClip() {
-      return null;
-    }
-    public java.awt.Rectangle getClipBounds() {
-      return null;
-    }
-    public java.awt.Color getColor() {
-      return null;
-    }
-    public java.awt.Font getFont() {
-      return device.getSystemFont().handle;
-    }
-    public java.awt.FontMetrics getFontMetrics(java.awt.Font f) {
-      return null;
-    }
-    public void setClip(int x, int y, int width, int height) {
-    }
-    public void setClip(Shape clip) {
-    }
-    public void setColor(java.awt.Color c) {
-    }
-    public void setFont(java.awt.Font font) {
-    }
-    public void setPaintMode() {
-    }
-    public void setXORMode(java.awt.Color c1) {
-    }
-  };
+class NullGraphics extends Graphics2D {
+  public void addRenderingHints(Map arg0) {
+  }
+  public void clip(Shape s) {
+  }
+  public void draw(Shape s) {
+  }
+  public void drawGlyphVector(GlyphVector g, float x, float y) {
+  }
+  public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
+  }
+  public boolean drawImage(java.awt.Image img, AffineTransform xform, ImageObserver obs) {
+    return true;
+  }
+  public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
+  }
+  public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
+  }
+  public void drawString(AttributedCharacterIterator iterator, float x, float y) {
+  }
+  public void drawString(AttributedCharacterIterator iterator, int x, int y) {
+  }
+  public void drawString(String s, float x, float y) {
+  }
+  public void drawString(String str, int x, int y) {
+  }
+  public void fill(Shape s) {
+  }
+  public java.awt.Color getBackground() {
+    return java.awt.Color.BLACK;
+  }
+  public Composite getComposite() {
+    return null;
+  }
+  public GraphicsConfiguration getDeviceConfiguration() {
+    return null;
+  }
+  public FontRenderContext getFontRenderContext() {
+    return null;
+  }
+  public Paint getPaint() {
+    return null;
+  }
+  public Object getRenderingHint(Key hintKey) {
+    return null;
+  }
+  public RenderingHints getRenderingHints() {
+    return null;
+  }
+  public Stroke getStroke() {
+    return null;
+  }
+  public AffineTransform getTransform() {
+    return null;
+  }
+  public boolean hit(java.awt.Rectangle rect, Shape s, boolean onStroke) {
+    return false;
+  }
+  public void rotate(double theta, double x, double y) {
+  }
+  public void rotate(double theta) {
+  }
+  public void scale(double sx, double sy) {
+  }
+  public void setBackground(java.awt.Color color) {
+  }
+  public void setComposite(Composite comp) {
+  }
+  public void setPaint(Paint paint) {
+  }
+  public void setRenderingHint(Key hintKey, Object hintValue) {
+  }
+  public void setRenderingHints(Map arg0) {
+  }
+  public void setStroke(Stroke s) {
+  }
+  public void setTransform(AffineTransform Tx) {
+  }
+  public void shear(double shx, double shy) {
+  }
+  public void transform(AffineTransform Tx) {
+  }
+  public void translate(double tx, double ty) {
+  }
+  public void translate(int x, int y) {
+  }
+  public void clearRect(int x, int y, int width, int height) {
+  }
+  public void clipRect(int x, int y, int width, int height) {
+  }
+  public void copyArea(int x, int y, int width, int height, int dx, int dy) {
+  }
+  public Graphics create() {
+    return this;
+  }
+  public void dispose() {
+  }
+  public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+  }
+  public boolean drawImage(java.awt.Image img, int x, int y, java.awt.Color bgcolor, ImageObserver observer) {
+    return true;
+  }
+  public boolean drawImage(java.awt.Image img, int x, int y, ImageObserver observer) {
+    return true;
+  }
+  public boolean drawImage(java.awt.Image img, int x, int y, int width, int height, java.awt.Color bgcolor, ImageObserver observer) {
+    return true;
+  }
+  public boolean drawImage(java.awt.Image img, int x, int y, int width, int height, ImageObserver observer) {
+    return true;
+  }
+  public boolean drawImage(java.awt.Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, java.awt.Color bgcolor, ImageObserver observer) {
+    return true;
+  }
+  public boolean drawImage(java.awt.Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
+    return true;
+  }
+  public void drawLine(int x1, int y1, int x2, int y2) {
+  }
+  public void drawOval(int x, int y, int width, int height) {
+  }
+  public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+  }
+  public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
+  }
+  public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+  }
+  public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+  }
+  public void fillOval(int x, int y, int width, int height) {
+  }
+  public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+  }
+  public void fillRect(int x, int y, int width, int height) {
+  }
+  public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
+  }
+  public Shape getClip() {
+    return null;
+  }
+  public java.awt.Rectangle getClipBounds() {
+    return null;
+  }
+  public java.awt.Color getColor() {
+    return null;
+  }
+  public java.awt.Font getFont() {
+    return device.getSystemFont().handle;
+  }
+  public java.awt.FontMetrics getFontMetrics(java.awt.Font f) {
+    return null;
+  }
+  public void setClip(int x, int y, int width, int height) {
+  }
+  public void setClip(Shape clip) {
+  }
+  public void setColor(java.awt.Color c) {
+  }
+  public void setFont(java.awt.Font font) {
+  }
+  public void setPaintMode() {
+  }
+  public void setXORMode(java.awt.Color c1) {
+  }
 }
 
 }

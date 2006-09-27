@@ -3578,7 +3578,13 @@ public void processEvent(EventObject e) {
     boolean isExpanded = ((CTree)handle).isExpanded(path);
     Event event = new Event();
     event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-    sendEvent(isExpanded? SWT.Expand: SWT.Collapse, event);
+    if(isExpanded) {
+      sendEvent(SWT.Expand, event);
+      ((CTree)handle).expandPath(path);
+    } else {
+      sendEvent(SWT.Collapse, event);
+      ((CTree)handle).collapsePath(path);
+    }
   } else if(e instanceof TreeSelectionEvent) {
     TreePath path = ((TreeSelectionEvent)e).getPath();
     Event event = new Event();
@@ -3635,9 +3641,7 @@ public void processEvent(EventObject e) {
       if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
       event.gc = new GC(this);
       event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-      event.gc.isSwingPainting = true;
       sendEvent(SWT.PaintItem, event);
-      event.gc.isSwingPainting = false; 
       break;
     }
     case CellPaintEvent.MEASURE_TYPE:

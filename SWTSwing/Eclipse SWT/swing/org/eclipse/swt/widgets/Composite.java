@@ -235,7 +235,7 @@ protected Container createHandle () {
 }
 
 Composite findDeferredControl () {
-  return layoutCount > 0 ? this : parent.findDeferredControl ();
+  return layoutCount > 0 || parent == null? this : parent.findDeferredControl ();
 }
 
 //Menu [] findMenus (Control control) {

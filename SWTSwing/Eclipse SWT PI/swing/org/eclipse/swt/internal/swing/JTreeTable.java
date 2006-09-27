@@ -563,7 +563,7 @@ public class JTreeTable extends JPanel implements Scrollable {
     }
   }
 
-  public void expandedPath(TreePath treePath) {
+  public void expandPath(TreePath treePath) {
     tree.expandPath(treePath);
   }
 

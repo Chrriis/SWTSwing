@@ -185,7 +185,7 @@ void createWidget () {
 	*/
   handle.addAdjustmentListener(new AdjustmentListener() {
     public void adjustmentValueChanged(AdjustmentEvent e) {
-      if(blockListener) return;
+      if(blockListener || isDisposed()) return;
       Event event = new Event ();
       event.detail = SWT.DRAG;
       switch(e.getAdjustmentType()) {

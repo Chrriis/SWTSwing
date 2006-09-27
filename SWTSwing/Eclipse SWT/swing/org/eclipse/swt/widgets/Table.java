@@ -3307,9 +3307,7 @@ public void processEvent(EventObject e) {
       if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
       event.gc = new GC(this);
       event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-      event.gc.isSwingPainting = true;
       sendEvent(SWT.PaintItem, event);
-      event.gc.isSwingPainting = false; 
       break;
     }
     case CellPaintEvent.MEASURE_TYPE:

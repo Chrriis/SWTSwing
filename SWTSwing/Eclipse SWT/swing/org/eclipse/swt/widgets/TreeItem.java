@@ -909,7 +909,7 @@ public void setExpanded (boolean expanded) {
   
   CTree tree = ((CTree)parent.handle);
   if(expanded) {
-    tree.expandedPath(new TreePath(handle.getPath()));
+    tree.expandPath(new TreePath(handle.getPath()));
   } else {
     tree.collapsePath(new TreePath(handle.getPath()));
   }

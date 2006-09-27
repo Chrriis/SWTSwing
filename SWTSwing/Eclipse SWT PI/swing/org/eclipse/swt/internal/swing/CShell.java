@@ -96,13 +96,13 @@ class CShellFrame extends JFrame implements CShell {
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
         if(backgroundImageIcon != null) {
           Dimension size = getSize();
           g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
         }
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
-        graphics = null;
         if(paintHandlerList != null) {
           int size = paintHandlerList.size();
           Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellFrame.this);
@@ -113,6 +113,8 @@ class CShellFrame extends JFrame implements CShell {
             g2.dispose();
           }
         }
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
+        graphics = null;
       }
       public void paint(Graphics g) {
         super.paint(g);
@@ -342,13 +344,13 @@ class CShellDialog extends JDialog implements CShell {
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
         if(backgroundImageIcon != null) {
           Dimension size = getSize();
           g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
         }
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
-        graphics = null;
         if(paintHandlerList != null) {
           int size = paintHandlerList.size();
           Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellDialog.this);
@@ -359,6 +361,8 @@ class CShellDialog extends JDialog implements CShell {
             g2.dispose();
           }
         }
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
+        graphics = null;
       }
       public void paint(Graphics g) {
         super.paint(g);

@@ -13,7 +13,6 @@ package org.eclipse.swt.graphics;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.Composite;
 import java.awt.Container;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -36,6 +35,7 @@ import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.UIManager;
@@ -166,7 +166,6 @@ public GC(Drawable drawable, int style) {
   if(handle == null) {
     // When the component gets hidden, the graphics would be null. In that case we return a bogus graphics.
     handle = new NullGraphics();
-    isSwingPainting = true;
   }
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
@@ -282,6 +281,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
   // TODO: check what to do with the paint argument
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.copyArea(srcX, srcY, width, height, destX - srcX, destY - srcY);
+//  ensureAreaClean(destX, destY, width, height);
 }
 
 //int createDIB(int width, int height) {
@@ -498,6 +498,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
   handle.drawArc(x, y, width, height, startAngle, arcAngle < 0? arcAngle + startAngle: arcAngle - startAngle);
+//  ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -538,6 +539,7 @@ public void drawFocus (int x, int y, int width, int height) {
   handle.setColor(newColor);
   handle.drawRect(x, y, width, height);
   handle.setColor(oldColor);
+//  ensureAreaClean(x, y, width, height);
 }
 
 /**
@@ -630,10 +632,12 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
     handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
   } else {
     Shape oldClip = handle.getClip();
-    handle.setClip(destX, destY, destWidth, destHeight);
+    handle.setClip(clip);
+    handle.clipRect(destX, destY, destWidth, destHeight);
     handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
     handle.setClip(oldClip);
   }
+//  ensureAreaClean(destX, destY, destWidth, destHeight);
 //	switch (srcImage.type) {
 //		case SWT.BITMAP:
 //			drawBitmap(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
@@ -1152,6 +1156,9 @@ public void drawLine (int x1, int y1, int x2, int y2) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawLine(x1, y1, x2, y2);
+//  Point p1 = new Point(Math.min(x1, x2), Math.min(y1, y2));
+//  Point p2 = new Point(Math.max(x1, x2), Math.max(y1, y2));
+//  ensureAreaClean(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
 }
 
 /** 
@@ -1179,6 +1186,7 @@ public void drawOval (int x, int y, int width, int height) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawOval(x, y, width, height);
+//  ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -1203,6 +1211,8 @@ public void drawPath (Path path) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	handle.draw(path.handle);
+//  java.awt.Rectangle bounds = path.handle.getBounds();
+//  ensureAreaClean(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /** 
@@ -1226,6 +1236,7 @@ public void drawPoint (int x, int y) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawLine(x, y, x, y);
+//  ensureAreaClean(x, y, 1, 1);
 }
 
 /** 
@@ -1249,13 +1260,22 @@ public void drawPolygon(int[] pointArray) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+//  int maxX = Integer.MIN_VALUE;
+//  int maxY = Integer.MIN_VALUE;
+//  int minX = Integer.MAX_VALUE;
+//  int minY = Integer.MAX_VALUE;
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
   for(int i=0; i<xPoints.length; i++) {
     xPoints[i] = pointArray[i * 2];
     yPoints[i] = pointArray[i * 2 + 1];
+//    maxX = Math.max(maxX, xPoints[i]);
+//    maxY = Math.max(maxY, yPoints[i]);
+//    minX = Math.min(minX, xPoints[i]);
+//    minY = Math.min(minY, yPoints[i]);
   }
   handle.drawPolygon(xPoints, yPoints, xPoints.length);
+//  ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
 }
 
 /** 
@@ -1279,13 +1299,22 @@ public void drawPolyline(int[] pointArray) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+//  int maxX = Integer.MIN_VALUE;
+//  int maxY = Integer.MIN_VALUE;
+//  int minX = Integer.MAX_VALUE;
+//  int minY = Integer.MAX_VALUE;
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
   for(int i=0; i<xPoints.length; i++) {
     xPoints[i] = pointArray[i * 2];
     yPoints[i] = pointArray[i * 2 + 1];
+//    maxX = Math.max(maxX, xPoints[i]);
+//    maxY = Math.max(maxY, yPoints[i]);
+//    minX = Math.min(minX, xPoints[i]);
+//    minY = Math.min(minY, yPoints[i]);
   }
   handle.drawPolyline(xPoints, yPoints, xPoints.length);
+//  ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
 }
 
 /** 
@@ -1307,6 +1336,7 @@ public void drawRectangle (int x, int y, int width, int height) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawRect(x, y, width, height);
+//  ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -1355,6 +1385,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
+//  ensureAreaClean(x, y, width, height);
 }
 
 //void drawRoundRectangleGdip (int gdipGraphics, int brush, int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -1463,6 +1494,9 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
     handle.setColor(oldColor);
   }
   handle.drawString(string, x, y + handle.getFontMetrics().getMaxAscent());
+//  // TODO: optimize if the ensureAreaClean works
+//  Point extent = stringExtent(string);
+//  ensureAreaClean(x, y, extent.x, extent.y);
 }
 
 /** 
@@ -1571,6 +1605,13 @@ public void drawText (String string, int x, int y, int flags) {
     int maxAscent = fm.getMaxAscent();
     handle.drawString(tokens[i], x, y + maxAscent + i * fmHeight);
   }
+  // TODO: optimize if the ensureAreaClean works
+  int width = 0;
+  int height = tokens.length * fmHeight;
+  for(int i=0; i<tokens.length; i++) {
+    width = Math.max(width, fm.stringWidth(tokens[i]));
+  }
+//  ensureAreaClean(x, y, width, height);
 //	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 //	int length = buffer.length();
 //	if (length == 0) return;
@@ -1693,6 +1734,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
   handle.setColor(data.background);
   handle.fillArc(x, y, width, height, startAngle, arcAngle < 0? arcAngle + startAngle: arcAngle - startAngle);
   handle.setColor(oldColor);
+//  ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillPie(data.gdipGraphics, data.gdipBrush, x, y, width, height, -startAngle, -arcAngle);
@@ -1802,6 +1844,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
   handle.fill(new java.awt.Rectangle(x, y, width, height));
 //  handle.setColor(oldColor);
   handle.setPaint(oldPaint);
+//  ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -1827,6 +1870,7 @@ public void fillOval (int x, int y, int width, int height) {
   handle.setColor(data.background);
   handle.fillOval(x, y, width, height);
   handle.setColor(oldColor);
+//  ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillEllipse(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -1868,6 +1912,8 @@ public void fillPath (Path path) {
 	handle.setPaint(handle.getBackground());
 	handle.fill(path.handle);
 	handle.setPaint(old);
+//  java.awt.Rectangle bounds = path.handle.getBounds();
+//  ensureAreaClean(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /** 
@@ -1893,16 +1939,25 @@ public void fillPolygon(int[] pointArray) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+  int maxX = Integer.MIN_VALUE;
+  int maxY = Integer.MIN_VALUE;
+  int minX = Integer.MAX_VALUE;
+  int minY = Integer.MAX_VALUE;
   int[] xPoints = new int[pointArray.length/2];
   int[] yPoints = new int[xPoints.length];
   for(int i=0; i<xPoints.length; i++) {
     xPoints[i] = pointArray[i * 2];
     yPoints[i] = pointArray[i * 2 + 1];
+    maxX = Math.max(maxX, xPoints[i]);
+    maxY = Math.max(maxY, yPoints[i]);
+    minX = Math.min(minX, xPoints[i]);
+    minY = Math.min(minY, yPoints[i]);
   }
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
   handle.fillPolygon(xPoints, yPoints, xPoints.length);
   handle.setColor(oldColor);
+//  ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
@@ -1937,6 +1992,7 @@ public void fillRectangle (int x, int y, int width, int height) {
   handle.setColor(data.background);
   handle.fillRect(x, y, width, height);
   handle.setColor(oldColor);
+//  ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -2001,6 +2057,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
   handle.setColor(data.background);
   handle.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
   handle.setColor(oldColor);
+//  ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		fillRoundRectangleGdip(data.gdipGraphics, data.gdipBrush, x, y, width, height, arcWidth, arcHeight);
@@ -2267,6 +2324,14 @@ public Rectangle getClipping() {
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   // TODO: getClipBounds could return null!
   java.awt.Rectangle clipping = handle.getClipBounds();
+  if(clipping == null) {
+    if(drawable instanceof Control) {
+      java.awt.Dimension size = ((CControl)((Control)drawable).handle).getClientArea().getSize();
+      return new Rectangle(0, 0, size.width, size.height);
+    }
+    // TODO: what to do for other types? Do they always have a clip region?
+    return new Rectangle(0, 0, 1, 1);
+  }
   return new Rectangle((int)clipping.getX(), (int)clipping.getY(), (int)clipping.getWidth(), (int)clipping.getHeight());
 //  RECT rect = new RECT();
 //	OS.GetClipBox(handle, rect);
@@ -2292,7 +2357,16 @@ public void getClipping (Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  region.add(new Region(data.device, handle.getClip()));
+  Shape clip = handle.getClip();
+  if(clip == null) {
+    if(drawable instanceof Control) {
+      clip = new java.awt.Rectangle(((CControl)((Control)drawable).handle).getClientArea().getSize());
+    } else {
+      // TODO: what to do for other types? Do they always have a clip region?
+      clip = new java.awt.Rectangle(0, 0, 1, 1);
+    }
+  }
+  region.add(new Region(data.device, clip));
 //	int result = OS.GetClipRgn (handle, region.handle);
 //	if (result != 1) {
 //		RECT rect = new RECT();
@@ -3068,7 +3142,8 @@ public void setBackgroundPattern (Pattern pattern) {
 public void setClipping (int x, int y, int width, int height) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.setClip(x, y, width, height);
+  handle.setClip(clip);
+  handle.clipRect(x, y, width, height);
 }
 
 /**
@@ -3093,7 +3168,8 @@ public void setClipping (Path path) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	handle.setClip(path.handle);
+  handle.setClip(clip);
+	handle.clip(path.handle);
 }
 
 /**
@@ -3113,7 +3189,7 @@ public void setClipping (Rectangle rect) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
-		handle.setClip(null);
+		handle.setClip(clip);
 	} else {
 		setClipping(rect.x, rect.y, rect.width, rect.height);
 	}
@@ -3139,7 +3215,8 @@ public void setClipping (Region region) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.setClip(region.handle);
+  handle.setClip(clip);
+  handle.clip(region.handle);
 }
 
 /** 
@@ -3188,6 +3265,9 @@ public void setFillRule(int rule) {
  */
 public void setFont (Font font) {
   Graphics2D handle = getGraphics();
+  if(handle == null) {
+    getGraphics();
+  }
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
     handle.setFont(data.device.systemFont);
@@ -3829,39 +3909,90 @@ BasicStroke getCurrentBasicStroke() {
   return new BasicStroke();
 }
 
-public boolean isSwingPainting = false;
-Graphics2D validGraphics;
+boolean isSwingPainting = false;
+//Graphics2D validGraphics;
+
+Shape clip;
 
 Graphics2D getGraphics() {
   if(handle == null) return null;
   // TODO: if the handle is a null graphic, try to reobtain a graphic from the source
-  if(isSwingPainting || !(drawable instanceof Control)) return handle;
-  // TODO: check that this optimization is correct.
-  if(validGraphics != null) return validGraphics;
+  if(!(drawable instanceof Control)) return handle;
+
   Container container = ((Control)drawable).handle;
   Container clientArea = ((CControl)container).getClientArea();
   Graphics2D g = (Graphics2D)clientArea.getGraphics();
-//  for(Container parent = container; parent != null && parent.isLightweight(); parent = parent.getParent()) {
-//    if(!parent.isVisible()) {
-//      g.clipRect(0, 0, 0, 0);
-//      break;
-//    }
-//    g.translate(parent.getX(), parent.getY());
-//  }
-  validGraphics = g;
-  // Duplicate from Control.getInternalOffset()
-  if(clientArea != container) {
-    if(clientArea.getParent() instanceof JViewport) {
-      JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
-      if(columnHeader != null && columnHeader.isVisible()) {
-        g.translate(0, -columnHeader.getHeight());
+  if(g != null) {
+    clip = g.getClip();
+  }
+  copyAttributes(handle, g);
+  isSwingPainting = clientArea instanceof JComponent && Boolean.TRUE.equals(((JComponent)clientArea).getClientProperty(Utils.SWTSwingPaintingClientProperty));
+  if(g != null) {
+    if(clientArea != container) {
+      if(clientArea.getParent() instanceof JViewport) {
+        JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
+        if(columnHeader != null && columnHeader.isVisible()) {
+          g.translate(0, -columnHeader.getHeight());
+        }
       }
     }
   }
-  return g;
+  if(g == null) {
+    g = new NullGraphics();
+  }
+  handle = g;
+  return handle;
+//  // TODO: check that this optimization is correct.
+//  if(validGraphics != null) return validGraphics;
+//  Container container = ((Control)drawable).handle;
+//  Container clientArea = ((CControl)container).getClientArea();
+//  Graphics2D g = (Graphics2D)clientArea.getGraphics();
+////  for(Container parent = container; parent != null && parent.isLightweight(); parent = parent.getParent()) {
+////    if(!parent.isVisible()) {
+////      g.clipRect(0, 0, 0, 0);
+////      break;
+////    }
+////    g.translate(parent.getX(), parent.getY());
+////  }
+//  validGraphics = g;
+//  // Duplicate from Control.getInternalOffset()
+//  if(clientArea != container) {
+//    if(clientArea.getParent() instanceof JViewport) {
+//      JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
+//      if(columnHeader != null && columnHeader.isVisible()) {
+//        g.translate(0, -columnHeader.getHeight());
+//      }
+//    }
+//  }
+//  return g;
 }
 
+//void ensureAreaClean(int x, int y, int width, int height) {
+//  // TODO: check if this is useful
+//  if(isSwingPainting) return;
+//  if(!(drawable instanceof Control)) return;
+//  if(handle == null || handle instanceof NullGraphics) return;
+//  Control control = (Control)drawable;
+//  Composite parent = control.getParent();
+//  Component[] components = ((CControl)parent.handle).getClientArea().getComponents();
+//  if(components.length < 2) return;
+//  Container parentClientArea = ((CControl)parent.handle).getClientArea();
+//  java.awt.Rectangle rect = SwingUtilities.convertRectangle(((CControl)control.handle).getClientArea(), new java.awt.Rectangle(x, y, width, height), parentClientArea);
+//  boolean isFound = false;
+//  for(int i=components.length-1; i>=0; i--) {
+//    Component component = components[i];
+//    if(isFound && component instanceof JComponent) {
+//      java.awt.Rectangle rect2 = SwingUtilities.convertRectangle(parentClientArea, rect, component);
+//      component.repaint(rect2.x, rect2.y, rect2.width, rect2.height);
+//    }
+//    if(component == control.handle) {
+//      isFound = true;
+//    }
+//  }
+//}
+
 class NullGraphics extends Graphics2D {
+  // TODO: save the attributes for the copyAttributes()
   public void addRenderingHints(Map arg0) {
   }
   public void clip(Shape s) {
@@ -3892,7 +4023,7 @@ class NullGraphics extends Graphics2D {
   public java.awt.Color getBackground() {
     return java.awt.Color.BLACK;
   }
-  public Composite getComposite() {
+  public java.awt.Composite getComposite() {
     return null;
   }
   public GraphicsConfiguration getDeviceConfiguration() {
@@ -3927,7 +4058,7 @@ class NullGraphics extends Graphics2D {
   }
   public void setBackground(java.awt.Color color) {
   }
-  public void setComposite(Composite comp) {
+  public void setComposite(java.awt.Composite comp) {
   }
   public void setPaint(Paint paint) {
   }
@@ -4025,6 +4156,21 @@ class NullGraphics extends Graphics2D {
   }
   public void setXORMode(java.awt.Color c1) {
   }
+}
+
+void copyAttributes(Graphics2D g1, Graphics2D g2) {
+  if(g1 == null || g2 == null || g1 == g2 || g1 instanceof NullGraphics || g2 instanceof NullGraphics) {
+    return;
+  }
+  g2.setBackground(g1.getBackground());
+  g2.setClip(g1.getClip());
+  g2.setColor(g1.getColor());
+  g2.setComposite(g1.getComposite());
+  g2.setFont(g1.getFont());
+  g2.setPaint(g1.getPaint());
+  g2.setRenderingHints(g1.getRenderingHints());
+  g2.setStroke(g1.getStroke());
+  g2.setTransform(g1.getTransform());
 }
 
 }

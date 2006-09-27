@@ -126,7 +126,9 @@ public class DisabledStatePanel extends JPanel {
   }
 
   protected void adjustBounds() {
-    setBounds(control.handle.getBounds());
+    if(control != null && control.handle != null) {
+      setBounds(control.handle.getBounds());
+    }
   }
 
   public void release() {

@@ -78,12 +78,12 @@ class CTreeImplementation extends JScrollPane implements CTree {
       public void insert(MutableTreeNode newChild, int childIndex) {
         super.insert(newChild, childIndex);
         getModel().nodesWereInserted(this, new int[] {childIndex});
-        treeTable.expandedPath(new TreePath(rootNode.getPath()));
+        treeTable.expandPath(new TreePath(rootNode.getPath()));
       }
     };
     treeTable = new JTreeTable(new DefaultTreeModel(rootNode)) {
       public boolean getScrollableTracksViewportWidth() {
-        return handle.getColumnCount() == 0 && getPreferredSize().width < getParent().getWidth();
+        return handle.isDisposed()? false: handle.getColumnCount() == 0 && getPreferredSize().width < getParent().getWidth();
       }
       public boolean getScrollableTracksViewportHeight() {
         return getPreferredSize().height < getParent().getHeight();
@@ -145,12 +145,14 @@ class CTreeImplementation extends JScrollPane implements CTree {
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
 //        if(backgroundImageIcon != null) {
 //          Dimension size = getSize();
 //          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
 //        }
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
       }
     };
@@ -400,8 +402,8 @@ class CTreeImplementation extends JScrollPane implements CTree {
     return treeTable.getTableHeader();
   }
 
-  public void expandedPath(TreePath treePath) {
-    treeTable.expandedPath(treePath);
+  public void expandPath(TreePath treePath) {
+    treeTable.expandPath(treePath);
   }
 
   public void collapsePath(TreePath treePath) {
@@ -569,7 +571,7 @@ public interface CTree extends CComposite {
 
   public JTableHeader getTableHeader();
 
-  public void expandedPath(TreePath treePath);
+  public void expandPath(TreePath treePath);
 
   public void collapsePath(TreePath treePath);
 

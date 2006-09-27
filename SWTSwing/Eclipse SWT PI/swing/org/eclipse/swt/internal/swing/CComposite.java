@@ -66,14 +66,19 @@ class CCompositeImplementation extends JPanel implements CComposite {
         }
         return g;
       }
+      public boolean isOptimizedDrawingEnabled() {
+        return getComponentCount() < 2;
+      }
       protected void paintComponent (Graphics g) {
         graphics = g;
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
         if(backgroundImageIcon != null) {
           Dimension size = getSize();
           g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
         }
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
+        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
       }
     };

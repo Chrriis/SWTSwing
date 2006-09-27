@@ -1744,6 +1744,10 @@ void releaseWidget () {
 		accessible.internal_dispose_Accessible ();
 	}
 	accessible = null;
+  if(disabledStatePanel != null) {
+    disabledStatePanel.release();
+    disabledStatePanel = null;
+  }
 }
 
 /**
@@ -2288,6 +2292,7 @@ public void setEnabled (boolean enabled) {
   if(enabled) {
     if(disabledStatePanel != null) {
       disabledStatePanel.release();
+      disabledStatePanel = null;
     }
   } else {
     if(disabledStatePanel == null) {
@@ -4127,7 +4132,6 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.PaintEvent.PAINT: {
     Event event = new Event();
     event.gc = new GC(this);
-    event.gc.isSwingPainting = true;
     Rectangle r = this.getBounds ();
     event.width = r.width;
     event.height = r.height;
@@ -4138,7 +4142,6 @@ public void processEvent(AWTEvent e) {
         canvas.caret.paintCaret (event.gc);
       }
     }
-    event.gc.isSwingPainting = false;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_DRAGGED:

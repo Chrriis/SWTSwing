@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- A tree to which children are added at expansion time does expand.
+- A composite with multiple children does not flash anymore.
 - Setting a null background image does not throw an exception.
 - More GC enhancements.
 - Few improvements to the image handling.

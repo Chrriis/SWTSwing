@@ -303,6 +303,8 @@ class CShellDialog extends JDialog implements CShell {
         return;
       }
     }
+    // TODO: Check if that should always be the case.
+    setFocusableWindowState(false);
     super.setVisible(isVisible);
   }
 

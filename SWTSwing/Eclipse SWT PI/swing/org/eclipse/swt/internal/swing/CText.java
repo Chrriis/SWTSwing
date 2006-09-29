@@ -33,6 +33,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 class CTextMulti extends JScrollPane implements CText {
@@ -42,6 +43,10 @@ class CTextMulti extends JScrollPane implements CText {
 
   public Container getSwingComponent() {
     return textArea;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CTextMulti(Text text, int style) {
@@ -344,6 +349,10 @@ class CTextField extends JScrollPane implements CText {
 
   public Container getSwingComponent() {
     return passwordField;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CTextField(Text text, int style) {

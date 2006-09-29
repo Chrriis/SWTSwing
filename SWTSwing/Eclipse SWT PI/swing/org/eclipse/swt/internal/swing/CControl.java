@@ -13,6 +13,8 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import org.eclipse.swt.widgets.Control;
+
 /**
  * The interface shared by all controls.
  * @version 1.0 2005.03.13
@@ -45,5 +47,7 @@ public interface CControl {
   public void setBackgroundInheritance(int backgroundInheritanceType);
 
   public Container getSwingComponent();
+
+  public Control getSWTHandle();
 
 }

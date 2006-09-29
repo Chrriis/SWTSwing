@@ -13,6 +13,7 @@ import java.awt.Image;
 import javax.swing.JProgressBar;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ProgressBar;
 
 class CProgressBarImplementation extends JProgressBar implements CProgressBar {
@@ -21,6 +22,10 @@ class CProgressBarImplementation extends JProgressBar implements CProgressBar {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CProgressBarImplementation(ProgressBar progressBar, int style) {

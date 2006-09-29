@@ -22,6 +22,7 @@ import javax.swing.event.HyperlinkListener;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.widgets.Control;
 
 public interface CBrowser extends CComposite {
 
@@ -32,6 +33,10 @@ public interface CBrowser extends CComposite {
 
     public Container getSwingComponent() {
       return editorPane;
+    }
+
+    public Control getSWTHandle() {
+      return handle;
     }
 
     public CBrowserImplementation(Browser browser, int style) {

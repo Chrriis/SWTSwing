@@ -19,6 +19,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TabFolder;
 
 class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
@@ -27,6 +28,10 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CTabFolderImplementation(TabFolder tabFolder, int style) {

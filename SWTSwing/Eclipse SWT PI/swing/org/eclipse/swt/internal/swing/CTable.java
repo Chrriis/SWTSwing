@@ -39,6 +39,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 
 class CTableImplementation extends JScrollPane implements CTable {
@@ -49,6 +50,10 @@ class CTableImplementation extends JScrollPane implements CTable {
 
   public Container getSwingComponent() {
     return table;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   protected class CheckBoxCellRenderer extends JPanel {

@@ -17,6 +17,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Scale;
 
 class CScaleImplementation extends JSlider implements CScale {
@@ -25,6 +26,10 @@ class CScaleImplementation extends JSlider implements CScale {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CScaleImplementation(Scale scale, int style) {

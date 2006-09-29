@@ -14,6 +14,7 @@ import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.CoolBar;
 
 class CCoolBarImplementation extends JCoolBar implements CCoolBar {
@@ -22,6 +23,10 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CCoolBarImplementation(CoolBar coolBar, int style) {

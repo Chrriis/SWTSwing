@@ -18,6 +18,7 @@ import javax.swing.JSeparator;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 class CSeparator extends JPanel implements CLabel {
@@ -28,6 +29,10 @@ class CSeparator extends JPanel implements CLabel {
 
   public Container getSwingComponent() {
     return separator;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CSeparator(Label label, int style) {
@@ -93,6 +98,10 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CLabelImplementation(Label label, int style) {

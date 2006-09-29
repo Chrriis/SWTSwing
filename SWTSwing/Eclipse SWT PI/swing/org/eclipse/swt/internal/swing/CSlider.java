@@ -17,6 +17,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Slider;
 
 class CSliderImplementation extends JScrollBar implements CSlider {
@@ -25,6 +26,10 @@ class CSliderImplementation extends JScrollBar implements CSlider {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CSliderImplementation(Slider slider, int style) {

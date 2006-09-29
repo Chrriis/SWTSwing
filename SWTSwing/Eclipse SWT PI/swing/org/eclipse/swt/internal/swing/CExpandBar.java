@@ -19,6 +19,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ExpandBar;
 
 class CExpandBarImplementation extends JScrollPane implements CExpandBar {
@@ -28,6 +29,10 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CExpandBarImplementation(ExpandBar expandBar, int style) {

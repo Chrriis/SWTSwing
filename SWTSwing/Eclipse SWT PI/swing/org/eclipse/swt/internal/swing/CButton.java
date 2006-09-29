@@ -21,6 +21,7 @@ import javax.swing.JToggleButton;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 
 class CButtonCommon {
 
@@ -36,6 +37,10 @@ class CButtonArrow extends ArrowButton implements CButton {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   protected static int getDirection(int style) {
@@ -101,6 +106,10 @@ class CButtonPush extends JButton implements CButton {
     return this;
   }
 
+  public Control getSWTHandle() {
+    return handle;
+  }
+
   public CButtonPush(Button button, int style) {
     this.handle = button;
     init(style);
@@ -147,6 +156,10 @@ class CButtonCheck extends JCheckBox implements CButton {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CButtonCheck(Button button, int style) {
@@ -197,6 +210,10 @@ class CButtonToggle extends JToggleButton implements CButton {
     return this;
   }
 
+  public Control getSWTHandle() {
+    return handle;
+  }
+
   public CButtonToggle(Button button, int style) {
     this.handle = button;
     init(style);
@@ -243,6 +260,10 @@ class CButtonRadio extends JIconRadioButton implements CButton {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CButtonRadio(Button button, int style) {

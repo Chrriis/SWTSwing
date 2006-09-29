@@ -19,6 +19,7 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
 
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 
 class CLinkImplementation extends JEditorPane implements CLink {
@@ -27,6 +28,10 @@ class CLinkImplementation extends JEditorPane implements CLink {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CLinkImplementation(Link link, int style) {

@@ -44,6 +44,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
 
 class CTreeImplementation extends JScrollPane implements CTree {
@@ -55,6 +56,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
 
   public Container getSwingComponent() {
     return treeTable;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   protected class CheckBoxCellRenderer extends JPanel {

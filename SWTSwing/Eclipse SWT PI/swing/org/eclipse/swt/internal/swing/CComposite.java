@@ -24,6 +24,7 @@ import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 class CCompositeImplementation extends JPanel implements CComposite {
 
@@ -33,6 +34,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
 
   public Container getSwingComponent() {
     return contentPane;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CCompositeImplementation(Composite composite, int style) {

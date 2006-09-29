@@ -29,6 +29,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -60,6 +61,8 @@ import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CControl;
+import org.eclipse.swt.internal.swing.CShell;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -271,9 +274,28 @@ public class Display extends Device {
   static {
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
       public void eventDispatched(AWTEvent event) {
-        java.awt.event.InputEvent me = (java.awt.event.InputEvent)event;
+        java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
         previousModifiersEx = modifiersEx;
-        modifiersEx = me.getModifiersEx();
+        modifiersEx = ie.getModifiersEx();
+        if(ie instanceof KeyEvent && ((KeyEvent)ie).getID() == KeyEvent.KEY_PRESSED) {
+          int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
+          if((modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
+            Window window = SwingUtilities.getWindowAncestor(ie.getComponent());
+            if(window instanceof CShell) {
+              java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+              SwingUtilities.convertPointFromScreen(mouseLocation, window);
+              Component component = window.findComponentAt(mouseLocation);
+              for(; component != null && !(component instanceof CControl); component = component.getParent());
+              Control control;
+              if(component != null) {
+                control = ((CControl)component).getSWTHandle();
+              } else {
+                control = ((CShell)window).getSWTHandle();
+              }
+              Utils.dumpTree(control);
+            }
+          }
+        }
       }
     }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
   }

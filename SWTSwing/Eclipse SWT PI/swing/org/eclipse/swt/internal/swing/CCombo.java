@@ -28,6 +28,7 @@ import javax.swing.text.JTextComponent;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
 
 class CComboImplementation extends JComboBox implements CCombo {
 
@@ -35,6 +36,10 @@ class CComboImplementation extends JComboBox implements CCombo {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CComboImplementation(Combo combo, int style) {

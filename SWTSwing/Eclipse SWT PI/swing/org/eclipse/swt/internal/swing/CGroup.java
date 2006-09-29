@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 
 class CGroupImplementation extends JPanel implements CGroup {
@@ -31,6 +32,10 @@ class CGroupImplementation extends JPanel implements CGroup {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CGroupImplementation(Group group, int style) {

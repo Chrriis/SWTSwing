@@ -23,7 +23,11 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Layout;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * General util methods.
@@ -287,11 +291,46 @@ public class Utils {
     for(; i<stackTraceElements.length; i++) {
       StackTraceElement stackElement = stackTraceElements[i];
       if(stackElement.getClassName().equals("org.eclipse.swt.internal.swing.Utils") && stackElement.getMethodName().equals("notImplemented")) {
-        System.err.println("Not implemented: " + stackTraceElements[i + 1]);
+        System.out.println("Not implemented: " + stackTraceElements[i + 1]);
         break;
       }
     }
     return;
+  }
+
+  public static void dumpTree(Control control) {
+    Shell shell = control.getShell();
+    dumpControlTree(shell, 0, shell == control? null: control);
+  }
+
+  protected static void dumpControlTree(Control control, int depth, Control referenceControl) {
+    StringBuffer sb = new StringBuffer();
+    if(depth > 0) {
+      int count = depth;
+      if(control == referenceControl) {
+        sb.append("> ");
+        count--;
+      }
+      while(count-- > 0) {
+        sb.append("  ");
+      }
+    }
+    sb.append(control);
+    Rectangle bounds = control.getBounds();
+    sb.append(" - [").append(bounds.x).append(", ").append(bounds.y).append(", ").append(bounds.width).append(", ").append(bounds.height).append(']');
+    if(control instanceof Composite) {
+      Layout layout = ((Composite)control).getLayout();
+      if(layout != null) {
+        sb.append(" - ").append(layout.getClass().getName());
+      }
+    }
+    System.out.println(sb.toString());
+    if(control instanceof Composite) {
+      Control[] children = ((Composite)control).getChildren();
+      for(int i=0; i<children.length; i++) {
+        dumpControlTree(children[i], depth + 1, referenceControl);
+      }
+    }
   }
 
 }

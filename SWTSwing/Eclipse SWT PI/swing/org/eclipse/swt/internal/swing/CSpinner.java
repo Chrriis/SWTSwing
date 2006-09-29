@@ -14,6 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Spinner;
 
 class CSpinnerImplementation extends JSpinner implements CSpinner {
@@ -24,6 +25,10 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 
   public Container getSwingComponent() {
     return this;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CSpinnerImplementation(Spinner spinner, int style) {

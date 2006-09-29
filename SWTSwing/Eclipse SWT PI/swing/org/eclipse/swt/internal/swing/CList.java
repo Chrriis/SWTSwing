@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 
 class CListImplementation extends JScrollPane implements CList {
@@ -35,6 +36,10 @@ class CListImplementation extends JScrollPane implements CList {
 
   public Container getSwingComponent() {
     return list;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CListImplementation(List list, int style) {

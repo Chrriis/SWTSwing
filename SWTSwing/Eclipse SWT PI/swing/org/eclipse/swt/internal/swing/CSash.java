@@ -27,6 +27,7 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.swing.CShell.PaintHandler;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Sash;
 
 class CSashImplementation extends JPanel implements CSash {
@@ -37,6 +38,10 @@ class CSashImplementation extends JPanel implements CSash {
 
   public Container getSwingComponent() {
     return divider;
+  }
+
+  public Control getSWTHandle() {
+    return handle;
   }
 
   public CSashImplementation(Sash sash, int style) {

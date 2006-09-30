@@ -631,11 +631,11 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
   if(!simple || srcWidth == destWidth && srcHeight == destHeight) {
     handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
   } else {
-    Shape oldClip = handle.getClip();
-    handle.setClip(clip);
-    handle.clipRect(destX, destY, destWidth, destHeight);
+//    Shape oldClip = handle.getClip();
+//    handle.setClip(systemClip);
+//    handle.clipRect(destX, destY, destWidth, destHeight);
     handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
-    handle.setClip(oldClip);
+//    handle.setClip(oldClip);
   }
 //  ensureAreaClean(destX, destY, destWidth, destHeight);
 //	switch (srcImage.type) {
@@ -2322,9 +2322,7 @@ public int getCharWidth(char ch) {
 public Rectangle getClipping() {
   Graphics2D handle = getGraphics();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  // TODO: getClipBounds could return null!
-  java.awt.Rectangle clipping = handle.getClipBounds();
-  if(clipping == null) {
+  if(userClip == null) {
     if(drawable instanceof Control) {
       java.awt.Dimension size = ((CControl)((Control)drawable).handle).getClientArea().getSize();
       return new Rectangle(0, 0, size.width, size.height);
@@ -2332,10 +2330,8 @@ public Rectangle getClipping() {
     // TODO: what to do for other types? Do they always have a clip region?
     return new Rectangle(0, 0, 1, 1);
   }
-  return new Rectangle((int)clipping.getX(), (int)clipping.getY(), (int)clipping.getWidth(), (int)clipping.getHeight());
-//  RECT rect = new RECT();
-//	OS.GetClipBox(handle, rect);
-//	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+  java.awt.Rectangle bounds = userClip.getBounds();
+  return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /** 
@@ -2357,7 +2353,7 @@ public void getClipping (Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  Shape clip = handle.getClip();
+  Shape clip = userClip;
   if(clip == null) {
     if(drawable instanceof Control) {
       clip = new java.awt.Rectangle(((CControl)((Control)drawable).handle).getClientArea().getSize());
@@ -3142,8 +3138,9 @@ public void setBackgroundPattern (Pattern pattern) {
 public void setClipping (int x, int y, int width, int height) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.setClip(clip);
-  handle.clipRect(x, y, width, height);
+  handle.setClip(systemClip);
+  userClip = new java.awt.Rectangle(x, y, width, height);
+  handle.clip(userClip);
 }
 
 /**
@@ -3168,8 +3165,9 @@ public void setClipping (Path path) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.setClip(clip);
-	handle.clip(path.handle);
+  handle.setClip(systemClip);
+  userClip = path.handle;
+	handle.clip(userClip);
 }
 
 /**
@@ -3189,7 +3187,7 @@ public void setClipping (Rectangle rect) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
-		handle.setClip(clip);
+		handle.setClip(systemClip);
 	} else {
 		setClipping(rect.x, rect.y, rect.width, rect.height);
 	}
@@ -3215,8 +3213,9 @@ public void setClipping (Region region) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.setClip(clip);
-  handle.clip(region.handle);
+  handle.setClip(systemClip);
+  userClip = region.handle;
+  handle.clip(userClip);
 }
 
 /** 
@@ -3912,7 +3911,8 @@ BasicStroke getCurrentBasicStroke() {
 boolean isSwingPainting = false;
 //Graphics2D validGraphics;
 
-Shape clip;
+Shape userClip;
+Shape systemClip;
 
 Graphics2D getGraphics() {
   if(handle == null) return null;
@@ -3923,9 +3923,9 @@ Graphics2D getGraphics() {
   Container clientArea = ((CControl)container).getClientArea();
   Graphics2D g = (Graphics2D)clientArea.getGraphics();
   if(g != null) {
-    clip = g.getClip();
+    systemClip = g.getClip();
   }
-  copyAttributes(handle, g);
+  setAttributes(handle, g);
   isSwingPainting = clientArea instanceof JComponent && Boolean.TRUE.equals(((JComponent)clientArea).getClientProperty(Utils.SWTSwingPaintingClientProperty));
   if(g != null) {
     if(clientArea != container) {
@@ -4158,12 +4158,14 @@ class NullGraphics extends Graphics2D {
   }
 }
 
-void copyAttributes(Graphics2D g1, Graphics2D g2) {
+void setAttributes(Graphics2D g1, Graphics2D g2) {
   if(g1 == null || g2 == null || g1 == g2 || g1 instanceof NullGraphics || g2 instanceof NullGraphics) {
     return;
   }
   g2.setBackground(g1.getBackground());
-  g2.setClip(g1.getClip());
+  if(userClip != null) {
+    g2.clip(userClip);
+  }
   g2.setColor(g1.getColor());
   g2.setComposite(g1.getComposite());
   g2.setFont(g1.getFont());

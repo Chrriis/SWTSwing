@@ -643,6 +643,7 @@ void releaseWidget () {
 
 void removeControl (Control control) {
 	fixTabList (control);
+  layout();
 //	resizeChildren ();
 }
 

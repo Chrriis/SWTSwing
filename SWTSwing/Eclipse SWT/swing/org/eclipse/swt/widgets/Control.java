@@ -587,12 +587,7 @@ void destroyWidget () {
   if(parent != null) {
     parent.remove(handle);
   }
-  Composite composite = getParent();
   releaseHandle ();
-  if(composite != null) {
-    composite.markLayout(true, true);
-    composite.updateLayout(false, true);
-  }
 //	if (hwnd != 0) {
 //		OS.DestroyWindow (hwnd);
 //	}

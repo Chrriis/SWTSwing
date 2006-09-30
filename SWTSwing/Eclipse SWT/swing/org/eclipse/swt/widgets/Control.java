@@ -587,7 +587,12 @@ void destroyWidget () {
   if(parent != null) {
     parent.remove(handle);
   }
+  Composite composite = getParent();
   releaseHandle ();
+  if(composite != null) {
+    composite.markLayout(true, true);
+    composite.updateLayout(false, true);
+  }
 //	if (hwnd != 0) {
 //		OS.DestroyWindow (hwnd);
 //	}
@@ -2113,9 +2118,19 @@ public void setBounds (int x, int y, int width, int height) {
 //  if(parent != null) {
 //    location = SwingUtilities.convertPoint(this.parent.handle, location, parent);
 //  }
+  java.awt.Rectangle bounds = handle.getBounds();
+  if(bounds.x == x && bounds.y == y && bounds.width == width && bounds.height == height) return;
   handle.setBounds(x, y, width, height);
-  handle.invalidate();
-  handle.validate();
+  // The notification has to be immediate in SWT, so we force it
+  if(bounds.x != x || bounds.y != y) {
+    processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_MOVED));
+  }
+  // The notification has to be immediate in SWT, so we force it
+  if(bounds.width != width || bounds.height != height) {
+//  ((CControl)handle).getClientArea().invalidate();
+    handle.validate();
+    processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_RESIZED));
+  }
   handle.repaint();
 }
 
@@ -2424,9 +2439,15 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
+  java.awt.Point location = handle.getLocation();
+  if(location.x == x && location.y == y) return;
   handle.setLocation(x, y);
-  handle.invalidate();
-  handle.validate();
+//  ((CControl)handle).getClientArea().invalidate();
+//  handle.validate();
+  // The notification has to be immediate in SWT, so we force it
+  if(location.x != x || location.y != y) {
+    processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_MOVED));
+  }
   handle.repaint();
 //  Container parent = handle.getParent();
 //  if(parent != null) {
@@ -2559,9 +2580,14 @@ public void setSize (int width, int height) {
 	checkWidget ();
   if(width < 0) width = 0;
   if(height < 0) height = 0;
+  java.awt.Dimension size = handle.getSize();
   handle.setSize(width, height);
-  handle.invalidate();
-  handle.validate();
+  // The notification has to be immediate in SWT, so we force it
+  if(size.width != width || size.height != height) {
+//  ((CControl)handle).getClientArea().invalidate();
+    handle.validate();
+    processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_RESIZED));
+  }
   handle.repaint();
 }
 

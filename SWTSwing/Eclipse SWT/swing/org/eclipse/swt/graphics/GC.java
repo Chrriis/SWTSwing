@@ -3918,14 +3918,12 @@ Graphics2D getGraphics() {
   if(handle == null) return null;
   // TODO: if the handle is a null graphic, try to reobtain a graphic from the source
   if(!(drawable instanceof Control)) return handle;
-
   Container container = ((Control)drawable).handle;
   Container clientArea = ((CControl)container).getClientArea();
   Graphics2D g = (Graphics2D)clientArea.getGraphics();
   if(g != null) {
     systemClip = g.getClip();
   }
-  setAttributes(handle, g);
   isSwingPainting = clientArea instanceof JComponent && Boolean.TRUE.equals(((JComponent)clientArea).getClientProperty(Utils.SWTSwingPaintingClientProperty));
   if(g != null) {
     if(clientArea != container) {
@@ -3937,6 +3935,7 @@ Graphics2D getGraphics() {
       }
     }
   }
+  setAttributes(handle, g);
   if(g == null) {
     g = new NullGraphics();
   }

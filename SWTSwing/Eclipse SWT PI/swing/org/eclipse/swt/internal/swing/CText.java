@@ -339,6 +339,11 @@ class CTextMulti extends JScrollPane implements CText {
       textArea.setBackground(background);
     }
   }
+ 
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    textArea.setEnabled(enabled);
+  }
   
 }
 
@@ -622,6 +627,11 @@ class CTextField extends JScrollPane implements CText {
     }
   }
  
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    passwordField.setEnabled(enabled);
+  }
+  
 }
 
 /**

@@ -103,6 +103,9 @@ class CShellFrame extends JFrame implements CShell {
         }
         return g;
       }
+      public boolean isOptimizedDrawingEnabled() {
+        return getComponentCount() < 2 || Utils.isFlatLayout(handle);
+      }
       protected void paintComponent (Graphics g) {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
@@ -358,6 +361,9 @@ class CShellDialog extends JDialog implements CShell {
           g = super.getGraphics();
         }
         return g;
+      }
+      public boolean isOptimizedDrawingEnabled() {
+        return getComponentCount() < 2 || Utils.isFlatLayout(handle);
       }
       protected void paintComponent (Graphics g) {
         graphics = g;

@@ -72,7 +72,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
         return g;
       }
       public boolean isOptimizedDrawingEnabled() {
-        return getComponentCount() < 2;
+        return getComponentCount() < 2 || Utils.isFlatLayout(handle);
       }
       protected void paintComponent (Graphics g) {
         graphics = g;

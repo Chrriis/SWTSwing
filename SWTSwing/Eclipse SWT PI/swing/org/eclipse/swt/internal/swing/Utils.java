@@ -22,8 +22,11 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Layout;
@@ -276,6 +279,20 @@ public class Utils {
 
   public static int getCurrentTime () {
     return (int)(System.currentTimeMillis() - timeStamp);
+  }
+
+  public static boolean isFlatLayout(Control control) {
+    if(!(control instanceof Composite)) {
+      return false;
+    }
+    Layout layout = ((Composite)control).getLayout();
+    if(layout == null) {
+      return false;
+    }
+    if(layout instanceof FillLayout || layout instanceof RowLayout || layout instanceof StackLayout) {
+      return true;
+    }
+    return false;
   }
 
   /**

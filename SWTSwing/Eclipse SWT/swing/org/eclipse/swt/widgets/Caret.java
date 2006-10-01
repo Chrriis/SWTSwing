@@ -128,6 +128,7 @@ private boolean blink;
 
 void paintCaret (GC gc) {
   if (blink) {
+    if(display == null) return;
     gc.setXORMode (true);
     gc.setBackground (display.getSystemColor (SWT.COLOR_BLACK));
     if (image != null) {

@@ -751,6 +751,8 @@ boolean setRadioSelection (boolean value) {
 	return true;
 }
 
+boolean adjustSelection;
+
 /**
  * Sets the selection state of the receiver.
  * <p>
@@ -767,7 +769,9 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
+  adjustSelection = true;
   ((AbstractButton)handle).setSelected(selected);
+  adjustSelection = false;
 //	parent.redraw ();
 }
 
@@ -1071,7 +1075,7 @@ void createHandle() {
     handle = menuItem;
     menuItem.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        if(!hooks(SWT.Selection)) return;
+        if(adjustSelection || !hooks(SWT.Selection)) return;
         Display display = getDisplay();
         display.startExclusiveSection();
         if(isDisposed()) {
@@ -1099,7 +1103,7 @@ void createHandle() {
           }
         }
         super.fireActionPerformed(e);
-        if(!hooks(SWT.Selection)) return;
+        if(adjustSelection || !hooks(SWT.Selection)) return;
         Display display = getDisplay();
         display.startExclusiveSection();
         if(isDisposed()) {

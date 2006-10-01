@@ -122,7 +122,7 @@ public class JCoolBarItem extends JToolBar {
   }
 
   private int getGripWidth() {
-    return 14;
+    return getInsets().left - 2;
   }
 
   /**
@@ -209,4 +209,5 @@ public class JCoolBarItem extends JToolBar {
       }
     }
   }
+  
 }

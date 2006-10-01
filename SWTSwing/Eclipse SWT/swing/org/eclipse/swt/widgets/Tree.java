@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.Container;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.EventObject;
 
@@ -3506,6 +3507,7 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
+  case MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.DefaultSelection) && ((MouseEvent)e).getClickCount() == 2) { super.processEvent(e); return; } break;
   case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }
@@ -3521,11 +3523,24 @@ public void processEvent(AWTEvent e) {
     return;
   }
   switch(id) {
+  case MouseEvent.MOUSE_CLICKED:
+    MouseEvent me = (MouseEvent)e;
+    if(me.getClickCount() == 2) {
+      java.awt.Point location = me.getPoint();
+      TreePath path = ((CTree)handle).getPathForLocation(location.x, location.y);
+      if(path != null) {
+        Event event = new Event();
+        event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+        sendEvent(SWT.DefaultSelection, event);
+      }
+    }
+    break;
   case ItemEvent.ITEM_STATE_CHANGED:
     Event event = new Event();
     event.detail = SWT.CHECK;
     event.item = ((CTreeItem)((ItemEvent)e).getItem()).getTreeItem();
     sendEvent(SWT.Selection, event);
+    break;
   }
   super.processEvent(e);
   display.stopExclusiveSection();

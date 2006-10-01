@@ -58,8 +58,8 @@ class CToolItemCheck extends JToggleButton implements CToolItem {
   }
 
   protected void init(int style) {
-    setHorizontalTextPosition(CENTER);
-    setVerticalTextPosition(BOTTOM);
+//    setHorizontalTextPosition(CENTER);
+//    setVerticalTextPosition(BOTTOM);
     setMargin(new Insets(0, 1, 0, 1));
     Utils.installMouseListener(this, handle.getParent());
   }

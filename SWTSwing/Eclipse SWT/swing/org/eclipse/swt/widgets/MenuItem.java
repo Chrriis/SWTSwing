@@ -1067,7 +1067,24 @@ void createHandle() {
       }
     });
   } else if((style & SWT.CHECK) != 0) {
-    handle = new JCheckBoxMenuItem();
+    JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem();
+    handle = menuItem;
+    menuItem.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if(!hooks(SWT.Selection)) return;
+        Display display = getDisplay();
+        display.startExclusiveSection();
+        if(isDisposed()) {
+          display.stopExclusiveSection();
+          return;
+        }
+//        Event event = new Event();
+//        event.stateMask = Display.getInputState();
+//        sendEvent(SWT.Selection, event);
+        sendEvent(SWT.Selection);
+        display.stopExclusiveSection();
+      }
+    });
   } else if((style & SWT.RADIO) != 0) {
     JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem() {
       protected void fireActionPerformed(ActionEvent e) {

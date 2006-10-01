@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- Text position for check tool items is not below anymore but on the same line.
+- Selection event is sent for check box menu items.
 - Fixes to the Coolbar.
 - Default selection for Tree is added.
 - Layout is reviewed with some forced events to comply with expected behaviour.

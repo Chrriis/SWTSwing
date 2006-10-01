@@ -323,8 +323,7 @@ class CShellDialog extends JDialog implements CShell {
   }
 
   protected void init(int style) {
-    if((style & SWT.ON_TOP) != 0) {
-      // TODO: Check if that should always be the case. Do we apply the non focusable state also to shells with a title bar?
+    if((style & SWT.TITLE) == 0) {
       setFocusableWindowState(false);
     }
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

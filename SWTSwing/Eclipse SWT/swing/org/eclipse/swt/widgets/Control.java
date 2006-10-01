@@ -2117,14 +2117,14 @@ public void setBounds (int x, int y, int width, int height) {
   if(bounds.x == x && bounds.y == y && bounds.width == width && bounds.height == height) return;
   handle.setBounds(x, y, width, height);
   // The notification has to be immediate in SWT, so we force it
-  if(bounds.x != x || bounds.y != y) {
-    processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_MOVED));
-  }
-  // The notification has to be immediate in SWT, so we force it
   if(bounds.width != width || bounds.height != height) {
-//  ((CControl)handle).getClientArea().invalidate();
+//    ((CControl)handle).getClientArea().invalidate();
     handle.validate();
     processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_RESIZED));
+  }
+  // The notification has to be immediate in SWT, so we force it
+  if(bounds.x != x || bounds.y != y) {
+    processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_MOVED));
   }
   handle.repaint();
 }

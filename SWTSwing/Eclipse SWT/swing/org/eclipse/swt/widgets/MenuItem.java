@@ -1111,9 +1111,6 @@ void createHandle() {
         sendEvent(SWT.Selection, event);
         display.stopExclusiveSection();
       }
-      public void setSelected(boolean b) {
-        super.setSelected(b);
-      }
     };
     handle = menuItem;
     menuItem.addItemListener(new ItemListener() {

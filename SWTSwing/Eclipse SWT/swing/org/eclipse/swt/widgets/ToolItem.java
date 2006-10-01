@@ -873,6 +873,8 @@ public void processEvent(AWTEvent e) {
         break;
       }
       return;
+    } else if((style & SWT.CHECK) != 0 && hooks(SWT.Selection)) {
+      break;
     }
     return;
   }

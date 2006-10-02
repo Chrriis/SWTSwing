@@ -272,6 +272,7 @@ public class Display extends Device {
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 
   static {
+    Utils.adjustAppleMenuBar();
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
       public void eventDispatched(AWTEvent event) {
         java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;

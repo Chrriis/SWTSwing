@@ -44,11 +44,18 @@ public class Utils {
   protected static final String LIGHTPOPUPS_PROPERTY = "swt.swing.lightpopups";
   protected static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
   protected static final String LOOK_AND_FEEL_DECORATED_PROPERTY = "swt.swing.laf.decorated";
+  protected static final String APPLEMENUBAR_PROPERTY = "apple.laf.useScreenMenuBar";
 
   public static final String SWTSwingPaintingClientProperty = "SWTSwingClientProperty";
 
   public static boolean isLightweightPopups() {
     return "true".equals(System.getProperty(LIGHTPOPUPS_PROPERTY));
+  }
+
+  public static void adjustAppleMenuBar() {
+    if(System.getProperty(APPLEMENUBAR_PROPERTY) == null) {
+      System.setProperty(APPLEMENUBAR_PROPERTY, "true");
+    }
   }
 
   public static String getLookAndFeel() {

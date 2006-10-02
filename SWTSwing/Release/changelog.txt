@@ -7,7 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
-- 
+- Apple menu bar system property is on by default.
 
 
 * Version 3.2.0004 (October 2, 2006):

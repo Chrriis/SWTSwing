@@ -1880,7 +1880,7 @@ public void setItemCount (int count) {
   itemList.ensureCapacity(count);
   for(int i=itemCount; i<count; i++) {
     itemList.add(null);
-    ((CTable)handle).addItem(index);
+    ((CTable)handle).addItem(i);
   }
 	if (isVirtual) {
 //  TODO: notify item deleted?

@@ -285,6 +285,9 @@ public class JTreeTable extends JPanel implements Scrollable {
 
     protected void processEvent(AWTEvent e) {
       if(e instanceof MouseEvent) {
+        if(e.getID() == MouseEvent.MOUSE_PRESSED && isFocusable() && !hasFocus()) {
+          requestFocus();
+        }
         MouseEvent me = (MouseEvent)e;
         Point point = me.getPoint();
         int row = rowAtPoint(point);
@@ -725,6 +728,16 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public int rowAtPoint(Point point) {
     return table.rowAtPoint(point);
+  }
+
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    table.setEnabled(enabled);
+    tree.setEnabled(enabled);
+  }
+
+  public void requestFocus() {
+    table.requestFocus();
   }
 
 }

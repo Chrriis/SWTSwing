@@ -595,6 +595,11 @@ class CTableImplementation extends JScrollPane implements CTable {
     table.requestFocus();
   }
 
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    table.setEnabled(enabled);
+  }
+
 }
 
 public interface CTable extends CComposite {

@@ -525,6 +525,15 @@ class CTreeImplementation extends JScrollPane implements CTree {
     treeTable.getTableHeader().setVisible(isHeaderVisible);
   }
 
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    treeTable.setEnabled(enabled);
+  }
+
+  public void requestFocus() {
+    treeTable.requestFocus();
+  }
+
 }
 
 public interface CTree extends CComposite {

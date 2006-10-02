@@ -42,9 +42,9 @@ You can set the Look And Feel of your application by setting the system property
 metal Look And Feel, the system property should be set to
 "javax.swing.plaf.metal.MetalLookAndFeel".
 
-If you want to try Eclipse with SWTSwing, the easiest way is to place
-SWTSwing.jar in the eclipse folder (let's assume it is C:\eclipse) and run the
-following command:
+If you want to try Eclipse Java SDK 3.2 with SWTSwing, the easiest way is to
+place SWTSwing.jar in the eclipse folder (let's assume it is C:\eclipse) and run
+the following command:
 java -cp SWTSwing.jar;startup.jar -Dosgi.install.area=C:\eclipse 
 -Dosgi.parentClassloader=app -Dswt.swing.debug=true 
 org.eclipse.swt.widgets.Display org.eclipse.core.launcher.Main

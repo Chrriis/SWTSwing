@@ -1348,7 +1348,7 @@ public Color getSystemColor (int id) {
     case SWT.COLOR_TITLE_BACKGROUND:
       swingColor = UIManager.getColor("activeCaption"); break;
     case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:
-      swingColor = UIManager.getColor("activeCaption"); break;
+      swingColor = UIManager.getColor("inactiveCaption"); break;
     case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:
       swingColor = UIManager.getColor("inactiveCaptionText"); break;
     case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:

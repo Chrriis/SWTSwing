@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Gradient for title is adjusted.
 - Bug affecting the row count of a Table should be fixed.
 - Apple menu bar system property is on by default.
 

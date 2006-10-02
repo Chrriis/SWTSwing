@@ -498,7 +498,8 @@ public String getText (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   int count = Math.max (1, parent.getColumnCount ());
   if (0 > index || index > count - 1) return "";
-  return handle.getTableItemObject(index).getText();
+  String text = handle.getTableItemObject(index).getText();
+  return text == null? "": text;
 }
 
 //void redraw () {

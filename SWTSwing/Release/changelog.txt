@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- Modifiers are not repeated when key is stuck.
 - Tree and table focus and enabling requests are rerouted to appropriate components.
 - Modal dialogs don't generate an exception anymore.
 - File Transfer is implemented.

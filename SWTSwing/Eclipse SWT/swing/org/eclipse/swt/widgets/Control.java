@@ -4088,6 +4088,7 @@ public void processEvent(EventObject e) {
 }
 
 boolean isTraversing;
+int lastPressedKeyCode;
 
 /**
  * The entry point for callbacks 
@@ -4251,6 +4252,18 @@ public void processEvent(AWTEvent e) {
     break;
   case java.awt.event.KeyEvent.KEY_PRESSED: {
     java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+    int pressedKeyCode = ke.getKeyCode();
+    if(pressedKeyCode == lastPressedKeyCode) {
+      boolean isBlocked = false;
+      switch(pressedKeyCode) {
+      case java.awt.event.KeyEvent.VK_CONTROL:
+      case java.awt.event.KeyEvent.VK_SHIFT:
+      case java.awt.event.KeyEvent.VK_ALT:
+        isBlocked = true;
+      }
+      if(isBlocked) break;
+    }
+    lastPressedKeyCode = pressedKeyCode;
     if(isTraversalKey(ke)) {
       isTraversing = processTraversalKey(ke);
     }
@@ -4258,11 +4271,12 @@ public void processEvent(AWTEvent e) {
       if(hooks(SWT.KeyDown)) {
         sendEvent(SWT.KeyDown, createKeyEvent(ke));
       }
-      lastPressed = ((java.awt.event.KeyEvent) e).getWhen ();
+      lastPressed = ke.getWhen ();
     }
     break;
   }
   case java.awt.event.KeyEvent.KEY_RELEASED: {
+    lastPressedKeyCode = -1;
     if(!isTraversing) {
       sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e));
     }
@@ -4270,8 +4284,9 @@ public void processEvent(AWTEvent e) {
   }
   case java.awt.event.KeyEvent.KEY_TYPED:
     if(!isTraversing) {
-      if (((java.awt.event.KeyEvent) e).getWhen () > lastPressed) {
-        Event event = createKeyEvent ((java.awt.event.KeyEvent) e);
+      java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+      if (ke.getWhen () > lastPressed) {
+        Event event = createKeyEvent (ke);
         sendEvent (SWT.KeyDown, event);
         sendEvent (SWT.KeyUp, event);
       }

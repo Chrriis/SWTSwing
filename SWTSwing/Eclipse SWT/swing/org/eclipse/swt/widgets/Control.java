@@ -2118,7 +2118,7 @@ public void setBounds (int x, int y, int width, int height) {
   handle.setBounds(x, y, width, height);
   // The notification has to be immediate in SWT, so we force it
   if(bounds.width != width || bounds.height != height) {
-//    ((CControl)handle).getClientArea().invalidate();
+    ((CControl)handle).getClientArea().invalidate();
     handle.validate();
     processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_RESIZED));
   }
@@ -2579,7 +2579,7 @@ public void setSize (int width, int height) {
   handle.setSize(width, height);
   // The notification has to be immediate in SWT, so we force it
   if(size.width != width || size.height != height) {
-//  ((CControl)handle).getClientArea().invalidate();
+    ((CControl)handle).getClientArea().invalidate();
     handle.validate();
     processEvent(new ComponentEvent(handle, ComponentEvent.COMPONENT_RESIZED));
   }

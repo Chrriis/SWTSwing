@@ -7,7 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
-- TableItem.getText(int) does not return null.
+- 
 
 
 * Version 3.2.0004 (October 2, 2006):

@@ -5,7 +5,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 ---------------------------------- Change log ----------------------------------
 
-* Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
+* Version 3.2.0004 (October 2, 2006):
 
 - Modifiers are not repeated when key is stuck.
 - Tree and table focus and enabling requests are rerouted to appropriate components.

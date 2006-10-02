@@ -42,6 +42,13 @@ You can set the Look And Feel of your application by setting the system property
 metal Look And Feel, the system property should be set to
 "javax.swing.plaf.metal.MetalLookAndFeel".
 
+If you want to try Eclipse with SWTSwing, the easiest way is to place
+SWTSwing.jar in the eclipse folder (let's assume it is C:\eclipse) and run the
+following command:
+java -cp SWTSwing.jar;startup.jar -Dosgi.install.area=C:\eclipse 
+-Dosgi.parentClassloader=app -Dswt.swing.debug=true 
+org.eclipse.swt.widgets.Display org.eclipse.core.launcher.Main
+
 
 3. Any demo?
 
@@ -57,6 +64,9 @@ ports) are running flawlessly.
 Some more complex examples, like the ones provided by the SWT team, and some
 simple applications do work on SWTSwing too, and the goal is now to make more of
 these real world test cases to be supported.
+
+The Eclipse Java SDK is able to run with SWTSwing. It has a few problems still,
+but a lot is working already.
 
 For more detailed information about the current implementation status, visit
 SWTSwing's website.

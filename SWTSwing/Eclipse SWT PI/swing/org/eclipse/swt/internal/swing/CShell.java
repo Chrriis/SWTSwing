@@ -296,7 +296,7 @@ class CShellDialog extends JDialog implements CShell {
       Display display = handle.getDisplay();
       if(display != null && display.getThread() == Thread.currentThread() || SwingUtilities.isEventDispatchThread()) {
         final Object LOCK = new Object();
-        Thread t = new Thread() {
+        Thread t = new Thread(Utils.getSWTSwingUIThreadsNamePrefix() + "Modal shell opening") {
           public void run() {
             synchronized(LOCK) {
               LOCK.notify();

@@ -316,7 +316,13 @@ protected void checkSubclass () {
 protected void checkWidget () {
 	Display display = this.display;
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (display.thread != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	Thread currentThread = Thread.currentThread ();
+  if (display.thread != currentThread && !SwingUtilities.isEventDispatchThread()) {
+    String name = currentThread.getName();
+    if(name == null || !name.startsWith(Utils.getSWTSwingUIThreadsNamePrefix())) {
+      error (SWT.ERROR_THREAD_INVALID_ACCESS);
+    }
+  }
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 

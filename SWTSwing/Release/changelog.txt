@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0004 (xxxxxxxxxxxxxxxxxx):
 
+- Modal dialogs don't generate an exception anymore.
 - File Transfer is implemented.
 - Text position for check tool items is not below anymore but on the same line.
 - Selection event is sent for check box tool items.

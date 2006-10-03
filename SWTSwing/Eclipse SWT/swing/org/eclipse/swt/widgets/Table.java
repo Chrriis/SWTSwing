@@ -1879,16 +1879,20 @@ public void setItemCount (int count) {
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
   itemList.ensureCapacity(count);
   for(int i=itemCount; i<count; i++) {
-    itemList.add(null);
-    ((CTable)handle).addItem(i);
+    if (isVirtual) {
+      itemList.add(null);
+      ((CTable)handle).addItem(i);
+    } else {
+      new TableItem (this, SWT.NONE, i, true);
+    }
   }
-	if (isVirtual) {
-//  TODO: notify item deleted?
-	} else {
-		for (int i=itemCount; i<count; i++) {
-			itemList.set(i, new TableItem (this, SWT.NONE, i, true));
-		}
-	}
+//	if (isVirtual) {
+////  TODO: notify item deleted?
+//	} else {
+//		for (int i=itemCount; i<count; i++) {
+//			itemList.set(i, new TableItem (this, SWT.NONE, i, false));
+//		}
+//	}
   ((CTable)handle).getModel().fireTableDataChanged();
 //	if (!isVirtual) setRedraw (true);
 }

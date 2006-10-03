@@ -214,25 +214,25 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-    if(isDisposed()) {
-      super.processEvent(e);
-      return;
-    }
-    Display display = getDisplay();
-    display.startExclusiveSection();
-    if(isDisposed()) {
-      display.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
-    if(e instanceof HyperlinkEvent) {
-      Event event = new Event();
-      event.text = ((HyperlinkEvent)e).getDescription();
-      sendEvent(SWT.Selection, event);
-    }
+  if(isDisposed()) {
     super.processEvent(e);
-    display.stopExclusiveSection();
     return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  if(e instanceof HyperlinkEvent) {
+    Event event = new Event();
+    event.text = ((HyperlinkEvent)e).getDescription();
+    sendEvent(SWT.Selection, event);
+  }
+  super.processEvent(e);
+  display.stopExclusiveSection();
+  return;
 }
 
 }

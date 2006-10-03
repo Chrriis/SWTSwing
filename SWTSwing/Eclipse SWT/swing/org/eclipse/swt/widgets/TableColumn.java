@@ -11,6 +11,9 @@
 package org.eclipse.swt.widgets;
 
  
+import java.beans.PropertyChangeEvent;
+import java.util.EventObject;
+
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 
@@ -614,6 +617,36 @@ public void setWidth (int width) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
   ((javax.swing.table.TableColumn)handle).setPreferredWidth(width);
+}
+
+public void processEvent(EventObject e) {
+  if(e instanceof PropertyChangeEvent) {
+    String propertyName = ((PropertyChangeEvent)e).getPropertyName();
+    if(!"width".equals(propertyName)) { return; }
+  } else {
+    return;
+  }
+  if(isDisposed()) {
+    return;
+  }
+  Display display = getDisplay();
+  display.startExclusiveSection();
+  if(isDisposed()) {
+    display.stopExclusiveSection();
+    return;
+  }
+  if(e instanceof PropertyChangeEvent) {
+    String propertyName = ((PropertyChangeEvent)e).getPropertyName();
+    if("width".equals(propertyName)) {
+      sendEvent(SWT.Resize);
+      int columnCount = parent.getColumnCount();
+      for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
+        parent.getColumn(i).sendEvent(SWT.Move);
+      }
+    }
+  }
+  display.stopExclusiveSection();
+  return;
 }
 
 }

@@ -858,7 +858,8 @@ public int getBorderWidth () {
 public Rectangle getBounds () {
 	checkWidget ();
   java.awt.Rectangle rect = handle.getBounds();
-  return new Rectangle (rect.x, rect.y, rect.width, rect.height);
+  Point offset = parent == null? new Point(0, 0): parent.getInternalOffset();
+  return new Rectangle (rect.x + offset.x, rect.y + offset.y, rect.width, rect.height);
 //  
 //	RECT rect = new RECT ();
 //	OS.GetWindowRect (topHandle (), rect);
@@ -989,7 +990,8 @@ public Object getLayoutData () {
 public Point getLocation () {
 	checkWidget ();
   java.awt.Point location = handle.getLocation();
-	return new Point (location.x, location.y);
+  Point offset = parent == null? new Point(0, 0): parent.getInternalOffset();
+	return new Point (location.x + offset.x, location.y + offset.y);
 }
 
 /**
@@ -2108,6 +2110,9 @@ public void setBounds (int x, int y, int width, int height) {
 	checkWidget ();
   if(width < 0) width = 0;
   if(height < 0) height = 0;
+  Point offset = parent == null? new Point(0, 0): parent.getInternalOffset();
+  x -= offset.x;
+  y -= offset.y;
 //  java.awt.Point location = new java.awt.Point(x, y);
 //  Container parent = handle.getParent();
 //  if(parent != null) {
@@ -2434,6 +2439,9 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
+  Point offset = parent == null? new Point(0, 0): parent.getInternalOffset();
+	x -= offset.x;
+	y -= offset.y;
   java.awt.Point location = handle.getLocation();
   if(location.x == x && location.y == y) return;
   handle.setLocation(x, y);

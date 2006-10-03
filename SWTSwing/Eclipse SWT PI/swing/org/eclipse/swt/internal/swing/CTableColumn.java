@@ -7,6 +7,9 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.Icon;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableColumn;
@@ -31,6 +34,11 @@ class CTableColumnImplementation extends TableColumn implements CTableColumn {
     if ((style & SWT.LEFT) == SWT.LEFT) setAlignment(SwingConstants.LEFT);
     if ((style & SWT.CENTER) == SWT.CENTER) setAlignment(SwingConstants.CENTER);
     if ((style & SWT.RIGHT) == SWT.RIGHT) setAlignment(SwingConstants.RIGHT);
+    addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   protected Icon icon;

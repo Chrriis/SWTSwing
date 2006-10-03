@@ -430,7 +430,7 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-  Utils.notImplemented(); return new Rectangle (0, 0, 0, 0);
+  Utils.notImplemented(); Rectangle bounds = getBounds(index); bounds.width = 0; return bounds;
 //	RECT rect = getBounds (itemIndex, index, false, true);
 //	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 //	return new Rectangle (rect.left, rect.top, width, height);

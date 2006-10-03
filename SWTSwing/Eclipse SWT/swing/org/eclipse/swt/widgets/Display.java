@@ -1346,15 +1346,31 @@ public Color getSystemColor (int id) {
     case SWT.COLOR_TITLE_FOREGROUND:
       swingColor = UIManager.getColor("activeCaptionText"); break;
     case SWT.COLOR_TITLE_BACKGROUND:
-      swingColor = UIManager.getColor("activeCaption"); break;
+      swingColor = UIManager.getColor("InternalFrame.activeTitleBackground");
+      if(swingColor == null) {
+        swingColor = UIManager.getColor("activeCaption");
+      }
+      break;
     case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:
-      swingColor = UIManager.getColor("inactiveCaption"); break;
+      swingColor = UIManager.getColor("InternalFrame.activeTitleGradient");
+      if(swingColor == null) {
+        swingColor = UIManager.getColor("activeCaption");
+      }
+      break;
     case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:
       swingColor = UIManager.getColor("inactiveCaptionText"); break;
     case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:
-      swingColor = UIManager.getColor("inactiveCaption"); break;
+      swingColor = UIManager.getColor("InternalFrame.inactiveTitleBackground");
+      if(swingColor == null) {
+        swingColor = UIManager.getColor("inactiveCaption");
+      }
+      break;
     case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:
-      swingColor = UIManager.getColor("inactiveCaption"); break;
+      swingColor = UIManager.getColor("InternalFrame.inactiveTitleGradient");
+      if(swingColor == null) {
+        swingColor = UIManager.getColor("inactiveCaption");
+      }
+      break;
     default:
       return super.getSystemColor(id);
   }

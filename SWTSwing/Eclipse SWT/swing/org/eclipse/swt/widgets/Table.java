@@ -708,7 +708,7 @@ public TableColumn getColumn (int index) {
  */
 public int getColumnCount () {
 	checkWidget ();
-  return columnList.size();
+  return columnList == null? 0: columnList.size();
 }
 
 /**

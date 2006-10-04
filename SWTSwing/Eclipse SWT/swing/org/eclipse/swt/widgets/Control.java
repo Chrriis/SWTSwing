@@ -466,12 +466,16 @@ public Point computeSize (int wHint, int hHint) {
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-  Dimension size = handle.getPreferredSize();
+  //TODO: it seems that for some components we have to take the border into account (Shell), and for others not (Button).
+  // Let's assume for a start that we don't take that into account if the component is the same as the client area.
   Container clientArea = ((CControl)handle).getClientArea();
+  Dimension size = handle.getPreferredSize();
   Dimension contentSize = clientArea.getPreferredSize();
-  Insets insets = clientArea.getInsets();
-  contentSize.width -= insets.left + insets.right;
-  contentSize.height -= insets.top + insets.bottom;
+  if(clientArea != handle) {
+    Insets insets = clientArea.getInsets();
+    contentSize.width -= insets.left + insets.right;
+    contentSize.height -= insets.top + insets.bottom;
+  }
   int width = size.width;
   int height = size.height;
   if(wHint != SWT.DEFAULT) {

@@ -1718,17 +1718,8 @@ public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-  java.awt.Point point = new java.awt.Point(x, y);
-  if (from != to) {
-    if (from == null) {
-      SwingUtilities.convertPointFromScreen (point, to.handle);
-    } else if (to == null) {
-      SwingUtilities.convertPointToScreen (point, from.handle);
-    } else {
-      SwingUtilities.convertPoint (from.handle, point, to.handle);
-    }
-  }
-  return new Point(point.x, point.y);
+  Rectangle r = map(from, to, x, y, 0, 0);
+  return new Point(r.x, r.y);
 }
 
 /**
@@ -1813,8 +1804,27 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
-  java.awt.Point point = SwingUtilities.convertPoint(from == null? null: from.handle, x, y, to == null? null: to.handle);
-  // TODO: cehck what the "mirror" stuff mentioned in the comments is about.
+  java.awt.Point point = new java.awt.Point(x, y);
+  if(from == null) {
+    if(to == null) return new Rectangle(x, y, width, height);
+    Point offset = to.parent == null? new Point(0, 0): to.parent.getInternalOffset();
+    point.x -= offset.x;
+    point.y -= offset.y;
+    SwingUtilities.convertPointFromScreen(point, ((CControl)to.handle).getClientArea());
+  } else {
+    Point offset = from.parent == null? new Point(0, 0): from.parent.getInternalOffset();
+    point.x -= offset.x;
+    point.y -= offset.y;
+    if(to == null) {
+      SwingUtilities.convertPointToScreen(point, ((CControl)from.handle).getClientArea());
+    } else {
+      offset = to.parent == null? new Point(0, 0): to.parent.getInternalOffset();
+      point.x -= offset.x;
+      point.y -= offset.y;
+      point = SwingUtilities.convertPoint(((CControl)from.handle).getClientArea(), point, ((CControl)to.handle).getClientArea());
+    }
+  }
+  // TODO: check what the "mirror" stuff mentioned in the comments is about.
   return new Rectangle(point.x, point.y, width, height);
 }
 

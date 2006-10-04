@@ -326,7 +326,10 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-  Utils.notImplemented(); return 15;
+  java.awt.Rectangle bounds = ((CList)handle).getCellBounds(0);
+  // TODO: find another way to get a default value.
+  if(bounds == null) return 16;
+  return bounds.height;
 //	int result = OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 //	if (result == OS.LB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 //	return result;

@@ -193,7 +193,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
           treeItemObject = null;
         }
         if(!isInitialized) {
-          Component c = super.getTreeTableCellRendererComponent(treeTable, "", isSelected, expanded, leaf, row, column, hasFocus);
+          Component c = super.getTreeTableCellRendererComponent(treeTable, "", true, expanded, leaf, row, column, hasFocus);
           if(c instanceof JComponent) {
             isOpaque = ((JComponent)c).isOpaque();
           }

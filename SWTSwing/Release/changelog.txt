@@ -7,7 +7,12 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
-- Positioning of controls is fixed for Table.
+- List.getItemHeight() is implemented.
+- Arrow button has no margins.
+- Preferred size of component is modified.
+- Display.map methods are fixed.
+- Selected item in a tree has appropriate foreground and background colors.
+- Locations of controls in a Table are corrected.
 - Gradient for title is adjusted.
 - Bug affecting the row count of a Table is fixed.
 - Apple menu bar system property is on by default.

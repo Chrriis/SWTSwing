@@ -9,7 +9,9 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractButton;
@@ -59,6 +61,7 @@ class CButtonArrow extends ArrowButton implements CButton {
 
   public CButtonArrow(Button button, int style) {
     super(getDirection(style));
+    setMargin(new Insets(1, 1, 1, 1));
     this.handle = button;
     init(style);
   }
@@ -69,6 +72,12 @@ class CButtonArrow extends ArrowButton implements CButton {
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
+  }
+
+  public Dimension getPreferredSize() {
+    Dimension size = super.getPreferredSize();
+    size.width = size.height;
+    return size;
   }
 
   public Container getClientArea() {
@@ -94,6 +103,10 @@ class CButtonArrow extends ArrowButton implements CButton {
     case PREFERRED_BACKGROUND_INHERITANCE:
     case BACKGROUND_INHERITANCE: setOpaque(false); break;
     }
+  }
+
+  public void reshape(int x, int y, int w, int h) {
+    super.reshape(x, y, h, h);
   }
 
 }

@@ -23,6 +23,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CButton;
 
 /**
@@ -249,6 +250,20 @@ void click () {
 //	width += border * 2; height += border * 2;
 //	return new Point (width, height);
 //}
+
+public Point computeSize(int wHint, int hHint, boolean changed) {
+  Point size = super.computeSize(wHint, hHint, changed);
+  if ((style & SWT.ARROW) != 0) {
+    if(wHint == SWT.DEFAULT) {
+      size.x = size.y;
+    } else if(hHint == SWT.DEFAULT) {
+      size.y = size.x;
+    } else {
+      size.x = size.y;
+    }
+  }
+  return size;
+}
 
 Container createHandle () {
   return (Container)CButton.Instanciator.createInstance(this, style);

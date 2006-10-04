@@ -225,6 +225,10 @@ class CListImplementation extends JScrollPane implements CList {
     }
   }
 
+  public Rectangle getCellBounds(int index) {
+    return list.getCellBounds(index, index);
+  }
+
 }
 
 public interface CList extends CScrollable {
@@ -279,5 +283,7 @@ public interface CList extends CScrollable {
   public int getFirstVisibleIndex();
 
   public void setFirstVisibleIndex(int index);
+
+  public Rectangle getCellBounds(int index);
 
 }

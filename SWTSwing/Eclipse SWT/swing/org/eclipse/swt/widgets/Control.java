@@ -716,6 +716,10 @@ public boolean forceFocus () {
 	if (isFocusControl ()) return true;
 //	shell.setSavedFocus (null);
   // return handle.requestFocusInWindow();
+  Window window = SwingUtilities.getWindowAncestor(handle);
+  if(window != null) {
+    window.setFocusableWindowState(true);
+  }
   if (handle instanceof JComponent) {
     ((javax.swing.JComponent) handle).grabFocus();
   } else {

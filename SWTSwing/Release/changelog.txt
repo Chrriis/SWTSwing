@@ -7,6 +7,9 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Window focus is adjusted.
+- List is now focusable and re-routes the focus handling to the Swing component.
+- A menu bar is not assumed to only contain SWTSwing components anymore.
 - List.getItemHeight() is implemented.
 - Arrow button has no margins.
 - Preferred size of component is modified.

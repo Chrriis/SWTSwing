@@ -66,10 +66,10 @@ class CShellFrame extends JFrame implements CShell {
   }
   
   protected void init(int style) {
-    if((style & SWT.ON_TOP) != 0) {
-      // TODO: Check if that should always be the case. Do we apply the non focusable state also to shells with a title bar?
-      setFocusableWindowState(false);
-    }
+//    if((style & SWT.TITLE) != 0) {
+//      // TODO: Check if that should always be the case. Do we apply the non focusable state also to shells with a title bar?
+//      setFocusableWindowState(false);
+//    }
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);

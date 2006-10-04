@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import java.awt.Component;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JMenu;
@@ -534,7 +535,19 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-  return display.getMenuItem ((JComponent)handle.getComponent(index));
+  if(index < 0) error (SWT.ERROR_INVALID_RANGE);
+  int result = 0;
+  int count = handle.getComponentCount();
+  if(index > count) error (SWT.ERROR_INVALID_RANGE);
+  for(int i=0; i<count; i++) {
+    MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
+    if(item != null) {
+      if(result == index) return item;
+      result++;
+    }
+  }
+  error (SWT.ERROR_INVALID_RANGE);
+  return null;
 }
 
 /**
@@ -549,7 +562,15 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return handle.getComponentCount();
+  int count = handle.getComponentCount();
+  int result = 0;
+  for(int i=0; i<count; i++) {
+    MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
+    if(item != null) {
+      result++;
+    }
+  }
+	return result;
 }
 
 /**
@@ -570,11 +591,15 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-  MenuItem[] items = new MenuItem[handle.getComponentCount()];
-  for(int i=0; i<items.length; i++) {
-    items[i] = display.getMenuItem ((JComponent)handle.getComponent(i));
+  int count = handle.getComponentCount();
+  java.util.List arrayList = new ArrayList(count);
+  for(int i=0; i<count; i++) {
+    MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
+    if(item != null) {
+      arrayList.add(item);
+    }
   }
-  return items;
+  return (MenuItem[])arrayList.toArray(new MenuItem[0]);
 }
 
 //int GetMenuItemCount (int handle) {

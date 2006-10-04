@@ -45,7 +45,6 @@ class CListImplementation extends JScrollPane implements CList {
   public CListImplementation(List list, int style) {
     this.handle = list;
     this.list = new JList(new DefaultListModel());
-    setFocusable(false);
     getViewport().setView(this.list);
     init(style);
   }
@@ -69,6 +68,10 @@ class CListImplementation extends JScrollPane implements CList {
         handle.processEvent(e);
       }
     });
+  }
+
+  public void requestFocus() {
+    list.requestFocus();
   }
 
   public void setFont(Font font) {

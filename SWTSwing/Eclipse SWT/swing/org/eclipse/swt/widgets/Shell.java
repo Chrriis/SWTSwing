@@ -1006,7 +1006,8 @@ public void removeShellListener (ShellListener listener) {
 public void setActive () {
 	checkWidget ();
 	if(!isVisible()) return;
-	bringToTop ();
+//	bringToTop ();
+  ((CShell)handle).forceActive();
   // widget could be disposed at this point
 }
 

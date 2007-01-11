@@ -13,15 +13,15 @@
 
   <target name="getSWT" description="Get latest stable SWT">
     <echo>Checking out SWT</echo>
-    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"
       package="org.eclipse.swt"
       tag="R3_2"
       dest="." />
-    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"
       package="org.eclipse.swt.examples"
       tag="R3_2"
       dest="." />
-    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/home/eclipse"
+    <cvs cvsroot=":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse"
       package="org.eclipse.swt.snippets"
       dest="." />
   </target>

@@ -12,7 +12,7 @@ It is probably not too dificult to do the same for another platform.
 - SWTSwingTests
 
 
-* Get SWT from ":pserver:anonymous@dev.eclipse.org:/home/eclipse" and check out
+* Get SWT from ":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" and check out
 the Modules:
 
 on "HEAD":

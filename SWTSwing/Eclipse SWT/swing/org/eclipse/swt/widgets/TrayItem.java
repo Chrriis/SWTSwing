@@ -11,10 +11,17 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.swing.Utils;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * Instances of this class represent icons that can be placed on the
@@ -34,11 +41,9 @@ import org.eclipse.swt.internal.swing.Utils;
  */
 public class TrayItem extends Item {
   Tray parent;
-  int id;
-  Image image2;
   ToolTip toolTip;
-  String toolTipText;
   boolean visible = true;
+  TrayIcon trayIcon;
   
 /**
  * Constructs a new instance of this class given its parent
@@ -74,8 +79,7 @@ public TrayItem (Tray parent, int style) {
   super (parent, style);
   this.parent = parent;
   parent.createItem (this, parent.getItemCount ());
-  Utils.notImplemented();
-//  createWidget ();
+  createWidget();
 }
 
 /**
@@ -114,15 +118,54 @@ protected void checkSubclass () {
   if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-//void createWidget () {
-//  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-//  iconData.cbSize = NOTIFYICONDATA.sizeof;
-//  iconData.uID = id = display.nextTrayId++;
-//  iconData.hWnd = display.hwndMessage;
-//  iconData.uFlags = OS.NIF_MESSAGE;
-//  iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-//  OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
-//}
+void createWidget () {
+  trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
+//  trayIcon.setImageAutoSize(true);
+  trayIcon.addMouseListener(new MouseAdapter() {
+    public void mousePressed(MouseEvent e) {
+      switch(e.getClickCount()) {
+      case 1:
+        // e.isPopupTrigger() does not seem to work...
+        if(e.getButton() == MouseEvent.BUTTON3) {
+          if (hooks (SWT.MenuDetect)) {
+            display.startExclusiveSection();
+            if(isDisposed()) {
+              display.stopExclusiveSection();
+              return;
+            }
+            sendEvent (SWT.MenuDetect);
+            display.stopExclusiveSection();
+          }
+        } else if (hooks (SWT.Selection)) {
+          display.startExclusiveSection();
+          if(isDisposed()) {
+            display.stopExclusiveSection();
+            return;
+          }
+          postEvent (SWT.Selection);
+          display.stopExclusiveSection();
+        }
+        break;
+      case 2:
+        if (hooks (SWT.DefaultSelection)) {
+          display.startExclusiveSection();
+          if(isDisposed()) {
+            display.stopExclusiveSection();
+            return;
+          }
+          postEvent (SWT.DefaultSelection);
+          display.stopExclusiveSection();
+        }
+        break;
+      }
+    }
+  });
+  try {
+    SystemTray.getSystemTray().add(trayIcon);
+  } catch(Exception e) {
+    e.printStackTrace();
+  }
+}
 
 void destroyWidget () {
   parent.destroyItem (this);
@@ -177,7 +220,7 @@ public ToolTip getToolTip () {
  */
 public String getToolTipText () {
   checkWidget ();
-  return toolTipText;
+  return trayIcon.getToolTip();
 }
 
 /**
@@ -287,15 +330,10 @@ void releaseWidget () {
   super.releaseWidget ();
   if (toolTip != null) toolTip.item = null;
   toolTip = null;
-  if (image2 != null) image2.dispose ();
-  image2 = null;
-  toolTipText = null;
-  Utils.notImplemented();
-//  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-//  iconData.cbSize = NOTIFYICONDATA.sizeof;
-//  iconData.uID = id;
-//  iconData.hWnd = display.hwndMessage;
-//  OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
+  if(visible) {
+    SystemTray.getSystemTray().remove(trayIcon);
+  }
+  // TODO: send hide event?
 }
   
 /**
@@ -340,29 +378,7 @@ public void setImage (Image image) {
   checkWidget ();
   if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
   super.setImage (image);
-  if (image2 != null) image2.dispose ();
-  image2 = null;
-  Utils.notImplemented();
-//  int hIcon = 0;
-//  Image icon = image;
-//  if (icon != null) {
-//    switch (icon.type) {
-//      case SWT.BITMAP:
-//        image2 = Display.createIcon (image);
-//        hIcon = image2.handle;
-//        break;
-//      case SWT.ICON:
-//        hIcon = icon.handle;
-//        break;
-//    }
-//  }
-//  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-//  iconData.cbSize = NOTIFYICONDATA.sizeof;
-//  iconData.uID = id;
-//  iconData.hWnd = display.hwndMessage;
-//  iconData.hIcon = hIcon;
-//  iconData.uFlags = OS.NIF_ICON;
-//  OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+  trayIcon.setImage(image.handle);
 }
 
 /**
@@ -399,28 +415,7 @@ public void setToolTip (ToolTip toolTip) {
  */
 public void setToolTipText (String value) {
   checkWidget ();
-  toolTipText = value;
-  Utils.notImplemented();
-//  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-//  TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
-//  /*
-//  * Note that the size of the szTip field is different in version 5.0 of shell32.dll.
-//  */
-//  int length = OS.SHELL32_MAJOR < 5 ? 64 : 128;
-//  if (OS.IsUnicode) {
-//    char [] szTip = ((NOTIFYICONDATAW) iconData).szTip;
-//    length = Math.min (length - 1, buffer.length ());
-//    System.arraycopy (buffer.chars, 0, szTip, 0, length);
-//  } else {
-//    byte [] szTip = ((NOTIFYICONDATAA) iconData).szTip;
-//    length = Math.min (length - 1, buffer.length ());
-//    System.arraycopy (buffer.bytes, 0, szTip, 0, length);
-//  }
-//  iconData.cbSize = NOTIFYICONDATA.sizeof;
-//  iconData.uID = id;
-//  iconData.hWnd = display.hwndMessage;
-//  iconData.uFlags = OS.NIF_TIP;
-//  OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+  trayIcon.setToolTip(value);
 }
 
 /**
@@ -436,39 +431,19 @@ public void setToolTipText (String value) {
  */
 public void setVisible (boolean visible) {
   checkWidget ();
-  if (this.visible == visible) return;
-  if (visible) {
-    /*
-    * It is possible (but unlikely), that application
-    * code could have disposed the widget in the show
-    * event.  If this happens, just return.
-    */
-    sendEvent (SWT.Show);
-    if (isDisposed ()) return;
-  }
+  if(this.visible == visible) return;
   this.visible = visible;
-  Utils.notImplemented();
-//  NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-//  iconData.cbSize = NOTIFYICONDATA.sizeof;
-//  iconData.uID = id;
-//  iconData.hWnd = display.hwndMessage;
-//  if (OS.SHELL32_MAJOR < 5) {
-//    if (visible) {
-//      iconData.uFlags = OS.NIF_MESSAGE;
-//      iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-//      OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
-//      setImage (image);
-//      setToolTipText (toolTipText);
-//    } else {
-//      OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
-//    }
-//  } else {
-//    iconData.uFlags = OS.NIF_STATE;
-//    iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-//    iconData.dwStateMask = OS.NIS_HIDDEN;
-//    OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-//  }
-//  if (!visible) sendEvent (SWT.Hide);
+  if(visible) {
+    try {
+      SystemTray.getSystemTray().add(trayIcon);
+      sendEvent (SWT.Show);
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
+  } else {
+    SystemTray.getSystemTray().remove(trayIcon);
+    sendEvent (SWT.Hide);
+  }
 }
 
 }

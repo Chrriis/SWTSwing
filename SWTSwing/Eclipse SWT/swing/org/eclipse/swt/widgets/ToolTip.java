@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.TrayIcon.MessageType;
+
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
@@ -37,10 +39,11 @@ import org.eclipse.swt.events.*;
 public class ToolTip extends Widget {
 	Shell parent;
 	TrayItem item;
-	String text = "", message = "";
-	int id, x, y;
+	String text = "";
+  String message = "";
+	int x;
+  int y;
 	boolean autoHide = true, hasLocation, visible;
-	static final int TIMER_ID = 100;
 
   /**
    * Constructs a new instance of this class given its parent
@@ -245,7 +248,6 @@ void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
 	item = null;
-	id = -1;
 }
 
 void releaseWidget () {
@@ -428,7 +430,27 @@ public void setText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-  Utils.notImplemented();
+  if (visible == getVisible ()) return;
+  if(item == null) {
+    Utils.notImplemented();
+  } else {
+    if(visible) {
+      MessageType messageType = null;
+      if((style & SWT.ICON_ERROR) != 0) {
+        messageType = MessageType.ERROR;
+      } else if((style & SWT.ICON_WARNING) != 0) {
+        messageType = MessageType.WARNING;
+      } else if((style & SWT.ICON_INFORMATION) != 0) {
+        messageType = MessageType.INFO;
+      } else {
+        messageType = MessageType.NONE;
+      }
+      item.trayIcon.displayMessage(text, message, messageType);
+      sendEvent (SWT.Show);
+    } else {
+      Utils.notImplemented();
+    }
+  }
 //	if (OS.IsWinCE) return;
 //	if (visible == getVisible ()) return;
 //	if (item == null) {

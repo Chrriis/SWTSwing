@@ -26,6 +26,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.MenuComponent;
 import java.awt.MouseInfo;
 import java.awt.Robot;
+import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
@@ -1538,6 +1539,9 @@ static java.awt.Image getImage(Icon icon) {
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
+  if (!SystemTray.isSupported()) {
+    return null;
+  }
 	return tray = new Tray (this, SWT.NONE);
 }
 

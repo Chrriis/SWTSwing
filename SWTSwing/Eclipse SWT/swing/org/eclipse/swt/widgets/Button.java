@@ -624,8 +624,6 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
   this.text = string;
-  CButton cButton = (CButton)handle;
-
   int mnemonicIndex = findMnemonicIndex(string);
   if(mnemonicIndex > 0) {
     String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
@@ -635,6 +633,7 @@ public void setText (String string) {
   } else {
     string = string.replaceAll("&&", "&");
   }
+  CButton cButton = (CButton)handle;
   cButton.setText(string);
   cButton.setDisplayedMnemonicIndex(mnemonicIndex);
 }

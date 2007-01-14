@@ -11,10 +11,13 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.ArrayList;
+
 import javax.swing.JMenuBar;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.internal.swing.CButton;
 import org.eclipse.swt.internal.swing.CShell;
 
@@ -867,91 +870,7 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
   ((CShell)handle).setIconImage(image.handle);
-//	setImages (image, null);
 }
-
-//void setImages (Image image, Image [] images) {
-//	/*
-//	* Feature in WinCE.  WM_SETICON and WM_GETICON set the icon
-//	* for the window class, not the window instance.  This means
-//	* that it is possible to set an icon into a window and then
-//	* later free the icon, thus freeing the icon for every window.
-//	* The fix is to avoid the API.
-//	* 
-//	* On WinCE PPC, icons in windows are not displayed.
-//	*/
-//	if (OS.IsWinCE) return;
-//	if (smallImage != null) smallImage.dispose ();
-//	if (largeImage != null) largeImage.dispose ();
-//	smallImage = largeImage = null;
-//	int hSmallIcon = 0, hLargeIcon = 0;
-//	Image smallIcon = null, largeIcon = null;
-//	int smallWidth = 0x7FFFFFFF, largeWidth = 0x7FFFFFFF;
-//	if (image != null) {
-//		Rectangle rect = image.getBounds ();
-//		smallWidth = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXSMICON));
-//		smallIcon = image;
-//		largeWidth = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXICON)); 
-//		largeIcon = image;
-//	}
-//	if (images != null) {
-//		for (int i = 0; i < images.length; i++) {
-//			Rectangle rect = images [i].getBounds ();
-//			int value = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXSMICON));
-//			if (value < smallWidth) {
-//				smallWidth = value;
-//				smallIcon = images [i];
-//			}
-//			value = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXICON));
-//			if (value < largeWidth) {
-//				largeWidth = value;
-//				largeIcon = images [i];
-//			}
-//		}
-//	}
-//	if (smallIcon != null) {
-//		switch (smallIcon.type) {
-//			case SWT.BITMAP:
-//				ImageData data = smallIcon.getImageData ();
-//				ImageData mask = data.getTransparencyMask ();
-//				smallImage = new Image (display, data, mask);
-//				hSmallIcon = smallImage.handle;
-//				break;
-//			case SWT.ICON:
-//				hSmallIcon = smallIcon.handle;
-//				break;
-//		}
-//	}
-//	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
-//	if (largeIcon != null) {
-//		switch (largeIcon.type) {
-//			case SWT.BITMAP:
-//				ImageData data = largeIcon.getImageData ();
-//				ImageData mask = data.getTransparencyMask ();
-//				largeImage = new Image (display, data, mask);
-//				hLargeIcon = largeImage.handle;
-//				break;
-//			case SWT.ICON:
-//				hLargeIcon = largeIcon.handle;
-//				break;
-//		}
-//	}
-//	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hLargeIcon);
-//	
-//	/*
-//	* Bug in Windows.  When WM_SETICON is used to remove an
-//	* icon from the window trimmings for a window with the
-//	* extended style bits WS_EX_DLGMODALFRAME, the window
-//	* trimmings do not redraw to hide the previous icon.
-//	* The fix is to force a redraw.
-//	*/
-//	if (!OS.IsWinCE) {
-//		if (hSmallIcon == 0 && hLargeIcon == 0 && (style & SWT.BORDER) != 0) {
-//			int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
-//			OS.RedrawWindow (handle, null, 0, flags);
-//		}
-//	}
-//}
 
 /**
  * Sets the receiver's images to the argument, which may
@@ -984,11 +903,16 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
-  // TODO: how to get the exact image to use?
+  
   if(images.length > 0) {
-    ((CShell)handle).setIconImage(images[0].handle);
+    java.util.List imageList = new ArrayList(images.length);
+    for(int i=0; i<images.length; i++) {
+      imageList.add(images[i].handle);
+    }
+    ((CShell)handle).setIconImages(imageList);
+  } else {
+    ((CShell)handle).setIconImage(null);
   }
-//	setImages (null, images);
 }
 
 /**
@@ -1016,10 +940,11 @@ public void setImages (Image [] images) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
+  CShell cShell = (CShell)handle;
   if(maximized) {
-    ((CShell)handle).setExtendedState(CShell.MAXIMIZED_BOTH);
+    cShell.setExtendedState(CShell.MAXIMIZED_BOTH);
   } else {
-    ((CShell)handle).setExtendedState(CShell.NORMAL);
+    cShell.setExtendedState(cShell.getExtendedState() & ~CShell.MAXIMIZED_BOTH);
   }
 }
 
@@ -1077,10 +1002,11 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
+  CShell cShell = (CShell)handle;
   if(minimized) {
-    ((CShell)handle).setExtendedState(CShell.ICONIFIED);
+    cShell.setExtendedState(CShell.ICONIFIED);
   } else {
-    ((CShell)handle).setExtendedState(CShell.NORMAL);
+    cShell.setExtendedState(cShell.getExtendedState() & ~CShell.ICONIFIED);
   }
 }
 

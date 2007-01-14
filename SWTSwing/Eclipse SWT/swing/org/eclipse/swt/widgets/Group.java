@@ -39,6 +39,9 @@ import org.eclipse.swt.internal.swing.CGroup;
  */
 
 public class Group extends Composite {
+
+  String text;
+  
 //	static final int CLIENT_INSET = 3;
 //	static final int GroupProc;
 //	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
@@ -234,7 +237,7 @@ String getNameText () {
  */
 public String getText () {
 	checkWidget ();
-  return ((CGroup)handle).getText();
+  return text == null? "": text;
 }
 
 boolean mnemonicHit (char key) {
@@ -274,6 +277,16 @@ boolean mnemonicMatch (char key) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+  this.text = string;
+  int mnemonicIndex = findMnemonicIndex(string);
+  if(mnemonicIndex > 0) {
+    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+    mnemonicIndex -= mnemonicIndex - 1 - s.length();
+    mnemonicIndex--;
+  } else {
+    string = string.replaceAll("&&", "&");
+  }
   ((CGroup)handle).setText(string);
 }
 

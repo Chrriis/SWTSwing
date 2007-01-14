@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import java.awt.Component;
+import java.awt.MouseInfo;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -1054,10 +1055,22 @@ public void setVisible (boolean visible) {
   JPopupMenu popup = (JPopupMenu)handle;
 	if (visible) {
     display.addPopup (this);
-    java.awt.Point location = new java.awt.Point(x, y);
-    Component shellHandle = getShell().handle;
-    SwingUtilities.convertPointFromScreen(location, shellHandle);
-    popup.show(shellHandle, location.x, location.y);
+    java.awt.Point location;
+    if(hasLocation) {
+      location = new java.awt.Point(x, y);
+    } else {
+      location = MouseInfo.getPointerInfo().getLocation();
+    }
+    Shell shell = getShell();
+    if(shell != null) {
+      Component shellHandle = shell.handle;
+      if(shellHandle.isShowing()) {
+        SwingUtilities.convertPointFromScreen(location, shellHandle);
+        popup.show(shellHandle, location.x, location.y);
+        return;
+      }
+    }
+    popup.show(null, location.x, location.y);
 	} else {
     display.removePopup (this);
     popup.setVisible(false);

@@ -369,6 +369,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
     treeTable.addTreeSelectionListener(new TreeSelectionListener() {
       public void valueChanged(TreeSelectionEvent e) {
         handle.processEvent(e);
+        treeTable.repaint();
       }
     });
     // TODO: Map other events for table header click etc.

@@ -25,6 +25,7 @@ import java.awt.event.PaintEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -328,7 +329,11 @@ class CShellDialog extends JDialog implements CShell {
     }
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     if((style & SWT.APPLICATION_MODAL) != 0) {
-      setModal(true);
+      setModalityType(ModalityType.APPLICATION_MODAL);
+    } else if((style & SWT.PRIMARY_MODAL) != 0) {
+      setModalityType(ModalityType.DOCUMENT_MODAL);
+    } else if((style & SWT.SYSTEM_MODAL) != 0) {
+      setModalityType(ModalityType.TOOLKIT_MODAL);
     }
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
@@ -501,8 +506,8 @@ class CShellDialog extends JDialog implements CShell {
     // TODO: implement fake maximize/minimize?
   }
 
-  public void setIconImage(Image image) {
-  }
+//  public void setIconImage(Image image) {
+//  }
 
   public void setDefaultButton(CButton button) {
     if(button instanceof JButton) {
@@ -585,6 +590,8 @@ public interface CShell extends CScrollable {
   public void setExtendedState(int state);
 
   public void setIconImage(Image image);
+
+  public void setIconImages(List imageList);
 
   public void setJMenuBar(JMenuBar menuBar);
 

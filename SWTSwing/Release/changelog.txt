@@ -1,12 +1,24 @@
 The SWTSwing project - SWT running on Swing
 http://swtswing.sourceforge.net
-Christopher Deckers (chrriis@nextencia.com)
+Christopher Deckers (chrriis@nextencia.net)
 Licence terms: EPL 1.0 (see licence.html)
 
 ---------------------------------- Change log ----------------------------------
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Setting the selection in a Tree repaints it to actually see the change.
+- Tool items are not focusable.
+- Group does not show the '&' when there is a mnemonic.
+- GC: getting the line dash now returns null when there are no dashes.
+- Altering minimize/maximize state now returns to expected state.
+- Arc drawing is corrected.
+- Caret stops blinking when the parent component is not the focus owner.
+- Balloon tooltip for tray item is implemented, with the limits of the JDK.
+- Dialog modality is improved.
+- Setting multiple images for a frame is supported.
+- System tray is implemented.
+- Java 6 is now officially taken into use for some long awaited features.
 - Window focus is adjusted.
 - List is now focusable and re-routes the focus handling to the Swing component.
 - A menu bar is not assumed to only contain SWTSwing components anymore.

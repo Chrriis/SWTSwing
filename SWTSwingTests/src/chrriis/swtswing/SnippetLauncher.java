@@ -285,7 +285,7 @@ public class SnippetLauncher {
       new Snippet(27, "open a shell minimized (iconified)"),
       new Snippet(28, "open a shell maximized (full screen)"),
 /**/      new UnsupportedSnippet(134, "create a non-rectangular window"),
-/**/      new UnsupportedSnippet(138, "set icons with different resolutions"),
+      new Snippet(138, "set icons with different resolutions"),
 /**/      new UnsupportedSnippet(180, "emulate transparent shell"),
     }), new SnippetCategory("Slider", new Snippet[] {
       new Snippet(17, "print scroll event details"),
@@ -373,7 +373,7 @@ public class SnippetLauncher {
 /**/      new NotWorkingSnippet(23, "create a tracker (drag on mouse down)"),
 /**/      new NotWorkingSnippet(31, "create a tracker (drag when \"torn off\")"),
     }), new SnippetCategory("Tray, TrayItem", new Snippet[] {
-/**/      new UnsupportedSnippet(143, "place a popup menu on the system tray"),
+/**/      new PartiallyWorkingSnippet(143, "place a popup menu on the system tray"),
     }), new SnippetCategory("Tree", new Snippet[] {
       new Snippet(15, "create a tree"),
       new Snippet(8, "create a tree (lazy)"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 231;
+  protected static int snippetNumber = 143;
 
   protected static boolean isRealDispatch = true;
 

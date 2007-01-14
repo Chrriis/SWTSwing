@@ -497,7 +497,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-  handle.drawArc(x, y, width, height, startAngle, arcAngle < 0? arcAngle + startAngle: arcAngle - startAngle);
+  handle.drawArc(x, y, width, height, startAngle, arcAngle);
 //  ensureAreaClean(x, y, width, height);
 }
 
@@ -1732,7 +1732,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 	if (width == 0 || height == 0 || arcAngle == 0) return;
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
-  handle.fillArc(x, y, width, height, startAngle, arcAngle < 0? arcAngle + startAngle: arcAngle - startAngle);
+  handle.fillArc(x, y, width, height, startAngle, arcAngle);
   handle.setColor(oldColor);
 //  ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
@@ -2571,7 +2571,7 @@ public int getLineCap() {
  * Returns the receiver's line dash style. The default value is
  * <code>null</code>.
  *
- * @return the lin dash style used for drawing lines
+ * @return the line dash style used for drawing lines
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -2583,9 +2583,10 @@ public int[] getLineDash() {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   float[] dashArray = getCurrentBasicStroke().getDashArray();
+  if(dashArray == null) return null;
   int[] dashes = new int[dashArray.length];
   for(int i=0; i<dashes.length; i++) {
-    dashes[i] = (int)dashArray[i];
+    dashes[i] = Math.round(dashArray[i]);
   }
 	return dashes;	
 }

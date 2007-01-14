@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -26,6 +27,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CControl;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -94,10 +96,6 @@ void createWidget () {
       }
     });
   }
-//  isVisible = true;
-//  if (parent.getCaret () == null) {
-//    parent.setCaret (this);
-//  }
 }
 
 Timer timer = new Timer (UIManager.getInt ("TextArea.caretBlinkRate"), new ActionListener () {
@@ -127,7 +125,7 @@ Timer timer = new Timer (UIManager.getInt ("TextArea.caretBlinkRate"), new Actio
 private boolean blink;
 
 void paintCaret (GC gc) {
-  if (blink) {
+  if (blink && isVisible()) {
     if(display == null) return;
     gc.setXORMode (true);
     gc.setBackground (display.getSystemColor (SWT.COLOR_BLACK));
@@ -286,7 +284,13 @@ public boolean getVisible () {
 }
 
 boolean hasFocus () {
-  return parent.handle.hasFocus();
+  Container handleParent = parent.handle.getParent();
+  for(Container c = ((CControl)parent.handle).getSwingComponent(); c != handleParent; c = c.getParent()) {
+    if(c.hasFocus()) {
+      return true;
+    }
+  }
+  return false;
 //  return parent.handle == OS.GetFocus ();
 }
 

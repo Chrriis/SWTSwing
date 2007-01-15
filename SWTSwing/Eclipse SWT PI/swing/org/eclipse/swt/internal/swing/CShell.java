@@ -328,13 +328,13 @@ class CShellDialog extends JDialog implements CShell {
       setFocusableWindowState(false);
     }
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    if((style & SWT.APPLICATION_MODAL) != 0) {
-      setModalityType(ModalityType.APPLICATION_MODAL);
-    } else if((style & SWT.PRIMARY_MODAL) != 0) {
-      setModalityType(ModalityType.DOCUMENT_MODAL);
-    } else if((style & SWT.SYSTEM_MODAL) != 0) {
-      setModalityType(ModalityType.TOOLKIT_MODAL);
-    }
+//    if((style & SWT.APPLICATION_MODAL) != 0) {
+//      setModalityType(ModalityType.APPLICATION_MODAL);
+//    } else if((style & SWT.PRIMARY_MODAL) != 0) {
+//      setModalityType(ModalityType.DOCUMENT_MODAL);
+//    } else if((style & SWT.SYSTEM_MODAL) != 0) {
+//      setModalityType(ModalityType.TOOLKIT_MODAL);
+//    }
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
     if((style & SWT.RESIZE) == 0) {

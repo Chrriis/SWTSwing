@@ -16,7 +16,6 @@ Licence terms: EPL 1.0 (see licence.html)
 - Arc drawing is corrected.
 - Caret stops blinking when the parent component is not the focus owner.
 - Balloon tooltip for tray item is implemented, with the limits of the JDK.
-- Dialog modality is improved.
 - Setting multiple images for a frame is supported.
 - System tray is implemented.
 - Java 6 is now officially taken into use for some long awaited features.

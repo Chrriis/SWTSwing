@@ -139,7 +139,7 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 /**
  * The spinner equivalent on the Swing side.
  * @version 1.0 2006.03.12
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CSpinner extends CControl {
 

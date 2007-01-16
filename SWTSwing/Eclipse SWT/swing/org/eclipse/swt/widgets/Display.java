@@ -274,12 +274,13 @@ public class Display extends Device {
 
   static {
     Utils.adjustAppleMenuBar();
+    CShell.ModalityHandler.initialize();
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
       public void eventDispatched(AWTEvent event) {
         java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
         previousModifiersEx = modifiersEx;
         modifiersEx = ie.getModifiersEx();
-        if(ie instanceof KeyEvent && ((KeyEvent)ie).getID() == KeyEvent.KEY_PRESSED) {
+        if(ie.getID() == KeyEvent.KEY_PRESSED) {
           int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
           if((modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
             Window window = SwingUtilities.getWindowAncestor(ie.getComponent());

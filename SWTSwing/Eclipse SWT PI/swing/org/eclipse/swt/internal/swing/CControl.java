@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * The interface shared by all controls.
  * @version 1.0 2005.03.13
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CControl {
 

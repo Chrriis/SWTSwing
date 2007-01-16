@@ -7,6 +7,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -16,11 +17,14 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -41,8 +45,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 class CShellFrame extends JFrame implements CShell {
@@ -77,6 +81,7 @@ class CShellFrame extends JFrame implements CShell {
     if((style & SWT.RESIZE) == 0) {
       setResizable(false);
     }
+    setAlwaysOnTop((style & SWT.ON_TOP) != 0);
     boolean isDecorated = (style & SWT.TITLE) != 0;
     if(isDecorated) {
       if(JFrame.isDefaultLookAndFeelDecorated()) {
@@ -179,7 +184,9 @@ class CShellFrame extends JFrame implements CShell {
 //        transferFocusDownCycle();
       }
       public void windowClosing(WindowEvent e) {
-        handle.processEvent(e);
+        if(!getModalityHandler().isBlocked()) {
+          handle.processEvent(e);
+        }
       };
       public void windowActivated(WindowEvent e) {
         handle.processEvent(e);
@@ -199,6 +206,20 @@ class CShellFrame extends JFrame implements CShell {
     });
   }
 
+  public void show() {
+    if(!isVisible()) {
+      super.show();
+      getModalityHandler().setEnabled(true);
+    }
+  }
+
+  public void hide() {
+    if(isVisible()) {
+      getModalityHandler().setEnabled(false);
+      super.hide();
+    }
+  }
+  
   public void setBackground(Color c) {
     super.setBackground(c);
     if(contentPane != null) {
@@ -262,6 +283,16 @@ class CShellFrame extends JFrame implements CShell {
   public void setBackgroundInheritance(int backgroundInheritanceType) {
   }
 
+  protected ModalityHandler modalityHandler = new ModalityHandler(this);
+  
+  public ModalityHandler getModalityHandler() {
+    return modalityHandler;
+  }
+
+  public boolean getFocusableWindowState() {
+    return super.getFocusableWindowState() && !getModalityHandler().isBlocked();
+  }
+  
 }
 
 class CShellDialog extends JDialog implements CShell {
@@ -292,54 +323,48 @@ class CShellDialog extends JDialog implements CShell {
     init(style);
   }
 
-  public void setVisible(final boolean isVisible) {
-    if(isVisible && isModal()) {
-      Display display = handle.getDisplay();
-      if(display != null && display.getThread() == Thread.currentThread() || SwingUtilities.isEventDispatchThread()) {
-        final Object LOCK = new Object();
-        Thread t = new Thread(Utils.getSWTSwingUIThreadsNamePrefix() + "Modal shell opening") {
-          public void run() {
-            synchronized(LOCK) {
-              LOCK.notify();
-            }
-            setVisible(isVisible);
-          }
-        };
-        synchronized(LOCK) {
-          t.start();
-          try {
-            LOCK.wait();
-          } catch(Exception e) {}
-          int count = 0;
-          while(!isVisible() && count++ < 10) {
-            try {
-              Thread.sleep(10);
-            } catch(Exception e) {}
-          }
-        }
-        return;
-      }
-    }
-    super.setVisible(isVisible);
-  }
+//  public void setVisible(final boolean isVisible) {
+//    if(isVisible && isModal()) {
+//      Display display = handle.getDisplay();
+//      if(display != null && display.getThread() == Thread.currentThread() || SwingUtilities.isEventDispatchThread()) {
+//        final Object LOCK = new Object();
+//        Thread t = new Thread(Utils.getSWTSwingUIThreadsNamePrefix() + "Modal shell opening") {
+//          public void run() {
+//            synchronized(LOCK) {
+//              LOCK.notify();
+//            }
+//            setVisible(isVisible);
+//          }
+//        };
+//        synchronized(LOCK) {
+//          t.start();
+//          try {
+//            LOCK.wait();
+//          } catch(Exception e) {}
+//          int count = 0;
+//          while(!isVisible() && count++ < 10) {
+//            try {
+//              Thread.sleep(10);
+//            } catch(Exception e) {}
+//          }
+//        }
+//        return;
+//      }
+//    }
+//    super.setVisible(isVisible);
+//  }
 
   protected void init(int style) {
     if((style & SWT.TITLE) == 0) {
       setFocusableWindowState(false);
     }
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-//    if((style & SWT.APPLICATION_MODAL) != 0) {
-//      setModalityType(ModalityType.APPLICATION_MODAL);
-//    } else if((style & SWT.PRIMARY_MODAL) != 0) {
-//      setModalityType(ModalityType.DOCUMENT_MODAL);
-//    } else if((style & SWT.SYSTEM_MODAL) != 0) {
-//      setModalityType(ModalityType.TOOLKIT_MODAL);
-//    }
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
     if((style & SWT.RESIZE) == 0) {
       setResizable(false);
     }
+    setAlwaysOnTop((style & SWT.ON_TOP) != 0);
     boolean isDecorated = (style & SWT.TITLE) != 0;
     if(isDecorated) {
       if(JDialog.isDefaultLookAndFeelDecorated()) {
@@ -446,7 +471,9 @@ class CShellDialog extends JDialog implements CShell {
 //        transferFocusDownCycle();
       }
       public void windowClosing(WindowEvent e) {
-        handle.processEvent(e);
+        if(!getModalityHandler().isBlocked()) {
+          handle.processEvent(e);
+        }
       };
       public void windowActivated(WindowEvent e) {
         handle.processEvent(e);
@@ -466,6 +493,20 @@ class CShellDialog extends JDialog implements CShell {
     });
   }
 
+  public void show() {
+    if(!isVisible()) {
+      super.show();
+      getModalityHandler().setEnabled(true);
+    }
+  }
+
+  public void hide() {
+    if(isVisible()) {
+      getModalityHandler().setEnabled(false);
+      super.hide();
+    }
+  }
+  
   public void setBackground(Color c) {
     super.setBackground(c);
     if(contentPane != null) {
@@ -540,15 +581,167 @@ class CShellDialog extends JDialog implements CShell {
   public void setBackgroundInheritance(int backgroundInheritanceType) {
   }
 
+  protected ModalityHandler modalityHandler = new ModalityHandler(this);
+  
+  public ModalityHandler getModalityHandler() {
+    return modalityHandler;
+  }
+  
+  public boolean getFocusableWindowState() {
+    return super.getFocusableWindowState() && !getModalityHandler().isBlocked();
+  }
+  
 }
 
 /**
  * The shell equivalent on the Swing side.
  * @version 1.0 2005.03.13
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CShell extends CScrollable {
 
+  public static class ModalityHandler {
+    
+    protected List blockerList = new ArrayList(0);
+    protected static List applicationBlockerList = new ArrayList(0);
+
+    protected static final CShell[] NO_BLOCKERS = new CShell[0];
+    
+    public static void initialize() {
+      Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+        public void eventDispatched(AWTEvent event) {
+          MouseEvent me = (MouseEvent)event;
+          Window window = SwingUtilities.getWindowAncestor(me.getComponent());
+          if(window instanceof CShell) {
+            CShell[] blockers = ((CShell)window).getModalityHandler().getBlockers();
+            if(blockers.length != 0) {
+              if(me.getID() == MouseEvent.MOUSE_PRESSED) {
+                blockers[0].getModalityHandler().advertiseBlocker();
+              }
+              me.consume();
+              return;
+            }
+          }
+        }
+      }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+    }
+    
+    protected boolean isBlocked() {
+      if(blockerList.isEmpty() && applicationBlockerList.isEmpty()) {
+        return false;
+      }
+      for(int i=blockerList.size()-1; i>= 0; i--) {
+        if(blockerList.get(i) != cShell) {
+          return true;
+        }
+      }
+      for(int i=applicationBlockerList.size()-1; i>= 0; i--) {
+        if(applicationBlockerList.get(i) != cShell) {
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    protected CShell[] getBlockers() {
+      if(blockerList.isEmpty() && applicationBlockerList.isEmpty()) {
+        return NO_BLOCKERS;
+      }
+      if(blockerList.size() + applicationBlockerList.size() == 1) {
+        CShell blocker = blockerList.isEmpty()? (CShell)applicationBlockerList.get(0): (CShell)blockerList.get(0);
+        if(blocker == cShell) {
+          return NO_BLOCKERS;
+        }
+        return new CShell[] {blocker};
+      }
+      List shellList = new ArrayList();
+      for(int i=blockerList.size()-1; i>= 0; i--) {
+        Object blocker = blockerList.get(i);
+        if(blocker != cShell) {
+          shellList.add(blocker);
+        }
+      }
+      for(int i=applicationBlockerList.size()-1; i>= 0; i--) {
+        Object blocker = applicationBlockerList.get(i);
+        if(blocker != cShell) {
+          shellList.add(blocker);
+        }
+      }
+      return (CShell[])shellList.toArray(new CShell[0]);
+    }
+    
+    protected Shell parent;
+    protected CShell cShell;
+    
+    protected ModalityHandler(CShell cShell) {
+      this.cShell = cShell;
+    }
+    
+    protected boolean isEnabled;
+    
+    protected void setEnabled(boolean isEnabled) {
+      if(this.isEnabled == isEnabled) {
+        return;
+      }
+      Control handle = cShell.getSWTHandle();
+      if(isEnabled) {
+        if(!handle.isDisposed()) {
+          parent = (Shell)cShell.getSWTHandle().getParent();
+          this.isEnabled = isEnabled;
+          int style = handle.getStyle();
+          if((style & SWT.APPLICATION_MODAL) != 0 || (style & SWT.SYSTEM_MODAL) != 0) {
+            applicationBlockerList.add(cShell);
+          } else if((style & SWT.PRIMARY_MODAL) != 0) {
+            Composite parent = handle.getParent();
+            if(parent != null) {
+              ((CShell)parent.handle).getModalityHandler().blockerList.add(cShell);
+            }
+          }
+        }
+      } else {
+        applicationBlockerList.remove(cShell);
+        if(parent != null) {
+          ((CShell)parent.handle).getModalityHandler().blockerList.remove(cShell);
+        }
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            // Empty event
+          }
+        });
+      }
+    }
+    
+    protected void advertiseBlocker() {
+      Toolkit.getDefaultToolkit().beep();
+      cShell.toFront();
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          final JDialog dialog = new JDialog((Window)cShell);
+          dialog.setLocation(-200, -200);
+          dialog.setVisible(true);
+          SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+              dialog.setVisible(false);
+              cShell.toFront();
+              SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  dialog.setVisible(true);
+                  SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                      dialog.dispose();
+                      cShell.toFront();
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+    }
+    
+  }
+  
   public static interface PaintHandler {
     public void paintComponent(Graphics2D g);
     public void paint(Graphics2D g);
@@ -601,4 +794,6 @@ public interface CShell extends CScrollable {
 
   public void removePaintHandler(PaintHandler paintHandler);
 
+  public ModalityHandler getModalityHandler();
+  
 }

@@ -178,7 +178,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
 /**
  * The label equivalent on the Swing side.
  * @version 1.0 2005.08.20
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CLink extends CControl {
 

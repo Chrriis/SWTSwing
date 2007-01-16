@@ -113,7 +113,7 @@ class CGroupImplementation extends JPanel implements CGroup {
 /**
  * The group equivalent on the Swing side.
  * @version 1.0 2005.03.13
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CGroup extends CScrollable {
 

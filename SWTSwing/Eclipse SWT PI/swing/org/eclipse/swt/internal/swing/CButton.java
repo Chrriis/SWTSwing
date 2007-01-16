@@ -332,7 +332,7 @@ class CButtonRadio extends JIconRadioButton implements CButton {
 /**
  * The button equivalent on the Swing side.
  * @version 1.0 2005.03.14
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CButton extends CControl {
 

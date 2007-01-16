@@ -1,8 +1,8 @@
 /*
  * @(#)TabFilterReader.java
  * 
- * Christopher Deckers (chrriis@brainlex.com)
- * http://chrriis.brainlex.com
+ * Christopher Deckers (chrriis@nextencia.net)
+ * http://www.nextencia.net
  * 
  * See the file "LICENSE.txt" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.

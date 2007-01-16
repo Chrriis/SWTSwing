@@ -907,13 +907,13 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	activeMenu = null;
-    final Window window = (Window)handle;
-    window.setVisible(false);
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        window.dispose();
-      }
-    });
+  final Window window = (Window)handle;
+  window.setVisible(false);
+  SwingUtilities.invokeLater(new Runnable() {
+    public void run() {
+      window.dispose();
+    }
+  });
 //	display.clearModal (this);
 //	if (lpstrTip != 0) {
 //		int hHeap = OS.GetProcessHeap ();

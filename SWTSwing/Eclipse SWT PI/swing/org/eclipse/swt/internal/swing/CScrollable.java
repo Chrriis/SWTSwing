@@ -12,7 +12,7 @@ import javax.swing.JScrollBar;
 /**
  * The interface shared by all scrollable controls.
  * @version 1.0 2005.03.22
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CScrollable extends CControl {
 

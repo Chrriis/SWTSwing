@@ -154,7 +154,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
 /**
  * The composite equivalent on the Swing side.
  * @version 1.0 2005.08.31
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CComposite extends CScrollable {
 

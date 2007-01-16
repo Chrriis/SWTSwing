@@ -15,7 +15,7 @@ import javax.swing.UIManager;
 /**
  * An arrow button.
  * @version 1.0 2003.08.03
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public class ArrowButton extends JButton {
 

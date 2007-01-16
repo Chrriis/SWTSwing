@@ -1,8 +1,8 @@
 /*
  * @(#)RegExJavaTypes.java
  * 
- * Christopher Deckers (chrriis@brainlex.com)
- * http://chrriis.brainlex.com
+ * Christopher Deckers (chrriis@nextencia.net)
+ * http://www.nextencia.net
  * 
  * See the file "LICENSE.txt" for information on usage and redistribution of
  * this file, and for a DISCLAIMER OF ALL WARRANTIES.
@@ -22,7 +22,7 @@ import javax.swing.text.StyledEditorKit;
 /**
  * A definition of tokens.
  * @version 1.0 2004.02.09
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public class RegExJavaTypes extends RegExTypes {
   public static final String CHAR = "char";

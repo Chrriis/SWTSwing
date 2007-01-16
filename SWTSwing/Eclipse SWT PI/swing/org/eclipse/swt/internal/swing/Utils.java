@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 /**
  * General util methods.
  * @version 1.0 2005.03.18
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public class Utils {
 

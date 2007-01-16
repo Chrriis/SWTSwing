@@ -637,7 +637,7 @@ class CTextField extends JScrollPane implements CText {
 /**
  * The text equivalent on the Swing side.
  * @version 1.0 2005.08.30
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CText extends CScrollable {
 

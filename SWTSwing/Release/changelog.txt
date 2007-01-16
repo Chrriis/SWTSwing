@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Modality is improved and does not block the UI thread anymore.
+- Always on top for shells is added.
 - Ctrl+Shift+<char> now sets the keycode correctly.
 - Setting the selection in a Tree repaints it to actually see the change.
 - Tool items are not focusable.

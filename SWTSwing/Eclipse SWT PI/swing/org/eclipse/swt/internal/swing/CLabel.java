@@ -152,7 +152,7 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
 /**
  * The label equivalent on the Swing side.
  * @version 1.0 2005.08.20
- * @author Christopher Deckers (chrriis@brainlex.com)
+ * @author Christopher Deckers (chrriis@nextencia.net)
  */
 public interface CLabel extends CControl {
 

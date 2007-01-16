@@ -22,6 +22,7 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.EventObject;
 
@@ -4544,6 +4545,17 @@ Event createKeyEvent(java.awt.event.KeyEvent ke) {
   }
   event.character = c;
   event.stateMask = Display.getInputState();
+  switch(event.keyCode) {
+  case SWT.CONTROL:
+  case SWT.SHIFT:
+  case SWT.ALT:
+    if(ke.getID() == KeyEvent.KEY_PRESSED) {
+      event.stateMask &= ~event.keyCode;
+    } else {
+      event.stateMask |= event.keyCode;
+    }
+    break;
+  }
   return event;
 }
 

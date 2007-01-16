@@ -10,6 +10,7 @@ Licence terms: EPL 1.0 (see licence.html)
 - Resizable Shells with no title now show a border.
 - Modality is improved and does not block the UI thread anymore.
 - Always on top for shells is added.
+- The state mask of key events is fixed when modifiers are pressed.
 - Ctrl+Shift+<char> now sets the keycode correctly.
 - Setting the selection in a Tree repaints it to actually see the change.
 - Tool items are not focusable.

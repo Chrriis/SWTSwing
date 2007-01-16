@@ -31,6 +31,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -43,6 +44,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -71,10 +73,7 @@ class CShellFrame extends JFrame implements CShell {
   }
   
   protected void init(int style) {
-//    if((style & SWT.TITLE) != 0) {
-//      // TODO: Check if that should always be the case. Do we apply the non focusable state also to shells with a title bar?
-//      setFocusableWindowState(false);
-//    }
+    setFocusableWindowState((style & SWT.NO_FOCUS) == 0);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
@@ -95,6 +94,9 @@ class CShellFrame extends JFrame implements CShell {
         getRootPane().setWindowDecorationStyle(JRootPane.NONE);
       }
       setUndecorated(!isDecorated);
+      if((style & SWT.RESIZE) != 0 || (style & SWT.BORDER) != 0) {
+        getRootPane().setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
+      }
     }
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
     contentPane = getContentPane();
@@ -355,6 +357,7 @@ class CShellDialog extends JDialog implements CShell {
 //  }
 
   protected void init(int style) {
+    setFocusableWindowState((style & SWT.NO_FOCUS) == 0);
     if((style & SWT.TITLE) == 0) {
       setFocusableWindowState(false);
     }
@@ -378,6 +381,10 @@ class CShellDialog extends JDialog implements CShell {
         getRootPane().setWindowDecorationStyle(JRootPane.NONE);
       }
       setUndecorated(!isDecorated);
+      if((style & SWT.RESIZE) != 0 || (style & SWT.BORDER) != 0) {
+        JRootPane rootPane = getRootPane();
+        rootPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
+      }
     }
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {

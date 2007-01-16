@@ -638,14 +638,17 @@ public interface CShell extends CScrollable {
         return false;
       }
       for(int i=blockerList.size()-1; i>= 0; i--) {
-        if(blockerList.get(i) != cShell) {
+        if(blockerList.get(i) == cShell) {
           return true;
         }
       }
-      for(int i=applicationBlockerList.size()-1; i>= 0; i--) {
-        if(applicationBlockerList.get(i) != cShell) {
-          return true;
+      if(!applicationBlockerList.isEmpty()) {
+        for(int i=applicationBlockerList.size()-1; i>= 0; i--) {
+          if(applicationBlockerList.get(i) == cShell) {
+            return false;
+          }
         }
+        return true;
       }
       return false;
     }
@@ -668,9 +671,9 @@ public interface CShell extends CScrollable {
           shellList.add(blocker);
         }
       }
-      for(int i=applicationBlockerList.size()-1; i>= 0; i--) {
-        Object blocker = applicationBlockerList.get(i);
-        if(blocker != cShell) {
+      if(!applicationBlockerList.contains(cShell)) {
+        for(int i=applicationBlockerList.size()-1; i>= 0; i--) {
+          Object blocker = applicationBlockerList.get(i);
           shellList.add(blocker);
         }
       }

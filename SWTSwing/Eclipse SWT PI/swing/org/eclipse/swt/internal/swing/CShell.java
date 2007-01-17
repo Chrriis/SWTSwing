@@ -360,9 +360,9 @@ class CShellDialog extends JDialog implements CShell {
 
   protected void init(int style) {
     setFocusableWindowState((style & SWT.NO_FOCUS) == 0);
-    if((style & SWT.TITLE) == 0) {
-      setFocusableWindowState(false);
-    }
+//    if((style & SWT.TITLE) == 0) {
+//      setFocusableWindowState(false);
+//    }
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);

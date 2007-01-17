@@ -7,7 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
-- Resizable Shells with no title now show a border.
+- Resizable Shells with no title now show a border and are resizable.
 - Modality is improved and does not block the UI thread anymore.
 - Always on top for shells is added.
 - The state mask of key events is fixed when modifiers are pressed.

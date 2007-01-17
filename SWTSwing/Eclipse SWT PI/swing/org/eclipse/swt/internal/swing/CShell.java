@@ -95,7 +95,9 @@ class CShellFrame extends JFrame implements CShell {
       }
       setUndecorated(!isDecorated);
       if((style & SWT.RESIZE) != 0 || (style & SWT.BORDER) != 0) {
-        getRootPane().setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
+        JRootPane rootPane = getRootPane();
+        rootPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
+        ComponentBorderResizer.handle(this, rootPane);
       }
     }
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
@@ -384,6 +386,7 @@ class CShellDialog extends JDialog implements CShell {
       if((style & SWT.RESIZE) != 0 || (style & SWT.BORDER) != 0) {
         JRootPane rootPane = getRootPane();
         rootPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
+        ComponentBorderResizer.handle(this, rootPane);
       }
     }
     contentPane = getContentPane();

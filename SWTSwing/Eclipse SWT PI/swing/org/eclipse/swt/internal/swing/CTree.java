@@ -334,6 +334,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
     setColumnHeader(createViewport());
     setHeaderVisible(false);
     init(style);
+    treeTable.configureEnclosingScrollPane();
   }
 
   protected void init(int style) {

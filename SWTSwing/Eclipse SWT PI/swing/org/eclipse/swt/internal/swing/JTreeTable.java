@@ -490,7 +490,13 @@ public class JTreeTable extends JPanel implements Scrollable {
     configureEnclosingScrollPane();
   }
 
+  protected volatile boolean isEnclosingScrollPaneConfigured;
+
   protected void configureEnclosingScrollPane() {
+    if(isEnclosingScrollPaneConfigured) {
+      return;
+    }
+    isEnclosingScrollPaneConfigured = true;
     Container parent = getParent();
     if (parent instanceof JViewport) {
       Container grandParent = parent.getParent();

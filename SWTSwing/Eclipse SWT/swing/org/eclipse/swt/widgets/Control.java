@@ -538,7 +538,9 @@ void createWidget () {
   if(parent != null && !(handle instanceof Window)) {
     if(parent.autoAddChildren()) {
       Container clientArea = ((CControl)parent.handle).getClientArea();
-      clientArea.setLayout(null);
+      if(!parent.isLayoutManaged()) {
+        clientArea.setLayout(null);
+      }
       clientArea.add(handle);
       updateBackgroundMode();
       ((JComponent)clientArea).revalidate();

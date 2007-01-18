@@ -603,6 +603,85 @@ class CShellDialog extends JDialog implements CShell {
   
 }
 
+class CShellPanel extends JPanel implements CShell {
+  protected Shell handle;
+  public Container getSwingComponent() {
+    return this;
+  }
+  public Control getSWTHandle() {
+    return handle;
+  }
+  public Container getClientArea() {
+    return this;
+  }
+  public CShellPanel(Shell shell, int style) {
+    handle = shell;
+    init(style);
+  }
+  protected void init(int style) {
+//    addHierarchyListener(new HierarchyListener() {
+//      protected Window window;
+//      public void hierarchyChanged(HierarchyEvent e) {
+//        Window window = SwingUtilities.getWindowAncestor(CShellPanel.this);
+//        boolean isEnabled = window != null;
+//        if(!getModalityHandler().setEnabled(isEnabled)) {
+//          return;
+//        }
+//        System.err.println(isEnabled);
+//        if(isEnabled) {
+//          if(window.getFocusableWindowState()) {
+//            window.setFocusableWindowState(false);
+//            this.window = window;
+//          }
+//        } else if(this.window != null) {
+//          this.window.setFocusableWindowState(false);
+//        }
+//        
+//      }
+//    });
+  }
+  public void forceActive() {
+  }
+  public String getTitle() {
+    return null;
+  }
+  public void setTitle(String title) {
+  }
+  public void toFront() {
+  }
+  public int getExtendedState() {
+    return 0;
+  }
+  public void setExtendedState(int state) {
+  }
+  public void setIconImage(Image image) {
+  }
+  public void setIconImages(List imageList) {
+  }
+  public void setJMenuBar(JMenuBar menuBar) {
+  }
+  public void setDefaultButton(CButton button) {
+  }
+  public void addPaintHandler(PaintHandler paintHandler) {
+  }
+  public void removePaintHandler(PaintHandler paintHandler) {
+  }
+  protected ModalityHandler modalityHandler = new ModalityHandler(this);
+  public ModalityHandler getModalityHandler() {
+    return modalityHandler;
+  }
+  public JScrollBar getHorizontalScrollBar() {
+    return null;
+  }
+  public JScrollBar getVerticalScrollBar() {
+    return null;
+  }
+  public void setBackgroundImage(Image backgroundImage) {
+  }
+  public void setBackgroundInheritance(int backgroundInheritanceType) {
+  }
+}
+
 /**
  * The shell equivalent on the Swing side.
  * @version 1.0 2005.03.13
@@ -610,6 +689,8 @@ class CShellDialog extends JDialog implements CShell {
  */
 public interface CShell extends CScrollable {
 
+  public static interface CEmbeddedShell {}
+  
   public static class ModalityHandler {
     
     protected List blockerList = new ArrayList(0);
@@ -692,9 +773,9 @@ public interface CShell extends CScrollable {
     
     protected boolean isEnabled;
     
-    protected void setEnabled(boolean isEnabled) {
+    protected boolean setEnabled(boolean isEnabled) {
       if(this.isEnabled == isEnabled) {
-        return;
+        return false;
       }
       Control handle = cShell.getSWTHandle();
       if(isEnabled) {
@@ -704,11 +785,13 @@ public interface CShell extends CScrollable {
           int style = handle.getStyle();
           if((style & SWT.APPLICATION_MODAL) != 0 || (style & SWT.SYSTEM_MODAL) != 0) {
             applicationBlockerList.add(cShell);
+            return true;
           } else if((style & SWT.PRIMARY_MODAL) != 0) {
             Composite parent = handle.getParent();
             if(parent != null) {
               ((CShell)parent.handle).getModalityHandler().blockerList.add(cShell);
             }
+            return true;
           }
         }
       } else {
@@ -721,7 +804,9 @@ public interface CShell extends CScrollable {
             // Empty event
           }
         });
+        return true;
       }
+      return false;
     }
     
     protected void advertiseBlocker() {
@@ -772,6 +857,9 @@ public interface CShell extends CScrollable {
     }
 
     public static CShell createInstance(Shell shell, CShell parent, int style) {
+      if(shell instanceof CEmbeddedShell) {
+        return new CShellPanel(shell, style);
+      }
       if(parent instanceof CShellFrame) {
         return new CShellDialog(shell, (CShellFrame)parent, style);
       }

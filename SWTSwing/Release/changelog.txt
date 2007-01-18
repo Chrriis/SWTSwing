@@ -7,7 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
-- SWTSwing package is added, and currently allows SWT components in Swing code.
+- SWTSwing package is added: SWT in Swing and Swing in SWT APIs are implemented.
 - Table background is now set correctly.
 - Resizable Shells with no title now show a border and are resizable.
 - Modality is improved and does not block the UI thread anymore.

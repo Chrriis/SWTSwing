@@ -9,14 +9,21 @@ package org.eclipse.swt.swtswing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CShell;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -54,6 +61,53 @@ public class SWT_Swing {
     EmbeddedShell parent = new EmbeddedShell();
     manageEventDispatch(parent);
     return parent;
+  }
+  
+  protected static class EmbeddedPanel extends JPanel implements CControl {
+
+    protected Control handle;
+    
+    public EmbeddedPanel(Control control) {
+      super(new BorderLayout(0, 0));
+      handle = control;
+    }
+    
+    public void setComponent(JComponent component) {
+      add(component, BorderLayout.CENTER);
+    }
+    
+    public Container getClientArea() {
+      return this;
+    }
+
+    public void setBackgroundImage(Image backgroundImage) {
+    }
+
+    public void setBackgroundInheritance(int backgroundInheritanceType) {
+    }
+
+    public Container getSwingComponent() {
+      return this;
+    }
+
+    public Control getSWTHandle() {
+      return handle;
+    }
+    
+  }
+
+  /**
+   * @return A control that contains the component.
+   */
+  public static Control newEmbeddedComposite(Composite parent, JComponent component) {
+    Control control = new Control(parent, SWT.NONE) {
+      protected void checkSubclass() {
+        // Trick to get the handle set before the end of the constructor of Control
+        handle = new EmbeddedPanel(this);
+      }
+    };
+    ((EmbeddedPanel)control.handle).setComponent(component);
+    return control;
   }
   
   protected static List managedCompositeList = new ArrayList();

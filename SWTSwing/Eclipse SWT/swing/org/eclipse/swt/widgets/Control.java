@@ -518,6 +518,7 @@ Control [] computeTabList () {
 }
 
 Container createHandle () {
+  if(handle != null) return handle;
   error (SWT.ERROR_NO_HANDLES);
   return null;
 }

@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
@@ -125,26 +126,31 @@ public class SWT_Swing {
       if(managedCompositeList.size() == 1) {
         Display.swtExec(new Runnable() {
           public void run() {
-            try {
-              Display display = Display.getDefault();
-              boolean hasElements = true;
-              while(hasElements) {
-                if(!display.readAndDispatch ()) {
-                  display.sleep ();
-                }
-                synchronized(managedCompositeList) {
-                  for(Iterator it=managedCompositeList.iterator(); it.hasNext(); ) {
-                    if(((Composite)it.next()).isDisposed()) {
-                      it.remove();
+            // We invoke later from the UI thread to make sure the queue has run once and is considered a valid thread.
+            SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                try {
+                  Display display = Display.getDefault();
+                  boolean hasElements = true;
+                  while(hasElements) {
+                    if(!display.readAndDispatch ()) {
+                      display.sleep ();
+                    }
+                    synchronized(managedCompositeList) {
+                      for(Iterator it=managedCompositeList.iterator(); it.hasNext(); ) {
+                        if(((Composite)it.next()).isDisposed()) {
+                          it.remove();
+                        }
+                      }
+                      hasElements = !managedCompositeList.isEmpty();
                     }
                   }
-                  hasElements = !managedCompositeList.isEmpty();
+                }
+                catch(Throwable t) {
+                  t.printStackTrace();
                 }
               }
-            }
-            catch(Throwable t) {
-              t.printStackTrace();
-            }
+            });
           }
         });
       }

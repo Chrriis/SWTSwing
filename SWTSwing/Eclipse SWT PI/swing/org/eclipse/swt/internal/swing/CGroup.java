@@ -74,6 +74,7 @@ class CGroupImplementation extends JPanel implements CGroup {
 
   public void setText(String string) {
     titledBorder.setTitle(string);
+    repaint();
   }
 
   public JScrollBar getVerticalScrollBar() {

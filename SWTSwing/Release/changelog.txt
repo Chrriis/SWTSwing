@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Updating the text of a Group now repaints to show the change.
 - Deferred configuration of Tree's scrollpane is immediate to fix header issues.
 - SWTSwing package is added: SWT in Swing and Swing in SWT APIs are implemented.
 - Table background is now set correctly.

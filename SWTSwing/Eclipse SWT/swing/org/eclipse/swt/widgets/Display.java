@@ -45,6 +45,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
+import javax.swing.LookAndFeel;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
@@ -394,16 +395,21 @@ public Display (DeviceData data) {
   JPopupMenu.setDefaultLightWeightPopupEnabled(lightweightPopups);
   String lafName = Utils.getLookAndFeel();
   if(lafName != null) {
-    try {
-      javax.swing.UIManager.setLookAndFeel(lafName);
+    LookAndFeel lookAndFeel = javax.swing.UIManager.getLookAndFeel();
+    if(lookAndFeel != null && lafName.equals(lookAndFeel.getClass().getName())) {
       isLookAndFeelInstalled = true;
-      Boolean isLookAndFeelDecorated = Utils.isLookAndFeelDecorated();
-      if(isLookAndFeelDecorated != null) {
-        boolean isLafDecrated = isLookAndFeelDecorated.booleanValue();
-        JFrame.setDefaultLookAndFeelDecorated(isLafDecrated);
-        JDialog.setDefaultLookAndFeelDecorated(isLafDecrated);
-      }
-    } catch(Exception e) {e.printStackTrace();}
+    } else {
+      try {
+        javax.swing.UIManager.setLookAndFeel(lafName);
+        isLookAndFeelInstalled = true;
+        Boolean isLookAndFeelDecorated = Utils.isLookAndFeelDecorated();
+        if(isLookAndFeelDecorated != null) {
+          boolean isLafDecrated = isLookAndFeelDecorated.booleanValue();
+          JFrame.setDefaultLookAndFeelDecorated(isLafDecrated);
+          JDialog.setDefaultLookAndFeelDecorated(isLafDecrated);
+        }
+      } catch(Exception e) {e.printStackTrace();}
+    }
   }
   // If no look and feel is specified, install one that looks native.
   if(!isLookAndFeelInstalled) {

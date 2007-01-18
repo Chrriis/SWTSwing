@@ -178,10 +178,6 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   protected TreeTableModel tableModel = new TreeTableModel();
 
-  protected void paintCellRenderer(Graphics g, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-    
-  }
-
   protected TableCellRenderer tableCellRenderer = new TableCellRenderer() {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       final TreePath path = tree.getPathForRow(row);

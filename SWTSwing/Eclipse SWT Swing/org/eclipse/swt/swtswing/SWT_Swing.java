@@ -147,10 +147,6 @@ public class SWT_Swing {
             }
           }
         });
-        new Thread() {
-          public void run() {
-          }
-        }.start();
       }
     }
   }

@@ -18,7 +18,7 @@ look and feel.
 
 SWTSwing requires the latest official version of the Java Runtime Environment in
 order to provide a maximum coverage of SWT features.
-The current version is Java 5.0.
+The current version is Java 6.0.
 
 
 2. How to use it?

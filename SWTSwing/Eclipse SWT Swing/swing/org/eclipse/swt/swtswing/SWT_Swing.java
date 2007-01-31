@@ -156,5 +156,9 @@ public class SWT_Swing {
       }
     }
   }
+
+  public static void runSafe(Runnable runnable) {
+    Display.getDefault().swtSync(runnable);
+  }
   
 }

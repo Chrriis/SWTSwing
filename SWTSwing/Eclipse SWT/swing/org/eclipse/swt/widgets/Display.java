@@ -2700,6 +2700,15 @@ void wakeThread () {
 
 protected static int exclusiveSectionCount = 0;
 
+public void swtSync(Runnable runnable) {
+  try {
+    startExclusiveSection();
+    runnable.run();
+  } finally {
+    stopExclusiveSection();
+  }
+}
+
 protected void startExclusiveSection() {
   if(isRealDispatch() || !SwingUtilities.isEventDispatchThread()) {
     exclusiveSectionCount++;

@@ -10,7 +10,7 @@
 	<classpathentry path="Eclipse SWT PI/swing" kind="src"/>
 	<classpathentry path="Eclipse SWT Printing/swing" kind="src"/>
 	<classpathentry path="Eclipse SWT Program/swing" kind="src"/>
-	<classpathentry path="Eclipse SWT Swing" kind="src"/>
+	<classpathentry path="Eclipse SWT Swing/swing" kind="src"/>
 	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
 	<classpathentry path="/org.eclipse.swt" kind="src"/>
 	<classpathentry path="bin" kind="output"/>

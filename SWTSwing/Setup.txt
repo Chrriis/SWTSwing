@@ -6,6 +6,8 @@ It is probably not too dificult to do the same for another platform.
 
 --------------------------------------------------------------------------------
 
+* Set a default JRE of at least Java 6. Set the compiler compliance level to 1.4.
+
 * Get SWTSwing from "swtswing.cvs.sourceforge.net:/cvsroot/swtswing" and check out the modules:
 
 - SWTSwing

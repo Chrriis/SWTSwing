@@ -3732,10 +3732,11 @@ public void setTransform(Transform transform) {
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (saveAT != null) {
-		handle.setTransform(saveAT);
-	}
-	saveAT = handle.getTransform();
+	if (saveAT == null) {
+		saveAT = handle.getTransform();
+	} else {
+	  handle.setTransform(saveAT);
+  }
 	gcAT = transform.handle;
 	handle.transform(transform.handle);
 }

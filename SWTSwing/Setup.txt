@@ -6,16 +6,17 @@ It is probably not too dificult to do the same for another platform.
 
 --------------------------------------------------------------------------------
 
-* Set a default JRE of at least Java 6. Set the compiler compliance level to 1.4.
+* Set a default JRE of at least Java 6 and the compiler compliance level to 1.4.
 
-* Get SWTSwing from "swtswing.cvs.sourceforge.net:/cvsroot/swtswing" and check out the modules:
+* Get SWTSwing from "swtswing.cvs.sourceforge.net:/cvsroot/swtswing" and check
+out the modules:
 
 - SWTSwing
 - SWTSwingTests
 
 
-* Get SWT from ":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" and check out
-the Modules:
+* Get SWT from ":pserver:anonymous@dev.eclipse.org:/cvsroot/eclipse" and check
+out the modules:
 
 on "HEAD":
 - org.eclipse.swt.snippets
@@ -25,7 +26,8 @@ on "R3_2" version:
 - org.eclipse.swt.examples
 - org.eclipse.swt.win32.win32.x86
 
-To compile SWT itself, copy "org.eclipse.swt/.classpath_win32" to "org.eclipse.swt/.classpath"
+To compile SWT itself, copy "org.eclipse.swt/.classpath_win32" to
+"org.eclipse.swt/.classpath"
 
 --------------------------------------------------------------------------------
 
@@ -47,5 +49,5 @@ and without SWTSwing (this example is for win32):
   Main class: chrriis.swtswing.SnippetLauncher
   VM Arguments: -Dswt.swing.laf=javax.swing.plaf.metal.MetalLookAndFeel -Dswt.swing.debug=defined -Dswt.swing.snippets=defined
   
-... then open the "chrriis.swtswing.SnippetLauncher" class and change the snippet number
-that is located below the snippet definitions to whatever snippet number.
+... then open the "chrriis.swtswing.SnippetLauncher" class and adjust the
+snippet number that is located below the snippet definitions.

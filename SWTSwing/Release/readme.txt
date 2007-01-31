@@ -77,6 +77,10 @@ SWTSwing's website.
 The sources are part of the distribution, both for SWTSwing and the
 SnippetLauncher.
 
+There is of course some access to the various CVS trees, composed of the SWT
+standard source tree and the SWTSwing sources. The setup process is documented
+on the SWTSwing web site.
+
 
 6. How to contribute?
 

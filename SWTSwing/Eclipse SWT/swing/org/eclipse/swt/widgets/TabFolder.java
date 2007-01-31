@@ -23,6 +23,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CTabFolder;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of this class implement the notebook user interface
@@ -447,10 +448,9 @@ public void processEvent(EventObject e) {
   if(e instanceof ChangeEvent) {
     if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
   } else { super.processEvent(e); return; }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -464,7 +464,7 @@ public void processEvent(EventObject e) {
     sendEvent(SWT.Selection, event);
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

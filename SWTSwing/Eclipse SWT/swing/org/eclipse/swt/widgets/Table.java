@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.swing.CTable.CellPaintEvent;
 
@@ -3253,10 +3254,9 @@ public void processEvent(EventObject e) {
     default: super.processEvent(e); return;
     }
   } else { super.processEvent(e); return; }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -3334,7 +3334,7 @@ public void processEvent(EventObject e) {
     }
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

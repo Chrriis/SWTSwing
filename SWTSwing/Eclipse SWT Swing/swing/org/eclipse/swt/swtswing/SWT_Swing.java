@@ -23,6 +23,7 @@ import javax.swing.UIManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CShell;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -158,7 +159,7 @@ public class SWT_Swing {
   }
 
   public static void runSafe(Runnable runnable) {
-    Display.getDefault().swtSync(runnable);
+    UIThreadUtils.swtSync(Display.getDefault(), runnable);
   }
   
 }

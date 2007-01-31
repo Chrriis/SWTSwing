@@ -29,6 +29,7 @@ import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -316,29 +317,27 @@ void createHandle () {
       }
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
         if(!hooks(SWT.Hide)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
         Event event = new Event();
         event.widget = Menu.this;
         sendEvent(SWT.Hide, event);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         if(!hooks(SWT.Show)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
         Event event = new Event();
         event.widget = Menu.this;
         sendEvent(SWT.Show, event);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     });
     handle = popup;

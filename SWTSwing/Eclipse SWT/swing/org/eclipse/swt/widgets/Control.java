@@ -56,6 +56,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -4164,10 +4165,9 @@ public void processEvent(AWTEvent e) {
   if(isDisposed()) {
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     return;
   }
   switch(id) {
@@ -4215,14 +4215,13 @@ public void processEvent(AWTEvent e) {
                     java.awt.event.MouseEvent me = mouseHoverEvent;
                     mouseHoverEvent = null;
                     if(!isDisposed() && me.getComponent().contains(me.getPoint())) {
-                      Display display = getDisplay();
-                      display.startExclusiveSection();
+                      UIThreadUtils.startExclusiveSection(getDisplay());
                       if(isDisposed()) {
-                        display.stopExclusiveSection();
+                        UIThreadUtils.stopExclusiveSection();
                         return;
                       }
                       sendEvent(SWT.MouseHover, createMouseEvent(me, false));
-                      display.stopExclusiveSection();
+                      UIThreadUtils.stopExclusiveSection();
                     }
                   }
                 }
@@ -4333,7 +4332,7 @@ public void processEvent(AWTEvent e) {
     break;
   }
   }
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 static final Point DEFAULT_EVENT_OFFSET = new Point(0, 0);

@@ -357,8 +357,10 @@ public class Utils {
     }
   }
 
-  public static String getSWTSwingUIThreadsNamePrefix() {
-    return "SWTSwing UI - ";
-  }
+//  public static String getSWTSwingUIThreadsNamePrefix() {
+//    return "SWTSwing UI - ";
+//  }
 
+  
+  
 }

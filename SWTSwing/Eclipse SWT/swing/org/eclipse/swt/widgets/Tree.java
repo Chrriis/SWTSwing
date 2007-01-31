@@ -39,6 +39,7 @@ import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.swing.DefaultMutableTreeTableNode;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.swing.CTree.CellPaintEvent;
 
@@ -3515,10 +3516,9 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -3543,7 +3543,7 @@ public void processEvent(AWTEvent e) {
     break;
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 public void processEvent(EventObject e) {
@@ -3581,10 +3581,9 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -3680,7 +3679,7 @@ public void processEvent(EventObject e) {
   }
 
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
   return;
 }
 

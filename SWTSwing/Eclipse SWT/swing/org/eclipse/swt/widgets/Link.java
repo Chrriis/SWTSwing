@@ -20,6 +20,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.internal.swing.CLink;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of this class represent a selectable
@@ -218,10 +219,9 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -231,7 +231,7 @@ public void processEvent(EventObject e) {
     sendEvent(SWT.Selection, event);
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
   return;
 }
 

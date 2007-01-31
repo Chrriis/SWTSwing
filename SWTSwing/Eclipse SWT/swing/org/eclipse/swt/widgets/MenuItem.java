@@ -39,6 +39,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -955,17 +956,16 @@ void createHandle() {
         super.menuSelectionChanged(isIncluded);
         if(!isIncluded) return;
         if(!hooks(SWT.Arm)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
 //        Event event = new Event();
 //        event.stateMask = Display.getInputState();
 //        sendEvent(SWT.Arm, event);
         sendEvent(SWT.Arm);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     };
     popup.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
@@ -974,30 +974,28 @@ void createHandle() {
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
         if(menu == null) return;
         if(!menu.hooks(SWT.Hide)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
         Event event = new Event();
         event.widget = menu;
         menu.sendEvent(SWT.Hide, event);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         if(menu == null) return;
         if(!menu.hooks(SWT.Show)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
         Event event = new Event();
         event.widget = menu;
         menu.sendEvent(SWT.Show, event);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     });
     handle = popup;
@@ -1008,31 +1006,29 @@ void createHandle() {
         if(!isIncluded) {
           if(parent == null || parent.cascade == null) return;
           if(!parent.cascade.hooks(SWT.Arm)) return;
-          Display display = getDisplay();
-          display.startExclusiveSection();
+          UIThreadUtils.startExclusiveSection(getDisplay());
           if(isDisposed()) {
-            display.stopExclusiveSection();
+            UIThreadUtils.stopExclusiveSection();
             return;
           }
 //          Event event = new Event();
 //          event.stateMask = Display.getInputState();
 //          sendEvent(SWT.Arm, event);
           parent.cascade.sendEvent(SWT.Arm);
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
         if(!hooks(SWT.Arm)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
 //        Event event = new Event();
 //        event.stateMask = Display.getInputState();
 //        sendEvent(SWT.Arm, event);
         sendEvent(SWT.Arm);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     };
     handle = menuItem;
@@ -1042,32 +1038,30 @@ void createHandle() {
 //        isSelected = !isSelected;
 //        if(isSelected) return;
 //        if(!hooks(SWT.Arm)) return;
-//        Display display = getDisplay();
-//        display.startExclusiveSection();
+//        UIThreadUtil.startExclusiveSection(getDisplay());
 //        if(isDisposed()) {
-//          display.stopExclusiveSection();
+//          UIThreadUtil.stopExclusiveSection();
 //          return;
 //        }
 ////        Event event = new Event();
 ////        event.stateMask = Display.getInputState();
 ////        sendEvent(SWT.Arm, event);
 //        sendEvent(SWT.Arm);
-//        display.stopExclusiveSection();
+//        UIThreadUtil.stopExclusiveSection();
 //      }
 //    });
     menuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if(!hooks(SWT.Selection)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
         Event event = new Event();
         event.stateMask = Display.getInputState();
         sendEvent(SWT.Selection, event);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     });
   } else if((style & SWT.CHECK) != 0) {
@@ -1076,17 +1070,16 @@ void createHandle() {
     menuItem.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if(adjustSelection || !hooks(SWT.Selection)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
 //        Event event = new Event();
 //        event.stateMask = Display.getInputState();
 //        sendEvent(SWT.Selection, event);
         sendEvent(SWT.Selection);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     });
   } else if((style & SWT.RADIO) != 0) {
@@ -1104,16 +1097,15 @@ void createHandle() {
         }
         super.fireActionPerformed(e);
         if(adjustSelection || !hooks(SWT.Selection)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
         Event event = new Event();
         event.stateMask = Display.getInputState();
         sendEvent(SWT.Selection, event);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     };
     handle = menuItem;
@@ -1123,17 +1115,16 @@ void createHandle() {
           selectRadio();
         }
         if(!hooks(SWT.Arm)) return;
-        Display display = getDisplay();
-        display.startExclusiveSection();
+        UIThreadUtils.startExclusiveSection(getDisplay());
         if(isDisposed()) {
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
           return;
         }
 //        Event event = new Event();
 //        event.stateMask = Display.getInputState();
 //        sendEvent(SWT.Arm, event);
         sendEvent(SWT.Arm);
-        display.stopExclusiveSection();
+        UIThreadUtils.stopExclusiveSection();
       }
     });
   }

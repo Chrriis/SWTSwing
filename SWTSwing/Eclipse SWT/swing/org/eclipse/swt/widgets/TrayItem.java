@@ -22,6 +22,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of this class represent icons that can be placed on the
@@ -128,33 +129,33 @@ void createWidget () {
         // e.isPopupTrigger() does not seem to work...
         if(e.getButton() == MouseEvent.BUTTON3) {
           if (hooks (SWT.MenuDetect)) {
-            display.startExclusiveSection();
+            UIThreadUtils.startExclusiveSection(display);
             if(isDisposed()) {
-              display.stopExclusiveSection();
+              UIThreadUtils.stopExclusiveSection();
               return;
             }
             sendEvent (SWT.MenuDetect);
-            display.stopExclusiveSection();
+            UIThreadUtils.stopExclusiveSection();
           }
         } else if (hooks (SWT.Selection)) {
-          display.startExclusiveSection();
+          UIThreadUtils.startExclusiveSection(display);
           if(isDisposed()) {
-            display.stopExclusiveSection();
+            UIThreadUtils.stopExclusiveSection();
             return;
           }
           postEvent (SWT.Selection);
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
         }
         break;
       case 2:
         if (hooks (SWT.DefaultSelection)) {
-          display.startExclusiveSection();
+          UIThreadUtils.startExclusiveSection(display);
           if(isDisposed()) {
-            display.stopExclusiveSection();
+            UIThreadUtils.stopExclusiveSection();
             return;
           }
           postEvent (SWT.DefaultSelection);
-          display.stopExclusiveSection();
+          UIThreadUtils.stopExclusiveSection();
         }
         break;
       }

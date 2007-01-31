@@ -25,6 +25,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTableColumn;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -629,10 +630,9 @@ public void processEvent(EventObject e) {
   if(isDisposed()) {
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     return;
   }
   if(e instanceof PropertyChangeEvent) {
@@ -645,7 +645,7 @@ public void processEvent(EventObject e) {
       }
     }
   }
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
   return;
 }
 

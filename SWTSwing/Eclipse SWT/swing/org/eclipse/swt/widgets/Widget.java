@@ -319,7 +319,7 @@ protected void checkWidget () {
 	Thread currentThread = Thread.currentThread ();
   if (display.thread != currentThread && !SwingUtilities.isEventDispatchThread()) {
     String name = currentThread.getName();
-    if(name == null || !name.startsWith(Utils.getSWTSwingUIThreadsNamePrefix())) {
+    if(name == null /*|| !name.startsWith(Utils.getSWTSwingUIThreadsNamePrefix())*/) {
       error (SWT.ERROR_THREAD_INVALID_ACCESS);
     }
   }

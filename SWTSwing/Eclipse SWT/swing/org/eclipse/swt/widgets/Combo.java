@@ -22,6 +22,7 @@ import javax.swing.JButton;
 import javax.swing.RootPaneContainer;
 
 import org.eclipse.swt.internal.swing.CCombo;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -1115,10 +1116,9 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -1144,7 +1144,7 @@ public void processEvent(AWTEvent e) {
     break;
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

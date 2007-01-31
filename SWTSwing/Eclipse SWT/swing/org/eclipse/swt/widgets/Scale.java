@@ -20,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.internal.swing.CScale;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of the receiver represent a selectable user
@@ -325,10 +326,9 @@ public void processEvent(EventObject e) {
   if(e instanceof ChangeEvent) {
     if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
   } else { super.processEvent(e); return; }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -338,7 +338,7 @@ public void processEvent(EventObject e) {
 //    }
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

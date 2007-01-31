@@ -24,6 +24,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CToolItem;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -883,10 +884,9 @@ public void processEvent(AWTEvent e) {
   if(isDisposed()) {
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     return;
   }
   switch(id) {
@@ -904,7 +904,7 @@ public void processEvent(AWTEvent e) {
     break;
   }
   }
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

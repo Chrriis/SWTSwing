@@ -28,6 +28,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CText;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.CText.FilterEvent;
 
 /**
@@ -1703,10 +1704,9 @@ public void processEvent(EventObject e) {
   if(e instanceof FilterEvent) {
     if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
   } else { super.processEvent(e); return; }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -1715,7 +1715,7 @@ public void processEvent(EventObject e) {
     filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
@@ -1771,14 +1771,13 @@ protected void validateTraversalKey(java.awt.event.KeyEvent ke, Event event) {
 }
 
 public void processEvent(DocumentEvent e) {
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     return;
   }
   sendEvent(SWT.Modify, new Event());
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

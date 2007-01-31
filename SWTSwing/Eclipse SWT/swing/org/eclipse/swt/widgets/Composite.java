@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CComposite;
 import org.eclipse.swt.internal.swing.CControl;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of this class are controls which are capable
@@ -1369,10 +1370,9 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -1394,7 +1394,7 @@ public void processEvent(AWTEvent e) {
     break;
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

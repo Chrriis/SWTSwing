@@ -15,7 +15,6 @@ import java.awt.AWTEvent;
 import java.awt.ActiveEvent;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -32,7 +31,6 @@ import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,6 +63,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CShell;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -350,38 +349,6 @@ public Display () {
 	this (null);
 }
 
-static class SwingEventQueue extends EventQueue {
-  protected AWTEvent event;
-  public boolean sleep() {
-    event = null;
-    try {
-      event = getNextEvent();
-    } catch(InterruptedException e) {}
-    return event != null;
-  }
-  public boolean dispatchEvent() {
-    if(event != null) {
-      AWTEvent theEvent = event;
-      event = null;
-      try {
-        dispatchEvent(theEvent);
-      } catch(Throwable t) {
-        t.printStackTrace();
-      }
-    }
-    return false;
-  }
-  public void pop() {
-    super.pop();
-  }
-}
-
-static SwingEventQueue swingEventQueue;
-
-static boolean isRealDispatch() {
-  return swingEventQueue != null;
-}
-
 /**
  * Constructs a new instance of this class using the parameter.
  * 
@@ -420,55 +387,19 @@ public Display (DeviceData data) {
 }
 
 void paintComponentImmediately(Component component) {
-  synchronized(UI_LOCK) {
+  synchronized(UIThreadUtils.UI_LOCK) {
     RepaintManager repaintManager = RepaintManager.currentManager(component);
     repaintManager.validateInvalidComponents();
     repaintManager.paintDirtyRegions();
   }
 }
 
-static void pushQueue() {
-  if(isRealDispatch()) {
-    EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-    if(eventQueue != swingEventQueue) {
-      exclusiveSectionCount++;
-      eventQueue.push(swingEventQueue);
-    }
-  }
-}
-
-static void popQueue() {
-  if(isRealDispatch()) {
-    EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-    if(eventQueue == swingEventQueue) {
-      swingEventQueue.pop();
-      swingEventQueue = null;
-      exclusiveSectionCount--;
-    }
-  }
-}
-
 public static void main(final String[] args) {
-  swtExec(new Runnable() {
-    public void run() {
-      try {
-        Method method = Class.forName(args[0]).getDeclaredMethod("main", new Class[] {String[].class});
-        String[] newArgs = new String[args.length - 1];
-        System.arraycopy(args, 1, newArgs, 0, newArgs.length);
-        method.invoke(null, new Object[] {newArgs});
-      } catch(Throwable t) {
-        t.printStackTrace();
-      }
-    }
-  });
+  UIThreadUtils.main(args);
 }
 
 public static void swtExec(Runnable runnable) {
-  if(swingEventQueue == null) {
-    swingEventQueue = new SwingEventQueue();
-  }
-  pushQueue();
-  SwingUtilities.invokeLater(runnable);
+  UIThreadUtils.swtExec(runnable);
 }
 
 void addBar (Menu menu) {
@@ -730,8 +661,8 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
-  if(isRealDispatch()) {
-    popQueue();
+  if(UIThreadUtils.isRealDispatch()) {
+    UIThreadUtils.popQueue();
 //    /*
 //    * When the session is ending, no SWT program can continue
 //    * to run.  In order to avoid running code after the display
@@ -2023,8 +1954,8 @@ AWTEvent event;
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-  if(isRealDispatch()) {
-    boolean result = swingEventQueue.dispatchEvent();
+  if(UIThreadUtils.isRealDispatch()) {
+    boolean result = UIThreadUtils.swingEventQueue.dispatchEvent();
     runDeferredEvents ();
     return result || isDisposed();
   }
@@ -2048,13 +1979,13 @@ public boolean readAndDispatch () {
   if(SwingUtilities.isEventDispatchThread()) {
     return isDisposed();
   }
-  synchronized(UI_LOCK) {
-    if(exclusiveSectionCount == 0) {
+  synchronized(UIThreadUtils.UI_LOCK) {
+    if(UIThreadUtils.exclusiveSectionCount == 0) {
       return isDisposed();
     }
     try {
-      UI_LOCK.notify();
-      UI_LOCK.wait();
+      UIThreadUtils.UI_LOCK.notify();
+      UIThreadUtils.UI_LOCK.wait();
     } catch(Exception e) {
     }
   }
@@ -2478,8 +2409,8 @@ volatile Thread fakeDispatchingEDT;
  */
 public boolean sleep () {
 	checkDevice ();
-  if(isRealDispatch()) {
-    return swingEventQueue.sleep();
+  if(UIThreadUtils.isRealDispatch()) {
+    return UIThreadUtils.swingEventQueue.sleep();
   }
   if(SwingUtilities.isEventDispatchThread()) {
     boolean result = true;
@@ -2492,14 +2423,14 @@ public boolean sleep () {
     fakeDispatchingEDT = null;
     return result;
   }
-  synchronized(UI_LOCK) {
-    if(exclusiveSectionCount == 0) {
+  synchronized(UIThreadUtils.UI_LOCK) {
+    if(UIThreadUtils.exclusiveSectionCount == 0) {
       try {
-        UI_LOCK.wait();
+        UIThreadUtils.UI_LOCK.wait();
       } catch(Exception e) {
       }
     }
-    return exclusiveSectionCount > 0;
+    return UIThreadUtils.exclusiveSectionCount > 0;
   }
 }
 
@@ -2663,8 +2594,6 @@ public void update() {
 	}
 }
 
-protected static final Object UI_LOCK = new Object();
-
 /**
  * If the receiver's user-interface thread was <code>sleep</code>ing, 
  * causes it to be awakened and start running again. Note that this
@@ -2683,60 +2612,19 @@ public void wake () {
     fakeDispatchingEDT.interrupt();
     return;
   }
-  synchronized(UI_LOCK) {
-    UI_LOCK.notify();
+  synchronized(UIThreadUtils.UI_LOCK) {
+    UIThreadUtils.UI_LOCK.notify();
   }
 }
 
 void wakeThread () {
   SwingUtilities.invokeLater(new Runnable() {
     public void run() {
-      startExclusiveSection();
+      UIThreadUtils.startExclusiveSection(Display.this);
       runAsyncMessages (true);
-      stopExclusiveSection();
+      UIThreadUtils.stopExclusiveSection();
     }
   });
-}
-
-protected static int exclusiveSectionCount = 0;
-
-public void swtSync(Runnable runnable) {
-  try {
-    startExclusiveSection();
-    runnable.run();
-  } finally {
-    stopExclusiveSection();
-  }
-}
-
-protected void startExclusiveSection() {
-  if(isRealDispatch() || !SwingUtilities.isEventDispatchThread()) {
-    exclusiveSectionCount++;
-    return;
-  }
-  synchronized(UI_LOCK) {
-    exclusiveSectionCount++;
-    if(exclusiveSectionCount == 1) {
-      try {
-        wake();
-        UI_LOCK.wait();
-      } catch(Exception e) {
-      }
-    }
-  }
-}
-
-protected void stopExclusiveSection() {
-  if(isRealDispatch() || !SwingUtilities.isEventDispatchThread()) {
-    exclusiveSectionCount--;
-    return;
-  }
-  synchronized(UI_LOCK) {
-    exclusiveSectionCount--;
-    if(exclusiveSectionCount == 0) {
-      UI_LOCK.notify();
-    }
-  }
 }
 
 }

@@ -22,6 +22,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CSash;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of the receiver represent a selectable user interface object
@@ -159,10 +160,9 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  Display display = getDisplay();
-  display.startExclusiveSection();
+  UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
-    display.stopExclusiveSection();
+    UIThreadUtils.stopExclusiveSection();
     super.processEvent(e);
     return;
   }
@@ -233,7 +233,7 @@ public void processEvent(AWTEvent e) {
     break;
   }
   super.processEvent(e);
-  display.stopExclusiveSection();
+  UIThreadUtils.stopExclusiveSection();
 }
 
 }

@@ -76,9 +76,6 @@ SWTSwing's website.
 
 The sources are part of the distribution, both for SWTSwing and the
 SnippetLauncher.
-Some methods do not compile which indicate the API is not complete. Eclipse
-allows the compilation of code that contains errors: such code runs as long as
-the affected methods are not used by the application using SWTSwing.
 
 
 6. How to contribute?

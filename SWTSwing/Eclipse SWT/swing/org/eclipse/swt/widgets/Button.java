@@ -267,7 +267,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 }
 
 Container createHandle () {
-  return (Container)CButton.Instanciator.createInstance(this, style);
+  return (Container)CButton.Factory.newInstance(this, style);
 }
 
 //int defaultBackground () {

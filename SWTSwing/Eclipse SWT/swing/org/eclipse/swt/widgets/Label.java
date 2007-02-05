@@ -218,7 +218,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Container createHandle () {
   state |= THEME_BACKGROUND;
-  return (Container)CLabel.Instanciator.createInstance(this, style);
+  return (Container)CLabel.Factory.newInstance(this, style);
 }
 
 /**

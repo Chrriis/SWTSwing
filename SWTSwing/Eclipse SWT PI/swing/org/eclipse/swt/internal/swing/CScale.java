@@ -86,10 +86,10 @@ class CScaleImplementation extends JSlider implements CScale {
 
 public interface CScale extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CScale createInstance(Scale scale, int style) {
+    public static CScale newInstance(Scale scale, int style) {
       return new CScaleImplementation(scale, style);
     }
 

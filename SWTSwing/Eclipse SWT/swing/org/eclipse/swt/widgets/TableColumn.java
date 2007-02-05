@@ -194,7 +194,7 @@ protected void checkSubclass () {
 }
 
 CTableColumn createHandle () {
-  return CTableColumn.Instanciator.createInstance(this, style);
+  return CTableColumn.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {

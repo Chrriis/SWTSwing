@@ -196,7 +196,7 @@ protected void checkSubclass () {
 protected Container createHandle () {
   state |= DRAW_BACKGROUND;
   state &= ~CANVAS;
-  return (Container)CGroup.Instanciator.createInstance(this, style);
+  return (Container)CGroup.Factory.newInstance(this, style);
 //	super.createHandle ();
 }
 

@@ -57,10 +57,10 @@ class CTreeColumnImplementation extends TableColumn implements CTreeColumn {
 
 public interface CTreeColumn {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTreeColumn createInstance(TreeColumn treeColumn, int style) {
+    public static CTreeColumn newInstance(TreeColumn treeColumn, int style) {
       return new CTreeColumnImplementation(treeColumn, style);
     }
 

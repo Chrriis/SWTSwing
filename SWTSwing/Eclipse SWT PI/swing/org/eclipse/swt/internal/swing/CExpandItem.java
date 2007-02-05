@@ -30,10 +30,10 @@ class CExpandItemImplementation extends JPanel implements CExpandItem {
 
 public interface CExpandItem {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CExpandItem createInstance(ExpandItem expandItem, int style) {
+    public static CExpandItem newInstance(ExpandItem expandItem, int style) {
       return new CExpandItemImplementation(expandItem, style);
     }
   }

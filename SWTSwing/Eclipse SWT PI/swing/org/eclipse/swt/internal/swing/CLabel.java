@@ -156,10 +156,10 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
  */
 public interface CLabel extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CLabel createInstance(Label label, int style) {
+    public static CLabel newInstance(Label label, int style) {
       if((style & SWT.SEPARATOR) != 0) {
         return new CSeparator(label, style);
       }

@@ -106,7 +106,7 @@ public void addSelectionListener (SelectionListener listener) {
 
 Container createHandle () {
   state |= THEME_BACKGROUND;
-  return (Container)CLink.Instanciator.createInstance(this, style);
+  return (Container)CLink.Factory.newInstance(this, style);
 }
 
 String getNameText () {

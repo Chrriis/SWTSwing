@@ -68,10 +68,10 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
 
 public interface CCoolBar extends CComposite {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CCoolBar createInstance(CoolBar coolBar, int style) {
+    public static CCoolBar newInstance(CoolBar coolBar, int style) {
       return new CCoolBarImplementation(coolBar, style);
     }
 

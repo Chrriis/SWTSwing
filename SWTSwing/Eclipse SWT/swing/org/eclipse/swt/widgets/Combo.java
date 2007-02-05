@@ -324,7 +324,7 @@ public void copy () {
 
 protected Container createHandle () {
   state &= ~(CANVAS | THEME_BACKGROUND);
-  return (Container)CCombo.Instanciator.createInstance(this, style);
+  return (Container)CCombo.Factory.newInstance(this, style);
 }
 
 /**

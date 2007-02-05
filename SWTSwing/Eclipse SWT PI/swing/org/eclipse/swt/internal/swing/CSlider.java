@@ -79,10 +79,10 @@ class CSliderImplementation extends JScrollBar implements CSlider {
 
 public interface CSlider extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CSlider createInstance(Slider slider, int style) {
+    public static CSlider newInstance(Slider slider, int style) {
       return new CSliderImplementation(slider, style);
     }
 

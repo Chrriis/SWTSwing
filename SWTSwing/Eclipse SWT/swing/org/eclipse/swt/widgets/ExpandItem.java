@@ -115,7 +115,7 @@ public ExpandItem (ExpandBar parent, int style, int index) {
 }
 
 Container createHandle () {
-  return (Container)CExpandItem.Instanciator.createInstance(this, style);
+  return (Container)CExpandItem.Factory.newInstance(this, style);
 }
 
 protected void checkSubclass () {

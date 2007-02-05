@@ -193,7 +193,7 @@ protected void checkSubclass () {
 }
 
 CTreeColumn createHandle () {
-  return CTreeColumn.Instanciator.createInstance(this, style);
+  return CTreeColumn.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {

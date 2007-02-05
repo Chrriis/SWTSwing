@@ -120,7 +120,7 @@ public TabItem (TabFolder parent, int style, int index) {
 }
 
 Container createHandle () {
-  return (Container)CTabItem.Instanciator.createInstance(this, style);
+  return (Container)CTabItem.Factory.newInstance(this, style);
 }
 
 protected void checkSubclass () {

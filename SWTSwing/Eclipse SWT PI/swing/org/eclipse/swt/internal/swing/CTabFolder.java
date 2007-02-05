@@ -91,10 +91,10 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
 
 public interface CTabFolder extends CScrollable {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTabFolder createInstance(TabFolder tabFolder, int style) {
+    public static CTabFolder newInstance(TabFolder tabFolder, int style) {
       return new CTabFolderImplementation(tabFolder, style);
     }
 

@@ -229,7 +229,7 @@ protected void checkSubclass () {
 }
 
 CTreeItem createHandle () {
-  return CTreeItem.Instanciator.createInstance(this, style);
+  return CTreeItem.Factory.newInstance(this, style);
 }
 
 /**

@@ -118,10 +118,10 @@ class CGroupImplementation extends JPanel implements CGroup {
  */
 public interface CGroup extends CScrollable {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CGroup createInstance(Group group, int style) {
+    public static CGroup newInstance(Group group, int style) {
       return new CGroupImplementation(group, style);
     }
 

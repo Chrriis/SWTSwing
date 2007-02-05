@@ -322,7 +322,7 @@ protected void checkSubclass() {
 }
 
 protected Container createHandle () {
-  return (Container)CBrowser.Instanciator.createInstance(this, getStyle());
+  return (Container)CBrowser.Factory.newInstance(this, getStyle());
 }
 
 /**

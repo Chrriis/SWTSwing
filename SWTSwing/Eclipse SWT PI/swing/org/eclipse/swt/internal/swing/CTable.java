@@ -632,10 +632,10 @@ public interface CTable extends CComposite {
   }
   
   
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTable createInstance(Table table, int style) {
+    public static CTable newInstance(Table table, int style) {
       return new CTableImplementation(table, style);
     }
 

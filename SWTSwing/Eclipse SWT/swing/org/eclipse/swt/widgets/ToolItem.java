@@ -235,7 +235,7 @@ protected void checkSubclass () {
 //}
 
 Container createHandle () {
-  return (Container)CToolItem.Instanciator.createInstance(this, style);
+  return (Container)CToolItem.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {

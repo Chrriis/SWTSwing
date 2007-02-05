@@ -93,7 +93,7 @@ protected void checkSubclass () {
 
 protected Container createHandle () {
   state &= ~(CANVAS | THEME_BACKGROUND);
-  return (Container)CSpinner.Instanciator.createInstance(this, style);
+  return (Container)CSpinner.Factory.newInstance(this, style);
 }
 
 /**

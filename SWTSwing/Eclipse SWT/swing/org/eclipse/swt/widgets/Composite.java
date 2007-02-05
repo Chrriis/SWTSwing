@@ -230,7 +230,7 @@ protected Container createHandle () {
   if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
     state |= THEME_BACKGROUND;
   }
-  return (Container)CComposite.Instanciator.createInstance(this, style);
+  return (Container)CComposite.Factory.newInstance(this, style);
 }
 
 Composite findDeferredControl () {

@@ -236,10 +236,10 @@ class CListImplementation extends JScrollPane implements CList {
 
 public interface CList extends CScrollable {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CList createInstance(List list, int style) {
+    public static CList newInstance(List list, int style) {
       return new CListImplementation(list, style);
     }
 

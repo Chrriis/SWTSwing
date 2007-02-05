@@ -63,10 +63,10 @@ class CProgressBarImplementation extends JProgressBar implements CProgressBar {
 
 public interface CProgressBar extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CProgressBar createInstance(ProgressBar progressBar, int style) {
+    public static CProgressBar newInstance(ProgressBar progressBar, int style) {
       return new CProgressBarImplementation(progressBar, style);
     }
 

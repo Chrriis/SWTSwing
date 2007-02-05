@@ -145,7 +145,7 @@ protected void checkSubclass () {
 }
 
 CTableItem createHandle () {
-  return CTableItem.Instanciator.createInstance(this, style);
+  return CTableItem.Factory.newInstance(this, style);
 }
 
 void clear () {

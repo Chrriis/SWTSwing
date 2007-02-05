@@ -333,7 +333,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 
 protected Container createHandle () {
   state &= ~(CANVAS | THEME_BACKGROUND);
-  return (Container)CTree.Instanciator.createInstance(this, style);
+  return (Container)CTree.Factory.newInstance(this, style);
 }
 
 //void createHandle () {

@@ -151,7 +151,7 @@ static int checkStyle (int style) {
 }
 
 Container createHandle () {
-  return (Container)CSlider.Instanciator.createInstance(this, style);
+  return (Container)CSlider.Factory.newInstance(this, style);
 }
 
 /**

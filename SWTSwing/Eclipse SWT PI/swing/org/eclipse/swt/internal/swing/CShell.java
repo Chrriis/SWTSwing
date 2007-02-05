@@ -849,14 +849,14 @@ public interface CShell extends CScrollable {
   public static int ICONIFIED = JFrame.ICONIFIED;
   public static int NORMAL = JFrame.NORMAL;
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
     static {
       Toolkit.getDefaultToolkit().setDynamicLayout(true);
     }
 
-    public static CShell createInstance(Shell shell, CShell parent, int style) {
+    public static CShell newInstance(Shell shell, CShell parent, int style) {
       if(shell instanceof CEmbeddedShell) {
         return new CShellPanel(shell, style);
       }

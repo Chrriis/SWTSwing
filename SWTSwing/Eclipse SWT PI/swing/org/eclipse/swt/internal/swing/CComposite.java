@@ -158,10 +158,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
  */
 public interface CComposite extends CScrollable {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CComposite createInstance(Composite composite, int style) {
+    public static CComposite newInstance(Composite composite, int style) {
       return new CCompositeImplementation(composite, style);
     }
 

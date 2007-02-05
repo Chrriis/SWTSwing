@@ -343,7 +343,7 @@ public void copy () {
 }
 
 Container createHandle () {
-  return (Container)CText.Instanciator.createInstance(this, style);
+  return (Container)CText.Factory.newInstance(this, style);
 }
 
 void createWidget () {

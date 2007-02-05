@@ -515,7 +515,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 
 protected Container createHandle () {
   state &= ~(CANVAS | THEME_BACKGROUND);
-  return (Container)CTable.Instanciator.createInstance(this, style);
+  return (Container)CTable.Factory.newInstance(this, style);
 }
 
 void createItem (TableColumn column, int index) {

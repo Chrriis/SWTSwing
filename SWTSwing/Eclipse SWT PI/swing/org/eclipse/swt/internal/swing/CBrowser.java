@@ -175,10 +175,10 @@ public interface CBrowser extends CComposite {
 
   }
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CBrowser createInstance(Browser browser, int style) {
+    public static CBrowser newInstance(Browser browser, int style) {
 //      if ((style & SWT.SIMPLE) != 0) {
       return new CBrowserImplementation(browser, style);
     }

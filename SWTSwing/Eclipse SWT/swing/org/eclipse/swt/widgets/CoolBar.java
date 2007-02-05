@@ -176,7 +176,7 @@ boolean autoAddChildren() {
 
 protected Container createHandle () {
   state &= ~(CANVAS | THEME_BACKGROUND);
-  return (Container)CCoolBar.Instanciator.createInstance(this, style);
+  return (Container)CCoolBar.Factory.newInstance(this, style);
 }
 
 //void createHandle () {

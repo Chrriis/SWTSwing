@@ -75,10 +75,10 @@ class CTableColumnImplementation extends TableColumn implements CTableColumn {
 
 public interface CTableColumn {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTableColumn createInstance(org.eclipse.swt.widgets.TableColumn tableColumn, int style) {
+    public static CTableColumn newInstance(org.eclipse.swt.widgets.TableColumn tableColumn, int style) {
       return new CTableColumnImplementation(tableColumn, style);
     }
 

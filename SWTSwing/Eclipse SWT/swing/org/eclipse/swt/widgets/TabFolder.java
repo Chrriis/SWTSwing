@@ -133,7 +133,7 @@ boolean autoAddChildren() {
 
 protected Container createHandle () {
   state &= ~(CANVAS | THEME_BACKGROUND);
-  return (Container)CTabFolder.Instanciator.createInstance(this, style);
+  return (Container)CTabFolder.Factory.newInstance(this, style);
 }
 
 void createItem (TabItem item, int index) {

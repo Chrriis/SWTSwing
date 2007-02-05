@@ -679,10 +679,10 @@ public interface CText extends CScrollable {
   }
 
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CText createInstance(Text text, int style) {
+    public static CText newInstance(Text text, int style) {
       if((style & SWT.MULTI) != 0) {
         return new CTextMulti(text, style);
       }

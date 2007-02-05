@@ -201,10 +201,10 @@ class CComboImplementation extends JComboBox implements CCombo {
 
 public interface CCombo extends CComposite {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CCombo createInstance(Combo combo, int style) {
+    public static CCombo newInstance(Combo combo, int style) {
 //      if ((style & SWT.SIMPLE) != 0) {
       return new CComboImplementation(combo, style);
     }

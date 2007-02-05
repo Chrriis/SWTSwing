@@ -222,10 +222,10 @@ public interface CTableItem {
 
   }
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTableItem createInstance(TableItem tableItem, int style) {
+    public static CTableItem newInstance(TableItem tableItem, int style) {
       return new CTableItemImplementation(tableItem, style);
     }
 

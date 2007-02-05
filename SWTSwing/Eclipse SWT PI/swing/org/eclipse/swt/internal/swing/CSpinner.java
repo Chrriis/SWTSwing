@@ -143,10 +143,10 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
  */
 public interface CSpinner extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CSpinner createInstance(Spinner spinner, int style) {
+    public static CSpinner newInstance(Spinner spinner, int style) {
       return new CSpinnerImplementation(spinner, style);
     }
 

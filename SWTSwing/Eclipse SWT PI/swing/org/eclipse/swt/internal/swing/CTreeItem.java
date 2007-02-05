@@ -201,10 +201,10 @@ public interface CTreeItem {
 
   }
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTreeItem createInstance(TreeItem treeItem, int style) {
+    public static CTreeItem newInstance(TreeItem treeItem, int style) {
       return new CTreeItemImplementation(treeItem, style);
     }
 

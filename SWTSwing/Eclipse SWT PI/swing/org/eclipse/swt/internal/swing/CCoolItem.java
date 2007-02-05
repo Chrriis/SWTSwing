@@ -29,10 +29,10 @@ class CCoolItemImplementation extends JCoolBarItem implements CCoolItem {
 
 public interface CCoolItem {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CCoolItem createInstance(CoolItem coolItem, int style) {
+    public static CCoolItem newInstance(CoolItem coolItem, int style) {
       return new CCoolItemImplementation(coolItem, style);
     }
   }

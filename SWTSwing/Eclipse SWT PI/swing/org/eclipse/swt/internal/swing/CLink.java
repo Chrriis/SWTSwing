@@ -182,10 +182,10 @@ class CLinkImplementation extends JEditorPane implements CLink {
  */
 public interface CLink extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CLink createInstance(Link link, int style) {
+    public static CLink newInstance(Link link, int style) {
       return new CLinkImplementation(link, style);
     }
 

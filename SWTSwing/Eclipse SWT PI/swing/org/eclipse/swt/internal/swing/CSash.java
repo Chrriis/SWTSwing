@@ -129,10 +129,10 @@ class CSashImplementation extends JPanel implements CSash {
 
 public interface CSash extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CSash createInstance(Sash sash, int style) {
+    public static CSash newInstance(Sash sash, int style) {
       return new CSashImplementation(sash, style);
     }
 

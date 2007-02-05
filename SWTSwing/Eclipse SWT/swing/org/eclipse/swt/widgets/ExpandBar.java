@@ -121,7 +121,7 @@ boolean autoAddChildren() {
 
 protected Container createHandle () {
   state &= ~CANVAS;
-  return (Container)CExpandBar.Instanciator.createInstance(this, style);
+  return (Container)CExpandBar.Factory.newInstance(this, style);
 }
 
 void createItem (ExpandItem item, int style, int index) {

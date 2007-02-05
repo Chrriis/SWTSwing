@@ -336,10 +336,10 @@ class CButtonRadio extends JIconRadioButton implements CButton {
  */
 public interface CButton extends CControl {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CButton createInstance(Button button, int style) {
+    public static CButton newInstance(Button button, int style) {
       if((style & SWT.ARROW) != 0) {
         return new CButtonArrow(button, style);
       }

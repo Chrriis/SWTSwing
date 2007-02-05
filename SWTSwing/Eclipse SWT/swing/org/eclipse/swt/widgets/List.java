@@ -197,7 +197,7 @@ public void deselect (int [] indices) {
 }
 
 Container createHandle () {
-  return (Container)CList.Instanciator.createInstance(this, style);
+  return (Container)CList.Factory.newInstance(this, style);
 }
 
 /**

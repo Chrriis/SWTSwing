@@ -113,7 +113,7 @@ static int checkStyle (int style) {
 
 Container createHandle () {
   state |= THEME_BACKGROUND | DRAW_BACKGROUND;
-  return (Container)CScale.Instanciator.createInstance(this, style);
+  return (Container)CScale.Factory.newInstance(this, style);
 }
 
 /**

@@ -30,10 +30,10 @@ class CTabItemImplementation extends JPanel implements CTabItem {
 
 public interface CTabItem {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTabItem createInstance(TabItem tabItem, int style) {
+    public static CTabItem newInstance(TabItem tabItem, int style) {
       return new CTabItemImplementation(tabItem, style);
     }
   }

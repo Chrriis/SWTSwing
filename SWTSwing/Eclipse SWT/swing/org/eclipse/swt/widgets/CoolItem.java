@@ -207,7 +207,7 @@ public Point computeSize (int wHint, int hHint) {
 }
 
 Container createHandle () {
-  return (Container)CCoolItem.Instanciator.createInstance(this, style);
+  return (Container)CCoolItem.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {

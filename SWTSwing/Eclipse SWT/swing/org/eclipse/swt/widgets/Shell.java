@@ -461,7 +461,7 @@ public void close () {
 
 protected Container createHandle () {
   CShell parentShell = parent != null? (CShell)parent.handle: null;
-  return (Container)CShell.Instanciator.createInstance(this, parentShell, style);
+  return (Container)CShell.Factory.newInstance(this, parentShell, style);
 //	boolean embedded = handle != 0;
 //	
 //	/*

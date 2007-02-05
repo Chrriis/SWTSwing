@@ -217,10 +217,10 @@ class CToolItemSeparator extends Separator implements CToolItem {
 
 public interface CToolItem {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CToolItem createInstance(ToolItem toolItem, int style) {
+    public static CToolItem newInstance(ToolItem toolItem, int style) {
       if((style & SWT.PUSH) != 0) {
         return new CToolItemPush(toolItem, style);
       }

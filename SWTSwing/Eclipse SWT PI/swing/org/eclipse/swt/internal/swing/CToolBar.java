@@ -83,10 +83,10 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
 
 public interface CToolBar extends CScrollable {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CToolBar createInstance(ToolBar toolBar, int style) {
+    public static CToolBar newInstance(ToolBar toolBar, int style) {
       return new CToolBarImplementation(toolBar, style);
     }
 

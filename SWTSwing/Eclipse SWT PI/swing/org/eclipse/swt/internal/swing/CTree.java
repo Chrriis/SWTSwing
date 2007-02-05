@@ -566,10 +566,10 @@ public interface CTree extends CComposite {
     
   }
   
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CTree createInstance(Tree tree, int style) {
+    public static CTree newInstance(Tree tree, int style) {
       return new CTreeImplementation(tree, style);
     }
 

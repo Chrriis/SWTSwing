@@ -76,7 +76,7 @@ static int checkStyle (int style) {
 }
 
 Container createHandle () {
-  return (Container)CProgressBar.Instanciator.createInstance(this, style);
+  return (Container)CProgressBar.Factory.newInstance(this, style);
 }
 
 /**

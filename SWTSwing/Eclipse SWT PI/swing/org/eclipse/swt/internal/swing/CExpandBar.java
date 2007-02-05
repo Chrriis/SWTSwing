@@ -118,10 +118,10 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
 
 public interface CExpandBar extends CScrollable {
 
-  public static class Instanciator {
-    private Instanciator() {}
+  public static class Factory {
+    private Factory() {}
 
-    public static CExpandBar createInstance(ExpandBar expandBar, int style) {
+    public static CExpandBar newInstance(ExpandBar expandBar, int style) {
       return new CExpandBarImplementation(expandBar, style);
     }
 

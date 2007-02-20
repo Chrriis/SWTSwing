@@ -101,7 +101,7 @@ public class SWT_Swing {
   /**
    * @return A control that contains the component.
    */
-  public static Control newEmbeddedComposite(Composite parent, JComponent component) {
+  public static Control newEmbeddedComponent(Composite parent, JComponent component) {
     Control control = new Control(parent, SWT.NONE) {
       protected void checkSubclass() {
         // Trick to get the handle set before the end of the constructor of Control

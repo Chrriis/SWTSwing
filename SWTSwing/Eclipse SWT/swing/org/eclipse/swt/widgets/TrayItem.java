@@ -123,21 +123,33 @@ void createWidget () {
   trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
 //  trayIcon.setImageAutoSize(true);
   trayIcon.addMouseListener(new MouseAdapter() {
-    public void mousePressed(MouseEvent e) {
+    protected boolean processMenuEvent(MouseEvent e) {
       switch(e.getClickCount()) {
       case 1:
-        // e.isPopupTrigger() does not seem to work...
-        if(e.getButton() == MouseEvent.BUTTON3) {
+        if(e.isPopupTrigger()) {
           if (hooks (SWT.MenuDetect)) {
             UIThreadUtils.startExclusiveSection(display);
             if(isDisposed()) {
               UIThreadUtils.stopExclusiveSection();
-              return;
+              return true;
             }
             sendEvent (SWT.MenuDetect);
             UIThreadUtils.stopExclusiveSection();
+            return true;
           }
-        } else if (hooks (SWT.Selection)) {
+        }
+      }
+      return false;
+    }
+    public void mousePressed(MouseEvent e) {
+      if(processMenuEvent(e)) return;
+    }
+    public void mouseReleased(MouseEvent e) {
+      if(processMenuEvent(e)) return;
+      // We can't use action listener because it does not make a difference between single click and double click...
+      switch(e.getClickCount()) {
+      case 1:
+        if (hooks (SWT.Selection)) {
           UIThreadUtils.startExclusiveSection(display);
           if(isDisposed()) {
             UIThreadUtils.stopExclusiveSection();

@@ -1541,6 +1541,11 @@ public Graphics2D internal_new_GC (GCData data) {
       return (Graphics2D) frames[i].getGraphics ();
     }
   }
+  for (int i = 0; i < frames.length; i++) {
+    if (frames[i].isShowing()) {
+      return (Graphics2D) frames[i].getGraphics ();
+    }
+  }
   return (Graphics2D) frames[0].getGraphics ();
 }
 

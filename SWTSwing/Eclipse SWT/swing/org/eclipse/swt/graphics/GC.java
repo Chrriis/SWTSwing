@@ -3918,7 +3918,14 @@ Shape systemClip;
 
 Graphics2D getGraphics() {
   if(handle == null) return null;
-  // TODO: if the handle is a null graphic, try to reobtain a graphic from the source
+  if(handle instanceof NullGraphics) {
+    if(!(drawable instanceof Control)) {
+      Graphics2D newHandle = drawable.internal_new_GC(data);
+      if(newHandle != null) {
+        handle = newHandle;
+      }
+    }
+  }
   if(!(drawable instanceof Control)) return handle;
   Container container = ((Control)drawable).handle;
   Container clientArea = ((CControl)container).getClientArea();

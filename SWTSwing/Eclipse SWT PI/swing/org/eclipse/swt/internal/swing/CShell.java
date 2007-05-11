@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -763,15 +764,18 @@ public interface CShell extends CScrollable {
       Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
         public void eventDispatched(AWTEvent event) {
           InputEvent ie = (InputEvent)event;
-          Window window = SwingUtilities.getWindowAncestor(ie.getComponent());
-          if(window instanceof CShell) {
-            CShell[] blockers = ((CShell)window).getModalityHandler().getBlockers();
-            if(blockers.length != 0) {
-              if(ie.getID() == MouseEvent.MOUSE_PRESSED) {
-                blockers[0].getModalityHandler().advertiseBlocker();
+          Component component = ie.getComponent();
+          if(component != null) {
+            Window window = SwingUtilities.getWindowAncestor(component);
+            if(window instanceof CShell) {
+              CShell[] blockers = ((CShell)window).getModalityHandler().getBlockers();
+              if(blockers.length != 0) {
+                if(ie.getID() == MouseEvent.MOUSE_PRESSED) {
+                  blockers[0].getModalityHandler().advertiseBlocker();
+                }
+                ie.consume();
+                return;
               }
-              ie.consume();
-              return;
             }
           }
         }

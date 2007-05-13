@@ -205,8 +205,8 @@ public class SnippetLauncher {
       new Snippet(93, "measure a string"),
       new Snippet(66, "implement a simple scribble program"),
       new Snippet(70, "create an icon (in memory)"),
-/**/      new NotWorkingSnippet(95, "capture a widget image with a GC"),
-/**/      new NotWorkingSnippet(215, "take a screen shot with a GC"),
+/**/      new Snippet(95, "capture a widget image with a GC"),
+/**/      new Snippet(215, "take a screen shot with a GC"),
       new Snippet(168, "draw lines with different cap and join styles"),
       new Snippet(10, "drawing with transformations, paths and alpha blending"),
       new Snippet(207, "reflect, shear and rotate images using matrix transformations"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 143;
+  protected static int snippetNumber = 95;
 
   protected static boolean isRealDispatch = true;
 

@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
+import java.awt.AWTException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Container;
@@ -20,6 +21,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Paint;
 import java.awt.RenderingHints;
+import java.awt.Robot;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.RenderingHints.Key;
@@ -47,6 +49,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
@@ -200,6 +203,21 @@ static int checkStyle(int style) {
  * </ul>
  */
 public void copyArea(Image image, int x, int y) {
+	if (drawable instanceof Control) {
+		Control control = (Control) drawable;
+		control.handle.paint(image.handle.getGraphics());
+	}
+	if (drawable instanceof Display) { // Remark from Dieter to Chris: I guess there is no better check if the method client "wants" a screenshot?
+		Rectangle r = image.getBounds();
+        try {
+			image.handle = new Robot().createScreenCapture(new java.awt.Rectangle(r.x, r.y, r.width, r.height));
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	if (true) return; // Remark Dieter to Chris: added return - didn't want to delete the stuff below.
+	
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

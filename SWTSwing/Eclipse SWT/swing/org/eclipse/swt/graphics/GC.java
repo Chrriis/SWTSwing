@@ -205,19 +205,23 @@ static int checkStyle(int style) {
 public void copyArea(Image image, int x, int y) {
 	if (drawable instanceof Control) {
 		Control control = (Control) drawable;
-		control.handle.paint(image.handle.getGraphics());
+		Graphics graphics = image.handle.getGraphics();
+		graphics.translate(-x, -y);
+    control.handle.paint(graphics);
+    graphics.translate(x, y);
+    return;
 	}
-	if (drawable instanceof Display) { // Remark from Dieter to Chris: I guess there is no better check if the method client "wants" a screenshot?
+	if (drawable instanceof Display) {
+	  // TODO: better way?
 		Rectangle r = image.getBounds();
-        try {
+    try {
 			image.handle = new Robot().createScreenCapture(new java.awt.Rectangle(r.x, r.y, r.width, r.height));
 		} catch (AWTException e) {
 			e.printStackTrace();
 		}
+		return;
 	}
-	
-	if (true) return; // Remark Dieter to Chris: added return - didn't want to delete the stuff below.
-	
+	// TODO: what about other cases?
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

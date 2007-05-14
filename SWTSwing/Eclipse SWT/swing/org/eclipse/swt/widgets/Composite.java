@@ -14,8 +14,18 @@ package org.eclipse.swt.widgets;
 import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
+import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Set;
+
+import javax.swing.JFrame;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -824,6 +834,39 @@ public void setLayoutDeferred (boolean defer) {
  */
 public void setTabList (Control [] tabList) {
 	checkWidget ();
+	if (tabList == null) return;
+	
+	LinkedList tabs = new LinkedList();
+	for (int i = 0; i < tabList.length; i++) {
+		Container container = tabList[i].handle;
+		container.setFocusable(true);
+		tabs.add(container);
+		System.out.println(container);
+	}
+	MyFTPolicy myPolicy = new MyFTPolicy(tabs);
+	
+	Container focusCycleRoot = null;
+	if (handle instanceof Window == false) {
+		focusCycleRoot = handle.getFocusCycleRootAncestor();
+	}
+	else {
+		focusCycleRoot = handle;
+		System.out.println(handle);
+	}
+	
+	System.out.println();
+	System.out.println(focusCycleRoot);
+	System.out.println(focusCycleRoot.getFocusTraversalPolicy());
+	System.out.println();
+//	if (focusCycleRoot.getFocusTraversalPolicy() != null) ((MyFTPolicy)focusCycleRoot.getFocusTraversalPolicy()).append(tabs);
+	focusCycleRoot.setFocusTraversalPolicy(myPolicy);
+	focusCycleRoot.setFocusTraversalPolicyProvider(true);
+	focusCycleRoot.setFocusCycleRoot(true);
+	focusCycleRoot.setFocusTraversalKeysEnabled(true);
+	
+	if (true) return;
+	
+	checkWidget ();
 	if (tabList != null) {
 		for (int i=0; i<tabList.length; i++) {
 			Control control = tabList [i];
@@ -836,6 +879,50 @@ public void setTabList (Control [] tabList) {
 		tabList = newList;
 	} 
 	this.tabList = tabList;
+}
+
+
+private class MyFTPolicy extends FocusTraversalPolicy {
+	
+	// TODO: Parameterized List would be nice here
+	LinkedList linkedTabList = new LinkedList(); 
+
+	public MyFTPolicy(LinkedList list) {
+		this.linkedTabList = list;
+	}
+
+    public void append(LinkedList additionalComponents) {
+    	this.linkedTabList.addAll(additionalComponents);
+	}
+
+	public Component getComponentAfter(Container focusCycleRoot, Component aComponent) {
+    	System.out.println("getComponentAfter");
+    	int index = linkedTabList.indexOf(aComponent);
+    	if (index >= linkedTabList.size()) return getFirstComponent(focusCycleRoot);
+    	else return (Component) linkedTabList.get(index+1);
+    }
+
+    public Component getComponentBefore(Container focusCycleRoot, Component aComponent) {
+    	System.out.println("getComponentBefore");
+    	int index = linkedTabList.indexOf(aComponent);
+    	if (index == 0) return getLastComponent(focusCycleRoot);
+    	else return (Component) linkedTabList.get(index-1);
+    }
+
+    public Component getDefaultComponent(Container focusCycleRoot) {
+    	System.out.println("getDefaultComponent");
+        return getFirstComponent(focusCycleRoot);
+    }
+
+    public Component getLastComponent(Container focusCycleRoot) {
+    	System.out.println("getLastComponent");
+        return (Component) linkedTabList.getLast();
+    }
+
+    public Component getFirstComponent(Container focusCycleRoot) {
+    	System.out.println("getFirstComponent");
+        return (Component) linkedTabList.getFirst();
+    }
 }
 
 //void setResizeChildren (boolean resize) {

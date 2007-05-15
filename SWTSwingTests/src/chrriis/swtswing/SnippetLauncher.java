@@ -134,7 +134,7 @@ public class SnippetLauncher {
       new Snippet(224, "implement radio behavior for setSelection()"),
     }), new SnippetCategory("Canvas", new Snippet[] {
       new Snippet(48, "scroll an image (flicker free, no double buffering)"),
-/**/      new NotWorkingSnippet(21, "implement tab traversal (behave like a tab group)"),
+/**/      new Snippet(21, "implement tab traversal (behave like a tab group)"),
     }), new SnippetCategory("Caret", new Snippet[] {
       new Snippet(74, "create a caret"),
 /**/      new NotWorkingSnippet(43, "create a caret (using an image)"),

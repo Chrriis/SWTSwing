@@ -37,7 +37,7 @@ public class JCoolBarLayout implements LayoutManager {
             break;
           }
           // TODO: Check why we have to add "+ 1"
-          lineHeight = Math.max(lineHeight, coolBarItem.getPreferredSize().height + 1);
+          lineHeight = Math.max(lineHeight, coolBarItem.getItemPreferredSize().height + 1);
         }
         int lineX = 0;
         boolean isFirst = true;
@@ -86,7 +86,7 @@ public class JCoolBarLayout implements LayoutManager {
         width = 0;
       }
       isNewLine = false;
-      Dimension preferredSize = coolBarItem.getPreferredSize();
+      Dimension preferredSize = coolBarItem.getItemPreferredSize();
       width = width + Math.max(0, coolBarItem.getXSpacing()) + preferredSize.width;
       // TODO: Check why we have to add "+ 1"
       lineHeight = Math.max(lineHeight, preferredSize.height + 1);

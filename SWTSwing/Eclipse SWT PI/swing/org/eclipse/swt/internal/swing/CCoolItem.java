@@ -8,7 +8,10 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.CoolItem;
 
 class CCoolItemImplementation extends JCoolBarItem implements CCoolItem {
@@ -21,6 +24,16 @@ class CCoolItemImplementation extends JCoolBarItem implements CCoolItem {
     init(style);
   }
 
+  public Dimension getItemPreferredSize() {
+    Dimension preferredSize = getPreferredSize();
+    if(getComponentCount() > 0) {
+      Dimension cPreferredSize = getComponent(0).getPreferredSize();
+      Point size = ((CControl)getComponent(0)).getSWTHandle().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+      return new Dimension(preferredSize.width, preferredSize.height - cPreferredSize.height + size.y);
+    }
+    return preferredSize;
+  }
+  
   protected void init(int style) {
 //    getToolBar().setLayout(null);
   }

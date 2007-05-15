@@ -210,4 +210,8 @@ public class JCoolBarItem extends JToolBar {
     }
   }
   
+  public Dimension getItemPreferredSize() {
+    return getPreferredSize();
+  }
+  
 }

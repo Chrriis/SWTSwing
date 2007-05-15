@@ -860,7 +860,6 @@ public void open () {
 //	*/
 //	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
 //	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
-  if (!traverseGroup (true)) setFocus ();
 	setVisible (true);
   // This is to ensure that splashscreens that do not dispatch the events from the queue have some display.
   handle.paint(handle.getGraphics());
@@ -1328,7 +1327,15 @@ public void setRegion (Region region) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
+	if(handle.isVisible() == visible) {
+	  return;
+	}
   handle.setVisible(visible);
+  if(visible) {
+    if(handle.isFocusable()) {
+      if (!traverseGroup (true)) setFocus ();
+    }
+  }
 //	if (drawCount != 0) {
 //		if (((state & HIDDEN) == 0) == visible) return;
 //	} else {

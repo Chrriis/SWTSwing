@@ -295,6 +295,10 @@ class CShellFrame extends JFrame implements CShell {
     return modalityHandler;
   }
 
+  public boolean isFocusable() {
+    return getFocusableWindowState() && super.isFocusable();
+  }
+  
   public boolean getFocusableWindowState() {
     return super.getFocusableWindowState() && !isModallyBlocked();
   }
@@ -619,6 +623,10 @@ class CShellDialog extends JDialog implements CShell {
   
   public ModalityHandler getModalityHandler() {
     return modalityHandler;
+  }
+  
+  public boolean isFocusable() {
+    return getFocusableWindowState() && super.isFocusable();
   }
   
   public boolean getFocusableWindowState() {

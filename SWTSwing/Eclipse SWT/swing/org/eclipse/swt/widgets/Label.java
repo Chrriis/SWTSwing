@@ -216,8 +216,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
   return super.computeSize (wHint, hHint, changed);
 }
 
-Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state |= THEME_BACKGROUND;
+}
+
+Container createHandle () {
   return (Container)CLabel.Factory.newInstance(this, style);
 }
 

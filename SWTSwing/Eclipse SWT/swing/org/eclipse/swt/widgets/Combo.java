@@ -322,8 +322,12 @@ public void copy () {
   ((CCombo)handle).copyEditor();
 }
 
-protected Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state &= ~(CANVAS | THEME_BACKGROUND);
+}
+
+protected Container createHandle () {
   return (Container)CCombo.Factory.newInstance(this, style);
 }
 

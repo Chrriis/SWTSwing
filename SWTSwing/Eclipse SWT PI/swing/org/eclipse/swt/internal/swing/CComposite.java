@@ -45,6 +45,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
     this.handle = composite;
     init(style);
   }
+  
+  public boolean isFocusable() {
+    return contentPane.isFocusable();
+  }
 
   public void requestFocus() {
     contentPane.requestFocus();

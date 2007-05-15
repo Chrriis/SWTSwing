@@ -119,8 +119,12 @@ boolean autoAddChildren() {
   return false;
 }
 
-protected Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state &= ~CANVAS;
+}
+
+protected Container createHandle () {
   return (Container)CExpandBar.Factory.newInstance(this, style);
 }
 

@@ -91,8 +91,12 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-protected Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state &= ~(CANVAS | THEME_BACKGROUND);
+}
+
+protected Container createHandle () {
   return (Container)CSpinner.Factory.newInstance(this, style);
 }
 

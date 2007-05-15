@@ -331,8 +331,12 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
   return super.computeTrim(x, y, width, height);
 }
 
-protected Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state &= ~(CANVAS | THEME_BACKGROUND);
+}
+
+protected Container createHandle () {
   return (Container)CTree.Factory.newInstance(this, style);
 }
 

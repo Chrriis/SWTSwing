@@ -139,10 +139,13 @@ boolean autoAddChildren() {
   return false;
 }
 
-protected Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state &= ~CANVAS;
+}
+
+protected Container createHandle () {
   return (Container)CToolBar.Factory.newInstance(this, style);
-//  super.createHandle ();
 }
 
 void createItem (ToolItem item, int index) {

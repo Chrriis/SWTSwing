@@ -193,9 +193,13 @@ protected void checkSubclass () {
 //	return trim;
 //}
 
-protected Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state |= DRAW_BACKGROUND;
   state &= ~CANVAS;
+}
+
+protected Container createHandle () {
   return (Container)CGroup.Factory.newInstance(this, style);
 //	super.createHandle ();
 }

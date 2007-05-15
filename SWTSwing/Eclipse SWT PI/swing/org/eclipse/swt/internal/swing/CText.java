@@ -73,6 +73,10 @@ class CTextMulti extends JScrollPane implements CText {
     init(style);
   }
 
+  public boolean isFocusable() {
+    return textArea.isFocusable();
+  }
+  
   public void requestFocus() {
     textArea.requestFocus();
   }
@@ -382,6 +386,10 @@ class CTextField extends JScrollPane implements CText {
     setFocusable(false);
     getViewport().setView(passwordField);
     init(style);
+  }
+  
+  public boolean isFocusable() {
+    return passwordField.isFocusable();
   }
   
   public void requestFocus() {

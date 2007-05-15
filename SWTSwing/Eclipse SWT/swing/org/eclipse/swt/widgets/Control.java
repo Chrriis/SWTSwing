@@ -518,6 +518,13 @@ Control [] computeTabList () {
 	return new Control [0];
 }
 
+/**
+ * Like create handle, but overriden class should call its supertype declaration
+ */
+void createHandleInit () {
+  
+}
+
 Container createHandle () {
   if(handle != null) return handle;
   error (SWT.ERROR_NO_HANDLES);
@@ -530,6 +537,7 @@ boolean autoAddChildren() {
 
 void createWidget () {
 	checkOrientation (parent);
+	createHandleInit ();
 	handle = createHandle ();
   if(!(handle instanceof CControl)) throw new IllegalStateException("The widget should implement the CComponent interface!");
   if(handle instanceof Window) {
@@ -552,9 +560,9 @@ void createWidget () {
       handle.requestFocus();
     }
   }
-  handle.setFocusTraversalKeysEnabled(false);
-  handle.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
-  handle.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+  ((CControl)handle).getSwingComponent().setFocusTraversalKeysEnabled(false);
+  ((CControl)handle).getSwingComponent().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+  ((CControl)handle).getSwingComponent().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
     // TODO: should have a fixInitSize like in old implementation <- Note it seems to be fixed now, but have to check
 //    if(handle.getSize().equals(new java.awt.Dimension(0, 0))) {
 //      handle.setSize(handle.getPreferredSize());
@@ -725,12 +733,12 @@ public boolean forceFocus () {
   if(window != null) {
     window.setFocusableWindowState(true);
   }
-  if (handle instanceof JComponent) {
-    ((javax.swing.JComponent) handle).grabFocus();
-  } else {
+//  if (handle instanceof JComponent) {
+//    ((javax.swing.JComponent) handle).grabFocus();
+//  } else {
     handle.requestFocus();
-  }
-  return handle.isFocusOwner();
+//  }
+  return handle.isFocusable();
   
 //  return handle.hasFocus();
 //	/*
@@ -1417,10 +1425,7 @@ boolean isTabGroup () {
 			if (tabList [i] == this) return true;
 		}
 	}
-  // TODO: implement next lines and remove false?
-  return false;
-//	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//	return (bits & OS.WS_TABSTOP) != 0;
+  return handle.isFocusable();
 }
 
 boolean isTabItem () {
@@ -1438,7 +1443,7 @@ boolean isTabItem () {
 //	if ((code & OS.DLGC_WANTALLKEYS) != 0) return false;
 //	if ((code & OS.DLGC_WANTARROWS) != 0) return false;
 //	if ((code & OS.DLGC_WANTTAB) != 0) return false;
-	return true;
+	return false;
 }
 
 /**

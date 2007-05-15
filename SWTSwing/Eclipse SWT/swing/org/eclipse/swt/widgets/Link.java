@@ -104,8 +104,12 @@ public void addSelectionListener (SelectionListener listener) {
   addListener (SWT.DefaultSelection, typedListener);
 }
 
-Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state |= THEME_BACKGROUND;
+}
+
+Container createHandle () {
   return (Container)CLink.Factory.newInstance(this, style);
 }
 

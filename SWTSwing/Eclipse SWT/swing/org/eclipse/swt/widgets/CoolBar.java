@@ -174,8 +174,12 @@ boolean autoAddChildren() {
   return false;
 }
 
-protected Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state &= ~(CANVAS | THEME_BACKGROUND);
+}
+
+protected Container createHandle () {
   return (Container)CCoolBar.Factory.newInstance(this, style);
 }
 

@@ -531,6 +531,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
     super.setEnabled(enabled);
     treeTable.setEnabled(enabled);
   }
+  
+  public boolean isFocusable() {
+    return treeTable.isFocusable();
+  }
 
   public void requestFocus() {
     treeTable.requestFocus();

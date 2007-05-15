@@ -111,8 +111,12 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-Container createHandle () {
+void createHandleInit() {
+  super.createHandleInit();
   state |= THEME_BACKGROUND | DRAW_BACKGROUND;
+}
+
+Container createHandle () {
   return (Container)CScale.Factory.newInstance(this, style);
 }
 

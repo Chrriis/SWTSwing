@@ -1738,7 +1738,10 @@ protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
   switch(ke.getKeyCode()) {
   case java.awt.event.KeyEvent.VK_TAB:
   case java.awt.event.KeyEvent.VK_ENTER:
-    return (style & SWT.MULTI) == 0;
+    int modifiers = ke.getModifiers();
+    if((modifiers & java.awt.event.KeyEvent.CTRL_MASK) == 0 && (modifiers & java.awt.event.KeyEvent.SHIFT_MASK) == 0) {
+      return (style & SWT.MULTI) == 0;
+    }
   default:
     return super.getTraversalKeyDefault(ke);
   }

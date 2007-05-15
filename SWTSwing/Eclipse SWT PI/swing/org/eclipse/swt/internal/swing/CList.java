@@ -70,6 +70,10 @@ class CListImplementation extends JScrollPane implements CList {
     });
   }
 
+  public boolean isFocusable() {
+    return list.isFocusable();
+  }
+  
   public void requestFocus() {
     list.requestFocus();
   }

@@ -23,6 +23,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.Collections;
 import java.util.EventObject;
 
@@ -4148,7 +4149,21 @@ public void processEvent(AWTEvent e) {
     if(!hooks(SWT.MouseUp) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
-  case java.awt.event.MouseEvent.MOUSE_WHEEL: if(!hooks(SWT.MouseWheel)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_WHEEL: {
+    if(!hooks(SWT.MouseWheel)) {
+      Object o = e.getSource();
+      if(o instanceof Component && !(o instanceof Window)) {
+        Component c = ((Component)o);
+        Container cParent = c.getParent();
+        if(cParent != null) {
+          MouseWheelEvent mwe = (MouseWheelEvent)e;
+          cParent.dispatchEvent(new MouseWheelEvent(cParent, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mwe.getX() + cParent.getX(), mwe.getY() + cParent.getY(), mwe.getXOnScreen(), mwe.getYOnScreen(), mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
+        }
+      }
+      return;
+    }
+    break;
+  }
   case java.awt.event.MouseEvent.MOUSE_ENTERED: if(!hooks(SWT.MouseEnter)) return; break;
   case java.awt.event.MouseEvent.MOUSE_EXITED: if(!hooks(SWT.MouseExit)) {mouseHoverThread = null; return;} break;
   case java.awt.event.KeyEvent.KEY_PRESSED: {

@@ -126,7 +126,8 @@ class CTableImplementation extends JScrollPane implements CTable {
       final JTable table = this;
       protected TableCellRenderer renderer = new DefaultTableCellRenderer() {
         protected boolean isInitialized;
-        protected boolean isOpaque;
+        protected boolean isDefaultOpaque;
+        protected boolean isSelectionOpaque;
         protected Color defaultForeground;
         protected Color defaultBackground;
         protected Font defaultFont;
@@ -157,19 +158,31 @@ class CTableImplementation extends JScrollPane implements CTable {
           if(!isInitialized) {
             Component c = super.getTableCellRendererComponent(CTableImplementation.this.table, "", true, false, 0, 0);
             if(c instanceof JComponent) {
-              isOpaque = ((JComponent)c).isOpaque();
+              isSelectionOpaque = ((JComponent)c).isOpaque();
             }
-            selectionForeground = c.getForeground();
-            selectionBackground = c.getBackground();
+            selectionForeground = c.isForegroundSet()? c.getForeground(): null;
+            selectionBackground = c.isBackgroundSet()? c.getBackground(): null;
             selectionFont = c.getFont();
+            c.setForeground(null);
+            c.setBackground(null);
           }
-          Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
           if(!isInitialized) {
-            defaultForeground = c.getForeground();
-            defaultBackground = c.getBackground();
+            Component c = super.getTableCellRendererComponent(CTableImplementation.this.table, "", false, false, 0, 0);
+            if(c instanceof JComponent) {
+              isDefaultOpaque = ((JComponent)c).isOpaque();
+            }
+            defaultForeground = c.isForegroundSet()? c.getForeground(): null;
+            defaultBackground = c.isBackgroundSet()? c.getBackground(): null;
             defaultFont = c.getFont();
             isInitialized = true;
           }
+          Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+//          if(!isInitialized) {
+//            defaultForeground = c.isForegroundSet()? c.getForeground(): null;
+//            defaultBackground = c.isBackgroundSet()? c.getBackground(): null;
+//            defaultFont = c.getFont();
+//            isInitialized = true;
+//          }
           if(value == null) {
             return c;
           }
@@ -181,7 +194,7 @@ class CTableImplementation extends JScrollPane implements CTable {
           c.setBackground(isSelected? selectionBackground: defaultBackground);
           c.setFont(isSelected? selectionFont: defaultFont);
           if(c instanceof JComponent) {
-            ((JComponent)c).setOpaque(isOpaque);
+            ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque);
           }
           if(tableItemObject != null) {
             if(c instanceof JLabel) {
@@ -213,6 +226,9 @@ class CTableImplementation extends JScrollPane implements CTable {
               } else {
                 background = cTableItem.getBackground();
                 if(background != null) {
+                  if(c instanceof JComponent) {
+                    ((JComponent)c).setOpaque(true);
+                  }
                   c.setBackground(background);
                 }
               }

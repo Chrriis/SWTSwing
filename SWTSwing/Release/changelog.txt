@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Table background is improved.
 - Adjustments to default gradient colors.
 - Table selection events are added.
 - Mouse Wheel events are forwarded properly to ancestors.

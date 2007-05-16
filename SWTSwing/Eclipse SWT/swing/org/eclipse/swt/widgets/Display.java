@@ -1294,6 +1294,7 @@ public Color getSystemColor (int id) {
       swingColor = UIManager.getColor("InternalFrame.activeTitleGradient");
       if(swingColor == null) {
         swingColor = UIManager.getColor("activeCaption");
+        swingColor = new java.awt.Color(Math.min(swingColor.getRed() + 20, 255), Math.min(swingColor.getGreen() + 20, 255), Math.min(swingColor.getBlue() + 20, 255), swingColor.getAlpha());
       }
       break;
     case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:
@@ -1308,6 +1309,7 @@ public Color getSystemColor (int id) {
       swingColor = UIManager.getColor("InternalFrame.inactiveTitleGradient");
       if(swingColor == null) {
         swingColor = UIManager.getColor("inactiveCaption");
+        swingColor = new java.awt.Color(Math.min(swingColor.getRed() + 20, 255), Math.min(swingColor.getGreen() + 20, 255), Math.min(swingColor.getBlue() + 20, 255), swingColor.getAlpha());
       }
       break;
     default:

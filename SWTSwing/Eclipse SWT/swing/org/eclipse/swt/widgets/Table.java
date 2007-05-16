@@ -12,10 +12,12 @@ package org.eclipse.swt.widgets;
 
  
 import java.awt.Container;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.EventObject;
 
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 
@@ -3257,7 +3259,15 @@ public void processEvent(EventObject e) {
     case CellPaintEvent.MEASURE_TYPE: if(!hooks(SWT.MeasureItem)) { super.processEvent(e); return; } break;
     default: super.processEvent(e); return;
     }
-  } else { super.processEvent(e); return; }
+  } else if(e instanceof MouseEvent) {
+    MouseEvent me = (MouseEvent)e;
+    if(me.getID() != MouseEvent.MOUSE_PRESSED || me.getClickCount() != 2 || ((CTable)handle).getSelectionModel().getLeadSelectionIndex() == -1 || !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; };
+  } else if(e instanceof ListSelectionEvent) {
+    if(!hooks(SWT.Selection)) { super.processEvent(e); return; };
+  } else {
+    super.processEvent(e);
+    return;
+  }
   UIThreadUtils.startExclusiveSection(getDisplay());
   if(isDisposed()) {
     UIThreadUtils.stopExclusiveSection();
@@ -3336,6 +3346,14 @@ public void processEvent(EventObject e) {
       cellPaintEvent.rowHeight = event.height;
       break;
     }
+  } else if(e instanceof MouseEvent) {
+    Event event = new Event ();
+    event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
+    sendEvent(SWT.DefaultSelection, event);
+  } else if(e instanceof ListSelectionEvent) {
+    Event event = new Event ();
+    event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
+    sendEvent(SWT.Selection, event);
   }
   super.processEvent(e);
   UIThreadUtils.stopExclusiveSection();

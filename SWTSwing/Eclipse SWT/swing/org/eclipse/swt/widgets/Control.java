@@ -24,7 +24,6 @@ import java.awt.Window;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.Collections;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
@@ -561,9 +560,6 @@ void createWidget () {
       handle.requestFocus();
     }
   }
-  ((CControl)handle).getSwingComponent().setFocusTraversalKeysEnabled(false);
-  ((CControl)handle).getSwingComponent().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
-  ((CControl)handle).getSwingComponent().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
     // TODO: should have a fixInitSize like in old implementation <- Note it seems to be fixed now, but have to check
 //    if(handle.getSize().equals(new java.awt.Dimension(0, 0))) {
 //      handle.setSize(handle.getPreferredSize());
@@ -726,7 +722,15 @@ public boolean forceFocus () {
 //	if (display.focusEvent == SWT.FocusOut) return false;
 //	Decorations shell = menuShell ();
 //	shell.setSavedFocus (this);
-	if (!isEnabled () || !isVisible () /*|| !isActive ()*/) return false;
+	if (!isEnabled () /*|| !isActive ()*/) return false;
+	if (!isVisible ()) {
+	  Window window = SwingUtilities.getWindowAncestor(handle);
+	  if(!window.isVisible()) {
+	    getShell().setInitialFocusedControl(this);
+	    return true;
+	  }
+	  return false;
+	}
 	if (isFocusControl ()) return true;
 //	shell.setSavedFocus (null);
   // return handle.requestFocusInWindow();

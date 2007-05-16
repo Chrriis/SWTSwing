@@ -9,6 +9,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -21,6 +22,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.Collections;
 
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.DND;
@@ -107,6 +109,9 @@ public class Utils {
   }
 
   static void installKeyListener(Component component, final Control control) {
+    component.setFocusTraversalKeysEnabled(false);
+    component.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+    component.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
     component.addKeyListener(new KeyAdapter() {
       public void keyPressed(KeyEvent e) {
         control.processEvent(e);

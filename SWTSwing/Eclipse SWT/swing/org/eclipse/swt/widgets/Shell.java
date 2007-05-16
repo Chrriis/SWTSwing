@@ -1325,6 +1325,12 @@ public void setRegion (Region region) {
 //	lpnmtdi.lpszText = lpstrTip;
 //}
 
+Control initialFocusedControl;
+
+void setInitialFocusedControl(Control initialFocusedControl) {
+  this.initialFocusedControl = initialFocusedControl;
+}
+
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if(handle.isVisible() == visible) {
@@ -1332,8 +1338,13 @@ public void setVisible (boolean visible) {
 	}
   handle.setVisible(visible);
   if(visible) {
-    if(handle.isFocusable()) {
-      if (!traverseGroup (true)) setFocus ();
+    if(initialFocusedControl != null) {
+      initialFocusedControl.setFocus();
+      initialFocusedControl = null;
+    } else {
+      if(handle.isFocusable()) {
+        if (!traverseGroup (true)) setFocus ();
+      }
     }
   }
 //	if (drawCount != 0) {

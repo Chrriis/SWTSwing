@@ -1112,7 +1112,15 @@ boolean traverseEscape () {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; } break;
+  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) {
+    super.processEvent(e);
+    JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+    if(defaultButton != null) {
+      defaultButton.doClick();
+    }
+    return;
+  }
+  break;
   case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }

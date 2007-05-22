@@ -75,7 +75,7 @@ class CShellFrame extends JFrame implements CShell {
   }
   
   protected void init(int style) {
-    setFocusableWindowState(false);
+    setFocusableWindowState((style & SWT.TITLE) != 0);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
@@ -388,7 +388,7 @@ class CShellDialog extends JDialog implements CShell {
 //  }
 
   protected void init(int style) {
-    setFocusableWindowState(false);
+    setFocusableWindowState((style & SWT.TITLE) != 0);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);

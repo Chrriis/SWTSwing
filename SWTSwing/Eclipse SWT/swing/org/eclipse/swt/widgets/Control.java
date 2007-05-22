@@ -744,7 +744,7 @@ public boolean forceFocus () {
 //  } else {
     handle.requestFocus();
 //  }
-  return handle.hasFocus();
+  return true;
   
 //  return handle.hasFocus();
 //	/*

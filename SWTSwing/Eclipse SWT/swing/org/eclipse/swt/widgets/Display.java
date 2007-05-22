@@ -30,6 +30,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -276,10 +278,47 @@ public class Display extends Device {
     Utils.adjustAppleMenuBar();
     CShell.ModalityHandler.initialize();
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+      protected Window hoveredWindow;
       public void eventDispatched(AWTEvent event) {
         java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
         previousModifiersEx = modifiersEx;
         modifiersEx = ie.getModifiersEx();
+        if(ie instanceof MouseEvent) {
+          Component component = ie.getComponent();
+          // It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
+          Window window = SwingUtilities.getWindowAncestor(component);
+          switch(ie.getID()) {
+          case MouseEvent.MOUSE_WHEEL:
+            if(window != hoveredWindow && hoveredWindow != null) {
+              MouseWheelEvent mwe = (MouseWheelEvent)ie;
+              mwe.consume();
+              java.awt.Point mouseLocation = mwe.getPoint();
+              mouseLocation = SwingUtilities.convertPoint(component, mouseLocation, hoveredWindow);
+              Component c = hoveredWindow.findComponentAt(mouseLocation.x, mouseLocation.y);
+              mouseLocation = SwingUtilities.convertPoint(hoveredWindow, mouseLocation, c);
+              if(c != null) {
+                c.dispatchEvent(new MouseWheelEvent(c, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mouseLocation.x, mouseLocation.y, mwe.getXOnScreen(), mwe.getYOnScreen(), mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
+              }
+            }
+            break;
+          case MouseEvent.MOUSE_ENTERED:
+            break;
+          case MouseEvent.MOUSE_EXITED:
+            if(hoveredWindow != null) {
+              MouseEvent me = (MouseEvent)ie;
+              java.awt.Point mouseLocation = me.getPoint();
+              mouseLocation = SwingUtilities.convertPoint(component, mouseLocation, hoveredWindow);
+              if(!hoveredWindow.contains(mouseLocation)) {
+                hoveredWindow = null;
+              }
+            }
+            break;
+          default:
+            hoveredWindow = window;
+            break;
+          }
+          return;
+        }
         if(ie.getID() == KeyEvent.KEY_PRESSED) {
           int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
           if((modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
@@ -300,7 +339,7 @@ public class Display extends Device {
           }
         }
       }
-    }, AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
+    }, AWTEvent.MOUSE_WHEEL_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
   }
 	/*
 	* TEMPORARY CODE.  Install the runnable that

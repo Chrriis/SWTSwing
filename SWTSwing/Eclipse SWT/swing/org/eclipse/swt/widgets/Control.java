@@ -723,6 +723,7 @@ public boolean forceFocus () {
 //	Decorations shell = menuShell ();
 //	shell.setSavedFocus (this);
 	if (!isEnabled () /*|| !isActive ()*/) return false;
+	if(!handle.isFocusable()) return false;
 	if (!isVisible ()) {
 	  Window window = SwingUtilities.getWindowAncestor(handle);
 	  if(!window.isVisible()) {
@@ -743,7 +744,7 @@ public boolean forceFocus () {
 //  } else {
     handle.requestFocus();
 //  }
-  return handle.isFocusable();
+  return handle.hasFocus();
   
 //  return handle.hasFocus();
 //	/*
@@ -4162,6 +4163,7 @@ public void processEvent(AWTEvent e) {
         if(cParent != null) {
           MouseWheelEvent mwe = (MouseWheelEvent)e;
           cParent.dispatchEvent(new MouseWheelEvent(cParent, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mwe.getX() + cParent.getX(), mwe.getY() + cParent.getY(), mwe.getXOnScreen(), mwe.getYOnScreen(), mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
+          mwe.consume();
         }
       }
       return;

@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import java.awt.AWTEvent;
 import java.awt.Container;
+import java.awt.KeyboardFocusManager;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
@@ -802,6 +803,12 @@ public boolean isEnabled () {
 	return getEnabled ();
 }
 
+public boolean isFocusControl () {
+  checkWidget ();
+  KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+  return keyboardFocusManager.getFocusOwner() == null && keyboardFocusManager.getFocusedWindow() == handle;
+}
+
 //public boolean isVisible () {
 //	checkWidget ();
 //	return getVisible ();
@@ -1341,10 +1348,10 @@ public void setVisible (boolean visible) {
     if(initialFocusedControl != null) {
       initialFocusedControl.setFocus();
       initialFocusedControl = null;
-    } else {
-      if(handle.isFocusable()) {
-        if (!traverseGroup (true)) setFocus ();
-      }
+//    } else {
+//      if(handle.isFocusable()) {
+//        if (!traverseGroup (true)) setFocus ();
+//      }
     }
   }
 //	if (drawCount != 0) {

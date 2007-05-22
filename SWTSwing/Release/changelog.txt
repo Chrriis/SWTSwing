@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Scroll increments are set properly on scroll bars.
 - Table background is improved.
 - Adjustments to default gradient colors.
 - Table selection events are added.

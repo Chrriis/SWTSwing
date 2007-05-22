@@ -88,7 +88,6 @@ import org.eclipse.swt.events.*;
 public class ScrollBar extends Widget {	
 	Scrollable parent;
   JScrollBar handle;
-	int increment, pageIncrement;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -171,8 +170,6 @@ static int checkStyle (int style) {
 
 void createWidget () {
   handle = (style & SWT.HORIZONTAL) != 0? ((CScrollable)parent.handle).getHorizontalScrollBar(): ((CScrollable)parent.handle).getVerticalScrollBar();
-	increment = 1;
-	pageIncrement = 10;
 	/*
 	* Do not set the intial values of the maximum
 	* or the thumb.  These values normally default
@@ -281,7 +278,7 @@ public boolean getEnabled () {
  */
 public int getIncrement () {
 	checkWidget();
-	return increment;
+  return handle.getUnitIncrement();
 }
 
 /**
@@ -328,7 +325,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget();
-	return pageIncrement;
+	return handle.getBlockIncrement();
 }
 
 /**
@@ -578,7 +575,7 @@ public void setEnabled (boolean enabled) {
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
-	increment = value;
+	handle.setUnitIncrement(value);
 }
 
 /**
@@ -643,7 +640,7 @@ public void setMinimum (int value) {
 public void setPageIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
-	pageIncrement = value;
+	handle.setBlockIncrement(value);
 }
 
 //boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
@@ -791,8 +788,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (thumb < 1) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
-	this.increment = increment;	
-	this.pageIncrement = pageIncrement;
   blockListener = true;
   handle.setValues(selection, thumb, minimum, maximum);
   blockListener = false;

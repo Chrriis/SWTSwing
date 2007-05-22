@@ -4178,8 +4178,8 @@ public void processEvent(AWTEvent e) {
     }
     break;
   }
-  case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyUp)) return; break;
-  case java.awt.event.KeyEvent.KEY_TYPED: if(!hooks(SWT.KeyDown)) return; break;
+  case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyUp)) {lastPressedKeyCode = -1; return;} break;
+  case java.awt.event.KeyEvent.KEY_TYPED: if(!hooks(SWT.KeyDown)) {isTraversing = false; return;} break;
   case ComponentEvent.COMPONENT_RESIZED: if(!hooks(SWT.Resize)) return; break;
   case ComponentEvent.COMPONENT_MOVED: if(!hooks(SWT.Move)) return; break;
   case ComponentEvent.COMPONENT_SHOWN: if(!hooks(SWT.Show)) return; break;
@@ -4336,6 +4336,7 @@ public void processEvent(AWTEvent e) {
         sendEvent (SWT.KeyUp, event);
       }
     }
+    isTraversing = false;
     break;
   case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
   case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;

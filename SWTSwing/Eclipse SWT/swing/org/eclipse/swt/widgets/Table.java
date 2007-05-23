@@ -227,7 +227,10 @@ protected void checkSubclass () {
  */
 public void clear (int index) {
 	checkWidget ();
-  Utils.notImplemented();
+  TableItem item = (TableItem)itemList.get(index);
+  if(item != null) {
+    item.clear();
+  }
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 //	TableItem item = items [index];
@@ -285,7 +288,12 @@ public void clear (int index) {
 public void clear (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
-  Utils.notImplemented();
+  for(int i=start; i<=end; i++) {
+    TableItem item = (TableItem)itemList.get(i);
+    if(item != null) {
+      item.clear();
+    }
+  }
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	if (!(0 <= start && start <= end && end < count)) {
 //		error (SWT.ERROR_INVALID_RANGE);
@@ -361,7 +369,12 @@ public void clear (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
-  Utils.notImplemented();
+	for(int i=0; i<indices.length; i++) {
+	  TableItem item = (TableItem)itemList.get(i);
+	  if(item != null) {
+	    item.clear();
+	  }
+	}
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	for (int i=0; i<indices.length; i++) {
 //		if (!(0 <= indices [i] && indices [i] < count)) {
@@ -425,7 +438,12 @@ public void clear (int [] indices) {
  */
 public void clearAll () {
 	checkWidget ();
-  Utils.notImplemented();
+  for (int i=itemList.size()-1; i>=0; i--) {
+    TableItem item = (TableItem)itemList.get(i);
+    if(item != null) {
+      item.clear();
+    }
+  }
 //	LVITEM lvItem = null;
 //	boolean cleared = false;
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -1877,15 +1895,16 @@ public void setItemCount (int count) {
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
 //	if (!isVirtual) setRedraw (false);
 	int index = count;
-	while (index < itemCount) {
-		TableItem item = (TableItem)itemList.get(index);
+	int tmpItemCount = itemCount;
+	while (index < tmpItemCount) {
+		TableItem item = (TableItem)itemList.get(tmpItemCount - 1);
 		if (!isVirtual) {
       ((CTable)handle).removeItem(index);
 		}
-		if (item != null && !item.isDisposed ()) item.release (false);
-		index++;
+		if (item != null && !item.isDisposed ()) item.release (true);
+		tmpItemCount--;
 	}
-	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
+//	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
   itemList.ensureCapacity(count);
   for(int i=itemCount; i<count; i++) {
     if (isVirtual) {
@@ -3347,7 +3366,11 @@ public void processEvent(EventObject e) {
     }
   } else if(e instanceof ListSelectionEvent) {
     Event event = new Event ();
-    event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
+    int selectionIndex = ((CTable)handle).getSelectionModel().getLeadSelectionIndex();
+    if(selectionIndex != -1) {
+      // TODO: should we send the previous item?
+      event.item = _getItem(selectionIndex);
+    }
     sendEvent(SWT.Selection, event);
   }
   super.processEvent(e);

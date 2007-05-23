@@ -815,12 +815,11 @@ public void setVisible (boolean visible) {
 	checkWidget();
 //	boolean isVisible = (state & HIDDEN) == 0;
 //	if (isVisible == visible) return;
-	handle.setVisible(visible);
 	if(handle.getParent() instanceof JScrollPane) {
 	  JScrollPane scrollPane = ((JScrollPane)handle.getParent());
 	  if((style & SWT.HORIZONTAL) != 0) {
       if(visible) {
-        scrollPane.setVerticalScrollBarPolicy((parent.getStyle() & SWT.H_SCROLL) != 0? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS: ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy((parent.getStyle() & SWT.H_SCROLL) != 0? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS: ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       } else {
 	      scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
       }
@@ -831,6 +830,8 @@ public void setVisible (boolean visible) {
 	      scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 	    }
 	  }
+	} else {
+	  handle.setVisible(visible);
 	}
 //	/*
 //	* On Windows CE, use SIF_DISABLENOSCROLL to show and

@@ -17,6 +17,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JComponent;
@@ -301,7 +302,12 @@ public class JTreeTable extends JPanel implements Scrollable {
         Rectangle rowBounds = tree.getRowBounds(row);
         if(rowBounds != null) {
           if(!rowBounds.contains(x, y)) {
-            me = new MouseEvent(tree, me.getID(), me.getWhen(), me.getModifiers(), x, y, me.getClickCount(), me.isPopupTrigger(), me.getButton());
+            if(me instanceof MouseWheelEvent) {
+              MouseWheelEvent mwe = (MouseWheelEvent)me;
+              me = new MouseWheelEvent(tree, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), x, y, mwe.getXOnScreen(), mwe.getYOnScreen(), mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation());
+            } else {
+              me = new MouseEvent(tree, me.getID(), me.getWhen(), me.getModifiers(), x, y, me.getClickCount(), me.isPopupTrigger(), me.getButton());
+            }
             boolean isExpanded = tree.isExpanded(row);
             tree.dispatchEvent(me);
             if(isFullLineSelection() && tree.isExpanded(row) == isExpanded) {

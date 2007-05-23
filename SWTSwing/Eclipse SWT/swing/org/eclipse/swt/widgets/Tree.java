@@ -3681,7 +3681,6 @@ public void processEvent(EventObject e) {
       break;
     }
   }
-
   super.processEvent(e);
   UIThreadUtils.stopExclusiveSection();
   return;

@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Table items were not removed properly when removing a range.
 - Table items can now be cleared.
 - Few fixes to the key filtering.
 - Pressing enter on a combo validates the default button.

@@ -1398,13 +1398,14 @@ public void remove (int [] indices) {
 	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
+	// Sort puts the biggest indices first
 	sort (newIndices);
 	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	int count = getItemCount();
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-  for(int i=newIndices.length-1; i>=0; i--) {
+  for(int i=0; i<newIndices.length; i++) {
     int index = newIndices[i];
     TableItem tableItem = (TableItem)itemList.get(index);
     if(tableItem != null) {

@@ -134,7 +134,7 @@ public class SnippetLauncher {
       new Snippet(224, "implement radio behavior for setSelection()"),
     }), new SnippetCategory("Canvas", new Snippet[] {
       new Snippet(48, "scroll an image (flicker free, no double buffering)"),
-/**/      new Snippet(21, "implement tab traversal (behave like a tab group)"),
+      new Snippet(21, "implement tab traversal (behave like a tab group)"),
     }), new SnippetCategory("Caret", new Snippet[] {
       new Snippet(74, "create a caret"),
 /**/      new NotWorkingSnippet(43, "create a caret (using an image)"),
@@ -155,7 +155,7 @@ public class SnippetLauncher {
       new Snippet(208, "adjust hue, brightness and saturation of a color"),
     }), new SnippetCategory("Control", new Snippet[] {
       new Snippet(14, "detect mouse enter, exit and hover events"),
-/**/      new NotWorkingSnippet(127, "prevent Tab from traversing out of a control"),
+      new Snippet(127, "prevent Tab from traversing out of a control"),
       new Snippet(25, "print key state, code and character"),
       new Snippet(62, "print mouse state and button (down, move, up)"),
       new Snippet(214, "set a background image"),
@@ -205,8 +205,8 @@ public class SnippetLauncher {
       new Snippet(93, "measure a string"),
       new Snippet(66, "implement a simple scribble program"),
       new Snippet(70, "create an icon (in memory)"),
-/**/      new Snippet(95, "capture a widget image with a GC"),
-/**/      new Snippet(215, "take a screen shot with a GC"),
+      new Snippet(95, "capture a widget image with a GC"),
+      new Snippet(215, "take a screen shot with a GC"),
       new Snippet(168, "draw lines with different cap and join styles"),
       new Snippet(10, "drawing with transformations, paths and alpha blending"),
       new Snippet(207, "reflect, shear and rotate images using matrix transformations"),
@@ -309,22 +309,22 @@ public class SnippetLauncher {
     }), new SnippetCategory("TabFolder, TabItem", new Snippet[] {
       new Snippet(76, "create a tab folder (six pages)"),
     }), new SnippetCategory("Table, TableItem, TableColumn", new Snippet[] {
-/**/      new NotWorkingSnippet(151, "add 1000 sorted entries to a virtual table every 500 ms"),
+      new Snippet(151, "add 1000 sorted entries to a virtual table every 500 ms"),
       new Snippet(129, "color cells and rows in table"),
       new Snippet(35, "create a table (no columns, no headers)"),
       new Snippet(38, "create a table (columns, headers, lines)"),
       new Snippet(144, "create a table with 1,000,000 items (lazy)"),
       new Snippet(201, "create a table with 1,000,000 items (lazy, page size 64)"),
       new Snippet(7, "create a table (lazy with a thread)"),
-/**/      new NotWorkingSnippet(113, "detect a selection or check event in a table (SWT.CHECK)"),
+      new Snippet(113, "detect a selection or check event in a table (SWT.CHECK)"),
 /**/      new NotWorkingSnippet(3, "find a table cell from mouse down (SWT.FULL_SELECTION)"),
-/**/      new NotWorkingSnippet(110, "find a table cell from mouse down (works for any table style)"),
+      new Snippet(110, "find a table cell from mouse down (works for any table style)"),
       new Snippet(101, "insert a table item (at an index)"),
 /**/      new NotWorkingSnippet(106, "insert a table column (at an index)"),
 /**/      new NotWorkingSnippet(181, "make columns reorderable by dragging"),
-/**/      new NotWorkingSnippet(126, "place arbitrary controls in a table"),
-/**/      new NotWorkingSnippet(64, "print selected items in a table"),
-/**/      new NotWorkingSnippet(53, "remove selected items"),
+/**/      new PartiallyWorkingSnippet(126, "place arbitrary controls in a table"),
+      new Snippet(64, "print selected items in a table"),
+      new Snippet(53, "remove selected items"),
 /**/      new NotWorkingSnippet(77, "resize columns as table resizes"),
       new Snippet(51, "scroll a table (set the top index)"),
 /**/      new PartiallyWorkingSnippet(52, "select an index (select and scroll)"),
@@ -334,9 +334,9 @@ public class SnippetLauncher {
     }), new SnippetCategory("TableCursor", new Snippet[] {
 /**/      new NotWorkingSnippet(96, "navigate a table cells with arrow keys"),
     }), new SnippetCategory("TableEditor", new Snippet[] {
-/**/      new NotWorkingSnippet(88, "edit the text of a table item (in place)"),
-/**/      new NotWorkingSnippet(124, "edit a cell in a table (in place, fancy)"),
-/**/      new NotWorkingSnippet(149, "place a progress bar in a table"),
+/**/      new PartiallyWorkingSnippet(88, "edit the text of a table item (in place)"),
+/**/      new PartiallyWorkingSnippet(124, "edit a cell in a table (in place, fancy)"),
+/**/      new PartiallyWorkingSnippet(149, "place a progress bar in a table"),
     }), new SnippetCategory("Text", new Snippet[] {
       new Snippet(117, "add a select all menu item to the control"),
       new Snippet(24, "detect CR in a text control (default selection)"),
@@ -368,7 +368,7 @@ public class SnippetLauncher {
       new Snippet(41, "create tool tips for a tab folder, tool bar and control"),
       new Snippet(216, "show a tool tip inside a rectangle"),
 /**/      new NotWorkingSnippet(125, "create emulated tool tips for items in a table"),
-/**/      new NotWorkingSnippet(225, "create a balloon tooltip for a tray item"),
+      new Snippet(225, "create a balloon tooltip for a tray item"),
     }), new SnippetCategory("Tracker", new Snippet[] {
 /**/      new NotWorkingSnippet(23, "create a tracker (drag on mouse down)"),
 /**/      new NotWorkingSnippet(31, "create a tracker (drag when \"torn off\")"),
@@ -380,17 +380,17 @@ public class SnippetLauncher {
       new Snippet(114, "detect a selection or check event in a tree (SWT.CHECK)"),
       new Snippet(102, "insert a tree item (at an index)"),
       new Snippet(61, "print selected items in a tree"),
-/**/      new NotWorkingSnippet(80, "limit selection to items that match a pattern"),
+/**/      new PartiallyWorkingSnippet(80, "limit selection to items that match a pattern"),
       new Snippet(90, "detect mouse down in a tree item"),
       new Snippet(170, "create a tree with columns"),
 /**/      new NotWorkingSnippet(193, "make columns reorderable by dragging"),
-/**/      new NotWorkingSnippet(202, "virtual tree - lazy creation of sub nodes"),
+      new Snippet(202, "virtual tree - lazy creation of sub nodes"),
     }), new SnippetCategory("TreeEditor", new Snippet[] {
 /**/      new NotWorkingSnippet(111, "edit the text of a tree item (in place, fancy)"),
     })
   };
     
-  protected static int snippetNumber = 95;
+  protected static int snippetNumber = 202;
 
   protected static boolean isRealDispatch = true;
 

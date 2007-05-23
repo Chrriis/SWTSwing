@@ -289,7 +289,7 @@ public class Display extends Device {
           Window window = SwingUtilities.getWindowAncestor(component);
           switch(ie.getID()) {
           case MouseEvent.MOUSE_WHEEL:
-            if(window != hoveredWindow && hoveredWindow != null) {
+            if(window != hoveredWindow && hoveredWindow != null && window != null) {
               MouseWheelEvent mwe = (MouseWheelEvent)ie;
               mwe.consume();
               java.awt.Point mouseLocation = mwe.getPoint();

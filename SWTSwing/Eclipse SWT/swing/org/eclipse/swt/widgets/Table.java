@@ -1899,10 +1899,15 @@ public void setItemCount (int count) {
 	int tmpItemCount = itemCount;
 	while (index < tmpItemCount) {
 		TableItem item = (TableItem)itemList.get(tmpItemCount - 1);
-		if (!isVirtual) {
-      ((CTable)handle).removeItem(index);
+//		if (!isVirtual) {
+//      ((CTable)handle).removeItem(index);
+//		}
+		if (item != null && !item.isDisposed ()) {
+		  item.release (true);
+		} else {
+		  itemList.remove(index);
+		  ((CTable)handle).removeItem(index);
 		}
-		if (item != null && !item.isDisposed ()) item.release (true);
 		tmpItemCount--;
 	}
 //	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);

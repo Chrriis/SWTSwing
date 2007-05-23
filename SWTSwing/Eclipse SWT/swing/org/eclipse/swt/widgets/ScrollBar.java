@@ -15,6 +15,8 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
 import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import org.eclipse.swt.internal.swing.CScrollable;
 import org.eclipse.swt.*;
@@ -814,6 +816,22 @@ public void setVisible (boolean visible) {
 //	boolean isVisible = (state & HIDDEN) == 0;
 //	if (isVisible == visible) return;
 	handle.setVisible(visible);
+	if(handle.getParent() instanceof JScrollPane) {
+	  JScrollPane scrollPane = ((JScrollPane)handle.getParent());
+	  if((style & SWT.HORIZONTAL) != 0) {
+      if(visible) {
+        scrollPane.setVerticalScrollBarPolicy((parent.getStyle() & SWT.H_SCROLL) != 0? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS: ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      } else {
+	      scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+      }
+	  } else {
+	    if(visible) {
+	      scrollPane.setVerticalScrollBarPolicy((parent.getStyle() & SWT.V_SCROLL) != 0? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS: ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+	    } else {
+	      scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+	    }
+	  }
+	}
 //	/*
 //	* On Windows CE, use SIF_DISABLENOSCROLL to show and
 //	* hide the scroll bar when the page size is equal to

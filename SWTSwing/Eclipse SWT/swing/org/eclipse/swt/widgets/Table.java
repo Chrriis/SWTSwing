@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
  
 import java.awt.AWTEvent;
 import java.awt.Container;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
+import org.eclipse.swt.internal.swing.CTableItem;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.swing.CTable.CellPaintEvent;
@@ -3371,13 +3373,15 @@ public void processEvent(EventObject e) {
       break;
     }
   } else if(e instanceof ListSelectionEvent) {
-    Event event = new Event ();
-    int selectionIndex = ((CTable)handle).getSelectionModel().getLeadSelectionIndex();
-    if(selectionIndex != -1) {
-      // TODO: should we send the previous item?
-      event.item = _getItem(selectionIndex);
+    if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
+      Event event = new Event ();
+      int selectionIndex = ((CTable)handle).getSelectionModel().getLeadSelectionIndex();
+      if(selectionIndex != -1) {
+        // TODO: should we send the previous item?
+        event.item = _getItem(selectionIndex);
+      }
+      sendEvent(SWT.Selection, event);
     }
-    sendEvent(SWT.Selection, event);
   }
   super.processEvent(e);
   UIThreadUtils.stopExclusiveSection();
@@ -3398,6 +3402,7 @@ public void processEvent(AWTEvent e) {
     };
     break;
   }
+  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
@@ -3424,6 +3429,12 @@ public void processEvent(AWTEvent e) {
       event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
       sendEvent(SWT.DefaultSelection, event);
     }
+    break;
+  case ItemEvent.ITEM_STATE_CHANGED:
+    Event event = new Event();
+    event.detail = SWT.CHECK;
+    event.item = ((CTableItem)((ItemEvent)e).getItem()).getTableItem();
+    sendEvent(SWT.Selection, event);
     break;
   }
   super.processEvent(e);

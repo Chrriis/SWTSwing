@@ -7,6 +7,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -17,6 +18,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
 import java.util.EventObject;
@@ -41,6 +43,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.swing.CTableItem.TableItemObject;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 
@@ -318,6 +321,42 @@ class CTableImplementation extends JScrollPane implements CTable {
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
+      }
+      protected void processEvent(AWTEvent e) {
+        if(e instanceof MouseEvent) {
+          MouseEvent me = (MouseEvent)e;
+          if(isCheckType) {
+            Point location = me.getPoint();
+            int column = table.columnAtPoint(location);
+            int row = table.rowAtPoint(location);
+            if(row != -1 && column != -1) {
+              CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)table.getCellRenderer(row, column).getTableCellRendererComponent(this, table.getValueAt(row, column), table.isCellSelected(row, column), false, row, column);
+              Rectangle cellBounds = table.getCellRect(row, column, false);
+              checkBoxCellRenderer.setSize(cellBounds.width, cellBounds.height);
+              checkBoxCellRenderer.doLayout();
+              Component component = checkBoxCellRenderer.getComponentAt(location.x - cellBounds.x, location.y - cellBounds.y);
+              JStateCheckBox stateCheckBox = checkBoxCellRenderer.getStateCheckBox();
+              // TODO: find a way to rely on the Look&Feel for mouse events.
+              if(component == stateCheckBox) {
+                switch(me.getID()) {
+                case MouseEvent.MOUSE_PRESSED:
+                  CTableItem cTableItem = handle.getItem(row).handle;
+                  TableItemObject tableItemObject = cTableItem.getTableItemObject(0);
+                  boolean ischecked = !tableItemObject.isChecked();
+                  tableItemObject.getTableItem().setChecked(ischecked);
+                  table.repaint();
+                  handle.processEvent(new ItemEvent(stateCheckBox, ItemEvent.ITEM_STATE_CHANGED, cTableItem, ischecked? ItemEvent.SELECTED: ItemEvent.DESELECTED));
+                  return;
+                case MouseEvent.MOUSE_DRAGGED:
+                case MouseEvent.MOUSE_RELEASED:
+                case MouseEvent.MOUSE_CLICKED:
+                  return;
+                }
+              }
+            }
+          }
+        }
+        super.processEvent(e);
       }
 //      protected Set validItemSet = new HashSet();
 //      public int getRowHeight(int row) {

@@ -201,7 +201,7 @@ public class SnippetLauncher {
       new Snippet(69, "center a label and single line text using a form layout"),
       new Snippet(71, "create a simple OK/CANCEL dialog using form layout"),
     }), new SnippetCategory("GC", new Snippet[] {
-/**/      new PartiallyWorkingSnippet(13, "draw a thick line"), // Works, but for real dispatching or depending on the JRE, a repaint event may happen and clear the frame immediately.
+      new Snippet(13, "draw a thick line"),
       new Snippet(93, "measure a string"),
       new Snippet(66, "implement a simple scribble program"),
       new Snippet(70, "create an icon (in memory)"),
@@ -256,7 +256,7 @@ public class SnippetLauncher {
 /**/      new NotWorkingSnippet(133, "print text to printer, with word wrap and pagination"),
     }), new SnippetCategory("Program", new Snippet[] {
       new UnsupportedSnippet(32, "find the icon of the program that edits .bmp files"),
-      new UnsupportedSnippet(105, "invoke an external batch file"),
+      new Snippet(105, "invoke an external batch file"),
       new UnsupportedSnippet(30, "invoke the system text editor on autoexec.bat"),
     }), new SnippetCategory("ProgressBar", new Snippet[] {
       new Snippet(57, "update a progress bar (from the UI thread)"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 202;
+  protected static int snippetNumber = 13;
 
   protected static boolean isRealDispatch = true;
 

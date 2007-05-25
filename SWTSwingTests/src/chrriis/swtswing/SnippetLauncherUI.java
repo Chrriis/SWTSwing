@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.StringTokenizer;
@@ -338,6 +337,11 @@ public class SnippetLauncherUI extends JFrame {
     }
   }
   
+  protected static final Color UNDETERMINED_COLOR = Color.LIGHT_GRAY;
+  protected static final Color WORKING_COLOR = new Color(0, 200, 0);
+  protected static final Color PARTIALLY_WORKING_COLOR = new Color(250, 230, 0);
+  protected static final Color NOT_WORKING_COLOR = Color.RED;
+
   protected Component createStatisticsComponent() {
     int total = 0;
     int achieved = 0;
@@ -366,9 +370,9 @@ public class SnippetLauncherUI extends JFrame {
       protected void paintComponent(Graphics g) {
         Dimension size = getSize();
         int amount = Math.round(size.width * ratio / 100);
-        g.setColor(SUCCESS_COLOR);
+        g.setColor(WORKING_COLOR);
         g.fillRect(0, 0, amount, size.height);
-        g.setColor(FAILURE_COLOR);
+        g.setColor(NOT_WORKING_COLOR);
         g.fillRect(amount, 0, size.width - amount - 1, size.height);
         super.paintComponent(g);
       }
@@ -482,48 +486,58 @@ public class SnippetLauncherUI extends JFrame {
           }
         } else if(value instanceof SnippetCategory) {
           Snippet[] snippets = ((SnippetCategory)value).getSnippets();
-          int total = 0;
-          int achieved = 0;
+          int working = 0;
+          int partiallyWorking = 0;
+          int notWorking = 0;
+          int other = 0;
           boolean isFound = false;
           for(int i=0; i<snippets.length; i++) {
             Snippet snippet = snippets[i];
             switch(snippet.getStatus()) {
             case Snippet.WORKING:
-              total += 2;
-              achieved += 2;
+              working++;
               break;
             case Snippet.PARTIALLY_WORKING:
-              total += 2;
-              achieved++;
+              partiallyWorking++;
               break;
             case Snippet.NOT_WORKING:
-              total += 2;
+              notWorking++;
+              break;
+            default:
+              other++;
               break;
             }
             if(!isFound && filterText != null && snippet.toString().toLowerCase(Locale.ENGLISH).contains(filterText)) {
               isFound = true;
             }
           }
-          int ratio = total == 0? -1: Math.round(((float)achieved) * 14 / total);
-          ImageIcon icon = (ImageIcon)ratioToIconMap.get(new Integer(ratio));
-          if(icon == null) {
-            BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-            Graphics g = image.getGraphics();
-            g.setColor(Color.black);
-            g.drawRect(0, 4, 15, 7);
-            if(total > 0) {
-              g.setColor(FAILURE_COLOR);
-              g.fillRect(1 + ratio, 5, 14 - ratio, 6);
-              g.setColor(SUCCESS_COLOR);
-              g.fillRect(1, 5, ratio, 6);
-            } else {
-              g.setColor(UNDETERMINED_COLOR);
-              g.fillRect(1, 5, 14, 6);
+          BufferedImage image = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+          Graphics g = image.getGraphics();
+          g.setColor(Color.BLACK);
+          g.drawRect(0, 4, 15, 7);
+          int total = other + working + partiallyWorking + notWorking;
+          if(total > 0) {
+            int otherRatio = Math.round(other * 14f / total);
+            int workingRatio = Math.round((other + working) * 14f / total);
+            int partiallyWorkingRatio = Math.round((other + working + partiallyWorking) * 14f / total);
+            int notWorkingRatio = Math.round((other + working + partiallyWorking + notWorking) * 14f / total);
+            g.setColor(NOT_WORKING_COLOR);
+            g.fillRect(1, 5, notWorkingRatio, 6);
+            g.setColor(PARTIALLY_WORKING_COLOR);
+            g.fillRect(1, 5, partiallyWorkingRatio, 6);
+            g.setColor(WORKING_COLOR);
+            g.fillRect(1, 5, workingRatio, 6);
+            g.setColor(UNDETERMINED_COLOR);
+            g.fillRect(1, 5, otherRatio, 6);
+            if(other != total) {
+              g.setColor(Color.BLACK);
+              g.fillRect(otherRatio, 5, 1, 6);
             }
-            ratioToIconMap.put(new Integer(ratio), icon);
-            icon = new ImageIcon(image);
+          } else {
+            g.setColor(UNDETERMINED_COLOR);
+            g.fillRect(1, 5, 14, 6);
           }
-          c.setIcon(icon);
+          c.setIcon(new ImageIcon(image));
           if(isFound) {
             c.setOpaque(true);
             c.setBackground(HIGHLIGHT_COLOR);
@@ -536,11 +550,6 @@ public class SnippetLauncherUI extends JFrame {
     });
     return tree;
   }
-
-  protected HashMap ratioToIconMap = new HashMap();
-  protected static final Color UNDETERMINED_COLOR = Color.LIGHT_GRAY;
-  protected static final Color SUCCESS_COLOR = new Color(0, 197, 0);
-  protected static final Color FAILURE_COLOR = Color.RED;
 
   protected Process process;
 

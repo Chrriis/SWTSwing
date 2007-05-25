@@ -355,6 +355,23 @@ class CTableImplementation extends JScrollPane implements CTable {
               }
             }
           }
+          switch(me.getID()) {
+          case MouseEvent.MOUSE_PRESSED:
+            switch(me.getButton()) {
+            case MouseEvent.BUTTON3: {
+              // We have to assume that popup menus are triggered with the mouse button 3.
+              int row = rowAtPoint(me.getPoint());
+              if(row != -1) {
+                ListSelectionModel selectionModel = getSelectionModel();
+                if(!selectionModel.isSelectedIndex(row)) {
+                  selectionModel.setSelectionInterval(row, row);
+                }
+              }
+              break;
+            }
+            }
+            break;
+          }
         }
         super.processEvent(e);
       }

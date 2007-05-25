@@ -3923,7 +3923,6 @@ static final float[] lineDashDotArray = new float[] {9, 6, 3, 6};
 static final float[] lineDashDotDotArray = new float[] {9, 3, 3, 3, 3, 3};
 
 BasicStroke getCurrentBasicStroke() {
-  Graphics2D handle = getGraphics();
   Graphics2D g2d = handle;
   Stroke stroke = g2d.getStroke();
   if(stroke instanceof BasicStroke) {

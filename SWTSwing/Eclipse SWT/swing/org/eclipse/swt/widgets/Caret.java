@@ -11,7 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -27,7 +26,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.CControl;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -284,13 +282,7 @@ public boolean getVisible () {
 }
 
 boolean hasFocus () {
-  Container handleParent = parent.handle.getParent();
-  for(Container c = ((CControl)parent.handle).getSwingComponent(); c != handleParent; c = c.getParent()) {
-    if(c.hasFocus()) {
-      return true;
-    }
-  }
-  return false;
+  return parent.isFocusControl();
 //  return parent.handle == OS.GetFocus ();
 }
 

@@ -805,6 +805,7 @@ public boolean isEnabled () {
 
 public boolean isFocusControl () {
   checkWidget ();
+  if(super.isFocusControl()) return true;
   KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
   return keyboardFocusManager.getFocusOwner() == null && keyboardFocusManager.getFocusedWindow() == handle;
 }

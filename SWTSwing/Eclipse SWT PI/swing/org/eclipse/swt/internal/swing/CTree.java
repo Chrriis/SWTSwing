@@ -136,6 +136,20 @@ class CTreeImplementation extends JScrollPane implements CTree {
             }
           }
         }
+        switch(e.getID()) {
+        case MouseEvent.MOUSE_PRESSED:
+          if(e.getButton() == MouseEvent.BUTTON1) {
+            // We have to assume that the mouse button 1 is the one and only to trigger mouse selection events.
+            TreeSelectionModel selectionModel = getSelectionModel();
+            if(selectionModel.getSelectionCount() == 1) {
+              if(selectionModel.isRowSelected(row)) {
+                // This is to satisfy the fact that re-clicking on the sole-selected node should re-trigger selection
+                selectionModel.clearSelection();
+              }
+            }
+          }
+          break;
+        }
         return super.processMouseOnTreeRenderer(row, e, cellSize);
       }
       protected Graphics graphics;
@@ -382,7 +396,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
   }
 
   public Container getClientArea() {
-    return treeTable;
+    return treeTable.getInnerTable();
   }
 
   public void clearSelection() {

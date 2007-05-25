@@ -2065,11 +2065,11 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
-  int minSelectionRow = ((CTree)handle).getSelectionModel().getMinSelectionRow();
-  if(minSelectionRow == -1) {
+  int selectionRow = ((CTree)handle).getSelectionModel().getLeadSelectionRow();
+  if(selectionRow == -1) {
     return;
   }
-  ((CTree)handle).ensureRowVisible(minSelectionRow);
+  ((CTree)handle).ensureRowVisible(selectionRow);
 }
 
 //void showWidget (boolean visible) {
@@ -3512,7 +3512,7 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.DefaultSelection) && ((MouseEvent)e).getClickCount() == 2) { super.processEvent(e); return; } break;
+  case MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.DefaultSelection) || ((MouseEvent)e).getClickCount() != 2) { super.processEvent(e); return; } break;
   case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }

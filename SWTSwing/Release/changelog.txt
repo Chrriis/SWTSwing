@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- A file can now be launched.
 - Right mouse click selects the table row if it is not selected.
 - Right mouse click selects the tree node if it is not selected.
 - Multiple clicks on the same tree node triggers new selection events.

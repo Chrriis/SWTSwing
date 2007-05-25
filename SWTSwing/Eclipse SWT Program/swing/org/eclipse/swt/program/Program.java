@@ -11,6 +11,9 @@
 package org.eclipse.swt.program;
 
  
+import java.awt.Desktop;
+import java.io.File;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.internal.swing.Utils;
@@ -89,10 +92,8 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  Utils.notImplemented();
-	ProcessBuilder pb = new ProcessBuilder(new String[] {fileName});
   try {
-    pb.start();
+    Desktop.getDesktop().open(new File(fileName));
     return true;
   } catch(Exception e) {
     return false;

@@ -138,7 +138,8 @@ class CTreeImplementation extends JScrollPane implements CTree {
         }
         switch(e.getID()) {
         case MouseEvent.MOUSE_PRESSED:
-          if(e.getButton() == MouseEvent.BUTTON1) {
+          switch(e.getButton()) {
+          case MouseEvent.BUTTON1: {
             // We have to assume that the mouse button 1 is the one and only to trigger mouse selection events.
             TreeSelectionModel selectionModel = getSelectionModel();
             if(selectionModel.getSelectionCount() == 1) {
@@ -147,6 +148,16 @@ class CTreeImplementation extends JScrollPane implements CTree {
                 selectionModel.clearSelection();
               }
             }
+            break;
+          }
+          case MouseEvent.BUTTON3: {
+            // We have to assume that popup menus are triggered with the mouse button 3.
+            TreeSelectionModel selectionModel = getSelectionModel();
+            if(!selectionModel.isRowSelected(row)) {
+              selectionModel.setSelectionPath(getPathForRow(row));
+            }
+            break;
+          }
           }
           break;
         }

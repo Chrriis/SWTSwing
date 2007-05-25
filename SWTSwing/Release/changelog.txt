@@ -7,7 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
-- Multiple clicks on the same node triggers new selection events.
+- Right mouse click selects the tree node if it is not selected.
+- Multiple clicks on the same tree node triggers new selection events.
 - Table check box selection is implemented.
 - Scroll bar visibility now affect the parent scrollpane policies.
 - Table items were not removed properly when removing a range.

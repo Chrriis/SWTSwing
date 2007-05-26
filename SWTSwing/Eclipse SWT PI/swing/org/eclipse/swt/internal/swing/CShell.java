@@ -215,7 +215,7 @@ class CShellFrame extends JFrame implements CShell {
     });
   }
 
-  protected boolean isPaintActive = true;
+  protected boolean isPaintActive;
   
   public void paint(Graphics g) {
     if(isPaintActive) {
@@ -225,6 +225,7 @@ class CShellFrame extends JFrame implements CShell {
   
   public void show() {
     if(!isVisible()) {
+      isPaintActive = true;
       boolean isEventDispatchThread = SwingUtilities.isEventDispatchThread();
       if(isEventDispatchThread) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -237,8 +238,10 @@ class CShellFrame extends JFrame implements CShell {
       setFocusableWindowState((handle.getStyle() & SWT.NO_FOCUS) == 0);
       getModalityHandler().setEnabled(true);
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...
-      paint(getGraphics());
-      isPaintActive = !isEventDispatchThread;
+      if(isEventDispatchThread) {
+        paint(getGraphics());
+        isPaintActive = false;
+      }
     }
   }
 
@@ -553,7 +556,7 @@ class CShellDialog extends JDialog implements CShell {
     });
   }
 
-  protected boolean isPaintActive = true;
+  protected boolean isPaintActive;
   
   public void paint(Graphics g) {
     if(isPaintActive) {
@@ -563,6 +566,7 @@ class CShellDialog extends JDialog implements CShell {
   
   public void show() {
     if(!isVisible()) {
+      isPaintActive = true;
       boolean isEventDispatchThread = SwingUtilities.isEventDispatchThread();
       if(isEventDispatchThread) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -575,8 +579,10 @@ class CShellDialog extends JDialog implements CShell {
       setFocusableWindowState((handle.getStyle() & SWT.NO_FOCUS) == 0);
       getModalityHandler().setEnabled(true);
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...
-      paint(getGraphics());
-      isPaintActive = !isEventDispatchThread;
+      if(isEventDispatchThread) {
+        paint(getGraphics());
+        isPaintActive = false;
+      }
     }
   }
 

@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- A Border is shown for a tool shell with trimming.
 - Stroke attributes in GC were not always used.
 - GC painting to a frame when it opens does not get overwritten by some paint events.
 - A file can now be launched.

@@ -46,6 +46,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 
 import org.eclipse.swt.SWT;
@@ -100,6 +101,8 @@ class CShellFrame extends JFrame implements CShell {
         JRootPane rootPane = getRootPane();
         rootPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
         ComponentBorderResizer.handle(this, rootPane);
+      } else if((style & SWT.TOOL) != 0 && (style & SWT.NO_TRIM) == 0) {
+        rootPane.setBorder(BorderFactory.createLineBorder(UIManager.getColor("controlDkShadow")));
       }
     }
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
@@ -429,6 +432,8 @@ class CShellDialog extends JDialog implements CShell {
         JRootPane rootPane = getRootPane();
         rootPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
         ComponentBorderResizer.handle(this, rootPane);
+      } else if((style & SWT.TOOL) != 0 && (style & SWT.NO_TRIM) == 0) {
+        rootPane.setBorder(BorderFactory.createLineBorder(UIManager.getColor("controlDkShadow")));
       }
     }
     contentPane = getContentPane();

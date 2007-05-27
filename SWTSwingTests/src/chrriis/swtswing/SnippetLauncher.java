@@ -367,7 +367,7 @@ public class SnippetLauncher {
     }), new SnippetCategory("Tool Tips", new Snippet[] {
       new Snippet(41, "create tool tips for a tab folder, tool bar and control"),
       new Snippet(216, "show a tool tip inside a rectangle"),
-/**/      new NotWorkingSnippet(125, "create emulated tool tips for items in a table"),
+      new Snippet(125, "create emulated tool tips for items in a table"),
       new Snippet(225, "create a balloon tooltip for a tray item"),
     }), new SnippetCategory("Tracker", new Snippet[] {
 /**/      new NotWorkingSnippet(23, "create a tracker (drag on mouse down)"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 13;
+  protected static int snippetNumber = 125;
 
   protected static boolean isRealDispatch = true;
 

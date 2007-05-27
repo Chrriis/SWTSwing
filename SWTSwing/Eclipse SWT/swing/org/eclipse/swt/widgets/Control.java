@@ -4106,6 +4106,52 @@ private volatile long mouseHoverTimeStamp;
 private volatile Thread mouseHoverThread;
 private java.awt.event.MouseEvent mouseHoverEvent;
 
+void adjustMouseHoverState(java.awt.event.MouseEvent me) {
+  long now = System.currentTimeMillis();
+  mouseHoverTimeStamp = now + 500;
+  mouseHoverEvent = me;
+  if(mouseHoverThread == null) {
+    mouseHoverThread = new Thread("Mouse Hover Thread") {
+      public void run() {
+        while(mouseHoverThread == this) {
+          try {
+            sleep(Math.max(50, mouseHoverTimeStamp - System.currentTimeMillis()));
+          } catch(Exception e) {}
+          if(mouseHoverThread != this) {
+            return;
+          }
+          if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
+            final Thread t = this;
+            SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                if(mouseHoverThread != t) {
+                  return;
+                }
+                if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
+                  mouseHoverThread = null;
+                  java.awt.event.MouseEvent me = mouseHoverEvent;
+                  mouseHoverEvent = null;
+                  // TODO: the point is incorrect when the wheel mouse is used: cf snippet125
+                  if(!isDisposed() && me.getComponent().contains(me.getPoint())) {
+                    UIThreadUtils.startExclusiveSection(getDisplay());
+                    if(isDisposed()) {
+                      UIThreadUtils.stopExclusiveSection();
+                      return;
+                    }
+                    sendEvent(SWT.MouseHover, createMouseEvent(me, false));
+                    UIThreadUtils.stopExclusiveSection();
+                  }
+                }
+              }
+            });
+          }
+        }
+      }
+    };
+    mouseHoverThread.start();
+  }
+}
+
 /**
  * The entry point for callbacks 
  * (Warning: This method is platform dependent)
@@ -4166,6 +4212,7 @@ public void processEvent(AWTEvent e) {
           mwe.consume();
         }
       }
+      adjustMouseHoverState((java.awt.event.MouseEvent)e);
       return;
     }
     break;
@@ -4216,48 +4263,7 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.MouseEvent.MOUSE_MOVED: {
     java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
     sendEvent(SWT.MouseMove, createMouseEvent(me, false));
-    long now = System.currentTimeMillis();
-    mouseHoverTimeStamp = now + 500;
-    mouseHoverEvent = me;
-    if(mouseHoverThread == null) {
-      mouseHoverThread = new Thread("Mouse Hover Thread") {
-        public void run() {
-          while(mouseHoverThread == this) {
-            try {
-              sleep(Math.max(50, mouseHoverTimeStamp - System.currentTimeMillis()));
-            } catch(Exception e) {}
-            if(mouseHoverThread != this) {
-              return;
-            }
-            if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
-              final Thread t = this;
-              SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                  if(mouseHoverThread != t) {
-                    return;
-                  }
-                  if(mouseHoverTimeStamp - System.currentTimeMillis() < 0) {
-                    mouseHoverThread = null;
-                    java.awt.event.MouseEvent me = mouseHoverEvent;
-                    mouseHoverEvent = null;
-                    if(!isDisposed() && me.getComponent().contains(me.getPoint())) {
-                      UIThreadUtils.startExclusiveSection(getDisplay());
-                      if(isDisposed()) {
-                        UIThreadUtils.stopExclusiveSection();
-                        return;
-                      }
-                      sendEvent(SWT.MouseHover, createMouseEvent(me, false));
-                      UIThreadUtils.stopExclusiveSection();
-                    }
-                  }
-                }
-              });
-            }
-          }
-        }
-      };
-      mouseHoverThread.start();
-    }
+    adjustMouseHoverState(me);
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
@@ -4289,7 +4295,11 @@ public void processEvent(AWTEvent e) {
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
-  case java.awt.event.MouseEvent.MOUSE_WHEEL: sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
+  case java.awt.event.MouseEvent.MOUSE_WHEEL: {
+    sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false));
+    adjustMouseHoverState((java.awt.event.MouseEvent)e);
+    break;
+  }
   case java.awt.event.MouseEvent.MOUSE_ENTERED: sendEvent(SWT.MouseEnter, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
   case java.awt.event.MouseEvent.MOUSE_EXITED:
     mouseHoverThread = null;
@@ -4366,13 +4376,20 @@ static final Point DEFAULT_EVENT_OFFSET = new Point(0, 0);
 
 Point getInternalOffset() {
   Component clientArea = ((CControl)handle).getClientArea();
-  // Code is duplicated in GC.getGraphics()
+  // Code is duplicated in GC.getGraphics() in inverse
   if(clientArea != handle) {
     if(clientArea.getParent() instanceof JViewport) {
-      JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
+      JViewport viewport = (JViewport)clientArea.getParent();
+      int offsetX = 0;
+      int offsetY = 0;
+      java.awt.Point viewPosition = viewport.getViewPosition();
+      offsetX -= viewPosition.x;
+      offsetY -= viewPosition.y;
+      JViewport columnHeader = ((JScrollPane)viewport.getParent()).getColumnHeader();
       if(columnHeader != null && columnHeader.isVisible()) {
-        return new Point(0, columnHeader.getHeight());
+        offsetY += columnHeader.getHeight();
       }
+      return new Point(offsetX, offsetY);
     }
   }
   return DEFAULT_EVENT_OFFSET;
@@ -4453,11 +4470,12 @@ Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputStat
   Event event = new Event();
   Container container = handle;
   java.awt.Point point = me.getPoint();
+  Component component = me.getComponent();
   if(container instanceof RootPaneContainer) {
     container = ((RootPaneContainer)container).getContentPane();
-    point = SwingUtilities.convertPoint(me.getComponent(), point, container);
+    point = SwingUtilities.convertPoint(component, point, container);
   } else {
-    point = SwingUtilities.convertPoint(me.getComponent(), point, ((CControl)handle).getClientArea());
+    point = SwingUtilities.convertPoint(component, point, ((CControl)handle).getClientArea());
   }
   Point offset = getInternalOffset();
   event.x = point.x + offset.x;

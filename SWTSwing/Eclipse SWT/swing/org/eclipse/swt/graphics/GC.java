@@ -3956,12 +3956,20 @@ Graphics2D getGraphics() {
   }
   isSwingPainting = clientArea instanceof JComponent && Boolean.TRUE.equals(((JComponent)clientArea).getClientProperty(Utils.SWTSwingPaintingClientProperty));
   if(g != null) {
+    // Code is duplicated in Control.getInternalOffset() in inverse
     if(clientArea != container) {
       if(clientArea.getParent() instanceof JViewport) {
-        JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
+        JViewport viewport = (JViewport)clientArea.getParent();
+        JViewport columnHeader = ((JScrollPane)viewport.getParent()).getColumnHeader();
+        int offsetX = 0;
+        int offsetY = 0;
+        java.awt.Point viewPosition = viewport.getViewPosition();
+        offsetX += viewPosition.x;
+        offsetY += viewPosition.y;
         if(columnHeader != null && columnHeader.isVisible()) {
-          g.translate(0, -columnHeader.getHeight());
+          offsetY -= columnHeader.getHeight();
         }
+        g.translate(offsetX, offsetY);
       }
     }
   }

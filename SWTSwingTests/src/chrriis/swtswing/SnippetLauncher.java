@@ -320,7 +320,7 @@ public class SnippetLauncher {
       new Snippet(3, "find a table cell from mouse down (SWT.FULL_SELECTION)"),
       new Snippet(110, "find a table cell from mouse down (works for any table style)"),
       new Snippet(101, "insert a table item (at an index)"),
-/**/      new NotWorkingSnippet(106, "insert a table column (at an index)"),
+      new Snippet(106, "insert a table column (at an index)"),
 /**/      new NotWorkingSnippet(181, "make columns reorderable by dragging"),
 /**/      new PartiallyWorkingSnippet(126, "place arbitrary controls in a table"),
       new Snippet(64, "print selected items in a table"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 3;
+  protected static int snippetNumber = 111;
 
   protected static boolean isRealDispatch = true;
 

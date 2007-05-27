@@ -648,6 +648,10 @@ class CTableImplementation extends JScrollPane implements CTable {
   public int getTopIndex() {
     return rowAtPoint(new Point(0, 0));
   }
+  
+  public void moveColumn(int column, int targetColumn) {
+    table.moveColumn(column, targetColumn);
+  }
 
   public void setFont(Font font) {
     super.setFont(font);
@@ -761,5 +765,7 @@ public interface CTable extends CComposite {
   public void setTopIndex(int index);
 
   public int getTopIndex();
+  
+  public void moveColumn(int column, int targetColumn);
 
 }

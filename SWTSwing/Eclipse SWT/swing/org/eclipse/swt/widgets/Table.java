@@ -563,9 +563,17 @@ void createItem (TableColumn column, int index) {
     // TODO: remove a first bogus column? (3)
     columnModel.removeColumn(columnModel.getColumn(0));
   }
+  columnList.add(index, column);
+  for(int i=columnModel.getColumnCount()-1; i>=0; i--) {
+    javax.swing.table.TableColumn tColumn = columnModel.getColumn(i);
+    int modelIndex = tColumn.getModelIndex();
+    if(modelIndex >= index) {
+      tColumn.setModelIndex(modelIndex + 1);
+    }
+  }
   columnModel.addColumn(tableColumn);
   tableColumn.setModelIndex(index);
-  columnList.add(index, column);
+  ((CTable)handle).moveColumn(getColumnCount()-1, index);
   // TODO: check it is enough
   handle.repaint();
 }

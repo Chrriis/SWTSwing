@@ -317,7 +317,7 @@ public class SnippetLauncher {
       new Snippet(201, "create a table with 1,000,000 items (lazy, page size 64)"),
       new Snippet(7, "create a table (lazy with a thread)"),
       new Snippet(113, "detect a selection or check event in a table (SWT.CHECK)"),
-/**/      new NotWorkingSnippet(3, "find a table cell from mouse down (SWT.FULL_SELECTION)"),
+      new Snippet(3, "find a table cell from mouse down (SWT.FULL_SELECTION)"),
       new Snippet(110, "find a table cell from mouse down (works for any table style)"),
       new Snippet(101, "insert a table item (at an index)"),
 /**/      new NotWorkingSnippet(106, "insert a table column (at an index)"),
@@ -390,7 +390,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 125;
+  protected static int snippetNumber = 3;
 
   protected static boolean isRealDispatch = true;
 

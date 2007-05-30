@@ -122,11 +122,11 @@ protected void checkSubclass () {
 }
 
 void createWidget () {
-	if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-		trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
+	if (GeneralUtils.isEqualOrHigherVM(1.6) == false) return;
+	
+	trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
 	//  trayIcon.setImageAutoSize(true);
-		trayIcon.addMouseListener(new MouseAdapter() {
-	}  
+	trayIcon.addMouseListener(new MouseAdapter() {
     protected boolean processMenuEvent(MouseEvent e) {
       switch(e.getClickCount()) {
       case 1:

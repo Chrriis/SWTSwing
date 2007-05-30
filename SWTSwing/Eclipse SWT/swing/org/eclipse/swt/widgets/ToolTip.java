@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.awt.TrayIcon.MessageType;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.swing.GeneralUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -435,7 +436,8 @@ public void setVisible (boolean visible) {
     Utils.notImplemented();
   } else {
     if(visible) {
-      MessageType messageType = null;
+if (GeneralUtils.isEqualOrHigherVM(1.6)) {
+		      MessageType messageType = null;
       if((style & SWT.ICON_ERROR) != 0) {
         messageType = MessageType.ERROR;
       } else if((style & SWT.ICON_WARNING) != 0) {
@@ -446,6 +448,7 @@ public void setVisible (boolean visible) {
         messageType = MessageType.NONE;
       }
       item.trayIcon.displayMessage(text, message, messageType);
+	}
       sendEvent (SWT.Show);
     } else {
       Utils.notImplemented();

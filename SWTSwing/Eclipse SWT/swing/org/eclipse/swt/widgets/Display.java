@@ -65,6 +65,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CShell;
+import org.eclipse.swt.internal.swing.GeneralUtils;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
@@ -297,7 +298,17 @@ public class Display extends Device {
               Component c = hoveredWindow.findComponentAt(mouseLocation.x, mouseLocation.y);
               mouseLocation = SwingUtilities.convertPoint(hoveredWindow, mouseLocation, c);
               if(c != null) {
-                c.dispatchEvent(new MouseWheelEvent(c, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mouseLocation.x, mouseLocation.y, mwe.getXOnScreen(), mwe.getYOnScreen(), mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
+				if (GeneralUtils.isEqualOrHigherVM(1.6)) {
+					c
+							.dispatchEvent(new MouseWheelEvent(c, mwe.getID(),
+									mwe.getWhen(), mwe.getModifiers(),
+									mouseLocation.x, mouseLocation.y, mwe
+											.getXOnScreen(),
+									mwe.getYOnScreen(), mwe.getClickCount(),
+									mwe.isPopupTrigger(), mwe.getScrollType(),
+									mwe.getScrollAmount(), mwe
+											.getWheelRotation()));
+				}                
               }
             }
             break;
@@ -1518,9 +1529,11 @@ static java.awt.Image getImage(Icon icon) {
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
-  if (!SystemTray.isSupported()) {
-    return null;
-  }
+if (GeneralUtils.isEqualOrHigherVM(1.6)) {
+	if (!SystemTray.isSupported()) {
+		return null;
+	}
+}  
 	return tray = new Tray (this, SWT.NONE);
 }
 

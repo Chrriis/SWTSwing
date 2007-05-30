@@ -56,6 +56,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
+import org.eclipse.swt.internal.swing.GeneralUtils;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
@@ -4208,8 +4209,16 @@ public void processEvent(AWTEvent e) {
         Container cParent = c.getParent();
         if(cParent != null) {
           MouseWheelEvent mwe = (MouseWheelEvent)e;
-          cParent.dispatchEvent(new MouseWheelEvent(cParent, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mwe.getX() + cParent.getX(), mwe.getY() + cParent.getY(), mwe.getXOnScreen(), mwe.getYOnScreen(), mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
-          mwe.consume();
+		if (GeneralUtils.isEqualOrHigherVM(1.6)) {
+			cParent.dispatchEvent(new MouseWheelEvent(cParent, mwe.getID(), mwe
+					.getWhen(), mwe.getModifiers(),
+					mwe.getX() + cParent.getX(), mwe.getY() + cParent.getY(),
+					mwe.getXOnScreen(), mwe.getYOnScreen(),
+					mwe.getClickCount(), mwe.isPopupTrigger(), mwe
+							.getScrollType(), mwe.getScrollAmount(), mwe
+							.getWheelRotation()));
+		}          
+		mwe.consume();
         }
       }
       adjustMouseHoverState((java.awt.event.MouseEvent)e);

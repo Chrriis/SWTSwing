@@ -16,6 +16,7 @@ import java.io.File;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.internal.swing.GeneralUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -93,8 +94,10 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
   try {
-    Desktop.getDesktop().open(new File(fileName));
-    return true;
+	if (GeneralUtils.isEqualOrHigherVM(1.6)) {
+		Desktop.getDesktop().open(new File(fileName));
+	}    
+	return true;
   } catch(Exception e) {
     return false;
   }

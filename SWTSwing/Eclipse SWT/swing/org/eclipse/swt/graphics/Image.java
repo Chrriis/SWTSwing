@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.internal.swing.GeneralUtils;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -1055,6 +1056,13 @@ void init(Device device, int width, int height) {
 }
 
 static int[] init(Device device, Image image, ImageData data) {
+	// Incredible, all I left from the many modifications and different
+	// approaches I tried is only one line of code :)
+	image.handle = GeneralUtils.imageData2BufferedImage(data);
+	// I didn't remove the stuff below. So we can revert in case we find some major flaw in the current solution.
+	if (true) return null;
+	
+	
   if (image != null) image.device = device;
   image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
   ImageData transparencyMask = data.getTransparencyMask();

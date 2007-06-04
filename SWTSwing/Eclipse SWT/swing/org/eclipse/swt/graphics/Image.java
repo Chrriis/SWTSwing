@@ -1058,7 +1058,13 @@ void init(Device device, int width, int height) {
 }
 
 static void init(Device device, Image image, ImageData data) {
-//	image.handle = imageData2BufferedImage(data);
+//  BufferedImage bufferedImage;
+//  if (data.palette.isDirect) {
+//    bufferedImage = createBufferedImageDirectPalette(data, data.palette);
+//  } else {
+//    bufferedImage = createBufferedImageIndexPalette (data, data.palette);
+//  }
+//	image.handle = bufferedImage;
 //	image.device = null;
 //	if(true) return;
   if (image != null) image.device = device;
@@ -1528,13 +1534,6 @@ static BufferedImage duplicateImage(java.awt.Image handle) {
   g.drawImage(handle, 0, 0, null);
   g.dispose();
   return bHandle;
-}
-
-private static BufferedImage imageData2BufferedImage(ImageData data) {
-  if (data.palette.isDirect) {
-    return createBufferedImageDirectPalette(data, data.palette);
-  }
-  return createBufferedImageIndexPalette (data, data.palette);
 }
 
 private static BufferedImage createBufferedImageIndexPalette(ImageData data, PaletteData p) {

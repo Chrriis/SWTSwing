@@ -1059,11 +1059,15 @@ void init(Device device, int width, int height) {
 
 static void init(Device device, Image image, ImageData data) {
 //  BufferedImage bufferedImage;
-//  if (data.palette.isDirect) {
-//    bufferedImage = createBufferedImageDirectPalette(data, data.palette);
-//  } else {
-//    bufferedImage = createBufferedImageIndexPalette (data, data.palette);
-//  }
+////  if (data.palette.isDirect) {
+////    // This is some test code to write all the direct images to a given directory for further analysis
+////    try {
+////      javax.imageio.ImageIO.write(createBufferedImageDirectPalette(data, data.palette), "png", new java.io.File("C:\\tmp\\" + System.currentTimeMillis() + " - " + data.getTransparencyType() + " - " + data.palette.isDirect + ".png"));
+////    } catch(Exception e) {e.printStackTrace();}
+////    bufferedImage = createBufferedImageDirectPalette(data, data.palette);
+////  } else {
+////    bufferedImage = createBufferedImageIndexPalette (data, data.palette);
+////  }
 //	image.handle = bufferedImage;
 //	image.device = null;
 //	if(true) return;
@@ -1577,7 +1581,7 @@ private static BufferedImage createBufferedImageDirectPalette(ImageData data, Pa
   // TODO: Check if true: Still Transparency-Gradients may be
   // impossible with standard JavaIO & BufferedImages since
   // ColorModel.TRANSLUCENT is either opaque or transparent.
-  ColorModel cM = new DirectColorModel(data.depth, p.redMask, p.greenMask, p.blueMask, ColorModel.TRANSLUCENT);
+  ColorModel cM = new DirectColorModel(data.depth, p.redMask, p.greenMask, p.blueMask, 0);
   BufferedImage bi = new BufferedImage(cM, cM.createCompatibleWritableRaster(data.width, data.height), false, null);
   WritableRaster r = bi.getRaster();
   int[] pA = new int[4];

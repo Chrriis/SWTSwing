@@ -1057,8 +1057,10 @@ void init(Device device, int width, int height) {
   handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 }
 
-static int[] init(Device device, Image image, ImageData data) {
-//	image.handle = imageData2BufferedImage(data); if(true) return null;
+static void init(Device device, Image image, ImageData data) {
+//	image.handle = imageData2BufferedImage(data);
+//	image.device = null;
+//	if(true) return;
   if (image != null) image.device = device;
   image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
   ImageData transparencyMask = data.getTransparencyMask();
@@ -1093,7 +1095,6 @@ static int[] init(Device device, Image image, ImageData data) {
       image.handle.setRGB(x, y, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
     }
   }
-  return null;
 //	/*
 //	 * BUG in Windows 98:
 //	 * A monochrome DIBSection will display as solid black
@@ -1322,7 +1323,7 @@ static int[] init(Device device, Image image, ImageData data) {
 //	return result;
 }
 
-static int[] init(Device device, Image image, ImageData source, ImageData mask) {
+static void init(Device device, Image image, ImageData source, ImageData mask) {
 	ImageData imageData;
 	if (source.palette.isDirect) {
 		imageData = new ImageData(source.width, source.height, source.depth, source.palette);
@@ -1335,7 +1336,7 @@ static int[] init(Device device, Image image, ImageData source, ImageData mask) 
 	imageData.transparentPixel = source.transparentPixel;
 	imageData.maskPad = mask.scanlinePad;
 	imageData.maskData = mask.data;
-	return init(device, image, imageData);
+	init(device, image, imageData);
 }
 void init(Device device, ImageData i) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

@@ -3949,6 +3949,9 @@ Graphics2D getGraphics() {
   }
   if(!(drawable instanceof Control)) return handle;
   Container container = ((Control)drawable).handle;
+  if(container == null) {
+    return new NullGraphics();
+  }
   Container clientArea = ((CControl)container).getClientArea();
   Graphics2D g = (Graphics2D)clientArea.getGraphics();
   if(g != null) {

@@ -22,7 +22,6 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.internal.swing.GeneralUtils;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
@@ -45,7 +44,6 @@ public class TrayItem extends Item {
   Tray parent;
   ToolTip toolTip;
   boolean visible = true;
-  // TODO:  TrayIcon cannot be resolved to a type! Won't this break since we can't surround it with a version check?
   TrayIcon trayIcon;
   
 /**
@@ -122,11 +120,9 @@ protected void checkSubclass () {
 }
 
 void createWidget () {
-	if (GeneralUtils.isEqualOrHigherVM(1.6) == false) return;
-	
-	trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
-	//  trayIcon.setImageAutoSize(true);
-	trayIcon.addMouseListener(new MouseAdapter() {
+  trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
+//  trayIcon.setImageAutoSize(true);
+  trayIcon.addMouseListener(new MouseAdapter() {
     protected boolean processMenuEvent(MouseEvent e) {
       switch(e.getClickCount()) {
       case 1:
@@ -178,9 +174,7 @@ void createWidget () {
     }
   });
   try {
-	if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-		SystemTray.getSystemTray().add(trayIcon);
-	}    
+    SystemTray.getSystemTray().add(trayIcon);
   } catch(Exception e) {
     e.printStackTrace();
   }
@@ -239,10 +233,7 @@ public ToolTip getToolTip () {
  */
 public String getToolTipText () {
   checkWidget ();
-if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-	return trayIcon.getToolTip();
-}
-else return "Upgrade to most recent Java version!";
+  return trayIcon.getToolTip();
 }
 
 /**
@@ -353,9 +344,7 @@ void releaseWidget () {
   if (toolTip != null) toolTip.item = null;
   toolTip = null;
   if(visible) {
-	if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-		SystemTray.getSystemTray().remove(trayIcon);
-	}    
+    SystemTray.getSystemTray().remove(trayIcon);
   }
   // TODO: send hide event?
 }
@@ -402,9 +391,7 @@ public void setImage (Image image) {
   checkWidget ();
   if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
   super.setImage (image);
-if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-	trayIcon.setImage(image.handle);
-}  
+  trayIcon.setImage(image.handle);
 }
 
 /**
@@ -441,9 +428,7 @@ public void setToolTip (ToolTip toolTip) {
  */
 public void setToolTipText (String value) {
   checkWidget ();
-if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-	trayIcon.setToolTip(value);
-}  
+  trayIcon.setToolTip(value);
 }
 
 /**
@@ -463,18 +448,14 @@ public void setVisible (boolean visible) {
   this.visible = visible;
   if(visible) {
     try {
-	if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-		SystemTray.getSystemTray().add(trayIcon);
-	}      
-	sendEvent (SWT.Show);
+      SystemTray.getSystemTray().add(trayIcon);
+      sendEvent (SWT.Show);
     } catch(Exception e) {
       e.printStackTrace();
     }
   } else {
-	if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-		SystemTray.getSystemTray().remove(trayIcon);
-	}    
-	sendEvent (SWT.Hide);
+    SystemTray.getSystemTray().remove(trayIcon);
+    sendEvent (SWT.Hide);
   }
 }
 

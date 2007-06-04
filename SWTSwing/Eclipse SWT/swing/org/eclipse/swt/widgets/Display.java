@@ -65,7 +65,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CShell;
-import org.eclipse.swt.internal.swing.GeneralUtils;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
@@ -298,17 +297,7 @@ public class Display extends Device {
               Component c = hoveredWindow.findComponentAt(mouseLocation.x, mouseLocation.y);
               mouseLocation = SwingUtilities.convertPoint(hoveredWindow, mouseLocation, c);
               if(c != null) {
-				if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-					c
-							.dispatchEvent(new MouseWheelEvent(c, mwe.getID(),
-									mwe.getWhen(), mwe.getModifiers(),
-									mouseLocation.x, mouseLocation.y, mwe
-											.getXOnScreen(),
-									mwe.getYOnScreen(), mwe.getClickCount(),
-									mwe.isPopupTrigger(), mwe.getScrollType(),
-									mwe.getScrollAmount(), mwe
-											.getWheelRotation()));
-				}                
+                c.dispatchEvent(new MouseWheelEvent(c, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mouseLocation.x, mouseLocation.y, mwe.getXOnScreen(), mwe.getYOnScreen(), mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
               }
             }
             break;
@@ -1507,9 +1496,7 @@ public Image getSystemImage (int id) {
 }
 
 static java.awt.Image getImage(Icon icon) {
-  int type = BufferedImage.TYPE_INT_ARGB;
-  if (GeneralUtils.isEqualOrHigherVM(1.5)) {type = BufferedImage.TRANSLUCENT;}
-  BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), type);
+  BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TRANSLUCENT);
   Graphics g = image.getGraphics();
   icon.paintIcon(Utils.getDefaultComponent(), g, 0, 0);
   g.dispose();
@@ -1531,11 +1518,9 @@ static java.awt.Image getImage(Icon icon) {
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
-if (GeneralUtils.isEqualOrHigherVM(1.6)) {
-	if (!SystemTray.isSupported()) {
-		return null;
-	}
-}  
+  if (!SystemTray.isSupported()) {
+    return null;
+  }
 	return tray = new Tray (this, SWT.NONE);
 }
 

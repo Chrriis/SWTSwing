@@ -18,7 +18,10 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
+import java.awt.image.IndexColorModel;
 import java.awt.image.PixelGrabber;
+import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.util.Arrays;
 
@@ -28,7 +31,6 @@ import javax.swing.ImageIcon;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.internal.swing.GeneralUtils;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -1056,13 +1058,7 @@ void init(Device device, int width, int height) {
 }
 
 static int[] init(Device device, Image image, ImageData data) {
-	// Incredible, all I left from the many modifications and different
-	// approaches I tried is only one line of code :)
-	image.handle = GeneralUtils.imageData2BufferedImage(data);
-	// I didn't remove the stuff below. So we can revert in case we find some major flaw in the current solution.
-	if (true) return null;
-	
-	
+//	image.handle = imageData2BufferedImage(data); if(true) return null;
   if (image != null) image.device = device;
   image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
   ImageData transparencyMask = data.getTransparencyMask();
@@ -1531,6 +1527,85 @@ static BufferedImage duplicateImage(java.awt.Image handle) {
   g.drawImage(handle, 0, 0, null);
   g.dispose();
   return bHandle;
+}
+
+private static BufferedImage imageData2BufferedImage(ImageData data) {
+  if (data.palette.isDirect) {
+    return createBufferedImageDirectPalette(data, data.palette);
+  }
+  return createBufferedImageIndexPalette (data, data.palette);
+}
+
+private static BufferedImage createBufferedImageIndexPalette(ImageData data, PaletteData p) {
+  RGB[] rgbs = p.getRGBs();
+  byte[] red = new byte[rgbs.length];
+  byte[] green = new byte[rgbs.length];
+  byte[] blue = new byte[rgbs.length];
+  for(int i = 0; i < rgbs.length; i++) {
+    RGB rgb = rgbs[i];
+    red[i] = (byte) rgb.red;
+    green[i] = (byte) rgb.green;
+    blue[i] = (byte) rgb.blue;
+  }
+  ColorModel cM;
+  if(data.transparentPixel != -1) {
+    cM = new IndexColorModel(data.depth, rgbs.length, red, green, blue, data.transparentPixel);
+  } else {
+    cM = new IndexColorModel(data.depth, rgbs.length, red, green, blue);
+  }
+  BufferedImage bi = new BufferedImage(cM, cM.createCompatibleWritableRaster(data.width, data.height), false, null);
+  WritableRaster r = bi.getRaster();
+  int[] pA = new int[1];
+  for (int y = 0; y < data.height; y++) {
+    for (int x = 0; x < data.width; x++) {
+      int pixel = data.getPixel(x, y);
+      pA[0] = pixel;
+      r.setPixel(x, y, pA);
+    }
+  }
+  // System.out.println("data.transparentPixel: "
+  // + data.transparentPixel);
+  // System.out.println(colorModel);
+  // System.out.println(bufferedImage);
+  // System.out.println();
+  return bi;
+}
+
+private static BufferedImage createBufferedImageDirectPalette(ImageData data, PaletteData p) {
+  // Added ColorModel.TRANSLUCENT to create a ColorModel with
+  // transparency and resulting in a ARGB BufferedImage
+  // TODO: Check if true: Still Transparency-Gradients may be
+  // impossible with standard JavaIO & BufferedImages since
+  // ColorModel.TRANSLUCENT is either opaque or transparent.
+  ColorModel cM = new DirectColorModel(data.depth, p.redMask, p.greenMask, p.blueMask, ColorModel.TRANSLUCENT);
+  BufferedImage bi = new BufferedImage(cM, cM.createCompatibleWritableRaster(data.width, data.height), false, null);
+  WritableRaster r = bi.getRaster();
+  int[] pA = new int[4];
+  for (int y = 0; y < data.height; y++) {
+    for (int x = 0; x < data.width; x++) {
+      int pixel = data.getPixel(x, y);
+      RGB rgb = p.getRGB(pixel);
+      pA[0] = rgb.red;
+      pA[1] = rgb.green;
+      pA[2] = rgb.blue;
+      pA[3] = data.getAlpha(x, y);
+      // Line is a bugfix which is actually for Problems with
+      // detecting Transparency in BufferedImages. Also using the
+      // normal ImageIO.read(...) method results in this bug and
+      // can be tested using comment.png from Azureus
+      if (data.transparentPixel != -1 && pixel == data.transparentPixel) {
+        pA[3] = 0;
+      }
+      // System.out.println(pixelArray[3]);
+      r.setPixels(x, y, 1, 1, pA);
+    }
+  }
+  // System.out.println("data.transparentPixel: "
+  // + data.transparentPixel);
+  // System.out.println(colorModel);
+  // System.out.println(bufferedImage);
+  // System.out.println();
+  return bi;
 }
 
 }

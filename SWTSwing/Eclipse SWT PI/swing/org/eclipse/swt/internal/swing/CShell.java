@@ -895,8 +895,6 @@ public interface CShell extends CScrollable {
     protected boolean isEnabled;
     
     protected void adjustBlockedShells() {
-      if (GeneralUtils.isEqualOrHigherVM(1.6) == false) return;
-      
       Window[] windows = Window.getWindows();
       for(int i=0; i<windows.length; i++) {
         Window window = windows[i];

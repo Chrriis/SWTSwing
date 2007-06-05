@@ -1059,17 +1059,14 @@ void init(Device device, int width, int height) {
 
 static void init(Device device, Image image, ImageData data) {
 //  BufferedImage bufferedImage;
-////  if (data.palette.isDirect) {
-////    // This is some test code to write all the direct images to a given directory for further analysis
-////    try {
-////      javax.imageio.ImageIO.write(createBufferedImageDirectPalette(data, data.palette), "png", new java.io.File("C:\\tmp\\" + System.currentTimeMillis() + " - " + data.getTransparencyType() + " - " + data.palette.isDirect + ".png"));
-////    } catch(Exception e) {e.printStackTrace();}
-////    bufferedImage = createBufferedImageDirectPalette(data, data.palette);
-////  } else {
-////    bufferedImage = createBufferedImageIndexPalette (data, data.palette);
-////  }
+//  if (data.palette.isDirect) {
+//    bufferedImage = createBufferedImageDirectPalette(data, data.palette);
+//  } else {
+//    bufferedImage = createBufferedImageIndexPalette (data, data.palette);
+//  }
 //	image.handle = bufferedImage;
 //	image.device = null;
+////  SImageData.serialize(image, data);
 //	if(true) return;
   if (image != null) image.device = device;
   image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
@@ -1105,6 +1102,7 @@ static void init(Device device, Image image, ImageData data) {
       image.handle.setRGB(x, y, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
     }
   }
+//  SImageData.serialize(image, data);
 //	/*
 //	 * BUG in Windows 98:
 //	 * A monochrome DIBSection will display as solid black
@@ -1611,5 +1609,155 @@ private static BufferedImage createBufferedImageDirectPalette(ImageData data, Pa
   // System.out.println();
   return bi;
 }
+
+//public static class SImageData implements java.io.Serializable {
+//  public static class SPaletteData implements java.io.Serializable {
+//    public boolean isDirect;
+//    public RGB[] colors;
+//    public int redMask;
+//    public int greenMask;
+//    public int blueMask;
+//    public int redShift;
+//    public int greenShift;
+//    public int blueShift;
+//    SPaletteData(PaletteData data) {
+//      this.colors = data.colors;
+//      this.isDirect = data.isDirect;
+//      this.redMask = data.redMask;
+//      this.greenMask = data.greenMask;
+//      this.blueMask = data.blueMask;
+//      this.redShift = data.redShift;
+//      this.greenShift = data.greenShift;
+//      this.blueShift = data.blueShift;
+//    }
+//    public PaletteData createPaletteData() {
+//      PaletteData paletteData = new PaletteData(new RGB[0]);
+//      paletteData.colors = colors;
+//      paletteData.isDirect = isDirect;
+//      paletteData.redMask = redMask;
+//      paletteData.greenMask = greenMask;
+//      paletteData.blueMask = blueMask;
+//      paletteData.redShift = redShift;
+//      paletteData.greenShift = greenShift;
+//      paletteData.blueShift = blueShift;
+//      return paletteData;
+//    }
+//    public String toString() {
+//      StringBuilder sb = new StringBuilder("PaletteData:");
+//      try {
+//        java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
+//        for(int i=0; i<fields.length; i++) {
+//          java.lang.reflect.Field field = fields[i];
+//          sb.append("\r\n").append("    ").append(field.getName()).append(": ").append(field.get(this));
+//        }
+//      } catch(Exception e) {
+//        e.printStackTrace();
+//      }
+//      return sb.toString();
+//    }
+//  }
+//  public int width;
+//  public int height;
+//  public int depth;
+//  public int scanlinePad;
+//  public int bytesPerLine;
+//  public byte[] data;
+//  public SPaletteData palette;
+//  public int transparentPixel;
+//  public byte[] maskData;
+//  public int maskPad;
+//  public byte[] alphaData;
+//  public int alpha;
+//  public int type;
+//  public int x;
+//  public int y;
+//  public int disposalMethod;
+//  public int delayTime;
+//  SImageData(ImageData data) {
+//    this.width = data.width;
+//    this.height = data.height;
+//    this.depth = data.depth;
+//    this.scanlinePad = data.scanlinePad;
+//    this.bytesPerLine = data.bytesPerLine;
+//    this.data = data.data;
+//    if(data.palette != null) {
+//      this.palette = new SPaletteData(data.palette);
+//    }
+//    this.transparentPixel = data.transparentPixel;
+//    this.maskData = data.maskData;
+//    this.maskPad = data.maskPad;
+//    this.alphaData = data.alphaData;
+//    this.alpha = data.alpha;
+//    this.type = data.type;
+//    this.x = data.x;
+//    this.y = data.y;
+//    this.disposalMethod = data.disposalMethod;
+//    this.delayTime = data.delayTime;
+//  }
+//  public ImageData createImageData() {
+//    ImageData imageData = new ImageData();
+//    imageData.width = width;
+//    imageData.height = height;
+//    imageData.depth = depth;
+//    imageData.scanlinePad = scanlinePad;
+//    imageData.bytesPerLine = bytesPerLine;
+//    imageData.data = data;
+//    if(palette != null) {
+//      imageData.palette = palette.createPaletteData();
+//    }
+//    imageData.transparentPixel = transparentPixel;
+//    imageData.maskData = maskData;
+//    imageData.maskPad = maskPad;
+//    imageData.alphaData = alphaData;
+//    imageData.alpha = alpha;
+//    imageData.type = type;
+//    imageData.x = x;
+//    imageData.y = y;
+//    imageData.disposalMethod = disposalMethod;
+//    imageData.delayTime = delayTime;
+//    return imageData;
+//  }
+//  public String toString() {
+//    StringBuilder sb = new StringBuilder("ImageData: ");
+//    try {
+//      java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
+//      for(int i=0; i<fields.length; i++) {
+//        java.lang.reflect.Field field = fields[i];
+//        sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(field.get(this));
+//      }
+//    } catch(Exception e) {
+//      e.printStackTrace();
+//    }
+//    return sb.toString();
+//  }
+//  public static void serialize(Image image, ImageData data) {
+//    try {
+//      java.io.File tmpDir = new java.io.File(System.getProperty("java.io.tmpdir"), ".swtswing_img");
+//      tmpDir.mkdirs();
+//      long now = System.currentTimeMillis();
+//      javax.imageio.ImageIO.write(image.handle, "png", new java.io.File(tmpDir, now + ".png"));
+//      java.io.ObjectOutputStream out = new java.io.ObjectOutputStream(new java.io.BufferedOutputStream(new java.io.FileOutputStream(new java.io.File(tmpDir, now + ".bin"))));
+//      SImageData sImageData = new SImageData(data);
+//      out.writeObject(sImageData);
+//      out.close();
+//      java.io.OutputStream out2 = new java.io.BufferedOutputStream(new java.io.FileOutputStream(new java.io.File(tmpDir, now + ".txt")));
+//      out2.write(sImageData.toString().getBytes("UTF-8"));
+//      out2.close();
+//    } catch(Exception e) {
+//      e.printStackTrace();
+//    }
+//  }
+//  public static ImageData deserialize(java.io.File file) {
+//    try {
+//      java.io.ObjectInputStream in = new java.io.ObjectInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(file)));
+//      SImageData sImageData = (SImageData)in.readObject();
+//      in.close();
+//      return sImageData.createImageData();
+//    } catch(Exception e) {
+//      e.printStackTrace();
+//    }
+//    return null;
+//  }
+//}
 
 }

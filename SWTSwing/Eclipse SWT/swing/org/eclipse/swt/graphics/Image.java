@@ -677,7 +677,7 @@ public ImageData getImageData() {
   int width = handle.getWidth();
   ImageData imageData = new ImageData(width, handle.getHeight(), colorModel.getPixelSize(), paletteData);
   int height = handle.getHeight();
-  byte[] maskData = new byte[(width * height + 7) / 8];
+  byte[] maskData = new byte[(width + 7) / 8 * height];
   for(int x=width-1; x >= 0; x--) {
     for(int y=height-1; y >= 0; y--) {
       int rgb = handle.getRGB(x, y);
@@ -686,7 +686,7 @@ public ImageData getImageData() {
       int alpha = (rgb >> 24) & 0xFF;
       imageData.setAlpha(x, y, alpha);
       if(alpha != 0) {
-        int index = x + y * width;
+        int index = x + y * ((width + 7) / 8) * 8;
         maskData[index / 8] |= (byte)(1 << (7 - (index % 8)));
       }
     }

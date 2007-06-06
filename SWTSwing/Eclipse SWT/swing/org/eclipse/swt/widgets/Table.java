@@ -957,7 +957,7 @@ TableItem _getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-  return itemList.size();
+  return itemList == null? 0: itemList.size();
 }
 
 /**

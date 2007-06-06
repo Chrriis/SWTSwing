@@ -15,6 +15,7 @@ import java.awt.Rectangle;
 import javax.swing.Icon;
 import javax.swing.JScrollBar;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -40,6 +41,11 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
   }
 
   protected void init(int style) {
+    if((style & SWT.BORDER) != 0) {
+      setBorder(UIManager.getBorder("TextField.border"));
+    } else {
+      setBorder(null);
+    }
     setTabPlacement((style & SWT.BOTTOM) != 0? BOTTOM: TOP);
     setTabLayoutPolicy(SCROLL_TAB_LAYOUT);
     Utils.installMouseListener(this, handle);

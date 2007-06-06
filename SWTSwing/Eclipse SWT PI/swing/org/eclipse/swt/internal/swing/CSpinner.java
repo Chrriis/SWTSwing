@@ -9,9 +9,18 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Container;
 import java.awt.Image;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
+import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
@@ -48,14 +57,61 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
     init(style);
   }
 
+  protected KeyEvent keyEvent = null;
+
   protected void init(int style) {
+    JFormattedTextField textField = ((DefaultEditor)getEditor()).getTextField();
     if((style & SWT.READ_ONLY) != 0) {
-      ((DefaultEditor)getEditor()).getTextField().setEditable(false);
+      textField.setEditable(false);
     }
+//    if((style & SWT.BORDER) == 0) {
+//      setBorder(null);
+//      textField.setBorder(null);
+//    }
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
+    textField.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        keyEvent = e;
+      }
+      public void keyReleased(KeyEvent e) {
+        keyEvent = null;
+      }
+    });
+    AbstractDocument document = (AbstractDocument)textField.getDocument();
+    document.addDocumentListener(new DocumentListener() {
+      public void changedUpdate(DocumentEvent e) {
+        handle.processEvent(e);
+      }
+      public void insertUpdate(DocumentEvent e) {
+        handle.processEvent(e);
+      }
+      public void removeUpdate(DocumentEvent e) {
+        handle.processEvent(e);
+      }
+    });
+    document.setDocumentFilter(new DocumentFilter() {
+//    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+//    }
+    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+      TextFilterEvent filterEvent = new TextFilterEvent(this, text, offset, length, keyEvent);
+      handle.processEvent(filterEvent);
+      String s = filterEvent.getText();
+      if(s != null) {
+        super.replace(fb, offset, length, s, attrs);
+      }
+    }
+    public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+      TextFilterEvent filterEvent = new TextFilterEvent(this, "", offset, length, keyEvent);
+      handle.processEvent(filterEvent);
+      String s = filterEvent.getText();
+      if(s != null) {
+        super.replace(fb, offset, length, s, null);
+      }
+    }
+  });
   }
 
   public Container getClientArea() {

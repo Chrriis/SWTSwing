@@ -51,6 +51,16 @@ class CListImplementation extends JScrollPane implements CList {
 
   protected void init(int style) {
     setFont(list.getFont());
+    if((style & SWT.BORDER) == 0) {
+      setBorder(null);
+      list.setBorder(null);
+    }
+    if((style & SWT.H_SCROLL) == 0) {
+      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
+    }
+    if((style & SWT.V_SCROLL) == 0) {
+      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
+    }
     list.setSelectionMode((style & SWT.MULTI) != 0? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION: ListSelectionModel.SINGLE_SELECTION);
     Utils.installMouseListener(list, handle);
     Utils.installKeyListener(list, handle);
@@ -236,6 +246,11 @@ class CListImplementation extends JScrollPane implements CList {
     return list.getCellBounds(index, index);
   }
 
+  public void setEnabled(boolean enabled) {
+    super.setEnabled(enabled);
+    list.setEnabled(enabled);
+  }
+  
 }
 
 public interface CList extends CScrollable {

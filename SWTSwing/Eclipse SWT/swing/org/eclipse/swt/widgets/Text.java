@@ -28,8 +28,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CText;
+import org.eclipse.swt.internal.swing.TextFilterEvent;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
-import org.eclipse.swt.internal.swing.CText.FilterEvent;
 
 /**
  * Instances of this class are selectable user interface
@@ -1701,7 +1701,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 //}
 
 public void processEvent(EventObject e) {
-  if(e instanceof FilterEvent) {
+  if(e instanceof TextFilterEvent) {
     if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
   } else { super.processEvent(e); return; }
   UIThreadUtils.startExclusiveSection(getDisplay());
@@ -1710,8 +1710,8 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof FilterEvent) {
-    FilterEvent filterEvent = (FilterEvent)e;
+  if(e instanceof TextFilterEvent) {
+    TextFilterEvent filterEvent = (TextFilterEvent)e;
     filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
   }
   super.processEvent(e);

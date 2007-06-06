@@ -12,6 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.Container;
+import java.util.EventObject;
+
+import javax.swing.event.DocumentEvent;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -21,6 +24,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CSpinner;
+import org.eclipse.swt.internal.swing.TextFilterEvent;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
  * Instances of this class are selectable user interface
@@ -984,5 +989,48 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 //	}
 //	return super.wmScrollChild (wParam, lParam);
 //}
+
+String verifyText (String string, int start, int end, Event keyEvent) {
+  Event event = new Event ();
+  event.text = string;
+  event.start = start;
+  event.end = end;
+  if (keyEvent != null) {
+    event.character = keyEvent.character;
+    event.keyCode = keyEvent.keyCode;
+    event.stateMask = keyEvent.stateMask;
+  }
+  sendEvent (SWT.Verify, event);
+  if (!event.doit || isDisposed ()) return null;
+  return event.text;
+}
+
+public void processEvent(EventObject e) {
+  if(e instanceof TextFilterEvent) {
+    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+  } else { super.processEvent(e); return; }
+  UIThreadUtils.startExclusiveSection(getDisplay());
+  if(isDisposed()) {
+    UIThreadUtils.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  if(e instanceof TextFilterEvent) {
+    TextFilterEvent filterEvent = (TextFilterEvent)e;
+    filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
+  }
+  super.processEvent(e);
+  UIThreadUtils.stopExclusiveSection();
+}
+
+public void processEvent(DocumentEvent e) {
+  UIThreadUtils.startExclusiveSection(getDisplay());
+  if(isDisposed()) {
+    UIThreadUtils.stopExclusiveSection();
+    return;
+  }
+  sendEvent(SWT.Modify, new Event());
+  UIThreadUtils.stopExclusiveSection();
+}
 
 }

@@ -23,7 +23,6 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import javax.swing.GrayFilter;
 import javax.swing.ImageIcon;
@@ -193,8 +192,10 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
-      handle = srcImage.handle.getSubimage(0, 0, srcImage.handle.getWidth(), srcImage.handle.getHeight());
-      handle.setData(srcImage.handle.getData());
+		  handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		  Graphics g = handle.getGraphics();
+		  g.drawImage(srcImage.handle, 0, 0, null);
+		  g.dispose();
 			if (device.tracking) device.new_Object(this);	
 			return;
 		}
@@ -673,14 +674,25 @@ public Rectangle getBounds() {
 public ImageData getImageData() {
   ColorModel colorModel = handle.getColorModel();
   PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-  ImageData imageData = new ImageData(handle.getWidth(), handle.getHeight(), colorModel.getPixelSize(), paletteData);
-  for(int i=handle.getWidth()-1; i >= 0; i--) {
-    for(int j=handle.getHeight()-1; j >= 0; j--) {
-      int rgb = handle.getRGB(i, j);
+  int width = handle.getWidth();
+  ImageData imageData = new ImageData(width, handle.getHeight(), colorModel.getPixelSize(), paletteData);
+  int height = handle.getHeight();
+  byte[] maskData = new byte[(width * height + 7) / 8];
+  for(int x=width-1; x >= 0; x--) {
+    for(int y=height-1; y >= 0; y--) {
+      int rgb = handle.getRGB(x, y);
       int pixel = paletteData.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
-      imageData.setPixel(i, j, pixel);
+      imageData.setPixel(x, y, pixel);
+      int alpha = (rgb >> 24) & 0xFF;
+      imageData.setAlpha(x, y, alpha);
+      if(alpha != 0) {
+        int index = x + y * width;
+        maskData[index / 8] |= (byte)(1 << (7 - (index % 8)));
+      }
     }
   }
+  imageData.maskPad = 1;
+  imageData.maskData = maskData;
 //  ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //  ImageWriter writer = (ImageWriter)ImageIO.getImageWritersBySuffix("jpg").next();
 //  try {
@@ -1068,38 +1080,24 @@ static void init(Device device, Image image, ImageData data) {
 //	image.device = null;
 ////  SImageData.serialize(image, data);
 //	if(true) return;
-  if (image != null) image.device = device;
-  image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
-  ImageData transparencyMask = data.getTransparencyMask();
-  RGB argb;
-  if(data.transparentPixel < 0) {
-    argb = null;
-  } else {
-    RGB[] rgbs = data.getRGBs();
-    if(rgbs == null) {
-      // This case is found in RSSOwl: "View > Customize Toolbar..."
-      argb = data.palette.getRGB(data.transparentPixel);
-      // The data of the image does not seem to exist, so we initialize all the pixels (default to [0,0,0]) to the transparent color.
-      int[] pixels = new int[data.width * data.height];
-      Arrays.fill(pixels, data.transparentPixel);
-      data.setPixels(0, 0, pixels.length, pixels, 0);
-    } else {
-      argb = rgbs[data.transparentPixel];
-    }
+  image.device = device;
+  if(image.handle == null) {
+    image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
   }
+  ImageData transparencyMask = data.getTransparencyMask();
   for(int x=image.handle.getWidth()-1; x >= 0; x--) {
     for(int y=image.handle.getHeight()-1; y >= 0; y--) {
-      boolean hasAlphaMask = false;
-      // RSSOwl: Tools > Preference, some icons are not visible if the following test is not commented out.
-      // Snippet119: The cursor is not transparent if the following lines are commented out.
-      if(argb == null && transparencyMask != null) {
-    	  RGB alphaMask = data.palette.getRGB(transparencyMask.getPixel(x, y));
-    	  hasAlphaMask = alphaMask.red == 0 && alphaMask.green == 0 && alphaMask.blue == 0;
-      }
       RGB rgb = data.palette.getRGB(data.getPixel(x, y));
-      boolean equalArgb = argb != null && argb.red == rgb.red && argb.green == rgb.green && argb.blue == rgb.blue;
-	    int alpha = (hasAlphaMask || equalArgb) ? 0 : data.getAlpha(x, y);
-      image.handle.setRGB(x, y, alpha << 24 | rgb.red << 16 | rgb.green << 8 | rgb.blue);
+      int pixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+      rgb = transparencyMask.palette.getRGB(transparencyMask.getPixel(x, y));
+      int mask = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+      if(mask != 0) {
+        int alpha = data.getAlpha(x, y);
+        if(alpha > 0) {
+          pixel = pixel & 0x00FFFFFF | alpha << 24;
+          image.handle.setRGB(x, y, pixel);
+        }
+      }
     }
   }
 //  SImageData.serialize(image, data);
@@ -1340,12 +1338,12 @@ static void init(Device device, Image image, ImageData source, ImageData mask) {
 		imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
 		System.arraycopy(source.data, 0, imageData.data, 0, imageData.data.length);
 	}
-
 	imageData.transparentPixel = source.transparentPixel;
 	imageData.maskPad = mask.scanlinePad;
 	imageData.maskData = mask.data;
 	init(device, image, imageData);
 }
+
 void init(Device device, ImageData i) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, this, i);
@@ -1648,7 +1646,13 @@ private static BufferedImage createBufferedImageDirectPalette(ImageData data, Pa
 //        java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
 //        for(int i=0; i<fields.length; i++) {
 //          java.lang.reflect.Field field = fields[i];
-//          sb.append("\r\n").append("    ").append(field.getName()).append(": ").append(field.get(this));
+//          Object value = field.get(this);
+//          if(value instanceof Object[]) {
+//            value = java.util.Arrays.toString((Object[])value);
+//          } else if(value instanceof byte[]) {
+//            value = java.util.Arrays.toString((byte[])value);
+//          }
+//          sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(value);
 //        }
 //      } catch(Exception e) {
 //        e.printStackTrace();
@@ -1723,7 +1727,13 @@ private static BufferedImage createBufferedImageDirectPalette(ImageData data, Pa
 //      java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
 //      for(int i=0; i<fields.length; i++) {
 //        java.lang.reflect.Field field = fields[i];
-//        sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(field.get(this));
+//        Object value = field.get(this);
+//        if(value instanceof Object[]) {
+//          value = java.util.Arrays.toString((Object[])value);
+//        } else if(value instanceof byte[]) {
+//          value = java.util.Arrays.toString((byte[])value);
+//        }
+//        sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(value);
 //      }
 //    } catch(Exception e) {
 //      e.printStackTrace();

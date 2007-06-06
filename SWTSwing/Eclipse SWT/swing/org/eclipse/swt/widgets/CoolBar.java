@@ -652,6 +652,7 @@ void releaseChildren (boolean destroy) {
 }
 
 void removeControl (Control control) {
+  if(isDisposed()) return;
 	super.removeControl (control);
   int count = itemList.size();
   for (int i=0; i<count; i++) {

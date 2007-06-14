@@ -18,6 +18,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.ExpandAdapter;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CExpandBar;
 
 /**
@@ -252,6 +253,12 @@ public int indexOf (ExpandItem item) {
     if (itemList.get(i) == item) return i;
   }
   return -1;
+}
+
+Point minimumSize (int wHint, int hHint, boolean changed) {
+  java.awt.Dimension size = handle.getPreferredSize();
+  int width = ((CExpandBar)handle).getVerticalScrollBar().getPreferredSize().width;
+  return new Point(size.width + width, size.height);
 }
 
 void releaseChildren (boolean destroy) {

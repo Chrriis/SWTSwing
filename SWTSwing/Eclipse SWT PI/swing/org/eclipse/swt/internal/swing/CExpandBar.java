@@ -113,7 +113,7 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
   public int getSpacing() {
     return expandPane.getSpacing();
   }
-
+  
 }
 
 public interface CExpandBar extends CScrollable {

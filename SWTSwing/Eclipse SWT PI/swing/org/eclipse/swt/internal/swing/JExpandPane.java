@@ -55,15 +55,17 @@ class JExpandPaneLayout implements LayoutManager {
   }
   public Dimension preferredLayoutSize(Container parent) {
     int height = spacing;
+    int width = 0;
     int componentCount = parent.getComponentCount();
     for(int i=0; i<componentCount; i++) {
       Component component = parent.getComponent(i);
       if(component.isVisible()) {
         Dimension size = component.getPreferredSize();
+        width = Math.max(width, size.width);
         height += size.height + spacing;
       }
     }
-    return new Dimension(2 * spacing, height);
+    return new Dimension(2 * spacing + width, height);
   }
   public void addLayoutComponent(String name, Component comp) {
   }
@@ -160,7 +162,7 @@ public class JExpandPane extends JPanel {
 
   }
 
-  JExpandPaneLayout expandPaneLayout;
+  protected JExpandPaneLayout expandPaneLayout;
 
   public JExpandPane() {
     expandPaneLayout = new JExpandPaneLayout();

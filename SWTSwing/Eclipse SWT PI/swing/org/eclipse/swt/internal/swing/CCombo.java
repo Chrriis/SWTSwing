@@ -119,11 +119,14 @@ class CComboImplementation extends JComboBox implements CCombo {
   }
 
   public String getEditorText() {
-    return ((JTextComponent)getEditor().getEditorComponent()).getText();
+    Object selectedItem = getSelectedItem();
+    return selectedItem == null? "": String.valueOf(selectedItem);
+//    return ((JTextComponent)getEditor().getEditorComponent()).getText();
   }
 
   public void setEditorText(String text) {
-    ((JTextComponent)getEditor().getEditorComponent()).setText(text);
+    setSelectedItem(text);
+//    ((JTextComponent)getEditor().getEditorComponent()).setText(text);
   }
 
   public void copyEditor() {

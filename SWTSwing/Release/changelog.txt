@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Combo should now get/set the text of the selected item properly.
 - The font chooser is improved.
 - The size and style of the default font of the font chooser are now correct.
 - Selection events on the arrow of a drop down button are not sent twice anymore.

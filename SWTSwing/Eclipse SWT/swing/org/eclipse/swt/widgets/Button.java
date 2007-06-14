@@ -488,7 +488,7 @@ public void setAlignment (int alignment) {
     } else if((alignment & SWT.LEFT) != 0) {
       ((CButton)handle).setAlignment(SwingConstants.WEST);
     } else if((alignment & SWT.RIGHT) != 0) {
-      ((CButton)handle).setAlignment(SwingConstants.RIGHT);
+      ((CButton)handle).setAlignment(SwingConstants.EAST);
     }
 		return;
 	}

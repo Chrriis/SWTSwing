@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -22,7 +23,9 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CTabFolder;
+import org.eclipse.swt.internal.swing.CTabItem;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
@@ -271,6 +274,28 @@ public TabItem [] getSelection () {
 public int getSelectionIndex () {
 	checkWidget ();
 	return ((CTabFolder)handle).getSelectedIndex();
+}
+
+Control [] _getChildren () {
+  Component[] children = ((CControl)handle).getClientArea().getComponents();
+  if(children.length == 0) {
+    return new Control[0];
+  }
+  ArrayList controlsList = new ArrayList(children.length);
+  for(int i=0; i<children.length; i++) {
+    Component childComponent = children[i];
+    if(childComponent instanceof CTabItem) {
+      CTabItem cTabItem = ((CTabItem)childComponent);
+      childComponent = cTabItem.getContent();
+      if(childComponent != null) {
+        Control control = display.getControl(childComponent);
+        if (control != null && control != this) {
+          controlsList.add(control);
+        }
+      }
+    }
+  }
+  return (Control[])controlsList.toArray(new Control[0]);
 }
 
 /**

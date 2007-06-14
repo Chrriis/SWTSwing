@@ -13,6 +13,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -20,18 +21,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
+import javax.swing.plaf.basic.BasicArrowButton;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
-
-class CButtonCommon {
-
-  public static void applyStyle(AbstractButton component, int style) {
-    component.setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
-  }
-
-}
 
 class CButtonArrow extends ArrowButton implements CButton {
 
@@ -48,30 +42,35 @@ class CButtonArrow extends ArrowButton implements CButton {
   protected static int getDirection(int style) {
     int direction = 0;
     if((style & SWT.UP) != 0) {
-      direction = ArrowButton.NORTH;
+      direction = BasicArrowButton.NORTH;
     } else if((style & SWT.DOWN) != 0) {
-      direction = ArrowButton.SOUTH;
+      direction = BasicArrowButton.SOUTH;
     } else if((style & SWT.LEFT) != 0) {
-      direction = ArrowButton.WEST;
+      direction = BasicArrowButton.WEST;
     } else if((style & SWT.RIGHT) != 0) {
-      direction = ArrowButton.EAST;
+      direction = BasicArrowButton.EAST;
     }
     return direction;
   }
 
   public CButtonArrow(Button button, int style) {
     super(getDirection(style));
-    setMargin(new Insets(1, 1, 1, 1));
+//    setMargin(new Insets(1, 1, 1, 1));
     this.handle = button;
     init(style);
   }
   
   protected void init(int style) {
-    CButtonCommon.applyStyle(this, style);
+    setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Dimension getPreferredSize() {
@@ -88,11 +87,6 @@ class CButtonArrow extends ArrowButton implements CButton {
     setDirection(alignment);
   }
   
-  protected void fireActionPerformed(ActionEvent e) {
-    super.fireActionPerformed(e);
-    handle.processEvent(e);
-  }
-
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
@@ -124,16 +118,22 @@ class CButtonPush extends JButton implements CButton {
   }
 
   public CButtonPush(Button button, int style) {
+    setMargin(new Insets(2, 4, 2, 4));
     this.handle = button;
     init(style);
   }
   
   protected void init(int style) {
-    CButtonCommon.applyStyle(this, style);
+    setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -142,11 +142,6 @@ class CButtonPush extends JButton implements CButton {
 
   public void setAlignment(int alignment) {
     setHorizontalAlignment(alignment);
-  }
-
-  protected void fireActionPerformed(ActionEvent e) {
-    super.fireActionPerformed(e);
-    handle.processEvent(e);
   }
 
   public void setBackgroundImage(Image backgroundImage) {
@@ -176,16 +171,22 @@ class CButtonCheck extends JCheckBox implements CButton {
   }
 
   public CButtonCheck(Button button, int style) {
+    setMargin(new Insets(0, 0, 0, 0));
     this.handle = button;
     init(style);
   }
   
   protected void init(int style) {
-    CButtonCommon.applyStyle(this, style);
+    setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -196,11 +197,6 @@ class CButtonCheck extends JCheckBox implements CButton {
     setHorizontalAlignment(alignment);
   }
   
-  protected void fireActionPerformed(ActionEvent e) {
-    super.fireActionPerformed(e);
-    handle.processEvent(e);
-  }
-
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
@@ -228,16 +224,22 @@ class CButtonToggle extends JToggleButton implements CButton {
   }
 
   public CButtonToggle(Button button, int style) {
+    setMargin(new Insets(2, 4, 2, 4));
     this.handle = button;
     init(style);
   }
   
   protected void init(int style) {
-    CButtonCommon.applyStyle(this, style);
+    setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -246,11 +248,6 @@ class CButtonToggle extends JToggleButton implements CButton {
 
   public void setAlignment(int alignment) {
     setHorizontalAlignment(alignment);
-  }
-
-  protected void fireActionPerformed(ActionEvent e) {
-    super.fireActionPerformed(e);
-    handle.processEvent(e);
   }
 
   public void setBackgroundImage(Image backgroundImage) {
@@ -280,16 +277,32 @@ class CButtonRadio extends JIconRadioButton implements CButton {
   }
 
   public CButtonRadio(Button button, int style) {
+    setMargin(new Insets(0, 0, 0, 0));
     this.handle = button;
     init(style);
   }
 
   protected void init(int style) {
-    CButtonCommon.applyStyle(this, style);
+    setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if(!isSelected()) {
+          setSelected(true);
+        }
+        Component[] components = getParent().getComponents();
+        for(int i=0; i<components.length; i++) {
+          Component component = components[i];
+          if(component instanceof JRadioButton && component != CButtonRadio.this) {
+            ((JRadioButton)component).setSelected(false);
+          }
+        }
+        handle.processEvent(e);
+      }
+    });
   }
 
   public Container getClientArea() {
@@ -300,21 +313,6 @@ class CButtonRadio extends JIconRadioButton implements CButton {
     setHorizontalAlignment(alignment);
   }
   
-  protected void fireActionPerformed(ActionEvent e) {
-    if(!isSelected()) {
-      setSelected(true);
-    }
-    Component[] components = getParent().getComponents();
-    for(int i=0; i<components.length; i++) {
-      Component component = components[i];
-      if(component instanceof JRadioButton && component != this) {
-        ((JRadioButton)component).setSelected(false);
-      }
-    }
-    super.fireActionPerformed(e);
-    handle.processEvent(e);
-  }
-
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }

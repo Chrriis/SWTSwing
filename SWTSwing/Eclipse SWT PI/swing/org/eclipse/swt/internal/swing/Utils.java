@@ -46,6 +46,7 @@ public class Utils {
   protected static final String LIGHTPOPUPS_PROPERTY = "swt.swing.lightpopups";
   protected static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
   protected static final String LOOK_AND_FEEL_DECORATED_PROPERTY = "swt.swing.laf.decorated";
+  protected static final String DEFAULT_ARROW_BUTTONS_PROPERTY = "swt.swing.defaultarrowbuttons";
   protected static final String APPLEMENUBAR_PROPERTY = "apple.laf.useScreenMenuBar";
 
   public static final String SWTSwingPaintingClientProperty = "SWTSwingClientProperty";
@@ -69,6 +70,11 @@ public class Utils {
     return value == null? null: new Boolean(value);
   }
 
+  public static Boolean isUsingDefaultArrowButtons() {
+    String value = System.getProperty(DEFAULT_ARROW_BUTTONS_PROPERTY);
+    return value == null? null: new Boolean(value);
+  }
+  
   protected static Canvas panel = new Canvas();
 
   public static Component getDefaultComponent() {

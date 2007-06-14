@@ -270,7 +270,7 @@ public Rectangle getBounds (int index) {
 public boolean getChecked () {
 	checkWidget();
   if ((parent.style & SWT.CHECK) == 0) return false;
-  return handle.isGrayed();
+  return handle.isChecked();
 }
 
 /**

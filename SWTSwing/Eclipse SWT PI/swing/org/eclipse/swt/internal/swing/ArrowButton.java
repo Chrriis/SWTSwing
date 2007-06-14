@@ -7,147 +7,82 @@
  */
 package org.eclipse.swt.internal.swing;
 
-import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 
-import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollBar;
 import javax.swing.UIManager;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.metal.MetalScrollButton;
 
 /**
  * An arrow button.
  * @version 1.0 2003.08.03
  * @author Christopher Deckers (chrriis@nextencia.net)
  */
-public class ArrowButton extends JButton {
+public class ArrowButton extends BasicArrowButton {
 
-  private int direction;
-  private Color shadow = UIManager.getColor("ComboBox.buttonShadow");
-  private Color darkShadow = UIManager.getColor("ComboBox.buttonDarkShadow");
-  private Color highlight = UIManager.getColor("ComboBox.buttonHighlight");
-
+  protected BasicArrowButton arrowButton;
+  
   /**
    * Construct an arrow button using the current look and feel. 
    * @param direction the direction of the arrow.
    */
   public ArrowButton(int direction) {
-    this.direction = direction;
+    super(direction);
+    setBorder(UIManager.getBorder("Button.border"));
+    createArrowButton();
   }
   
-  /**
-   * Get the direction the arrow is pointing at.
-   * @return The direction of the arrow.
-   */
-  public int getDirection() {
-    return direction;
+  public void paint(Graphics g) {
+    if(arrowButton != null) {
+      Dimension size = getSize();
+      arrowButton.setSize(size);
+      arrowButton.paint(g);
+    } else {
+      super.paint(g);
+    }
   }
-
+  
   /**
    * Set the direction the arrow is pointing to.
    * @param direction The direction of the arrow.
    */
   public void setDirection(int direction) {
-    this.direction = direction;
-  }
-
-  /**
-   * Paint the button with an arrow on it. Using the installed colors for the current Look and Feel.
-   */
-  public void paint(java.awt.Graphics g) {
-    super.paint(g);
-    Color origColor;
-    boolean isPressed, isEnabled;
-    int w, h, size;
-    w = getSize().width;
-    h = getSize().height;
-    origColor = g.getColor();
-    isPressed = getModel().isPressed();
-    isEnabled = this.isEnabled();
-    size = Math.min((h - 4) / 3, (w - 4) / 3);
-    size = Math.max(size, 2);
-    paintTriangle(g, (w - size) / 2, (h - size) / 2, size, direction, isEnabled);
-    if (isPressed) {
-      g.translate(-1, -1);
+    if(direction == getDirection()) {
+      return;
     }
-    g.setColor(origColor);
+    super.setDirection(direction);
+    createArrowButton();
+    repaint();
   }
-  /**
-   * Paint the triangle.
-   * @param g The graphic.
-   * @param x The starting point x.
-   * @param y The starting point y.
-   * @param size the size.
-   * @param direction The direction the arrow is pointing.
-   * @param isEnabled True if the arrow is painted enabled.
-   */
-  public void paintTriangle(java.awt.Graphics g, int x, int y, int size, int direction, boolean isEnabled) {
-    java.awt.Color oldColor = g.getColor();
-    size = Math.max(size, 2);
-    int mid = (size / 2) - 1;
-    g.translate(x, y);
-    if (isEnabled) {
-      g.setColor(darkShadow);
-    } else {
-      g.setColor(shadow);
+  
+  protected void createArrowButton() {
+    // Scroll bar buttons are not always applicable... so we need an external parameter if the default behavior is not right.
+    Boolean isNotCreating = Utils.isUsingDefaultArrowButtons();
+    if(isNotCreating != null && isNotCreating.booleanValue()) {
+      return;
     }
-    switch (direction) {
-      case NORTH :
-        int i = 0;
-        for (i = 0; i < size; i++) {
-          g.drawLine(mid - i, i, mid + i, i);
+    arrowButton = null;
+    setPreferredSize(null);
+    JComponent component = new JScrollBar();
+    Component[] components = component.getComponents();
+    for(int i=0; i<components.length; i++) {
+      Component c = components[i];
+      if(c instanceof BasicArrowButton) {
+        if(isNotCreating == null && c instanceof MetalScrollButton) {
+          return;
         }
-        if (!isEnabled) {
-          g.setColor(highlight);
-          g.drawLine(mid - i + 2, i, mid + i, i);
-        }
-        break;
-      case SOUTH : {
-        if (!isEnabled) {
-          g.translate(1, 1);
-          g.setColor(highlight);
-          int j = 0;
-          for (i = size - 1; i >= 0; i--) {
-            g.drawLine(mid - i, j, mid + i, j);
-            j++;
-          }
-          g.translate(-1, -1);
-          g.setColor(shadow);
-        }
-        int j = 0;
-        for (i = size - 1; i >= 0; i--) {
-          g.drawLine(mid - i, j, mid + i, j);
-          j++;
-        }
-        break;
+        arrowButton = (BasicArrowButton)c;
+        arrowButton.setDirection(direction);
+        arrowButton.setModel(getModel());
+        int width = component.getPreferredSize().width;
+        setPreferredSize(new Dimension(width, width));
+        return;
       }
-      case WEST :
-        for (i = 0; i < size; i++) {
-          g.drawLine(i, mid - i, i, mid + i);
-        }
-        if (!isEnabled) {
-          g.setColor(highlight);
-          g.drawLine(i, mid - i + 2, i, mid + i);
-        }
-        break;
-      case EAST :
-        if (!isEnabled) {
-          g.translate(1, 1);
-          g.setColor(highlight);
-          int j = 0;
-          for (i = size - 1; i >= 0; i--) {
-            g.drawLine(j, mid - i, j, mid + i);
-            j++;
-          }
-          g.translate(-1, -1);
-          g.setColor(shadow);
-        }
-        int j = 0;
-        for (i = size - 1; i >= 0; i--) {
-          g.drawLine(j, mid - i, j, mid + i);
-          j++;
-        }
-        break;
     }
-    g.translate(-x, -y);
-    g.setColor(oldColor);
   }
 
 }

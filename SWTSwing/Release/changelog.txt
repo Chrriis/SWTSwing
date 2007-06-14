@@ -7,6 +7,12 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Selection events on the arrow of a drop down button are not sent twice anymore.
+- The arrow button now relies on the arrow button of the scroll bar for a better rendering.
+- Checkboxes and radio buttons have a smaller margin.
+- Preferred tab folder size is improved.
+- Tab folders now return properly its children.
+- TableItem now return the proper check state.
 - Spinner events are generated.
 - Various widget styles are implemented.
 - Image handling is much improved.

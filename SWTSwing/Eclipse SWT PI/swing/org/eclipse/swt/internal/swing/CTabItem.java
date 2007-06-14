@@ -8,9 +8,13 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.TabItem;
 
 class CTabItemImplementation extends JPanel implements CTabItem {
@@ -25,7 +29,22 @@ class CTabItemImplementation extends JPanel implements CTabItem {
 
   protected void init(int style) {
   }
+  
+  public Component getContent() {
+    if(getComponentCount() > 0) {
+      return getComponent(0);
+    }
+    return null;
+  }
 
+  public Dimension getPreferredSize() {
+    if(getComponentCount() > 0) {
+      Point size = ((CControl)getComponent(0)).getSWTHandle().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+      return new Dimension(size.x, size.y);
+    }
+    return super.getPreferredSize();
+  }
+  
 }
 
 public interface CTabItem {
@@ -37,5 +56,7 @@ public interface CTabItem {
       return new CTabItemImplementation(tabItem, style);
     }
   }
+  
+  public Component getContent();
 
 }

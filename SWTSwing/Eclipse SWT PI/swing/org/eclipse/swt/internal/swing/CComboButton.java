@@ -72,12 +72,24 @@ public class CComboButton extends JButton implements SwingConstants {
     addMouseMotionListener(mouseHandler);
     addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        boolean oldIsArrowMouseOver = isArrowMouseOver;
         isArrowMouseOver = false;
         getModel().setPressed(false);
+        isArrowMouseOver = oldIsArrowMouseOver;
       }
     });
   }
-
+  
+  public static boolean isArrowEvent(ActionEvent e) {
+    return "Arrow".equals(e.getActionCommand());
+  }
+  
+  protected void fireActionPerformed(ActionEvent event) {
+    if(isArrowMouseOver == isArrowEvent(event)) {
+      super.fireActionPerformed(event);
+    }
+  }
+  
   protected static Color shadow = UIManager.getColor("ComboBox.buttonShadow");
   protected static Color darkShadow = UIManager.getColor("ComboBox.buttonDarkShadow");
   protected static Color highlight = UIManager.getColor("ComboBox.buttonHighlight");

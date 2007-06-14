@@ -2478,6 +2478,7 @@ public void showSelection () {
 }
 
 static int checkStyle (int style) {
+  style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 

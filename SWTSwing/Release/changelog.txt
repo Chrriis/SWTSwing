@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Improved style bits for table and tree.
 - Spinner selection events are implemented.
 - Background inheritance is improved.
 - Expand bar has an appropriate preferred size.

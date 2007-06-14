@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -365,7 +366,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
     if((style & SWT.BORDER) != 0) {
       setBorder(UIManager.getBorder("TextField.border"));
     } else {
-      setBorder(null);
+      setBorder(BorderFactory.createEmptyBorder());
     }
 //    if((style & SWT.H_SCROLL) == 0) {
 //      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);

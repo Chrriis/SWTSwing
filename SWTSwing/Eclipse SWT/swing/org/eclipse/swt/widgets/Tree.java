@@ -154,7 +154,7 @@ static int checkStyle (int style) {
 //	* V_SCROLL bits so that the SWT style will match the
 //	* widget that Windows creates.
 //	*/
-//	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 

@@ -79,7 +79,8 @@ class CShellFrame extends JFrame implements CShell {
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
-    if((style & SWT.RESIZE) == 0) {
+    boolean isResizable = (style & SWT.RESIZE) != 0;
+    if(!isResizable) {
       setResizable(false);
     }
     setAlwaysOnTop((style & SWT.ON_TOP) != 0);
@@ -92,15 +93,17 @@ class CShellFrame extends JFrame implements CShell {
         setUndecorated(!isDecorated);
       }
     } else {
+      JRootPane rootPane = getRootPane();
       if(JFrame.isDefaultLookAndFeelDecorated()) {
-        getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+        rootPane.setWindowDecorationStyle(JRootPane.NONE);
       }
       setUndecorated(!isDecorated);
-      if((style & SWT.RESIZE) != 0 || (style & SWT.BORDER) != 0) {
-        JRootPane rootPane = getRootPane();
+      if(isResizable || (style & SWT.BORDER) != 0) {
         rootPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
-        ComponentBorderResizer.handle(this, rootPane);
-      } else if((style & SWT.TOOL) != 0 && (style & SWT.NO_TRIM) == 0) {
+        if(isResizable) {
+          ComponentBorderResizer.handle(this, rootPane);
+        }
+      } else if(!isDecorated && (style & SWT.NO_TRIM) == 0) {
         rootPane.setBorder(BorderFactory.createLineBorder(UIManager.getColor("controlDkShadow")));
       }
     }
@@ -413,7 +416,8 @@ class CShellDialog extends JDialog implements CShell {
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
-    if((style & SWT.RESIZE) == 0) {
+    boolean isResizable = (style & SWT.RESIZE) != 0;
+    if(!isResizable) {
       setResizable(false);
     }
     setAlwaysOnTop((style & SWT.ON_TOP) != 0);
@@ -426,15 +430,17 @@ class CShellDialog extends JDialog implements CShell {
         setUndecorated(!isDecorated);
       }
     } else {
+      JRootPane rootPane = getRootPane();
       if(JDialog.isDefaultLookAndFeelDecorated()) {
-        getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+        rootPane.setWindowDecorationStyle(JRootPane.NONE);
       }
       setUndecorated(!isDecorated);
-      if((style & SWT.RESIZE) != 0 || (style & SWT.BORDER) != 0) {
-        JRootPane rootPane = getRootPane();
+      if(isResizable || (style & SWT.BORDER) != 0) {
         rootPane.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.GRAY), BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY)));
-        ComponentBorderResizer.handle(this, rootPane);
-      } else if((style & SWT.TOOL) != 0 && (style & SWT.NO_TRIM) == 0) {
+        if(isResizable) {
+          ComponentBorderResizer.handle(this, rootPane);
+        }
+      } else if(!isDecorated && (style & SWT.NO_TRIM) == 0) {
         rootPane.setBorder(BorderFactory.createLineBorder(UIManager.getColor("controlDkShadow")));
       }
     }

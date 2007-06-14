@@ -15,6 +15,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -78,6 +80,11 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
       }
       public void keyReleased(KeyEvent e) {
         keyEvent = null;
+      }
+    });
+    addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        handle.processEvent(e);
       }
     });
     AbstractDocument document = (AbstractDocument)textField.getDocument();

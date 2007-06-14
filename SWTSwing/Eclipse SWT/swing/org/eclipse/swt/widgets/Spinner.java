@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import java.awt.Container;
 import java.util.EventObject;
 
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.DocumentEvent;
 
 import org.eclipse.swt.SWT;
@@ -1006,7 +1007,9 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof TextFilterEvent) {
+  if(e instanceof ChangeEvent) {
+    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+  } else if(e instanceof TextFilterEvent) {
     if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
   } else { super.processEvent(e); return; }
   UIThreadUtils.startExclusiveSection(getDisplay());
@@ -1015,7 +1018,9 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof TextFilterEvent) {
+  if(e instanceof ChangeEvent) {
+    sendEvent (SWT.Selection);
+  } else if(e instanceof TextFilterEvent) {
     TextFilterEvent filterEvent = (TextFilterEvent)e;
     filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
   }

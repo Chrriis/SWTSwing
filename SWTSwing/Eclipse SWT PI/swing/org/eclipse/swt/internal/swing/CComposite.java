@@ -135,19 +135,21 @@ class CCompositeImplementation extends JPanel implements CComposite {
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
+    case PREFERRED_BACKGROUND_INHERITANCE:
     case NO_BACKGROUND_INHERITANCE:
       setOpaque(true);
       contentPane.setOpaque(true);
       if(scrollPane != null) {
         scrollPane.setOpaque(true);
+        scrollPane.getViewport().setOpaque(true);
       }
       break;
-    case PREFERRED_BACKGROUND_INHERITANCE:
     case BACKGROUND_INHERITANCE:
       setOpaque(false);
       contentPane.setOpaque(false);
       if(scrollPane != null) {
         scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
       }
       break;
     }

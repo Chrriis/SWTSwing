@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Background inheritance is improved.
 - Expand bar has an appropriate preferred size.
 - Combo should now get/set the text of the selected item properly.
 - The font chooser is improved.

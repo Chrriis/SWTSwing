@@ -296,6 +296,9 @@ public void clearSelection () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
+  if((style & SWT.SIMPLE) != 0) {
+    return super.computeSize(wHint, hHint, changed);
+  }
   Dimension preferredSize = handle.getPreferredSize();
   if(wHint == SWT.DEFAULT) {
     return new Point(preferredSize.width, preferredSize.height);
@@ -674,8 +677,12 @@ public int indexOf (String string, int start) {
 }
 
 Point minimumSize(int wHint, int hHint, boolean changed) {
+  Dimension preferredSize = handle.getPreferredSize();
+  if((style & SWT.SIMPLE) != 0) {
+    return new Point(preferredSize.width, preferredSize.height);
+  }
   Point size = super.minimumSize(wHint, hHint, changed);
-  size.y = handle.getPreferredSize().height;
+  size.y = preferredSize.height;
   return size;
 }
 

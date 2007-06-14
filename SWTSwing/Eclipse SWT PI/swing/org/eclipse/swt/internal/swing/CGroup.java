@@ -8,6 +8,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Image;
 
@@ -85,6 +86,13 @@ class CGroupImplementation extends JPanel implements CGroup {
     return scrollPane == null? null: scrollPane.getHorizontalScrollBar();
   }
 
+  public void setBackground(Color color) {
+    super.setBackground(color);
+    if(contentPane != null) {
+      contentPane.setBackground(color);
+    }
+  }
+  
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
@@ -96,6 +104,7 @@ class CGroupImplementation extends JPanel implements CGroup {
       ((JComponent)contentPane).setOpaque(true);
       if(scrollPane != null) {
         scrollPane.setOpaque(true);
+        scrollPane.getViewport().setOpaque(true);
       }
       break;
     case PREFERRED_BACKGROUND_INHERITANCE:
@@ -104,6 +113,7 @@ class CGroupImplementation extends JPanel implements CGroup {
       ((JComponent)contentPane).setOpaque(false);
       if(scrollPane != null) {
         scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
       }
       break;
     }

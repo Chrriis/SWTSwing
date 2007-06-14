@@ -151,10 +151,10 @@ public FontData open () {
   }
   int dpi = getParent().getDisplay().getDPI().x;
   if(fontData != null) {
-    int height = fontData.getHeight() * dpi / 72;
+    int height = Math.round(fontData.getHeight() * dpi / 72.0f);
     int style = fontData.getStyle();
     style = (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0));
-    fontChooser.setDefaultFont(new java.awt.Font(fontData.getName(), height, style));
+    fontChooser.setDefaultFont(new java.awt.Font(fontData.getName(), style, height));
   }
   fontChooser.setModal(true);
   fontChooser.setVisible(true);
@@ -166,7 +166,6 @@ public FontData open () {
   int height = Math.round(font.getSize() * 72.0f / dpi);
   fontData = new FontData(font.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
   rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
-  System.err.println(rgb);
   return fontData;
 }
 

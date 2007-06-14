@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- The font chooser is improved.
+- The size and style of the default font of the font chooser are now correct.
 - Selection events on the arrow of a drop down button are not sent twice anymore.
 - The arrow button now relies on the arrow button of the scroll bar for a better rendering.
 - Checkboxes and radio buttons have a smaller margin.

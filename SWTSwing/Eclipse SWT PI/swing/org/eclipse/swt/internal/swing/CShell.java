@@ -12,7 +12,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -125,10 +124,7 @@ class CShellFrame extends JFrame implements CShell {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
-        if(backgroundImageIcon != null) {
-          Dimension size = getSize();
-          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
-        }
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         if(paintHandlerList != null) {
           int size = paintHandlerList.size();
@@ -461,10 +457,7 @@ class CShellDialog extends JDialog implements CShell {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
-        if(backgroundImageIcon != null) {
-          Dimension size = getSize();
-          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
-        }
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         if(paintHandlerList != null) {
           int size = paintHandlerList.size();

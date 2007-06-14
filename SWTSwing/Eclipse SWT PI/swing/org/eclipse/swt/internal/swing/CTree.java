@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -177,10 +178,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
-//        if(backgroundImageIcon != null) {
-//          Dimension size = getSize();
-//          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
-//        }
+//        Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
@@ -477,8 +475,11 @@ class CTreeImplementation extends JScrollPane implements CTree {
     return treeTable.getPreferredColumnWidth(columnIndex);
   }
 
+//  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
+//    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {

@@ -3185,6 +3185,7 @@ void updateBackgroundMode() {
   case SWT.INHERIT_DEFAULT: ((CControl)handle).setBackgroundInheritance(CControl.PREFERRED_BACKGROUND_INHERITANCE); break;
   case SWT.INHERIT_FORCE: ((CControl)handle).setBackgroundInheritance(CControl.BACKGROUND_INHERITANCE); break;
   }
+  handle.repaint();
 }
 
 void updateLayout (boolean resize, boolean all) {

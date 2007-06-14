@@ -10,9 +10,11 @@ package org.eclipse.swt.internal.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -56,8 +58,8 @@ class CGroupImplementation extends JPanel implements CGroup {
       contentPane = scrollPane.getViewport();
     } else {
       contentPane = new JPanel(null);
+      ((JComponent)contentPane).setOpaque(false);
       add(contentPane, BorderLayout.CENTER);
-//      contentPane.setBackground(java.awt.Color.red);
     }
     Utils.installMouseListener(contentPane, handle);
     Utils.installKeyListener(contentPane, handle);
@@ -65,6 +67,11 @@ class CGroupImplementation extends JPanel implements CGroup {
     Utils.installComponentListener(this, handle);
   }
 
+  protected void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    Utils.paintTiledImage(this, g, backgroundImageIcon);
+  }
+  
   public Container getClientArea() {
     return contentPane;
   }
@@ -93,15 +100,17 @@ class CGroupImplementation extends JPanel implements CGroup {
     }
   }
   
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
     case NO_BACKGROUND_INHERITANCE:
       setOpaque(true);
-      ((JComponent)contentPane).setOpaque(true);
+//      ((JComponent)contentPane).setOpaque(true);
       if(scrollPane != null) {
         scrollPane.setOpaque(true);
         scrollPane.getViewport().setOpaque(true);
@@ -110,7 +119,7 @@ class CGroupImplementation extends JPanel implements CGroup {
     case PREFERRED_BACKGROUND_INHERITANCE:
     case BACKGROUND_INHERITANCE:
       setOpaque(false);
-      ((JComponent)contentPane).setOpaque(false);
+//      ((JComponent)contentPane).setOpaque(false);
       if(scrollPane != null) {
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);

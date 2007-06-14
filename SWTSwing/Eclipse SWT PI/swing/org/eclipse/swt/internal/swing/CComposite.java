@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.PaintEvent;
@@ -82,10 +81,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
-        if(backgroundImageIcon != null) {
-          Dimension size = getSize();
-          g.drawImage(backgroundImageIcon.getImage(), 0, 0, size.width, size.height, null);
-        }
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;

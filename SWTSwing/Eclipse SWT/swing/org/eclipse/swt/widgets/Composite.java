@@ -17,8 +17,6 @@ import java.awt.Container;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
-import javax.swing.JComponent;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Point;
@@ -748,7 +746,6 @@ public void setBackgroundMode (int mode) {
   for (int i = 0; i < children.length; i++) {
     children [i].updateBackgroundMode ();   
   }
-  ((JComponent)handle).revalidate();
   handle.repaint();
 }
 

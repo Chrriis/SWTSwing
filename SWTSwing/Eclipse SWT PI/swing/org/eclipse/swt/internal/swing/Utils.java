@@ -9,6 +9,9 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.KeyboardFocusManager;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ComponentEvent;
@@ -23,6 +26,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Collections;
+
+import javax.swing.ImageIcon;
 
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.DND;
@@ -372,6 +377,24 @@ public class Utils {
 //    return "SWTSwing UI - ";
 //  }
 
-  
+  public static void paintTiledImage(Component component, Graphics g, ImageIcon backgroundImageIcon) {
+    if(backgroundImageIcon == null) {
+      return;
+    }
+    int iconWidth = backgroundImageIcon.getIconWidth();
+    int iconHeight = backgroundImageIcon.getIconHeight();
+    if(iconWidth <= 0 || iconHeight <= 0) {
+      return;
+    }
+    Dimension size = component.getSize();
+    int xCount = size.width / iconWidth + (size.width % iconWidth == 0? 0: 1);
+    int yCount = size.height / iconHeight + (size.height % iconHeight == 0? 0: 1);
+    Image image = backgroundImageIcon.getImage();
+    for(int x=0; x<xCount; x++) {
+      for(int y=0; y<yCount; y++) {
+        g.drawImage(image, x * iconWidth, y * iconHeight, null);
+      }
+    }
+  }
   
 }

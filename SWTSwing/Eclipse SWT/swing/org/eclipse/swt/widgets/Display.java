@@ -2667,7 +2667,11 @@ void wakeThread () {
   SwingUtilities.invokeLater(new Runnable() {
     public void run() {
       UIThreadUtils.startExclusiveSection(Display.this);
-      runAsyncMessages (true);
+      try {
+        runAsyncMessages (true);
+      } catch(Throwable t) {
+        t.printStackTrace();
+      }
       UIThreadUtils.stopExclusiveSection();
     }
   });

@@ -126,9 +126,7 @@ public void add (String string, int index) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
   int count = getItemCount();
-  if (0 <= index && index <= count) {
-    error (SWT.ERROR_INVALID_RANGE);
-  }
+  if (index < 0 || count < index) error (SWT.ERROR_INVALID_RANGE);
   ((CList)handle).addElement(string);
 }
 
@@ -549,9 +547,7 @@ public void remove (int [] indices) {
 	sort (newIndices);
 	int start = newIndices [newIndices.length - 1], end = newIndices [0];
   int count = getItemCount();
-	if (!(0 <= start && start <= end && end < count)) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	if (start < 0 || start > end || end >= count) error (SWT.ERROR_INVALID_RANGE);
   CList cList = (CList)handle;
   for(int i=newIndices.length-1; i>=0; i--) {
     cList.removeElementAt(newIndices[i]);
@@ -575,9 +571,7 @@ public void remove (int [] indices) {
 public void remove (int index) {
 	checkWidget ();
   int count = getItemCount();
-  if (0 <= index && index <= count) {
-    error (SWT.ERROR_INVALID_RANGE);
-  }
+  if (index < 0 || count <= index) error (SWT.ERROR_INVALID_RANGE);
   ((CList)handle).removeElementAt(index);
 }
 
@@ -601,9 +595,7 @@ public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
   int count = getItemCount();
-  if (!(0 <= start && start <= end && end < count)) {
-    error (SWT.ERROR_INVALID_RANGE);
-  }
+  if (start < 0 || start > end || end >= count) error (SWT.ERROR_INVALID_RANGE);
   ((CList)handle).removeRange(start, end);
 }
 

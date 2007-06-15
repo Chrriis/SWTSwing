@@ -556,7 +556,7 @@ class CTextField extends JPasswordField implements CText {
     if(userAttributeHandler == null) {
       return super.getCursor();
     }
-    for(Control parent = handle; parent != null; parent = parent.getParent()) {
+    for(Control parent = handle; parent != null && parent.handle != null; parent = parent.getParent()) {
       Cursor cursor = ((CControl)parent.handle).getUserAttributeHandler().cursor;
       if(cursor != null) {
         return cursor;

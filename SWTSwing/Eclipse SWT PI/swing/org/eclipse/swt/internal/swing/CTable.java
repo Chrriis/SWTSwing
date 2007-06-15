@@ -347,27 +347,30 @@ class CTableImplementation extends JScrollPane implements CTable {
             int column = table.columnAtPoint(location);
             int row = table.rowAtPoint(location);
             if(row != -1 && column != -1) {
-              CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)table.getCellRenderer(row, column).getTableCellRendererComponent(this, table.getValueAt(row, column), table.isCellSelected(row, column), false, row, column);
-              Rectangle cellBounds = table.getCellRect(row, column, false);
-              checkBoxCellRenderer.setSize(cellBounds.width, cellBounds.height);
-              checkBoxCellRenderer.doLayout();
-              Component component = checkBoxCellRenderer.getComponentAt(location.x - cellBounds.x, location.y - cellBounds.y);
-              JStateCheckBox stateCheckBox = checkBoxCellRenderer.getStateCheckBox();
-              // TODO: find a way to rely on the Look&Feel for mouse events.
-              if(component == stateCheckBox) {
-                switch(me.getID()) {
-                case MouseEvent.MOUSE_PRESSED:
-                  CTableItem cTableItem = handle.getItem(row).handle;
-                  TableItemObject tableItemObject = cTableItem.getTableItemObject(0);
-                  boolean ischecked = !tableItemObject.isChecked();
-                  tableItemObject.getTableItem().setChecked(ischecked);
-                  table.repaint();
-                  handle.processEvent(new ItemEvent(stateCheckBox, ItemEvent.ITEM_STATE_CHANGED, cTableItem, ischecked? ItemEvent.SELECTED: ItemEvent.DESELECTED));
-                  return;
-                case MouseEvent.MOUSE_DRAGGED:
-                case MouseEvent.MOUSE_RELEASED:
-                case MouseEvent.MOUSE_CLICKED:
-                  return;
+              Component tableCellRendererComponent = table.getCellRenderer(row, column).getTableCellRendererComponent(this, table.getValueAt(row, column), table.isCellSelected(row, column), false, row, column);
+              if(tableCellRendererComponent instanceof CheckBoxCellRenderer) {
+                CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)tableCellRendererComponent;
+                Rectangle cellBounds = table.getCellRect(row, column, false);
+                checkBoxCellRenderer.setSize(cellBounds.width, cellBounds.height);
+                checkBoxCellRenderer.doLayout();
+                Component component = checkBoxCellRenderer.getComponentAt(location.x - cellBounds.x, location.y - cellBounds.y);
+                JStateCheckBox stateCheckBox = checkBoxCellRenderer.getStateCheckBox();
+                // TODO: find a way to rely on the Look&Feel for mouse events.
+                if(component == stateCheckBox) {
+                  switch(me.getID()) {
+                  case MouseEvent.MOUSE_PRESSED:
+                    CTableItem cTableItem = handle.getItem(row).handle;
+                    TableItemObject tableItemObject = cTableItem.getTableItemObject(0);
+                    boolean ischecked = !tableItemObject.isChecked();
+                    tableItemObject.getTableItem().setChecked(ischecked);
+                    table.repaint();
+                    handle.processEvent(new ItemEvent(stateCheckBox, ItemEvent.ITEM_STATE_CHANGED, cTableItem, ischecked? ItemEvent.SELECTED: ItemEvent.DESELECTED));
+                    return;
+                  case MouseEvent.MOUSE_DRAGGED:
+                  case MouseEvent.MOUSE_RELEASED:
+                  case MouseEvent.MOUSE_CLICKED:
+                    return;
+                  }
                 }
               }
             }

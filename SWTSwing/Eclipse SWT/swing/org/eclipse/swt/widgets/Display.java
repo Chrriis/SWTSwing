@@ -2545,7 +2545,7 @@ public void timerExec (final int milliseconds, final Runnable runnable) {
     return;
   }
   timerList.add(runnable);
-  new Thread() {
+  new Thread("Display.timerExecThread") {
     public void run() {
       try {
         sleep(milliseconds);

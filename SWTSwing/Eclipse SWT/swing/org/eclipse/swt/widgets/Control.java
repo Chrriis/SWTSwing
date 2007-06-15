@@ -1748,6 +1748,9 @@ void releaseParent () {
 }
 
 void releaseWidget () {
+  if(focusLostRunnable != null && getShell().getActiveControl() == this) {
+    focusLostRunnable.run();
+  }
 	super.releaseWidget ();
 //	if (OS.IsDBLocale) {
 //		OS.ImmAssociateContext (handle, 0);
@@ -4172,7 +4175,7 @@ public void processEvent(EventObject e) {
 
 boolean isTraversing;
 int lastPressedKeyCode;
-Runnable focusLostRunnable;
+static Runnable focusLostRunnable;
 
 /**
  * The entry point for callbacks 
@@ -4375,12 +4378,14 @@ public void processEvent(AWTEvent e) {
         if(focusLostRunnable != this) {
           return;
         }
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        Shell shell = getShell ();
+        focusLostRunnable = null;
+        UIThreadUtils.startExclusiveSection(display);
+        Shell shell = getShell();
+        Display display = getDisplay();
         if (shell != display.getActiveShell ()) {
           shell.setActiveControl (null);
         }
-        postEvent(SWT.FocusOut);
+        sendEvent(SWT.FocusOut);
         UIThreadUtils.stopExclusiveSection();
       }
     };

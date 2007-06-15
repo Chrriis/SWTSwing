@@ -1019,6 +1019,10 @@ public void setActive () {
   // widget could be disposed at this point
 }
 
+Control getActiveControl() {
+  return lastActive;
+}
+
 void setActiveControl (Control control) {
 	if (control != null && control.isDisposed ()) control = null;
 	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;

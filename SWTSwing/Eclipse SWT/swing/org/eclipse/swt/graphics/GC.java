@@ -14,6 +14,8 @@ package org.eclipse.swt.graphics;
 import java.awt.AWTException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
+import java.awt.Button;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -24,6 +26,7 @@ import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.RenderingHints.Key;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
@@ -2466,6 +2469,9 @@ public Font getFont () {
  * </ul>
  */
 public FontMetrics getFontMetrics() {
+  if("org.eclipse.jface.preference.ColorSelector.computeImageSize(ColorSelector.java:130)".equals(String.valueOf(new Exception().getStackTrace()[1]))) {
+    System.err.println("in");
+  }
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return FontMetrics.swing_new(handle.getFontMetrics());
@@ -3853,6 +3859,7 @@ public Point textExtent(String string, int flags) {
   String[] tokens = string.replaceAll("\t", "    ") .split("\n");
   java.awt.FontMetrics fm = handle.getFontMetrics();
   // TODO: check why the CTabFolder queries the textExtent and this is null sometimes (cf Azureus, Details>Peers)
+  // Potential reason: the graphics is a NullGraphics. Have to check if it can still happen now.
   if(fm == null) return new Point(0, 0);
   int fmHeight = fm.getHeight();
   int width = 0;
@@ -3950,7 +3957,9 @@ Graphics2D getGraphics() {
   if(!(drawable instanceof Control)) return handle;
   Container container = ((Control)drawable).handle;
   if(container == null) {
-    return new NullGraphics();
+    NullGraphics nullGraphics = new NullGraphics();
+    setAttributes(handle, nullGraphics);
+    return nullGraphics;
   }
   Container clientArea = ((CControl)container).getClientArea();
   Graphics2D g = (Graphics2D)clientArea.getGraphics();
@@ -4060,8 +4069,9 @@ class NullGraphics extends Graphics2D {
   }
   public void fill(Shape s) {
   }
+  protected java.awt.Color background = java.awt.Color.BLACK;
   public java.awt.Color getBackground() {
-    return java.awt.Color.BLACK;
+    return background;
   }
   public java.awt.Composite getComposite() {
     return null;
@@ -4097,6 +4107,7 @@ class NullGraphics extends Graphics2D {
   public void scale(double sx, double sy) {
   }
   public void setBackground(java.awt.Color color) {
+    background = color;
   }
   public void setComposite(java.awt.Composite comp) {
   }
@@ -4178,11 +4189,15 @@ class NullGraphics extends Graphics2D {
   public java.awt.Color getColor() {
     return null;
   }
+  protected java.awt.Font font;
   public java.awt.Font getFont() {
-    return device.getSystemFont().handle;
+    if(font == null) {
+      return device.getSystemFont().handle;
+    }
+    return font;
   }
   public java.awt.FontMetrics getFontMetrics(java.awt.Font f) {
-    return null;
+    return Toolkit.getDefaultToolkit().getFontMetrics(f);
   }
   public void setClip(int x, int y, int width, int height) {
   }
@@ -4191,6 +4206,7 @@ class NullGraphics extends Graphics2D {
   public void setColor(java.awt.Color c) {
   }
   public void setFont(java.awt.Font font) {
+    this.font = font;
   }
   public void setPaintMode() {
   }
@@ -4199,7 +4215,7 @@ class NullGraphics extends Graphics2D {
 }
 
 void setAttributes(Graphics2D g1, Graphics2D g2) {
-  if(g1 == null || g2 == null || g1 == g2 || g1 instanceof NullGraphics || g2 instanceof NullGraphics) {
+  if(g1 == null || g2 == null || g1 == g2) {
     return;
   }
   g2.setBackground(g1.getBackground());

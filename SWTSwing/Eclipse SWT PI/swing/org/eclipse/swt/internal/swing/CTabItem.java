@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
@@ -28,6 +29,12 @@ class CTabItemImplementation extends JPanel implements CTabItem {
   }
 
   protected void init(int style) {
+    setOpaque(false);
+  }
+  
+  protected void paintComponent(Graphics g) {
+    Utils.paintTiledImage(this, g, ((CTabFolderImplementation)handle.getParent().handle).backgroundImageIcon);
+    super.paintComponent(g);
   }
   
   public Component getContent() {

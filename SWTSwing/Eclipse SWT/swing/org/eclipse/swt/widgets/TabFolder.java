@@ -89,6 +89,28 @@ public TabFolder (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+Control [] _getChildren () {
+  Component[] children = ((CControl)handle).getClientArea().getComponents();
+  if(children.length == 0) {
+    return new Control[0];
+  }
+  ArrayList controlsList = new ArrayList(children.length);
+  for(int i=0; i<children.length; i++) {
+    Component childComponent = children[i];
+    if(childComponent instanceof CTabItem) {
+      CTabItem cTabItem = ((CTabItem)childComponent);
+      childComponent = cTabItem.getContent();
+      if(childComponent != null) {
+        Control control = display.getControl(childComponent);
+        if (control != null && control != this) {
+          controlsList.add(control);
+        }
+      }
+    }
+  }
+  return (Control[])controlsList.toArray(new Control[0]);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -274,28 +296,6 @@ public TabItem [] getSelection () {
 public int getSelectionIndex () {
 	checkWidget ();
 	return ((CTabFolder)handle).getSelectedIndex();
-}
-
-Control [] _getChildren () {
-  Component[] children = ((CControl)handle).getClientArea().getComponents();
-  if(children.length == 0) {
-    return new Control[0];
-  }
-  ArrayList controlsList = new ArrayList(children.length);
-  for(int i=0; i<children.length; i++) {
-    Component childComponent = children[i];
-    if(childComponent instanceof CTabItem) {
-      CTabItem cTabItem = ((CTabItem)childComponent);
-      childComponent = cTabItem.getContent();
-      if(childComponent != null) {
-        Control control = display.getControl(childComponent);
-        if (control != null && control != this) {
-          controlsList.add(control);
-        }
-      }
-    }
-  }
-  return (Control[])controlsList.toArray(new Control[0]);
 }
 
 /**

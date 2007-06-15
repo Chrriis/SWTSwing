@@ -44,9 +44,16 @@ class CSashImplementation extends JPanel implements CSash {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CSashImplementation(Sash sash, int style) {
     super(new BorderLayout(0, 0));
     this.handle = sash;
+    userAttributeHandler = new UserAttributeHandler(this);
     JSplitPane splitPane = new JSplitPane((style & SWT.HORIZONTAL) != 0? JSplitPane.VERTICAL_SPLIT: JSplitPane.HORIZONTAL_SPLIT);
     divider = ((BasicSplitPaneUI)splitPane.getUI()).getDivider();
 //    divider.setBackground(java.awt.Color.blue);

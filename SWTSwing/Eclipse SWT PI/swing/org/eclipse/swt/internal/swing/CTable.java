@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -95,6 +96,12 @@ class CTableImplementation extends JScrollPane implements CTable {
     }
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CTableImplementation(Table table, int style) {
     handle = table;
     this.table = new JTable(new CTableModel(table)) {
@@ -301,6 +308,18 @@ class CTableImplementation extends JScrollPane implements CTable {
           }
         };
       }
+      public Color getBackground() {
+        return CTableImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CTableImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CTableImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+      public Cursor getCursor() {
+        return CTableImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+      }
       protected Graphics graphics;
       public Graphics getGraphics() {
         Graphics g;
@@ -405,6 +424,7 @@ class CTableImplementation extends JScrollPane implements CTable {
 //        return maxHeight;
 //      }
     };
+    userAttributeHandler = new UserAttributeHandler(this.table);
     this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     JTableHeader tableHeader = this.table.getTableHeader();
     final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();

@@ -7,12 +7,17 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.UIManager;
@@ -35,8 +40,15 @@ class CSeparator extends JPanel implements CLabel {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+
   public CSeparator(Label label, int style) {
     this.handle = label;
+    userAttributeHandler = new UserAttributeHandler(this);
     GridBagLayout gridBag = new GridBagLayout();
     setLayout(gridBag);
     GridBagConstraints c = new GridBagConstraints();
@@ -59,6 +71,14 @@ class CSeparator extends JPanel implements CLabel {
     Utils.installComponentListener(this, handle);
   }
 
+  public boolean isOpaque() {
+    return backgroundImageIcon == null && super.isOpaque();
+  }
+  protected void paintComponent(Graphics g) {
+    Utils.paintTiledImage(this, g, backgroundImageIcon);
+    super.paintComponent(g);
+  }
+
   public Container getClientArea() {
     return separator;
   }
@@ -72,8 +92,10 @@ class CSeparator extends JPanel implements CLabel {
   public void setIcon(Icon icon) {
   }
 
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
@@ -104,8 +126,15 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
+    userAttributeHandler = new UserAttributeHandler(this);
     init(style);
   }
 
@@ -127,6 +156,14 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
     Utils.installComponentListener(this, handle);
   }
 
+  public boolean isOpaque() {
+    return backgroundImageIcon == null && super.isOpaque();
+  }
+  protected void paintComponent(Graphics g) {
+    Utils.paintTiledImage(this, g, backgroundImageIcon);
+    super.paintComponent(g);
+  }
+  
   public Container getClientArea() {
     return this;
   }
@@ -135,8 +172,23 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
     setHorizontalAlignment(alignment);
   }
 
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+  
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {

@@ -7,18 +7,25 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.util.Locale;
 
+import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
+import javax.swing.text.html.HTMLDocument;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 
@@ -34,10 +41,51 @@ class CLinkImplementation extends JEditorPane implements CLink {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CLinkImplementation(Link link, int style) {
     this.handle = link;
+    userAttributeHandler = new UserAttributeHandler(this) {
+      public void setFont(Font font) {
+        super.setFont(font);
+        adjustFont();
+      }
+    };
     setContentType("text/html");
     init(style);
+  }
+
+  protected void init(int style) {
+    setEditable(false);
+    setForeground(UIManager.getColor("Label.foreground"));
+    setBackground(UIManager.getColor("Label.background"));
+    setFont(UIManager.getFont("Label.font"));
+    setOpaque(false);
+    adjustFont();
+    if((style & SWT.BORDER) != 0) {
+      setBorder(UIManager.getBorder("TextField.border"));
+    }
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
+    Utils.installComponentListener(this, handle);
+    addHyperlinkListener(new HyperlinkListener() {
+      public void hyperlinkUpdate(HyperlinkEvent e) {
+        if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+          handle.processEvent(e);
+        }
+      }
+    });
+  }
+
+  protected void adjustFont() {
+    Font font = getUserAttributeHandler().getFont();
+    String css = "body {font: " + font.getSize() + "pt " + font.getFamily() + "}";
+    ((HTMLDocument)getDocument()).getStyleSheet().addRule(css);
   }
 
   public Dimension getPreferredSize() {
@@ -53,25 +101,14 @@ class CLinkImplementation extends JEditorPane implements CLink {
     return preferredSize;
   }
 
-  protected void init(int style) {
-    setEditable(false);
-    setForeground(UIManager.getColor("Label.foreground"));
-    setBackground(UIManager.getColor("Label.background"));
-    setFont(UIManager.getFont("Label.font"));
-    setOpaque(false);
-    Utils.installMouseListener(this, handle);
-    Utils.installKeyListener(this, handle);
-    Utils.installFocusListener(this, handle);
-    Utils.installComponentListener(this, handle);
-    addHyperlinkListener(new HyperlinkListener() {
-      public void hyperlinkUpdate(HyperlinkEvent e) {
-        if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-          handle.processEvent(e);
-        }
-      }
-    });
+  public boolean isOpaque() {
+    return backgroundImageIcon == null && super.isOpaque();
   }
-
+  protected void paintComponent(Graphics g) {
+    Utils.paintTiledImage(this, g, backgroundImageIcon);
+    super.paintComponent(g);
+  }
+  
   public Container getClientArea() {
     return this;
   }
@@ -161,8 +198,23 @@ class CLinkImplementation extends JEditorPane implements CLink {
     return text;
   }
 
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+  
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {

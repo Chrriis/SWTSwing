@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
 
@@ -19,7 +20,10 @@ import org.eclipse.swt.events.ExpandAdapter;
 import org.eclipse.swt.events.ExpandEvent;
 import org.eclipse.swt.events.ExpandListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CExpandBar;
+import org.eclipse.swt.internal.swing.CExpandItem;
+import org.eclipse.swt.internal.swing.JExpandPane.JExpandPaneItem;
 
 /**
  * Instances of this class support the layout of selectable
@@ -78,6 +82,28 @@ public class ExpandBar extends Composite {
  */
 public ExpandBar (Composite parent, int style) {
   super (parent, checkStyle (style));
+}
+
+Control [] _getChildren () {
+  Component[] children = ((CControl)handle).getClientArea().getComponents();
+  if(children.length == 0) {
+    return new Control[0];
+  }
+  ArrayList controlsList = new ArrayList(children.length);
+  for(int i=0; i<children.length; i++) {
+    Component childComponent = children[i];
+    if(childComponent instanceof JExpandPaneItem) {
+      childComponent = ((JExpandPaneItem)childComponent).getComponent();
+      if(childComponent != null && childComponent instanceof CExpandItem) {
+        childComponent = ((CExpandItem)childComponent).getContent();
+        Control control = display.getControl(childComponent);
+        if (control != null && control != this) {
+          controlsList.add(control);
+        }
+      }
+    }
+  }
+  return (Control[])controlsList.toArray(new Control[0]);
 }
 
 /**

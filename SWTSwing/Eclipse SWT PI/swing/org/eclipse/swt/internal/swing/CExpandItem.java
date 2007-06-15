@@ -8,6 +8,7 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 
 import javax.swing.JPanel;
 
@@ -19,11 +20,19 @@ class CExpandItemImplementation extends JPanel implements CExpandItem {
 
   public CExpandItemImplementation(ExpandItem expandItem, int style) {
     super(new BorderLayout(0, 0));
+    setOpaque(false);
     this.handle = expandItem;
     init(style);
   }
 
   protected void init(int style) {
+  }
+
+  public Component getContent() {
+    if(getComponentCount() > 0) {
+      return getComponent(0);
+    }
+    return null;
   }
 
 }
@@ -37,5 +46,7 @@ public interface CExpandItem {
       return new CExpandItemImplementation(expandItem, style);
     }
   }
+
+  public Component getContent();
 
 }

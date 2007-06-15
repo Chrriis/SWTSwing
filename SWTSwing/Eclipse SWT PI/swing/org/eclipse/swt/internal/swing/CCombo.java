@@ -8,9 +8,13 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +22,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -58,9 +64,45 @@ class CComboSimple extends JPanel implements CCombo {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CComboSimple(Combo combo, int style) {
     super(new BorderLayout(0, 0));
-    textField = new JTextField(7);
+    textField = new JTextField(7) {
+      public Color getBackground() {
+        return CComboSimple.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CComboSimple.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CComboSimple.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+      public Cursor getCursor() {
+        if(CComboSimple.this == null) {
+          return super.getCursor();
+        }
+        for(Control parent = handle; parent != null; parent = parent.getParent()) {
+          Cursor cursor = ((CControl)parent.handle).getUserAttributeHandler().cursor;
+          if(cursor != null) {
+            return cursor;
+          }
+        }
+        return super.getCursor();
+      }
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
+    };
+    userAttributeHandler = new UserAttributeHandler(textField);
     add(textField, BorderLayout.NORTH);
     scrollPane = new JScrollPane();
     list = new JList(new DefaultListModel()) {
@@ -70,7 +112,31 @@ class CComboSimple extends JPanel implements CCombo {
         preferredSize.height += scrollPane.getHorizontalScrollBar().getPreferredSize().height;
         return preferredSize;
       }
+      public Color getBackground() {
+        return CComboSimple.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CComboSimple.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CComboSimple.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+//      public Cursor getCursor() {
+//        return CComboSimple.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+//      }
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
     };
+    list.setCellRenderer(new DefaultListCellRenderer() {
+      public boolean isOpaque() {
+        return list.isOpaque() && super.isOpaque();
+      }
+    });
     scrollPane.setViewportView(list);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     add(scrollPane, BorderLayout.CENTER);
@@ -135,10 +201,10 @@ class CComboSimple extends JPanel implements CCombo {
     return this;
   }
 
-  
-  
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
@@ -282,8 +348,15 @@ class CComboImplementation extends JComboBox implements CCombo {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CComboImplementation(Combo combo, int style) {
     this.handle = combo;
+    userAttributeHandler = new UserAttributeHandler(this);
     setLightWeightPopupEnabled(Utils.isLightweightPopups());
     init(style);
   }
@@ -432,6 +505,19 @@ class CComboImplementation extends JComboBox implements CCombo {
     super.reshape(x, y, w, getPreferredSize().height);
   }
 
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+  
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }

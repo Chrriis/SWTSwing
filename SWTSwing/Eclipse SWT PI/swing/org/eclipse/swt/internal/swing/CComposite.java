@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.PaintEvent;
@@ -39,6 +40,12 @@ class CCompositeImplementation extends JPanel implements CComposite {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CCompositeImplementation(Composite composite, int style) {
     super(new BorderLayout(0, 0));
     this.handle = composite;
@@ -86,7 +93,20 @@ class CCompositeImplementation extends JPanel implements CComposite {
         putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
       }
+      public Color getBackground() {
+        return CCompositeImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CCompositeImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CCompositeImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+      public Cursor getCursor() {
+        return CCompositeImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+      }
     };
+    userAttributeHandler = new UserAttributeHandler(panel);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
@@ -102,13 +122,6 @@ class CCompositeImplementation extends JPanel implements CComposite {
     Utils.installKeyListener(contentPane, handle);
     Utils.installFocusListener(contentPane, handle);
     Utils.installComponentListener(this, handle);
-  }
-
-  public void setBackground(Color bg) {
-    super.setBackground(bg);
-    if(contentPane != null) {
-      contentPane.setBackground(bg);
-    }
   }
 
   public Container getClientArea() {

@@ -69,9 +69,16 @@ public class SWT_Swing {
 
     protected Control handle;
     
+    protected UserAttributeHandler userAttributeHandler;
+    
+    public UserAttributeHandler getUserAttributeHandler() {
+      return userAttributeHandler;
+    }
+    
     public EmbeddedPanel(Control control) {
       super(new BorderLayout(0, 0));
       handle = control;
+      userAttributeHandler = new UserAttributeHandler(this);
     }
     
     public void setComponent(JComponent component) {

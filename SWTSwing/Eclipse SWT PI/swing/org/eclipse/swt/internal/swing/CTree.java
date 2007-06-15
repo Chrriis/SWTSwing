@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -24,7 +25,6 @@ import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -79,6 +79,12 @@ class CTreeImplementation extends JScrollPane implements CTree {
     }
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CTreeImplementation(Tree tree, int style) {
     handle = tree;
     rootNode = new DefaultMutableTreeTableNode() {
@@ -165,6 +171,18 @@ class CTreeImplementation extends JScrollPane implements CTree {
         }
         return super.processMouseOnTreeRenderer(row, e, cellSize);
       }
+      public Color getBackground() {
+        return CTreeImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CTreeImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CTreeImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+      public Cursor getCursor() {
+        return CTreeImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+      }
       protected Graphics graphics;
       public Graphics getGraphics() {
         Graphics g;
@@ -185,6 +203,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         graphics = null;
       }
     };
+    userAttributeHandler = new UserAttributeHandler(treeTable);
     treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     treeTable.setCellRenderer(new DefaultTreeTableCellRenderer() {
       protected boolean isInitialized;

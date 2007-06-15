@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.Icon;
@@ -35,9 +36,24 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CExpandBarImplementation(ExpandBar expandBar, int style) {
     this.handle = expandBar;
-    expandPane = new JExpandPane();
+    expandPane = new JExpandPane() {
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
+    };
+    userAttributeHandler = new UserAttributeHandler(expandPane);
     getViewport().setView(expandPane);
     init(style);
   }
@@ -86,15 +102,27 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
     return expandPane.getExpandItem(component).getTitleBarSize();
   }
 
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
     case PREFERRED_BACKGROUND_INHERITANCE:
-    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
-    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    case NO_BACKGROUND_INHERITANCE: {
+      setOpaque(true);
+      getViewport().setOpaque(true);
+      expandPane.setOpaque(true);
+      break;
+    }
+    case BACKGROUND_INHERITANCE: {
+      setOpaque(false);
+      getViewport().setOpaque(false);
+      expandPane.setOpaque(false);
+      break;
+    }
     }
   }
 

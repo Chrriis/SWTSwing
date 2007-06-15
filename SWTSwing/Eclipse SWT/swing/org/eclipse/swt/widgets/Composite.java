@@ -923,14 +923,14 @@ boolean translateMnemonic (Event event, Control control) {
 //}
 
 void updateBackgroundMode () {
-  int oldMode = this.backgroundMode;
+//  int oldMode = this.backgroundMode;
   this.backgroundMode = parent.getBackgroundMode();
   super.updateBackgroundMode ();
   Control [] children = _getChildren ();
   for (int i = 0; i < children.length; i++) {
     children [i].updateBackgroundMode ();   
   }
-  this.backgroundMode = oldMode;
+//  this.backgroundMode = oldMode;
 }
 
 void updateLayout (boolean resize, boolean all) {

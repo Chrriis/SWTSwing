@@ -7,8 +7,11 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 
 import javax.swing.JSlider;
@@ -32,8 +35,15 @@ class CScaleImplementation extends JSlider implements CScale {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CScaleImplementation(Scale scale, int style) {
     handle = scale;
+    userAttributeHandler = new UserAttributeHandler(this);
     init(style);
   }
 
@@ -70,6 +80,19 @@ class CScaleImplementation extends JSlider implements CScale {
     return super.getPreferredSize();
   }
 
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+  
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }

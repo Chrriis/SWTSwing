@@ -96,6 +96,10 @@ public class JExpandPane extends JPanel {
       }
     };
 
+    public boolean isOpaque() {
+      return getParent().isOpaque();
+    }
+    
     public JExpandPaneItem(String title, Icon icon, Component component) {
       super(new BorderLayout(0, 0));
       this.component = component;
@@ -114,6 +118,7 @@ public class JExpandPane extends JPanel {
       separator = new JSeparator();
       add(separator, BorderLayout.CENTER);
       contentPane = new JPanel(new BorderLayout(0, 0));
+      contentPane.setOpaque(false);
       contentPane.add(component, BorderLayout.CENTER);
       separator.setVisible(false);
       contentPane.setVisible(false);

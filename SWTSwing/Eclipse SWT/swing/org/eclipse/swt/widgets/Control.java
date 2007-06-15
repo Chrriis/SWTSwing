@@ -31,7 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -827,7 +826,7 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget ();
-	return Color.swing_new (display, handle.getBackground());
+	return Color.swing_new (display, ((CControl)handle).getUserAttributeHandler().getBackground());
 }
 
 //int getBackgroundPixel () {
@@ -963,7 +962,7 @@ public boolean getEnabled () {
  */
 public Font getFont () {
 	checkWidget ();	
-	return Font.swing_new (display, handle.getFont());
+	return Font.swing_new (display, ((CControl)handle).getUserAttributeHandler().getFont());
 }
 
 /**
@@ -978,7 +977,7 @@ public Font getFont () {
  */
 public Color getForeground () {
 	checkWidget ();
-	return Color.swing_new (display, handle.getForeground());
+	return Color.swing_new (display, ((CControl)handle).getUserAttributeHandler().getForeground());
 }
 
 //int getForegroundPixel () {
@@ -2062,12 +2061,13 @@ public void removeTraverseListener(TraverseListener listener) {
  */
 public void setBackground (Color color) {
   checkWidget ();
-  if (color != null && color.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  if (color == null) {
-    handle.setBackground (UIManager.getColor ("control"));
+  if (color != null) {
+    if (color.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+    ((CControl)handle).getUserAttributeHandler().setBackground (color.handle);
   } else {
-    handle.setBackground (color.handle);
+    ((CControl)handle).getUserAttributeHandler().setBackground (null);
   }
+  handle.repaint();
 }
 
 /**
@@ -2280,9 +2280,9 @@ public void setCursor (Cursor cursor) {
 	checkWidget ();
 	if (cursor != null) {
     if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-    handle.setCursor(cursor.handle);
+    ((CControl)handle).getUserAttributeHandler().setCursor(cursor.handle);
   } else {
-    handle.setCursor (null);
+    ((CControl)handle).getUserAttributeHandler().setCursor (null);
   }
 //	this.cursor = cursor;
 //	if (OS.IsWinCE) {
@@ -2396,8 +2396,11 @@ public void setFont (Font font) {
 	checkWidget ();
 	if (font != null) { 
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		handle.setFont(font.handle);
+		((CControl)handle).getUserAttributeHandler().setFont(font.handle);
+	} else {
+	  ((CControl)handle).getUserAttributeHandler().setFont(null);
 	}
+  handle.repaint();
 }
 
 /**
@@ -2419,10 +2422,11 @@ public void setForeground (Color color) {
 	checkWidget ();
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		handle.setForeground(color.handle);
+		((CControl)handle).getUserAttributeHandler().setForeground(color.handle);
 	} else {
-    handle.setForeground (null);
+	  ((CControl)handle).getUserAttributeHandler().setForeground (null);
   }
+  handle.repaint();
 }
 
 //void setForegroundPixel (int pixel) {

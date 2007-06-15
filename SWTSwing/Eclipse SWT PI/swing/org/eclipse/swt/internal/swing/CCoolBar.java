@@ -29,8 +29,15 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CCoolBarImplementation(CoolBar coolBar, int style) {
     handle = coolBar;
+    userAttributeHandler = new UserAttributeHandler(this);
     init(style);
   }
 

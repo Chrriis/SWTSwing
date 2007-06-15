@@ -7,9 +7,12 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -17,7 +20,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -42,9 +47,41 @@ class CListImplementation extends JScrollPane implements CList {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CListImplementation(List list, int style) {
     this.handle = list;
-    this.list = new JList(new DefaultListModel());
+    this.list = new JList(new DefaultListModel()) {
+      public Color getBackground() {
+        return CListImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CListImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CListImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+      public Cursor getCursor() {
+        return CListImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+      }
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
+    };
+    this.list.setCellRenderer(new DefaultListCellRenderer() {
+      public boolean isOpaque() {
+        return CListImplementation.this.list.isOpaque() && super.isOpaque();
+      }
+    });
+    userAttributeHandler = new UserAttributeHandler(this.list);
     getViewport().setView(this.list);
     init(style);
   }
@@ -230,15 +267,27 @@ class CListImplementation extends JScrollPane implements CList {
     scrollRectToVisible(list.getCellBounds(index, index));
   }
 
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
-    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
     case PREFERRED_BACKGROUND_INHERITANCE:
-    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    case NO_BACKGROUND_INHERITANCE: {
+      setOpaque(true);
+      getViewport().setOpaque(true);
+      list.setOpaque(true);
+      break;
+    }
+    case BACKGROUND_INHERITANCE: {
+      setOpaque(false);
+      getViewport().setOpaque(false);
+      list.setOpaque(false);
+      break;
+    }
     }
   }
 

@@ -7,9 +7,12 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -53,10 +56,17 @@ class CButtonArrow extends ArrowButton implements CButton {
     return direction;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CButtonArrow(Button button, int style) {
     super(getDirection(style));
-//    setMargin(new Insets(1, 1, 1, 1));
     this.handle = button;
+    userAttributeHandler = new UserAttributeHandler(this);
+//    setMargin(new Insets(1, 1, 1, 1));
     init(style);
   }
   
@@ -87,6 +97,19 @@ class CButtonArrow extends ArrowButton implements CButton {
     setDirection(alignment);
   }
   
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
@@ -117,9 +140,16 @@ class CButtonPush extends JButton implements CButton {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CButtonPush(Button button, int style) {
-    setMargin(new Insets(2, 4, 2, 4));
     this.handle = button;
+    userAttributeHandler = new UserAttributeHandler(this);
+    setMargin(new Insets(2, 4, 2, 4));
     init(style);
   }
   
@@ -142,6 +172,19 @@ class CButtonPush extends JButton implements CButton {
 
   public void setAlignment(int alignment) {
     setHorizontalAlignment(alignment);
+  }
+
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
 
   public void setBackgroundImage(Image backgroundImage) {
@@ -170,9 +213,16 @@ class CButtonCheck extends JCheckBox implements CButton {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CButtonCheck(Button button, int style) {
-    setMargin(new Insets(0, 0, 0, 0));
     this.handle = button;
+    userAttributeHandler = new UserAttributeHandler(this);
+    setMargin(new Insets(0, 0, 0, 0));
     init(style);
   }
   
@@ -197,6 +247,19 @@ class CButtonCheck extends JCheckBox implements CButton {
     setHorizontalAlignment(alignment);
   }
   
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
@@ -223,9 +286,16 @@ class CButtonToggle extends JToggleButton implements CButton {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CButtonToggle(Button button, int style) {
-    setMargin(new Insets(2, 4, 2, 4));
     this.handle = button;
+    userAttributeHandler = new UserAttributeHandler(this);
+    setMargin(new Insets(2, 4, 2, 4));
     init(style);
   }
   
@@ -248,6 +318,19 @@ class CButtonToggle extends JToggleButton implements CButton {
 
   public void setAlignment(int alignment) {
     setHorizontalAlignment(alignment);
+  }
+
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
 
   public void setBackgroundImage(Image backgroundImage) {
@@ -276,9 +359,16 @@ class CButtonRadio extends JIconRadioButton implements CButton {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CButtonRadio(Button button, int style) {
-    setMargin(new Insets(0, 0, 0, 0));
     this.handle = button;
+    userAttributeHandler = new UserAttributeHandler(this);
+    setMargin(new Insets(0, 0, 0, 0));
     init(style);
   }
 
@@ -313,6 +403,19 @@ class CButtonRadio extends JIconRadioButton implements CButton {
     setHorizontalAlignment(alignment);
   }
   
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }

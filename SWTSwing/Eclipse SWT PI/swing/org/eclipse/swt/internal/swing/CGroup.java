@@ -10,6 +10,8 @@ package org.eclipse.swt.internal.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -41,9 +43,16 @@ class CGroupImplementation extends JPanel implements CGroup {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CGroupImplementation(Group group, int style) {
     super(new BorderLayout(0, 0));
     this.handle = group;
+    userAttributeHandler = new UserAttributeHandler(this);
     init(style);
   }
 
@@ -93,11 +102,17 @@ class CGroupImplementation extends JPanel implements CGroup {
     return scrollPane == null? null: scrollPane.getHorizontalScrollBar();
   }
 
-  public void setBackground(Color color) {
-    super.setBackground(color);
-    if(contentPane != null) {
-      contentPane.setBackground(color);
-    }
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
   
   protected ImageIcon backgroundImageIcon;

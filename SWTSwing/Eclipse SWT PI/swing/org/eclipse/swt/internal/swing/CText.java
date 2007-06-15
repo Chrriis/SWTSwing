@@ -8,23 +8,25 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -49,25 +51,60 @@ class CTextMulti extends JScrollPane implements CText {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CTextMulti(Text text, int style) {
     this.handle = text;
 //    textArea = new JTextArea(4, 7);
     textArea = new JTextArea() {
+//      public Cursor getCursor() {
+//        if(!isCursorSet()) {
+//          return super.getCursor();
+//        }
+//        for(Component parent = this; (parent = parent.getParent()) != null; ) {
+//          if(parent.isCursorSet()) {
+//            Cursor cursor = parent.getCursor();
+//            if(!(parent instanceof Window) || cursor != Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)) {
+//              return cursor;
+//            }
+//          }
+//        }
+//        return super.getCursor();
+//      }
+      public Color getBackground() {
+        return CTextMulti.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CTextMulti.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CTextMulti.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
       public Cursor getCursor() {
-        if(!isCursorSet()) {
+        if(CTextMulti.this == null) {
           return super.getCursor();
         }
-        for(Component parent = this; (parent = parent.getParent()) != null; ) {
-          if(parent.isCursorSet()) {
-            Cursor cursor = parent.getCursor();
-            if(!(parent instanceof Window) || cursor != Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)) {
-              return cursor;
-            }
+        for(Control parent = handle; parent != null; parent = parent.getParent()) {
+          Cursor cursor = ((CControl)parent.handle).getUserAttributeHandler().cursor;
+          if(cursor != null) {
+            return cursor;
           }
         }
         return super.getCursor();
       }
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
     };
+    userAttributeHandler = new UserAttributeHandler(textArea);
     setFocusable(false);
     getViewport().setView(textArea);
     init(style);
@@ -84,7 +121,10 @@ class CTextMulti extends JScrollPane implements CText {
   protected KeyEvent keyEvent = null;
 
   protected void init(int style) {
-    setFont(textArea.getFont());
+    // A multi line text field should have the same characteristics than a single-line one.
+    textArea.setBackground(UIManager.getColor("TextField.background"));
+    textArea.setForeground(UIManager.getColor("TextField.foreground"));
+    textArea.setFont(UIManager.getFont("TextField.font"));
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
       textArea.setBorder(null);
@@ -99,9 +139,6 @@ class CTextMulti extends JScrollPane implements CText {
     }
     if((style & SWT.V_SCROLL) == 0) {
       setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
-    }
-    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
-      setBorder(null);
     }
     Utils.installMouseListener(textArea, handle);
     Utils.installKeyListener(textArea, handle);
@@ -155,13 +192,6 @@ class CTextMulti extends JScrollPane implements CText {
         }
       }
     });
-  }
-
-  public void setFont(Font font) {
-    super.setFont(font);
-    if(textArea != null) {
-      textArea.setFont(font);
-    }
   }
 
   public Container getClientArea() {
@@ -310,38 +340,28 @@ class CTextMulti extends JScrollPane implements CText {
     return textLimit;
   }
 
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
+    case PREFERRED_BACKGROUND_INHERITANCE:
     case NO_BACKGROUND_INHERITANCE:
       setOpaque(true);
+      getViewport().setOpaque(true);
       textArea.setOpaque(true);
       break;
-    case PREFERRED_BACKGROUND_INHERITANCE:
     case BACKGROUND_INHERITANCE:
       setOpaque(false);
+      getViewport().setOpaque(false);
       textArea.setOpaque(false);
       break;
     }
   }
 
-  public void setForeground(Color foreground) {
-    super.setForeground(foreground);
-    if(textArea != null) {
-      textArea.setForeground(foreground);
-    }
-  }
-
-  public void setBackground(Color background) {
-    super.setBackground(background);
-    if(textArea != null) {
-      textArea.setBackground(background);
-    }
-  }
- 
   public void setEnabled(boolean enabled) {
     super.setEnabled(enabled);
     textArea.setEnabled(enabled);
@@ -349,74 +369,67 @@ class CTextMulti extends JScrollPane implements CText {
   
 }
 
-class CTextField extends JScrollPane implements CText {
+class CTextField extends JPasswordField implements CText {
 
   protected Text handle;
-  protected JPasswordField passwordField;
 
   public Container getSwingComponent() {
-    return passwordField;
+    return this;
   }
 
   public Control getSWTHandle() {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CTextField(Text text, int style) {
     this.handle = text;
-    passwordField = new JPasswordField() {
-      public Cursor getCursor() {
-        if(!isCursorSet()) {
-          return super.getCursor();
-        }
-        for(Component parent = this; (parent = parent.getParent()) != null; ) {
-          if(parent.isCursorSet()) {
-            Cursor cursor = parent.getCursor();
-            if(!(parent instanceof Window) || cursor != Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)) {
-              return cursor;
-            }
-          }
-        }
-        return super.getCursor();
-      }
-    };
-    passwordField.setEchoChar('\0');
-    setFocusable(false);
-    getViewport().setView(passwordField);
+    userAttributeHandler = new UserAttributeHandler(this);
+    setEchoChar('\0');
     init(style);
   }
   
-  public boolean isFocusable() {
-    return passwordField.isFocusable();
+  public boolean isOpaque() {
+    return backgroundImageIcon == null && super.isOpaque();
   }
   
-  public void requestFocus() {
-    passwordField.requestFocus();
+  protected void paintComponent(Graphics g) {
+    Utils.paintTiledImage(this, g, backgroundImageIcon);
+    super.paintComponent(g);
   }
+  
+//  public Cursor getCursor() {
+//    if(!isCursorSet()) {
+//      return super.getCursor();
+//    }
+//    for(Component parent = this; (parent = parent.getParent()) != null; ) {
+//      if(parent.isCursorSet()) {
+//        Cursor cursor = parent.getCursor();
+//        if(!(parent instanceof Window) || cursor != Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)) {
+//          return cursor;
+//        }
+//      }
+//    }
+//    return super.getCursor();
+//  }
   
   protected KeyEvent keyEvent = null;
   
   protected void init(int style) {
-    setFont(passwordField.getFont());
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
-      passwordField.setBorder(null);
     }
-    passwordField.setEditable((style & SWT.READ_ONLY) == 0);
-    if((style & SWT.H_SCROLL) == 0) {
-      setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-    }
-    if((style & SWT.V_SCROLL) == 0) {
-      setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
-    }
-    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
-      setBorder(null);
-    }
-    Utils.installMouseListener(passwordField, handle);
-    Utils.installKeyListener(passwordField, handle);
-    Utils.installFocusListener(passwordField, handle);
+    setEditable((style & SWT.READ_ONLY) == 0);
+    Utils.installMouseListener(this, handle);
+    Utils.installKeyListener(this, handle);
+    Utils.installFocusListener(this, handle);
     Utils.installComponentListener(this, handle);
-    passwordField.addKeyListener(new KeyListener() {
+    addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e) {
         keyEvent = e;
       }
@@ -426,7 +439,7 @@ class CTextField extends JScrollPane implements CText {
       public void keyTyped(KeyEvent e) {
       }
     });
-    passwordField.getDocument().addDocumentListener(new DocumentListener() {
+    getDocument().addDocumentListener(new DocumentListener() {
       public void changedUpdate(DocumentEvent e) {
         handle.processEvent(e);
       }
@@ -437,7 +450,7 @@ class CTextField extends JScrollPane implements CText {
         handle.processEvent(e);
       }
     });
-    ((AbstractDocument)passwordField.getDocument()).setDocumentFilter(new DocumentFilter() {
+    ((AbstractDocument)getDocument()).setDocumentFilter(new DocumentFilter() {
 //      public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
 //      }
       public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
@@ -462,90 +475,15 @@ class CTextField extends JScrollPane implements CText {
     });
   }
 
-  public void setFont(Font font) {
-    super.setFont(font);
-    if(passwordField != null) {
-      passwordField.setFont(font);
-    }
-  }
-
   public Container getClientArea() {
-    return passwordField;
-  }
-
-  public String getText() {
-    return new String(passwordField.getPassword());
-  }
-
-  public String getText(int offs, int len) throws BadLocationException {
-    try {
-      return new String(passwordField.getPassword()).substring(offs, len + offs);
-    } catch(Exception e) {
-      throw new BadLocationException(e.getMessage(), offs);
-    }
+    return this;
   }
 
   public void setText(String text) {
-    passwordField.setText(text);
-  }
-
-  public void setSelectionStart(int start) {
-    passwordField.setSelectionStart(start);
-  }
-
-  public void setSelectionEnd(int end) {
-    passwordField.setSelectionEnd(end);
-  }
-
-  public int getSelectionStart() {
-    return passwordField.getSelectionStart();
-  }
-
-  public int getSelectionEnd() {
-    return passwordField.getSelectionEnd();
-  }
-
-  public void selectAll() {
-    passwordField.selectAll();
-  }
-
-  public void setEditable(boolean isEditable) {
-    passwordField.setEditable(isEditable);
-  }
-
-  public void setEchoChar(char echoChar) {
-    passwordField.setEchoChar(echoChar);
-  }
-
-  public char getEchoChar() {
-    return 0;
-  }
-
-  public void copy() {
-    passwordField.copy();
-  }
-
-  public void cut() {
-    passwordField.cut();
-  }
-
-  public void paste() {
-    passwordField.paste();
+    super.setText(text.replaceAll("[\r\n]", ""));
   }
 
   public void setTabSize(int tabSize) {
-  }
-
-  public void replaceSelection(String content) {
-    passwordField.replaceSelection(content);
-  }
-
-  public boolean isEditable() {
-    return passwordField.isEditable();
-  }
-
-  public int getCaretPosition() {
-    return passwordField.getCaretPosition();
   }
 
   public int getLineCount() {
@@ -553,13 +491,13 @@ class CTextField extends JScrollPane implements CText {
   }
 
   public Point getCaretLocation() {
-    return new Point(passwordField.getCaretPosition(), 0);
+    return new Point(getCaretPosition(), 0);
   }
 
   public void showSelection() {
     try {
-      Rectangle rec1 = passwordField.modelToView(getSelectionStart());
-      Rectangle rec2 = passwordField.modelToView(getSelectionEnd());
+      Rectangle rec1 = modelToView(getSelectionStart());
+      Rectangle rec2 = modelToView(getSelectionEnd());
       rec1.add(rec2);
       scrollRectToVisible(rec1);
     } catch(Exception e) {
@@ -571,20 +509,24 @@ class CTextField extends JScrollPane implements CText {
   }
 
   public int getRowHeight() {
-    return passwordField.getFontMetrics(passwordField.getFont()).getHeight();
-  }
-
-  public void setComponentOrientation(ComponentOrientation o) {
-    super.setComponentOrientation(o);
-    passwordField.setComponentOrientation(o);
+    return getFontMetrics(getFont()).getHeight();
   }
 
   public Point getViewPosition() {
-    return getViewport().getViewPosition();
+    try {
+      Rectangle rec1 = modelToView(0);
+      return new Point(rec1.x, rec1.y);
+    } catch(Exception e) {
+    }
+    return new Point(0, 0);
   }
 
   public void setViewPosition(Point p) {
-    getViewport().setViewPosition(p);
+    try {
+      Rectangle rec1 = modelToView(p.x);
+      scrollRectToVisible(rec1);
+    } catch(Exception e) {
+    }
   }
 
   public void setTextLimit(int limit) {
@@ -601,43 +543,56 @@ class CTextField extends JScrollPane implements CText {
     return textLimit;
   }
 
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    if(userAttributeHandler == null) {
+      return super.getCursor();
+    }
+    for(Control parent = handle; parent != null; parent = parent.getParent()) {
+      Cursor cursor = ((CControl)parent.handle).getUserAttributeHandler().cursor;
+      if(cursor != null) {
+        return cursor;
+      }
+    }
+    return super.getCursor();
+  }
+  
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
+    case PREFERRED_BACKGROUND_INHERITANCE:
     case NO_BACKGROUND_INHERITANCE:
       setOpaque(true);
-      passwordField.setOpaque(true);
       break;
-    case PREFERRED_BACKGROUND_INHERITANCE:
     case BACKGROUND_INHERITANCE:
       setOpaque(false);
-      passwordField.setOpaque(false);
       break;
     }
   }
 
-  public void setForeground(Color foreground) {
-    super.setForeground(foreground);
-    if(passwordField != null) {
-      passwordField.setForeground(foreground);
-    }
+  public JScrollBar getHorizontalScrollBar() {
+    // No support for scrolling in SIMPLE style.
+    return null;
   }
 
-  public void setBackground(Color background) {
-    super.setBackground(background);
-    if(passwordField != null) {
-      passwordField.setBackground(background);
-    }
+  public JScrollBar getVerticalScrollBar() {
+    // No support for scrolling in SIMPLE style.
+    return null;
   }
- 
-  public void setEnabled(boolean enabled) {
-    super.setEnabled(enabled);
-    passwordField.setEnabled(enabled);
-  }
-  
+
 }
 
 /**

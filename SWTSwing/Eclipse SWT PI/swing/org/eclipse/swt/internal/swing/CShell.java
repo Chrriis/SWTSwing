@@ -12,6 +12,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -68,6 +70,12 @@ class CShellFrame extends JFrame implements CShell {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CShellFrame(Shell shell, int style) {
     this.handle = shell;
     setLocationByPlatform(true);
@@ -110,6 +118,18 @@ class CShellFrame extends JFrame implements CShell {
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
+      public Color getBackground() {
+        return CShellFrame.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CShellFrame.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CShellFrame.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+      public Cursor getCursor() {
+        return CShellFrame.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+      }
       protected Graphics graphics;
       public Graphics getGraphics() {
         Graphics g;
@@ -156,6 +176,7 @@ class CShellFrame extends JFrame implements CShell {
         }
       }
     };
+    userAttributeHandler = new UserAttributeHandler(panel);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
@@ -366,6 +387,12 @@ class CShellDialog extends JDialog implements CShell {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CShellDialog(Shell shell, CShellDialog parent, int style) {
     super(parent);
     setLocationByPlatform(true);
@@ -446,6 +473,18 @@ class CShellDialog extends JDialog implements CShell {
     }
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
+      public Color getBackground() {
+        return CShellDialog.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+      public Color getForeground() {
+        return CShellDialog.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+      }
+      public Font getFont() {
+        return CShellDialog.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+      }
+      public Cursor getCursor() {
+        return CShellDialog.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+      }
       protected Graphics graphics;
       public Graphics getGraphics() {
         Graphics g;
@@ -492,6 +531,7 @@ class CShellDialog extends JDialog implements CShell {
         }
       }
     };
+    userAttributeHandler = new UserAttributeHandler(panel);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
       JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
       this.scrollPane = scrollPane;
@@ -715,8 +755,16 @@ class CShellPanel extends JPanel implements CShell {
   public Container getClientArea() {
     return this;
   }
+  
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CShellPanel(Shell shell, int style) {
     handle = shell;
+    userAttributeHandler = new UserAttributeHandler(this);
     init(style);
   }
   protected void init(int style) {

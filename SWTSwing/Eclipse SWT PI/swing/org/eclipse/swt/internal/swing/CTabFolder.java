@@ -7,12 +7,16 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Rectangle;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JScrollBar;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
@@ -35,8 +39,15 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CTabFolderImplementation(TabFolder tabFolder, int style) {
     this.handle = tabFolder;
+    userAttributeHandler = new UserAttributeHandler(this);
     init(style);
   }
 
@@ -71,18 +82,47 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
     return null;
   }
 
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+  
+  protected ImageIcon backgroundImageIcon;
+
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
     switch(backgroundInheritanceType) {
-    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
     case PREFERRED_BACKGROUND_INHERITANCE:
-    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+    case NO_BACKGROUND_INHERITANCE: {
+      Object isContentOpaqueObject = UIManager.get("TabbedPane.contentOpaque");
+      UIManager.put("TabbedPane.contentOpaque", Boolean.FALSE);
+      updateUI();
+      UIManager.put("TabbedPane.contentOpaque", isContentOpaqueObject);
+      setOpaque(true);
+      break;
+    }
+    case BACKGROUND_INHERITANCE: {
+      Object isContentOpaqueObject = UIManager.get("TabbedPane.contentOpaque");
+      UIManager.put("TabbedPane.contentOpaque", Boolean.FALSE);
+      updateUI();
+      UIManager.put("TabbedPane.contentOpaque", isContentOpaqueObject);
+      setOpaque(false);
+      break;
+    }
     }
   }
-
+  
   public Dimension getPreferredSize() {
     Dimension size = super.getPreferredSize();
     int count = getTabCount();

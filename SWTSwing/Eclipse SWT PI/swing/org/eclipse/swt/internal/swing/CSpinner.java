@@ -7,7 +7,10 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -42,8 +45,15 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
     return handle;
   }
 
+  protected UserAttributeHandler userAttributeHandler;
+  
+  public UserAttributeHandler getUserAttributeHandler() {
+    return userAttributeHandler;
+  }
+  
   public CSpinnerImplementation(Spinner spinner, int style) {
     this.handle = spinner;
+    userAttributeHandler = new UserAttributeHandler(this);
     model = new SpinnerNumberModel(0, minimum, maximum, 1.0);
     setModel(model);
     model.setMinimum(new Comparable() {
@@ -185,6 +195,19 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
     return digitCount;
   }
 
+  public Color getBackground() {
+    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+  }
+  public Color getForeground() {
+    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+  }
+  public Font getFont() {
+    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+  }
+  public Cursor getCursor() {
+    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+  }
+  
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }

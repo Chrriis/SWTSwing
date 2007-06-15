@@ -14,8 +14,6 @@ package org.eclipse.swt.graphics;
 import java.awt.AWTException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.Button;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
@@ -2469,9 +2467,6 @@ public Font getFont () {
  * </ul>
  */
 public FontMetrics getFontMetrics() {
-  if("org.eclipse.jface.preference.ColorSelector.computeImageSize(ColorSelector.java:130)".equals(String.valueOf(new Exception().getStackTrace()[1]))) {
-    System.err.println("in");
-  }
   Graphics2D handle = getGraphics();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return FontMetrics.swing_new(handle.getFontMetrics());

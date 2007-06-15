@@ -157,7 +157,7 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
   }
 
   public boolean isOpaque() {
-    return backgroundImageIcon == null && super.isOpaque();
+    return backgroundImageIcon == null && (userAttributeHandler != null && userAttributeHandler.background != null || super.isOpaque());
   }
   protected void paintComponent(Graphics g) {
     Utils.paintTiledImage(this, g, backgroundImageIcon);
@@ -192,11 +192,11 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
-    switch(backgroundInheritanceType) {
-    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
-    case PREFERRED_BACKGROUND_INHERITANCE:
-    case BACKGROUND_INHERITANCE: setOpaque(false); break;
-    }
+//    switch(backgroundInheritanceType) {
+//    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+//    case PREFERRED_BACKGROUND_INHERITANCE:
+//    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+//    }
   }
 
 }

@@ -688,14 +688,6 @@ class CTableImplementation extends JScrollPane implements CTable {
     }
   }
 
-  public void setBackground(Color background) {
-    super.setBackground(background);
-    getViewport().setBackground(background);
-    if(table != null) {
-      table.setBackground(background);
-    }
-  }
-  
   public boolean isFocusable() {
     return table.isFocusable();
   }

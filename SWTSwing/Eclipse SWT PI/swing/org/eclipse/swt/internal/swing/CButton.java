@@ -227,6 +227,7 @@ class CButtonCheck extends JCheckBox implements CButton {
   }
   
   protected void init(int style) {
+    setOpaque(false);
     setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
@@ -247,6 +248,10 @@ class CButtonCheck extends JCheckBox implements CButton {
     setHorizontalAlignment(alignment);
   }
   
+  public boolean isOpaque() {
+    return userAttributeHandler != null && userAttributeHandler.background != null || super.isOpaque();
+  }
+  
   public Color getBackground() {
     return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
   }
@@ -265,11 +270,11 @@ class CButtonCheck extends JCheckBox implements CButton {
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
-    switch(backgroundInheritanceType) {
-    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
-    case PREFERRED_BACKGROUND_INHERITANCE:
-    case BACKGROUND_INHERITANCE: setOpaque(false); break;
-    }
+//    switch(backgroundInheritanceType) {
+//    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+//    case PREFERRED_BACKGROUND_INHERITANCE:
+//    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+//    }
   }
 
 }
@@ -373,6 +378,7 @@ class CButtonRadio extends JIconRadioButton implements CButton {
   }
 
   protected void init(int style) {
+    setOpaque(false);
     setHorizontalAlignment((style & SWT.TRAIL) != 0? AbstractButton.TRAILING: (style & SWT.CENTER) != 0? AbstractButton.CENTER: AbstractButton.LEADING);
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
@@ -403,6 +409,10 @@ class CButtonRadio extends JIconRadioButton implements CButton {
     setHorizontalAlignment(alignment);
   }
   
+  public boolean isOpaque() {
+    return userAttributeHandler != null && userAttributeHandler.background != null || super.isOpaque();
+  }
+  
   public Color getBackground() {
     return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
   }
@@ -415,17 +425,17 @@ class CButtonRadio extends JIconRadioButton implements CButton {
   public Cursor getCursor() {
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
-
+  
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
-    switch(backgroundInheritanceType) {
-    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
-    case PREFERRED_BACKGROUND_INHERITANCE:
-    case BACKGROUND_INHERITANCE: setOpaque(false); break;
-    }
+//    switch(backgroundInheritanceType) {
+//    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+//    case PREFERRED_BACKGROUND_INHERITANCE:
+//    case BACKGROUND_INHERITANCE: setOpaque(false); break;
+//    }
   }
 
 }

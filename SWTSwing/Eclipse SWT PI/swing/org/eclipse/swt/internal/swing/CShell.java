@@ -272,13 +272,6 @@ class CShellFrame extends JFrame implements CShell {
     }
   }
   
-  public void setBackground(Color c) {
-    super.setBackground(c);
-    if(contentPane != null) {
-      contentPane.setBackground(c);
-    }
-  }
-
   public void forceActive() {
     toFront();
     requestFocus();
@@ -632,13 +625,6 @@ class CShellDialog extends JDialog implements CShell {
     }
   }
   
-  public void setBackground(Color c) {
-    super.setBackground(c);
-    if(contentPane != null) {
-      contentPane.setBackground(c);
-    }
-  }
-
   public void forceActive() {
     toFront();
     requestFocus();

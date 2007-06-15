@@ -4172,6 +4172,7 @@ public void processEvent(EventObject e) {
 
 boolean isTraversing;
 int lastPressedKeyCode;
+Runnable focusLostRunnable;
 
 /**
  * The entry point for callbacks 
@@ -4358,6 +4359,9 @@ public void processEvent(AWTEvent e) {
   case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;
   case ComponentEvent.COMPONENT_HIDDEN: sendEvent(SWT.Hide); break;
   case java.awt.event.FocusEvent.FOCUS_GAINED: {
+    if(focusLostRunnable != null) {
+      focusLostRunnable.run();
+    }
     Shell shell = getShell ();
     if(!shell.isDisposed()) {
       shell.setActiveControl(this);
@@ -4366,11 +4370,21 @@ public void processEvent(AWTEvent e) {
     break;
   }
   case java.awt.event.FocusEvent.FOCUS_LOST: {
-    Shell shell = getShell ();
-    if (shell != display.getActiveShell ()) {
-      shell.setActiveControl (null);
-    }
-    sendEvent(SWT.FocusOut);
+    Runnable runnable = new Runnable() {
+      public void run() {
+        if(focusLostRunnable != this) {
+          return;
+        }
+        UIThreadUtils.startExclusiveSection(getDisplay());
+        Shell shell = getShell ();
+        if (shell != display.getActiveShell ()) {
+          shell.setActiveControl (null);
+        }
+        postEvent(SWT.FocusOut);
+        UIThreadUtils.stopExclusiveSection();
+      }
+    };
+    focusLostRunnable = runnable;
     break;
   }
   }

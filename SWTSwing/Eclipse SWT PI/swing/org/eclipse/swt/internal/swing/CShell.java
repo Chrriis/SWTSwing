@@ -83,7 +83,6 @@ class CShellFrame extends JFrame implements CShell {
   }
   
   protected void init(int style) {
-    setFocusableWindowState((style & SWT.TITLE) != 0);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
@@ -245,6 +244,7 @@ class CShellFrame extends JFrame implements CShell {
   
   public void show() {
     if(!isVisible()) {
+      setFocusableWindowState((handle.getStyle() & SWT.TITLE) != 0);
       isPaintActive = true;
       boolean isEventDispatchThread = SwingUtilities.isEventDispatchThread();
       if(isEventDispatchThread) {
@@ -432,7 +432,6 @@ class CShellDialog extends JDialog implements CShell {
 //  }
 
   protected void init(int style) {
-    setFocusableWindowState((style & SWT.TITLE) != 0);
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
     java.awt.Rectangle bounds = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     setSize(bounds.width * 3 / 4, bounds.height * 3 / 4);
@@ -598,6 +597,7 @@ class CShellDialog extends JDialog implements CShell {
   
   public void show() {
     if(!isVisible()) {
+      setFocusableWindowState((handle.getStyle() & SWT.TITLE) != 0);
       isPaintActive = true;
       boolean isEventDispatchThread = SwingUtilities.isEventDispatchThread();
       if(isEventDispatchThread) {

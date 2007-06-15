@@ -61,6 +61,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
 
   protected void init(int style) {
     setEditable(false);
+    putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
     setForeground(UIManager.getColor("Label.foreground"));
     setBackground(UIManager.getColor("Label.background"));
     setFont(UIManager.getFont("Label.font"));

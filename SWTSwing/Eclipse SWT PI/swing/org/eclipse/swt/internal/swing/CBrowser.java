@@ -71,6 +71,7 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
   
   protected void init(int style) {
     editorPane.setEditable(false);
+    editorPane.putClientProperty(JEditorPane.W3C_LENGTH_UNITS, Boolean.TRUE);
     editorPane.addHyperlinkListener(new HyperlinkListener() {
       public void hyperlinkUpdate(HyperlinkEvent e) {
         if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {

@@ -613,10 +613,12 @@ public void deselect (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
 	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  isAdjustingSelection = true;
   for(int i=0; i<indices.length; i++) {
     int index = indices[i];
     selectionModel.removeSelectionInterval(index, index);
   }
+  isAdjustingSelection = false;
 }
 
 /**
@@ -634,7 +636,9 @@ public void deselect (int [] indices) {
 public void deselect (int index) {
 	checkWidget ();
 	if (index < 0) return;
+  isAdjustingSelection = true;
   ((CTable)handle).getSelectionModel().removeSelectionInterval(index, index);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -654,7 +658,9 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CTable)handle).getSelectionModel().removeSelectionInterval(start, end);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -667,7 +673,9 @@ public void deselect (int start, int end) {
  */
 public void deselectAll () {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CTable)handle).getSelectionModel().clearSelection();
+  isAdjustingSelection = false;
 }
 
 void destroyItem (TableColumn column) {

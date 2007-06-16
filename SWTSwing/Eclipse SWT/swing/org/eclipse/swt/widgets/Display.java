@@ -284,9 +284,9 @@ public class Display extends Device {
         previousModifiersEx = modifiersEx;
         modifiersEx = ie.getModifiersEx();
         if(ie instanceof MouseEvent) {
-          Component component = ie.getComponent();
           // It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
-          Window window = SwingUtilities.getWindowAncestor(component);
+          Component component = ie.getComponent();
+          Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
           switch(ie.getID()) {
           case MouseEvent.MOUSE_WHEEL:
             if(window != hoveredWindow && hoveredWindow != null && window != null) {
@@ -324,15 +324,16 @@ public class Display extends Device {
         if(ie.getID() == KeyEvent.KEY_PRESSED) {
           int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
           if((modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
-            Window window = SwingUtilities.getWindowAncestor(ie.getComponent());
+            Component component = ie.getComponent();
+            Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
             if(window instanceof CShell) {
               java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
               SwingUtilities.convertPointFromScreen(mouseLocation, window);
-              Component component = window.findComponentAt(mouseLocation);
-              for(; component != null && !(component instanceof CControl); component = component.getParent());
+              Component targetComponent = window.findComponentAt(mouseLocation);
+              for(; targetComponent != null && !(targetComponent instanceof CControl); targetComponent = targetComponent.getParent());
               Control control;
-              if(component != null) {
-                control = ((CControl)component).getSWTHandle();
+              if(targetComponent != null) {
+                control = ((CControl)targetComponent).getSWTHandle();
               } else {
                 control = ((CShell)window).getSWTHandle();
               }

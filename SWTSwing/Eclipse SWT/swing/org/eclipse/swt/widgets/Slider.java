@@ -437,29 +437,34 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED:
-    Event event = new Event ();
-    event.detail = SWT.DRAG;
-    switch(((AdjustmentEvent)e).getAdjustmentType()) {
-    case AdjustmentEvent.BLOCK_DECREMENT:
-      event.detail = SWT.PAGE_DOWN;
-      break;
-    case AdjustmentEvent.BLOCK_INCREMENT:
-      event.detail = SWT.PAGE_UP;
-      break;
-    case AdjustmentEvent.UNIT_DECREMENT:
-      event.detail = SWT.ARROW_DOWN;
-      break;
-    case AdjustmentEvent.UNIT_INCREMENT:
-      event.detail = SWT.ARROW_UP;
+  try {
+    switch(id) {
+    case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED:
+      Event event = new Event ();
+      event.detail = SWT.DRAG;
+      switch(((AdjustmentEvent)e).getAdjustmentType()) {
+      case AdjustmentEvent.BLOCK_DECREMENT:
+        event.detail = SWT.PAGE_DOWN;
+        break;
+      case AdjustmentEvent.BLOCK_INCREMENT:
+        event.detail = SWT.PAGE_UP;
+        break;
+      case AdjustmentEvent.UNIT_DECREMENT:
+        event.detail = SWT.ARROW_DOWN;
+        break;
+      case AdjustmentEvent.UNIT_INCREMENT:
+        event.detail = SWT.ARROW_UP;
+        break;
+      }
+      sendEvent (SWT.Selection, event);
       break;
     }
-    sendEvent (SWT.Selection, event);
-    break;
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

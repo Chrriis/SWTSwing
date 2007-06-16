@@ -170,74 +170,79 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case MouseEvent.MOUSE_PRESSED: {
-    origin = ((MouseEvent)e).getPoint();
-    Event event = new Event();
-    Rectangle bounds = getBounds();
-    event.x = bounds.x;
-    event.y = bounds.y;
-    event.width = bounds.width;
-    event.height = bounds.height;
-    targetPoint = new Point(bounds.x, bounds.y);
-    sendEvent(SWT.Selection, event);
-    break;
-  }
-  case MouseEvent.MOUSE_RELEASED: {
-    Event event = new Event();
-    Rectangle bounds = getBounds();
-    event.x = targetPoint.x;
-    event.y = targetPoint.y;
-    event.width = bounds.width;
-    event.height = bounds.height;
-//      if ((style & SWT.SMOOTH) != 0) {
-//        event.detail = SWT.DRAG;
-//      }
-    sendEvent(SWT.Selection, event);
-    origin = null;
-    targetPoint = null;
-    break;
-  }
-  case MouseEvent.MOUSE_DRAGGED:
-    Event event = new Event();
-    MouseEvent me = (MouseEvent)e;
-    java.awt.Dimension size = handle.getParent().getSize();
-    Rectangle bounds = getBounds();
-    event.x = bounds.x;
-    event.y = bounds.y;
-    if((style & SWT.VERTICAL) != 0) {
-      event.x += me.getX() - origin.x;
-      if(event.x < 0) {
-        event.x = 0;
-      } else if(event.x >= size.width - bounds.width) {
-        event.x = size.width - bounds.width;
-      }
-    } else {
-      event.y += me.getY() - origin.y;
-      if(event.y < 0) {
-        event.y = 0;
-      } else if(event.y >= size.height - bounds.height) {
-        event.y = size.height - bounds.height;
-      }
+  try {
+    switch(id) {
+    case MouseEvent.MOUSE_PRESSED: {
+      origin = ((MouseEvent)e).getPoint();
+      Event event = new Event();
+      Rectangle bounds = getBounds();
+      event.x = bounds.x;
+      event.y = bounds.y;
+      event.width = bounds.width;
+      event.height = bounds.height;
+      targetPoint = new Point(bounds.x, bounds.y);
+      sendEvent(SWT.Selection, event);
+      break;
     }
-    event.width = bounds.width;
-    event.height = bounds.height;
-    if ((style & SWT.SMOOTH) == 0) {
-      event.detail = SWT.DRAG;
-    }
-    sendEvent(SWT.Selection, event);
-    if (event.doit) {
-      targetPoint.x = event.x;
-      targetPoint.y = event.y;
-      ((CSash)handle).setDragLocation((style & SWT.VERTICAL) != 0? targetPoint.x: targetPoint.y);
+    case MouseEvent.MOUSE_RELEASED: {
+      Event event = new Event();
+      Rectangle bounds = getBounds();
+      event.x = targetPoint.x;
+      event.y = targetPoint.y;
+      event.width = bounds.width;
+      event.height = bounds.height;
 //        if ((style & SWT.SMOOTH) != 0) {
-//          setLocation(targetPoint.x, targetPoint.y);
+//          event.detail = SWT.DRAG;
 //        }
+      sendEvent(SWT.Selection, event);
+      origin = null;
+      targetPoint = null;
+      break;
     }
-    break;
+    case MouseEvent.MOUSE_DRAGGED:
+      Event event = new Event();
+      MouseEvent me = (MouseEvent)e;
+      java.awt.Dimension size = handle.getParent().getSize();
+      Rectangle bounds = getBounds();
+      event.x = bounds.x;
+      event.y = bounds.y;
+      if((style & SWT.VERTICAL) != 0) {
+        event.x += me.getX() - origin.x;
+        if(event.x < 0) {
+          event.x = 0;
+        } else if(event.x >= size.width - bounds.width) {
+          event.x = size.width - bounds.width;
+        }
+      } else {
+        event.y += me.getY() - origin.y;
+        if(event.y < 0) {
+          event.y = 0;
+        } else if(event.y >= size.height - bounds.height) {
+          event.y = size.height - bounds.height;
+        }
+      }
+      event.width = bounds.width;
+      event.height = bounds.height;
+      if ((style & SWT.SMOOTH) == 0) {
+        event.detail = SWT.DRAG;
+      }
+      sendEvent(SWT.Selection, event);
+      if (event.doit) {
+        targetPoint.x = event.x;
+        targetPoint.y = event.y;
+        ((CSash)handle).setDragLocation((style & SWT.VERTICAL) != 0? targetPoint.x: targetPoint.y);
+//          if ((style & SWT.SMOOTH) != 0) {
+//            setLocation(targetPoint.x, targetPoint.y);
+//          }
+      }
+      break;
+    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

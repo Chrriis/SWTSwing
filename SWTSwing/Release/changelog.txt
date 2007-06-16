@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Exception propagation, including VM shutdown if no user threads, is in place.
 - Guard against exceptions/errors in the event loop.
 - Some conditions for range checking were wrong in List. This is fixed.
 - Focus handling is improved.

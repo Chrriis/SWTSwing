@@ -3526,28 +3526,33 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case MouseEvent.MOUSE_CLICKED:
-    MouseEvent me = (MouseEvent)e;
-    if(me.getClickCount() == 2) {
-      java.awt.Point location = me.getPoint();
-      TreePath path = ((CTree)handle).getPathForLocation(location.x, location.y);
-      if(path != null) {
-        Event event = new Event();
-        event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-        sendEvent(SWT.DefaultSelection, event);
+  try {
+    switch(id) {
+    case MouseEvent.MOUSE_CLICKED:
+      MouseEvent me = (MouseEvent)e;
+      if(me.getClickCount() == 2) {
+        java.awt.Point location = me.getPoint();
+        TreePath path = ((CTree)handle).getPathForLocation(location.x, location.y);
+        if(path != null) {
+          Event event = new Event();
+          event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+          sendEvent(SWT.DefaultSelection, event);
+        }
       }
+      break;
+    case ItemEvent.ITEM_STATE_CHANGED:
+      Event event = new Event();
+      event.detail = SWT.CHECK;
+      event.item = ((CTreeItem)((ItemEvent)e).getItem()).getTreeItem();
+      sendEvent(SWT.Selection, event);
+      break;
     }
-    break;
-  case ItemEvent.ITEM_STATE_CHANGED:
-    Event event = new Event();
-    event.detail = SWT.CHECK;
-    event.item = ((CTreeItem)((ItemEvent)e).getItem()).getTreeItem();
-    sendEvent(SWT.Selection, event);
-    break;
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 public void processEvent(EventObject e) {
@@ -3585,105 +3590,109 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  if(e instanceof TreeExpansionEvent) {
-    TreePath path = ((TreeExpansionEvent)e).getPath();
-    boolean isExpanded = ((CTree)handle).isExpanded(path);
-    Event event = new Event();
-    event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-    if(isExpanded) {
-      sendEvent(SWT.Expand, event);
-      ((CTree)handle).expandPath(path);
-    } else {
-      sendEvent(SWT.Collapse, event);
-      ((CTree)handle).collapsePath(path);
+  try {
+    UIThreadUtils.startExclusiveSection(getDisplay());
+    if(isDisposed()) {
+      UIThreadUtils.stopExclusiveSection();
+      super.processEvent(e);
+      return;
     }
-  } else if(e instanceof TreeSelectionEvent) {
-    TreePath path = ((TreeSelectionEvent)e).getPath();
-    Event event = new Event();
-    event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-    sendEvent(SWT.Selection, event);
-  } else   if(e instanceof CellPaintEvent) {
-    CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
-    switch(cellPaintEvent.getType()) {
-    case CellPaintEvent.ERASE_TYPE: {
-      TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
-      Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+    if(e instanceof TreeExpansionEvent) {
+      TreePath path = ((TreeExpansionEvent)e).getPath();
+      boolean isExpanded = ((CTree)handle).isExpanded(path);
       Event event = new Event();
-      event.x = cellBounds.x;
-      event.y = cellBounds.y;
-      event.width = cellBounds.width;
-      event.height = cellBounds.height;
-      event.item = treeItem;
-      event.index = cellPaintEvent.column;
-      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-      event.gc = new GC(this);
-      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-//      event.gc.isSwingPainting = true;
-      sendEvent(SWT.EraseItem, event);
-      if(event.doit) {
-        cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
-        cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
-        cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-        cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
+      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+      if(isExpanded) {
+        sendEvent(SWT.Expand, event);
+        ((CTree)handle).expandPath(path);
       } else {
-        cellPaintEvent.ignoreDrawForeground = true;
-        cellPaintEvent.ignoreDrawBackground = true;
-        cellPaintEvent.ignoreDrawSelection = true;
-        cellPaintEvent.ignoreDrawFocused = true;
+        sendEvent(SWT.Collapse, event);
+        ((CTree)handle).collapsePath(path);
       }
-//      event.gc.isSwingPainting = false; 
-      break;
-    }
-    case CellPaintEvent.PAINT_TYPE: {
-      TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
-      Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+    } else if(e instanceof TreeSelectionEvent) {
+      TreePath path = ((TreeSelectionEvent)e).getPath();
       Event event = new Event();
-      event.x = cellBounds.x;
-      event.y = cellBounds.y;
-      event.width = cellBounds.width;
-      event.height = cellBounds.height;
-      event.item = treeItem;
-      event.index = cellPaintEvent.column;
-      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-      event.gc = new GC(this);
-      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-      sendEvent(SWT.PaintItem, event);
-      break;
+      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+      sendEvent(SWT.Selection, event);
+    } else   if(e instanceof CellPaintEvent) {
+      CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
+      switch(cellPaintEvent.getType()) {
+      case CellPaintEvent.ERASE_TYPE: {
+        TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+        Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+        Event event = new Event();
+        event.x = cellBounds.x;
+        event.y = cellBounds.y;
+        event.width = cellBounds.width;
+        event.height = cellBounds.height;
+        event.item = treeItem;
+        event.index = cellPaintEvent.column;
+        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+        event.gc = new GC(this);
+        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+//        event.gc.isSwingPainting = true;
+        sendEvent(SWT.EraseItem, event);
+        if(event.doit) {
+          cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
+          cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+          cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+          cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
+        } else {
+          cellPaintEvent.ignoreDrawForeground = true;
+          cellPaintEvent.ignoreDrawBackground = true;
+          cellPaintEvent.ignoreDrawSelection = true;
+          cellPaintEvent.ignoreDrawFocused = true;
+        }
+//        event.gc.isSwingPainting = false; 
+        break;
+      }
+      case CellPaintEvent.PAINT_TYPE: {
+        TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+        Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+        Event event = new Event();
+        event.x = cellBounds.x;
+        event.y = cellBounds.y;
+        event.width = cellBounds.width;
+        event.height = cellBounds.height;
+        event.item = treeItem;
+        event.index = cellPaintEvent.column;
+        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+        event.gc = new GC(this);
+        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        sendEvent(SWT.PaintItem, event);
+        break;
+      }
+      case CellPaintEvent.MEASURE_TYPE:
+        TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+//        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+        Event event = new Event();
+//        event.x = cellBounds.x;
+//        event.y = cellBounds.y;
+//        event.width = cellBounds.width;
+//        event.height = cellBounds.height;
+        event.height = cellPaintEvent.rowHeight;
+        event.item = treeItem;
+        event.index = cellPaintEvent.column;
+        event.gc = new GC(this);
+//        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        sendEvent(SWT.MeasureItem, event);
+//        cellPaintEvent.rowHeight -= event.height - cellBounds.height;
+        cellPaintEvent.rowHeight = event.height;
+        break;
+      }
     }
-    case CellPaintEvent.MEASURE_TYPE:
-      TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
-//      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-      Event event = new Event();
-//      event.x = cellBounds.x;
-//      event.y = cellBounds.y;
-//      event.width = cellBounds.width;
-//      event.height = cellBounds.height;
-      event.height = cellPaintEvent.rowHeight;
-      event.item = treeItem;
-      event.index = cellPaintEvent.column;
-      event.gc = new GC(this);
-//      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-      sendEvent(SWT.MeasureItem, event);
-//      cellPaintEvent.rowHeight -= event.height - cellBounds.height;
-      cellPaintEvent.rowHeight = event.height;
-      break;
-    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
-  return;
 }
 
 }

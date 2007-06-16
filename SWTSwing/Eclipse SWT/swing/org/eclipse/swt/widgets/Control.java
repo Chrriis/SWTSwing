@@ -4146,8 +4146,13 @@ void adjustMouseHoverState(java.awt.event.MouseEvent me) {
                       UIThreadUtils.stopExclusiveSection();
                       return;
                     }
-                    sendEvent(SWT.MouseHover, createMouseEvent(me, false));
-                    UIThreadUtils.stopExclusiveSection();
+                    try {
+                      sendEvent(SWT.MouseHover, createMouseEvent(me, false));
+                    } catch(Throwable t) {
+                      UIThreadUtils.storeException(t);
+                    } finally {
+                      UIThreadUtils.stopExclusiveSection();
+                    }
                   }
                 }
               }
@@ -4252,148 +4257,158 @@ public void processEvent(AWTEvent e) {
     UIThreadUtils.stopExclusiveSection();
     return;
   }
-  switch(id) {
-  case java.awt.event.PaintEvent.PAINT: {
-    Event event = new Event();
-    event.gc = new GC(this);
-    Rectangle r = this.getBounds ();
-    event.width = r.width;
-    event.height = r.height;
-    sendEvent(SWT.Paint, event);
-    if (this instanceof Canvas) {
-      Canvas canvas = (Canvas) this;
-      if (canvas.caret != null) {
-        canvas.caret.paintCaret (event.gc);
+  try {
+    switch(id) {
+    case java.awt.event.PaintEvent.PAINT: {
+      Event event = new Event();
+      event.gc = new GC(this);
+      Rectangle r = this.getBounds ();
+      event.width = r.width;
+      event.height = r.height;
+      sendEvent(SWT.Paint, event);
+      if (this instanceof Canvas) {
+        Canvas canvas = (Canvas) this;
+        if (canvas.caret != null) {
+          canvas.caret.paintCaret (event.gc);
+        }
       }
+      break;
     }
-    break;
-  }
-  case java.awt.event.MouseEvent.MOUSE_DRAGGED:
-  case java.awt.event.MouseEvent.MOUSE_MOVED: {
-    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-    sendEvent(SWT.MouseMove, createMouseEvent(me, false));
-    adjustMouseHoverState(me);
-    break;
-  }
-  case java.awt.event.MouseEvent.MOUSE_PRESSED: {
-    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-    Event event = createMouseEvent(me, true);
-    sendEvent(SWT.MouseDown, event);
-    if((menu != null || hooks(SWT.MenuDetect)) && me.isPopupTrigger()) {
-      java.awt.Point p = new java.awt.Point(event.x, event.y);
-      SwingUtilities.convertPointToScreen(p, me.getComponent());
-      event.x = p.x;
-      event.y = p.y;
-      sendEvent(SWT.MenuDetect, event);
-      showPopup(me);
+    case java.awt.event.MouseEvent.MOUSE_DRAGGED:
+    case java.awt.event.MouseEvent.MOUSE_MOVED: {
+      java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+      sendEvent(SWT.MouseMove, createMouseEvent(me, false));
+      adjustMouseHoverState(me);
+      break;
     }
-    break;
-  }
-  case java.awt.event.MouseEvent.MOUSE_RELEASED: {
-    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-    Event event = createMouseEvent(me, true);
-    sendEvent(SWT.MouseUp, event);
-    if((menu != null || hooks(SWT.MenuDetect)) && me.isPopupTrigger()) {
-      java.awt.Point p = new java.awt.Point(event.x, event.y);
-      SwingUtilities.convertPointToScreen(p, me.getComponent());
-      event.x = p.x;
-      event.y = p.y;
-      sendEvent(SWT.MenuDetect, event);
-      showPopup(me);
-    }
-    break;
-  }
-  case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
-  case java.awt.event.MouseEvent.MOUSE_WHEEL: {
-    sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false));
-    adjustMouseHoverState((java.awt.event.MouseEvent)e);
-    break;
-  }
-  case java.awt.event.MouseEvent.MOUSE_ENTERED: sendEvent(SWT.MouseEnter, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
-  case java.awt.event.MouseEvent.MOUSE_EXITED:
-    mouseHoverThread = null;
-    sendEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
-    break;
-  case java.awt.event.KeyEvent.KEY_PRESSED: {
-    java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
-    int pressedKeyCode = ke.getKeyCode();
-    if(pressedKeyCode == lastPressedKeyCode) {
-      boolean isBlocked = false;
-      switch(pressedKeyCode) {
-      case java.awt.event.KeyEvent.VK_CONTROL:
-      case java.awt.event.KeyEvent.VK_SHIFT:
-      case java.awt.event.KeyEvent.VK_ALT:
-        isBlocked = true;
+    case java.awt.event.MouseEvent.MOUSE_PRESSED: {
+      java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+      Event event = createMouseEvent(me, true);
+      sendEvent(SWT.MouseDown, event);
+      if((menu != null || hooks(SWT.MenuDetect)) && me.isPopupTrigger()) {
+        java.awt.Point p = new java.awt.Point(event.x, event.y);
+        SwingUtilities.convertPointToScreen(p, me.getComponent());
+        event.x = p.x;
+        event.y = p.y;
+        sendEvent(SWT.MenuDetect, event);
+        showPopup(me);
       }
-      if(isBlocked) break;
+      break;
     }
-    lastPressedKeyCode = pressedKeyCode;
-    if(isTraversalKey(ke)) {
-      isTraversing = processTraversalKey(ke);
-    }
-    if(!isTraversing) {
-      if(hooks(SWT.KeyDown)) {
-        sendEvent(SWT.KeyDown, createKeyEvent(ke));
+    case java.awt.event.MouseEvent.MOUSE_RELEASED: {
+      java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+      Event event = createMouseEvent(me, true);
+      sendEvent(SWT.MouseUp, event);
+      if((menu != null || hooks(SWT.MenuDetect)) && me.isPopupTrigger()) {
+        java.awt.Point p = new java.awt.Point(event.x, event.y);
+        SwingUtilities.convertPointToScreen(p, me.getComponent());
+        event.x = p.x;
+        event.y = p.y;
+        sendEvent(SWT.MenuDetect, event);
+        showPopup(me);
       }
-      lastPressed = ke.getWhen ();
+      break;
     }
-    break;
-  }
-  case java.awt.event.KeyEvent.KEY_RELEASED: {
-    lastPressedKeyCode = -1;
-    if(!isTraversing) {
-      sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e));
+    case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
+    case java.awt.event.MouseEvent.MOUSE_WHEEL: {
+      sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false));
+      adjustMouseHoverState((java.awt.event.MouseEvent)e);
+      break;
     }
-    break;
-  }
-  case java.awt.event.KeyEvent.KEY_TYPED:
-    if(!isTraversing) {
+    case java.awt.event.MouseEvent.MOUSE_ENTERED: sendEvent(SWT.MouseEnter, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
+    case java.awt.event.MouseEvent.MOUSE_EXITED:
+      mouseHoverThread = null;
+      sendEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
+      break;
+    case java.awt.event.KeyEvent.KEY_PRESSED: {
       java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
-      if (ke.getWhen () > lastPressed) {
-        Event event = createKeyEvent (ke);
-        sendEvent (SWT.KeyDown, event);
-        sendEvent (SWT.KeyUp, event);
-      }
-    }
-    isTraversing = false;
-    break;
-  case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
-  case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;
-  case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;
-  case ComponentEvent.COMPONENT_HIDDEN: sendEvent(SWT.Hide); break;
-  case java.awt.event.FocusEvent.FOCUS_GAINED: {
-    if(focusLostRunnable != null) {
-      focusLostRunnable.run();
-    }
-    Shell shell = getShell ();
-    if(!shell.isDisposed()) {
-      shell.setActiveControl(this);
-    }
-    sendEvent(SWT.FocusIn);
-    break;
-  }
-  case java.awt.event.FocusEvent.FOCUS_LOST: {
-    Runnable runnable = new Runnable() {
-      public void run() {
-        if(focusLostRunnable != this) {
-          return;
+      int pressedKeyCode = ke.getKeyCode();
+      if(pressedKeyCode == lastPressedKeyCode) {
+        boolean isBlocked = false;
+        switch(pressedKeyCode) {
+        case java.awt.event.KeyEvent.VK_CONTROL:
+        case java.awt.event.KeyEvent.VK_SHIFT:
+        case java.awt.event.KeyEvent.VK_ALT:
+          isBlocked = true;
         }
-        focusLostRunnable = null;
-        UIThreadUtils.startExclusiveSection(display);
-        Shell shell = getShell();
-        Display display = getDisplay();
-        if (shell != display.getActiveShell ()) {
-          shell.setActiveControl (null);
-        }
-        sendEvent(SWT.FocusOut);
-        UIThreadUtils.stopExclusiveSection();
+        if(isBlocked) break;
       }
-    };
-    focusLostRunnable = runnable;
-    break;
+      lastPressedKeyCode = pressedKeyCode;
+      if(isTraversalKey(ke)) {
+        isTraversing = processTraversalKey(ke);
+      }
+      if(!isTraversing) {
+        if(hooks(SWT.KeyDown)) {
+          sendEvent(SWT.KeyDown, createKeyEvent(ke));
+        }
+        lastPressed = ke.getWhen ();
+      }
+      break;
+    }
+    case java.awt.event.KeyEvent.KEY_RELEASED: {
+      lastPressedKeyCode = -1;
+      if(!isTraversing) {
+        sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e));
+      }
+      break;
+    }
+    case java.awt.event.KeyEvent.KEY_TYPED:
+      if(!isTraversing) {
+        java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+        if (ke.getWhen () > lastPressed) {
+          Event event = createKeyEvent (ke);
+          sendEvent (SWT.KeyDown, event);
+          sendEvent (SWT.KeyUp, event);
+        }
+      }
+      isTraversing = false;
+      break;
+    case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
+    case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;
+    case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;
+    case ComponentEvent.COMPONENT_HIDDEN: sendEvent(SWT.Hide); break;
+    case java.awt.event.FocusEvent.FOCUS_GAINED: {
+      if(focusLostRunnable != null) {
+        focusLostRunnable.run();
+      }
+      Shell shell = getShell ();
+      if(!shell.isDisposed()) {
+        shell.setActiveControl(this);
+      }
+      sendEvent(SWT.FocusIn);
+      break;
+    }
+    case java.awt.event.FocusEvent.FOCUS_LOST: {
+      Runnable runnable = new Runnable() {
+        public void run() {
+          if(focusLostRunnable != this) {
+            return;
+          }
+          focusLostRunnable = null;
+          UIThreadUtils.startExclusiveSection(display);
+          try {
+            Shell shell = getShell();
+            Display display = getDisplay();
+            if (shell != display.getActiveShell ()) {
+              shell.setActiveControl (null);
+            }
+            sendEvent(SWT.FocusOut);
+          } catch(Throwable t) {
+            UIThreadUtils.storeException(t);
+          } finally {
+            UIThreadUtils.stopExclusiveSection();
+          }
+        }
+      };
+      focusLostRunnable = runnable;
+      break;
+    }
+    }
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  }
-  UIThreadUtils.stopExclusiveSection();
 }
 
 static final Point DEFAULT_EVENT_OFFSET = new Point(0, 0);

@@ -336,13 +336,18 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof ChangeEvent) {
-//    if(!((ChangeEvent)e).getValueIsAdjusting()) {
-      sendEvent(SWT.Selection);
-//    }
+  try {
+    if(e instanceof ChangeEvent) {
+//      if(!((ChangeEvent)e).getValueIsAdjusting()) {
+        sendEvent(SWT.Selection);
+//      }
+    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

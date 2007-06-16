@@ -1993,28 +1993,32 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case WindowEvent.WINDOW_ACTIVATED: sendEvent(SWT.Activate); break;
-  case WindowEvent.WINDOW_DEACTIVATED: sendEvent(SWT.Deactivate); break;
-  case WindowEvent.WINDOW_CLOSED: sendEvent(SWT.Close); break;
-  case WindowEvent.WINDOW_ICONIFIED: sendEvent(SWT.Iconify); break;
-  case WindowEvent.WINDOW_DEICONIFIED: sendEvent(SWT.Deiconify); break;
-  case WindowEvent.WINDOW_CLOSING:
-    if(isEnabled()) {
-      closeWidget();
+  try {
+    switch(id) {
+    case WindowEvent.WINDOW_ACTIVATED: sendEvent(SWT.Activate); break;
+    case WindowEvent.WINDOW_DEACTIVATED: sendEvent(SWT.Deactivate); break;
+    case WindowEvent.WINDOW_CLOSED: sendEvent(SWT.Close); break;
+    case WindowEvent.WINDOW_ICONIFIED: sendEvent(SWT.Iconify); break;
+    case WindowEvent.WINDOW_DEICONIFIED: sendEvent(SWT.Deiconify); break;
+    case WindowEvent.WINDOW_CLOSING:
+      if(isEnabled()) {
+        closeWidget();
+      }
+      break;
+    case ActionEvent.ACTION_PERFORMED:
+      Event event = new Event();
+      event.detail = SWT.TRAVERSE_ESCAPE;
+      sendEvent(SWT.Traverse, event);
+      if(event.doit) {
+        close();
+      }
     }
-    break;
-  case ActionEvent.ACTION_PERFORMED:
-    Event event = new Event();
-    event.detail = SWT.TRAVERSE_ESCAPE;
-    sendEvent(SWT.Traverse, event);
-    if(event.doit) {
-      close();
-    }
-//    return;
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

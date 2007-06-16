@@ -28,6 +28,9 @@ public class UIThreadUtils {
     protected AWTEvent event;
     public boolean sleep() {
       event = null;
+      if(!isEnabled) {
+        return true;
+      }
       try {
         event = getNextEvent();
       } catch(InterruptedException e) {}
@@ -45,11 +48,91 @@ public class UIThreadUtils {
       }
       return false;
     }
+    public void postEvent(AWTEvent theEvent) {
+      if(isEnabled) {
+        super.postEvent(theEvent);
+      }
+    }
     public void pop() {
       super.pop();
     }
   }
+  
+  static volatile boolean isEnabled = true;
+  public static void setEventsEnabled(boolean isEnabled) {
+    UIThreadUtils.isEnabled = isEnabled;
+  }
 
+  protected static Throwable exception;
+  
+  public static void storeException(Throwable exception) {
+    UIThreadUtils.exception = exception;
+  }
+  
+  public static void throwStoredException() {
+    if(exception == null) {
+      return;
+    }
+    setEventsEnabled(false);
+    if(swingEventQueue == null) {
+      SwingUtilities.invokeLater(new Runnable() {
+        public void run() {
+          while(!isEnabled) {
+            try {
+              Thread.sleep(100);
+            } catch(Exception e) {
+            }
+            exitSystemIfNoThreads(Thread.currentThread());
+          }
+        }
+      });
+    } else {
+      final Thread uiThread = Thread.currentThread();
+      shutdownThread = new Thread("SWTSwing Shutdown Thread") {
+        public void run() {
+          while(!isEnabled && shutdownThread == this) {
+            try {
+              Thread.sleep(100);
+            } catch(Exception e) {
+            }
+            exitSystemIfNoThreads(uiThread);
+          }
+        }
+      };
+      shutdownThread.start();
+    }
+    Throwable e = exception;
+    exception = null;
+    Utils.throwUncheckedException(e);
+  }
+  
+  protected volatile static Thread shutdownThread;
+
+  protected static void exitSystemIfNoThreads(Thread uiThread) {
+    ThreadGroup group;
+    for(group = Thread.currentThread().getThreadGroup(); group.getParent() != null; group = group.getParent());
+    Thread[] threads = new Thread[group.activeCount() + 10];
+    group.enumerate(threads);
+    boolean isExit = true;
+    int skippedThreadCount = 2; // There are 2 VM non daemon threads: AWT-Shutdown and DestroyJavaVM
+    for(int i=0; i<threads.length; i++) {
+      Thread thread = threads[i];
+      if(thread == null) {
+        break;
+      }
+      if(thread != Thread.currentThread() && thread != uiThread && thread.isAlive() && !thread.isDaemon()) {
+        if(skippedThreadCount > 0) {
+          skippedThreadCount--;
+        } else {
+          isExit = false;
+        }
+      }
+    }
+    if(isExit) {
+      System.exit(0);
+    }
+  }
+  
   public static SwingEventQueue swingEventQueue;
 
   protected static void pushQueue() {
@@ -142,6 +225,16 @@ public class UIThreadUtils {
     }
   }
 
+  public static volatile Thread fakeDispatchingEDT;
 
+  public static void wakeUIThread() {
+    if(fakeDispatchingEDT != null) {
+      fakeDispatchingEDT.interrupt();
+      return;
+    }
+    synchronized(UIThreadUtils.UI_LOCK) {
+      UI_LOCK.notify();
+    }
+  }
   
 }

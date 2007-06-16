@@ -155,8 +155,13 @@ void createWidget () {
             UIThreadUtils.stopExclusiveSection();
             return;
           }
-          postEvent (SWT.Selection);
-          UIThreadUtils.stopExclusiveSection();
+          try {
+            postEvent (SWT.Selection);
+          } catch(Throwable t) {
+            UIThreadUtils.storeException(t);
+          } finally {
+            UIThreadUtils.stopExclusiveSection();
+          }
         }
         break;
       case 2:

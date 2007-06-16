@@ -889,22 +889,27 @@ public void processEvent(AWTEvent e) {
     UIThreadUtils.stopExclusiveSection();
     return;
   }
-  switch(id) {
-  case java.awt.event.ActionEvent.ACTION_PERFORMED: {
-    java.awt.event.ActionEvent ae = (java.awt.event.ActionEvent)e;
-    Event event = new Event();
-    if("Arrow".equals(ae.getActionCommand())) {
-      event.detail = SWT.ARROW;
+  try {
+    switch(id) {
+    case java.awt.event.ActionEvent.ACTION_PERFORMED: {
+      java.awt.event.ActionEvent ae = (java.awt.event.ActionEvent)e;
+      Event event = new Event();
+      if("Arrow".equals(ae.getActionCommand())) {
+        event.detail = SWT.ARROW;
+      }
+      sendEvent(SWT.Selection, event);
+      break;
     }
-    sendEvent(SWT.Selection, event);
-    break;
+    case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
+      sendEvent(SWT.Selection);
+      break;
+    }
+    }
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
-    sendEvent(SWT.Selection);
-    break;
-  }
-  }
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

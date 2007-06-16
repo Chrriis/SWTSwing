@@ -635,18 +635,22 @@ public void processEvent(EventObject e) {
     UIThreadUtils.stopExclusiveSection();
     return;
   }
-  if(e instanceof PropertyChangeEvent) {
-    String propertyName = ((PropertyChangeEvent)e).getPropertyName();
-    if("width".equals(propertyName)) {
-      sendEvent(SWT.Resize);
-      int columnCount = parent.getColumnCount();
-      for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
-        parent.getColumn(i).sendEvent(SWT.Move);
+  try {
+    if(e instanceof PropertyChangeEvent) {
+      String propertyName = ((PropertyChangeEvent)e).getPropertyName();
+      if("width".equals(propertyName)) {
+        sendEvent(SWT.Resize);
+        int columnCount = parent.getColumnCount();
+        for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
+          parent.getColumn(i).sendEvent(SWT.Move);
+        }
       }
     }
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  UIThreadUtils.stopExclusiveSection();
-  return;
 }
 
 }

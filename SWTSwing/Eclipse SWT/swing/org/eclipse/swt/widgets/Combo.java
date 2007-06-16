@@ -1141,29 +1141,34 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED:
-    Event event = new Event();
-    event.detail = SWT.TRAVERSE_RETURN;
-    sendEvent(SWT.Traverse, event);
-    boolean isSending = true;
-    if(event.doit) {
-      JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
-      if(defaultButton != null) {
-        isSending = false;
-        defaultButton.doClick();
+  try {
+    switch(id) {
+    case ActionEvent.ACTION_PERFORMED:
+      Event event = new Event();
+      event.detail = SWT.TRAVERSE_RETURN;
+      sendEvent(SWT.Traverse, event);
+      boolean isSending = true;
+      if(event.doit) {
+        JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+        if(defaultButton != null) {
+          isSending = false;
+          defaultButton.doClick();
+        }
       }
+      if(isSending) {
+        sendEvent(SWT.DefaultSelection);
+      }
+      break;
+    case ItemEvent.ITEM_STATE_CHANGED:
+      sendEvent(SWT.Selection);
+      break;
     }
-    if(isSending) {
-      sendEvent(SWT.DefaultSelection);
-    }
-    break;
-  case ItemEvent.ITEM_STATE_CHANGED:
-    sendEvent(SWT.Selection);
-    break;
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

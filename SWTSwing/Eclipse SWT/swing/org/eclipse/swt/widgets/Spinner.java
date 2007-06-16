@@ -1018,14 +1018,19 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof ChangeEvent) {
-    sendEvent (SWT.Selection);
-  } else if(e instanceof TextFilterEvent) {
-    TextFilterEvent filterEvent = (TextFilterEvent)e;
-    filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
+  try {
+    if(e instanceof ChangeEvent) {
+      sendEvent (SWT.Selection);
+    } else if(e instanceof TextFilterEvent) {
+      TextFilterEvent filterEvent = (TextFilterEvent)e;
+      filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
+    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 public void processEvent(DocumentEvent e) {
@@ -1034,8 +1039,13 @@ public void processEvent(DocumentEvent e) {
     UIThreadUtils.stopExclusiveSection();
     return;
   }
-  sendEvent(SWT.Modify, new Event());
-  UIThreadUtils.stopExclusiveSection();
+  try {
+    sendEvent(SWT.Modify, new Event());
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
+  }
 }
 
 }

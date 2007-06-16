@@ -483,17 +483,22 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof ChangeEvent) {
-//    ChangeEvent ce = (ChangeEvent)e;
-    int index = ((CTabFolder)handle).getSelectedIndex();
-    Event event = new Event();
-    if(index >= 0) {
-      event.item = (Widget)itemList.get(index);
+  try {
+    if(e instanceof ChangeEvent) {
+//      ChangeEvent ce = (ChangeEvent)e;
+      int index = ((CTabFolder)handle).getSelectedIndex();
+      Event event = new Event();
+      if(index >= 0) {
+        event.item = (Widget)itemList.get(index);
+      }
+      sendEvent(SWT.Selection, event);
     }
-    sendEvent(SWT.Selection, event);
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

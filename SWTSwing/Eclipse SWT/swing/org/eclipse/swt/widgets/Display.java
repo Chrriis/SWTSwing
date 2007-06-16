@@ -314,7 +314,9 @@ public class Display extends Device {
             }
             break;
           default:
-            hoveredWindow = window;
+            if(window != null) {
+              hoveredWindow = window;
+            }
             break;
           }
           return;
@@ -2001,7 +2003,9 @@ AWTEvent event;
 public boolean readAndDispatch () {
 	checkDevice ();
   if(UIThreadUtils.isRealDispatch()) {
+    UIThreadUtils.setEventsEnabled(true);
     boolean result = UIThreadUtils.swingEventQueue.dispatchEvent();
+    UIThreadUtils.throwStoredException();
     runDeferredEvents ();
     return result || isDisposed();
   }
@@ -2018,8 +2022,9 @@ public boolean readAndDispatch () {
         ((MenuComponent)source).dispatchEvent(awtEvent);
       }
     } catch(Throwable t) {
-      t.printStackTrace();
+      UIThreadUtils.storeException(t);
     }
+    UIThreadUtils.throwStoredException();
     return true;
   }
   if(SwingUtilities.isEventDispatchThread()) {
@@ -2034,6 +2039,7 @@ public boolean readAndDispatch () {
       UIThreadUtils.UI_LOCK.wait();
     } catch(Exception e) {
     }
+    UIThreadUtils.throwStoredException();
   }
   runDeferredEvents ();
 //		return true;
@@ -2437,8 +2443,6 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	this.synchronizer = synchronizer;
 }
 
-volatile Thread fakeDispatchingEDT;
-
 /**
  * Causes the user-interface thread to <em>sleep</em> (that is,
  * to be put in a state where it does not consume CPU cycles)
@@ -2460,13 +2464,13 @@ public boolean sleep () {
   }
   if(SwingUtilities.isEventDispatchThread()) {
     boolean result = true;
-    fakeDispatchingEDT = Thread.currentThread();
+    UIThreadUtils.fakeDispatchingEDT = Thread.currentThread();
     try {
       event = Toolkit.getDefaultToolkit().getSystemEventQueue().getNextEvent();
     } catch(InterruptedException e) {
       result = false;
     }
-    fakeDispatchingEDT = null;
+    UIThreadUtils.fakeDispatchingEDT = null;
     return result;
   }
   synchronized(UIThreadUtils.UI_LOCK) {
@@ -2654,13 +2658,7 @@ public void update() {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
-  if(fakeDispatchingEDT != null) {
-    fakeDispatchingEDT.interrupt();
-    return;
-  }
-  synchronized(UIThreadUtils.UI_LOCK) {
-    UIThreadUtils.UI_LOCK.notify();
-  }
+	UIThreadUtils.wakeUIThread();
 }
 
 void wakeThread () {
@@ -2670,9 +2668,10 @@ void wakeThread () {
       try {
         runAsyncMessages (true);
       } catch(Throwable t) {
-        t.printStackTrace();
+        UIThreadUtils.storeException(t);
       }
       UIThreadUtils.stopExclusiveSection();
+      UIThreadUtils.throwStoredException();
     }
   });
 }

@@ -985,13 +985,18 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof ListSelectionEvent) {
-    if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
-      sendEvent(SWT.Selection);
+  try {
+    if(e instanceof ListSelectionEvent) {
+      if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
+        sendEvent(SWT.Selection);
+      }
     }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 public void processEvent(AWTEvent e) {
@@ -1010,13 +1015,18 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED:
-    sendEvent(SWT.DefaultSelection);
-    break;
+  try {
+    switch(id) {
+    case ActionEvent.ACTION_PERFORMED:
+      sendEvent(SWT.DefaultSelection);
+      break;
+    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

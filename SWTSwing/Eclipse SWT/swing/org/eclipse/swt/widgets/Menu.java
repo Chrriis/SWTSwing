@@ -322,10 +322,15 @@ void createHandle () {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-        Event event = new Event();
-        event.widget = Menu.this;
-        sendEvent(SWT.Hide, event);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+          Event event = new Event();
+          event.widget = Menu.this;
+          sendEvent(SWT.Hide, event);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         if(!hooks(SWT.Show)) return;
@@ -334,10 +339,15 @@ void createHandle () {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-        Event event = new Event();
-        event.widget = Menu.this;
-        sendEvent(SWT.Show, event);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+          Event event = new Event();
+          event.widget = Menu.this;
+          sendEvent(SWT.Show, event);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
     });
     handle = popup;

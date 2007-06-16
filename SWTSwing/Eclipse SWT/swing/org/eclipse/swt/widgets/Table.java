@@ -3309,91 +3309,96 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof CellPaintEvent) {
-    CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
-    switch(cellPaintEvent.getType()) {
-    case CellPaintEvent.ERASE_TYPE: {
-      TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
-      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-      Event event = new Event();
-      event.x = cellBounds.x;
-      event.y = cellBounds.y;
-      event.width = cellBounds.width;
-      event.height = cellBounds.height;
-      event.item = tableItem;
-      event.index = cellPaintEvent.column;
-      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-      event.gc = new GC(this);
-      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-//      event.gc.isSwingPainting = true;
-      sendEvent(SWT.EraseItem, event);
-      if(event.doit) {
-        cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
-        cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
-        cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-        cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
-      } else {
-        cellPaintEvent.ignoreDrawForeground = true;
-        cellPaintEvent.ignoreDrawBackground = true;
-        cellPaintEvent.ignoreDrawSelection = true;
-        cellPaintEvent.ignoreDrawFocused = true;
+  try {
+    if(e instanceof CellPaintEvent) {
+      CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
+      switch(cellPaintEvent.getType()) {
+      case CellPaintEvent.ERASE_TYPE: {
+        TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+        Event event = new Event();
+        event.x = cellBounds.x;
+        event.y = cellBounds.y;
+        event.width = cellBounds.width;
+        event.height = cellBounds.height;
+        event.item = tableItem;
+        event.index = cellPaintEvent.column;
+        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+        event.gc = new GC(this);
+        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+//        event.gc.isSwingPainting = true;
+        sendEvent(SWT.EraseItem, event);
+        if(event.doit) {
+          cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
+          cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+          cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+          cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
+        } else {
+          cellPaintEvent.ignoreDrawForeground = true;
+          cellPaintEvent.ignoreDrawBackground = true;
+          cellPaintEvent.ignoreDrawSelection = true;
+          cellPaintEvent.ignoreDrawFocused = true;
+        }
+//        event.gc.isSwingPainting = false; 
+        break;
       }
-//      event.gc.isSwingPainting = false; 
-      break;
-    }
-    case CellPaintEvent.PAINT_TYPE: {
-      TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
-      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-      Event event = new Event();
-      event.x = cellBounds.x;
-      event.y = cellBounds.y;
-      event.width = cellBounds.width;
-      event.height = cellBounds.height;
-      event.item = tableItem;
-      event.index = cellPaintEvent.column;
-      if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-      if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-      if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-      if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-      event.gc = new GC(this);
-      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-      sendEvent(SWT.PaintItem, event);
-      break;
-    }
-    case CellPaintEvent.MEASURE_TYPE:
-      TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
-//      Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-      Event event = new Event();
-//      event.x = cellBounds.x;
-//      event.y = cellBounds.y;
-//      event.width = cellBounds.width;
-//      event.height = cellBounds.height;
-      event.height = cellPaintEvent.rowHeight;
-      event.item = tableItem;
-      event.index = cellPaintEvent.column;
-      event.gc = new GC(this);
-//      event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-      sendEvent(SWT.MeasureItem, event);
-//      cellPaintEvent.rowHeight -= event.height - cellBounds.height;
-      cellPaintEvent.rowHeight = event.height;
-      break;
-    }
-  } else if(e instanceof ListSelectionEvent) {
-    if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
-      Event event = new Event ();
-      int selectionIndex = ((CTable)handle).getSelectionModel().getLeadSelectionIndex();
-      if(selectionIndex != -1) {
-        // TODO: should we send the previous item?
-        event.item = _getItem(selectionIndex);
+      case CellPaintEvent.PAINT_TYPE: {
+        TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+        Event event = new Event();
+        event.x = cellBounds.x;
+        event.y = cellBounds.y;
+        event.width = cellBounds.width;
+        event.height = cellBounds.height;
+        event.item = tableItem;
+        event.index = cellPaintEvent.column;
+        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+        event.gc = new GC(this);
+        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        sendEvent(SWT.PaintItem, event);
+        break;
       }
-      sendEvent(SWT.Selection, event);
+      case CellPaintEvent.MEASURE_TYPE:
+        TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+//        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+        Event event = new Event();
+//        event.x = cellBounds.x;
+//        event.y = cellBounds.y;
+//        event.width = cellBounds.width;
+//        event.height = cellBounds.height;
+        event.height = cellPaintEvent.rowHeight;
+        event.item = tableItem;
+        event.index = cellPaintEvent.column;
+        event.gc = new GC(this);
+//        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        sendEvent(SWT.MeasureItem, event);
+//        cellPaintEvent.rowHeight -= event.height - cellBounds.height;
+        cellPaintEvent.rowHeight = event.height;
+        break;
+      }
+    } else if(e instanceof ListSelectionEvent) {
+      if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
+        Event event = new Event ();
+        int selectionIndex = ((CTable)handle).getSelectionModel().getLeadSelectionIndex();
+        if(selectionIndex != -1) {
+          // TODO: should we send the previous item?
+          event.item = _getItem(selectionIndex);
+        }
+        sendEvent(SWT.Selection, event);
+      }
     }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 public void processEvent(AWTEvent e) {
@@ -3424,30 +3429,35 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case KeyEvent.KEY_PRESSED:
-    if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
-      Event event = new Event ();
-      event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
-      sendEvent(SWT.DefaultSelection, event);
+  try {
+    switch(id) {
+    case KeyEvent.KEY_PRESSED:
+      if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
+        Event event = new Event ();
+        event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
+        sendEvent(SWT.DefaultSelection, event);
+      }
+      break;
+    case MouseEvent.MOUSE_PRESSED:
+      if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
+        Event event = new Event ();
+        event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
+        sendEvent(SWT.DefaultSelection, event);
+      }
+      break;
+    case ItemEvent.ITEM_STATE_CHANGED:
+      Event event = new Event();
+      event.detail = SWT.CHECK;
+      event.item = ((CTableItem)((ItemEvent)e).getItem()).getTableItem();
+      sendEvent(SWT.Selection, event);
+      break;
     }
-    break;
-  case MouseEvent.MOUSE_PRESSED:
-    if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
-      Event event = new Event ();
-      event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
-      sendEvent(SWT.DefaultSelection, event);
-    }
-    break;
-  case ItemEvent.ITEM_STATE_CHANGED:
-    Event event = new Event();
-    event.detail = SWT.CHECK;
-    event.item = ((CTableItem)((ItemEvent)e).getItem()).getTableItem();
-    sendEvent(SWT.Selection, event);
-    break;
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

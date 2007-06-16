@@ -961,11 +961,16 @@ void createHandle() {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-//        Event event = new Event();
-//        event.stateMask = Display.getInputState();
-//        sendEvent(SWT.Arm, event);
-        sendEvent(SWT.Arm);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+//          Event event = new Event();
+//          event.stateMask = Display.getInputState();
+//          sendEvent(SWT.Arm, event);
+          sendEvent(SWT.Arm);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
     };
     popup.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
@@ -979,10 +984,15 @@ void createHandle() {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-        Event event = new Event();
-        event.widget = menu;
-        menu.sendEvent(SWT.Hide, event);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+          Event event = new Event();
+          event.widget = menu;
+          menu.sendEvent(SWT.Hide, event);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         if(menu == null) return;
@@ -992,10 +1002,15 @@ void createHandle() {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-        Event event = new Event();
-        event.widget = menu;
-        menu.sendEvent(SWT.Show, event);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+          Event event = new Event();
+          event.widget = menu;
+          menu.sendEvent(SWT.Show, event);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
     });
     handle = popup;
@@ -1058,10 +1073,15 @@ void createHandle() {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-        Event event = new Event();
-        event.stateMask = Display.getInputState();
-        sendEvent(SWT.Selection, event);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+          Event event = new Event();
+          event.stateMask = Display.getInputState();
+          sendEvent(SWT.Selection, event);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
     });
   } else if((style & SWT.CHECK) != 0) {
@@ -1075,11 +1095,16 @@ void createHandle() {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-//        Event event = new Event();
-//        event.stateMask = Display.getInputState();
-//        sendEvent(SWT.Selection, event);
-        sendEvent(SWT.Selection);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+//          Event event = new Event();
+//          event.stateMask = Display.getInputState();
+//          sendEvent(SWT.Selection, event);
+          sendEvent(SWT.Selection);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
     });
   } else if((style & SWT.RADIO) != 0) {
@@ -1120,11 +1145,16 @@ void createHandle() {
           UIThreadUtils.stopExclusiveSection();
           return;
         }
-//        Event event = new Event();
-//        event.stateMask = Display.getInputState();
-//        sendEvent(SWT.Arm, event);
-        sendEvent(SWT.Arm);
-        UIThreadUtils.stopExclusiveSection();
+        try {
+//          Event event = new Event();
+//          event.stateMask = Display.getInputState();
+//          sendEvent(SWT.Arm, event);
+          sendEvent(SWT.Arm);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
       }
     });
   }

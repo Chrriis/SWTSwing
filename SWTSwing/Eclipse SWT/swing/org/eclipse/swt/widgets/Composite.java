@@ -1383,25 +1383,30 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case ComponentEvent.COMPONENT_RESIZED:
-    if(layout != null) {
-      markLayout(false, false);
-      updateLayout(false, false);
-//      ((CControl)handle).getClientArea().invalidate();
-//      handle.validate();
-//      if(handle instanceof JComponent) {
-//        ((JComponent)handle).revalidate();
-//      } else {
-//        handle.invalidate();
+  try {
+    switch(id) {
+    case ComponentEvent.COMPONENT_RESIZED:
+      if(layout != null) {
+        markLayout(false, false);
+        updateLayout(false, false);
+//        ((CControl)handle).getClientArea().invalidate();
 //        handle.validate();
-//      }
-      handle.repaint();
+//        if(handle instanceof JComponent) {
+//          ((JComponent)handle).revalidate();
+//        } else {
+//          handle.invalidate();
+//          handle.validate();
+//        }
+        handle.repaint();
+      }
+      break;
     }
-    break;
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

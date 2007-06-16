@@ -229,14 +229,18 @@ public void processEvent(EventObject e) {
     super.processEvent(e);
     return;
   }
-  if(e instanceof HyperlinkEvent) {
-    Event event = new Event();
-    event.text = ((HyperlinkEvent)e).getDescription();
-    sendEvent(SWT.Selection, event);
+  try {
+    if(e instanceof HyperlinkEvent) {
+      Event event = new Event();
+      event.text = ((HyperlinkEvent)e).getDescription();
+      sendEvent(SWT.Selection, event);
+    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
-  return;
 }
 
 }

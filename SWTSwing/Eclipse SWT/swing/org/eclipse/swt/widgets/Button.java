@@ -802,13 +802,18 @@ public void processEvent(AWTEvent e) {
     super.processEvent(e);
     return;
   }
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED:
-    sendEvent (SWT.Selection);
-    break;
+  try {
+    switch(id) {
+    case ActionEvent.ACTION_PERFORMED:
+      sendEvent (SWT.Selection);
+      break;
+    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
   }
-  super.processEvent(e);
-  UIThreadUtils.stopExclusiveSection();
 }
 
 }

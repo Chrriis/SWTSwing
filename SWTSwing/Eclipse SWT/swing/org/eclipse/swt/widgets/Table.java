@@ -1534,6 +1534,8 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+boolean isAdjustingSelection;
+
 /**
  * Selects the items at the given zero-relative indices in the receiver.
  * The current selection is not cleared before the new items are selected.
@@ -1563,10 +1565,12 @@ public void select (int [] indices) {
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+  isAdjustingSelection = true;
   for(int i=0; i<indices.length; i++) {
     int index = indices[i];
     selectionModel.addSelectionInterval(index, index);
   }
+  isAdjustingSelection = false;
 }
 
 /**
@@ -1583,7 +1587,9 @@ public void select (int [] indices) {
  */
 public void select (int index) {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CTable)handle).getSelectionModel().addSelectionInterval(index, index);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -1612,7 +1618,9 @@ public void select (int index) {
 public void select (int start, int end) {
 	checkWidget ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+  isAdjustingSelection = true;
   ((CTable)handle).getSelectionModel().addSelectionInterval(start, end);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -1630,7 +1638,9 @@ public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
   if(!itemList.isEmpty()) {
+    isAdjustingSelection = true;
     ((CTable)handle).getSelectionModel().addSelectionInterval(0, itemList.size() - 1);
+    isAdjustingSelection = false;
   }
 }
 
@@ -2235,7 +2245,9 @@ public void setSelection (TableItem  item) {
 public void setSelection (TableItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+  isAdjustingSelection = true;
 	deselectAll ();
+  isAdjustingSelection = false;
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int focusIndex = -1;
@@ -3298,7 +3310,7 @@ public void processEvent(EventObject e) {
     default: super.processEvent(e); return;
     }
   } else if(e instanceof ListSelectionEvent) {
-    if(!hooks(SWT.Selection)) { super.processEvent(e); return; };
+    if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; };
   } else {
     super.processEvent(e);
     return;
@@ -3416,7 +3428,7 @@ public void processEvent(AWTEvent e) {
     };
     break;
   }
-  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; } break;
   default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {

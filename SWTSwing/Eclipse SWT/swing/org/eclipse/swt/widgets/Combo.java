@@ -292,7 +292,9 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget ();
+  isAdjustingSelection = true;
   ((CCombo)handle).setEditorCaretPosition(0);
+  isAdjustingSelection = false;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {

@@ -97,7 +97,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	Accessible accessible;
 //	int drawCount, foreground, background;
-  long lastPressed = 0;
+//  long lastPressed = 0;
   Image backgroundImage;
 
 /**
@@ -4181,6 +4181,7 @@ public void processEvent(EventObject e) {
 
 boolean isTraversing;
 int lastPressedKeyCode;
+//int lastKeyCode;
 static Runnable focusLostRunnable;
 
 /**
@@ -4235,9 +4236,9 @@ public void processEvent(AWTEvent e) {
   case java.awt.event.MouseEvent.MOUSE_ENTERED: if(!hooks(SWT.MouseEnter)) return; break;
   case java.awt.event.MouseEvent.MOUSE_EXITED: if(!hooks(SWT.MouseExit)) {mouseHoverThread = null; return;} break;
   case java.awt.event.KeyEvent.KEY_PRESSED: {
-    if(!hooks(SWT.KeyDown) && !hooks(SWT.Traverse) && !isTraversalKey((java.awt.event.KeyEvent)e)) {
-      return;
-    }
+//    if(!hooks(SWT.KeyDown) && !hooks(SWT.Traverse) && !isTraversalKey((java.awt.event.KeyEvent)e)) {
+//      return;
+//    }
     break;
   }
   case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyUp)) {lastPressedKeyCode = -1; return;} break;
@@ -4335,6 +4336,7 @@ public void processEvent(AWTEvent e) {
         if(isBlocked) break;
       }
       lastPressedKeyCode = pressedKeyCode;
+//      lastKeyCode = lastPressedKeyCode;
       if(isTraversalKey(ke)) {
         isTraversing = processTraversalKey(ke);
       }
@@ -4342,7 +4344,7 @@ public void processEvent(AWTEvent e) {
         if(hooks(SWT.KeyDown)) {
           sendEvent(SWT.KeyDown, createKeyEvent(ke));
         }
-        lastPressed = ke.getWhen ();
+//        lastPressed = ke.getWhen ();
       }
       break;
     }
@@ -4354,14 +4356,15 @@ public void processEvent(AWTEvent e) {
       break;
     }
     case java.awt.event.KeyEvent.KEY_TYPED:
-      if(!isTraversing) {
-        java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
-        if (ke.getWhen () > lastPressed) {
-          Event event = createKeyEvent (ke);
-          sendEvent (SWT.KeyDown, event);
-          sendEvent (SWT.KeyUp, event);
-        }
-      }
+//      if(!isTraversing) {
+//        java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+//        ke.setKeyCode(lastKeyCode);
+//        if (ke.getWhen () > lastPressed) {
+//          Event event = createKeyEvent (ke);
+//          sendEvent (SWT.KeyDown, event);
+//          sendEvent (SWT.KeyUp, event);
+//        }
+//      }
       isTraversing = false;
       break;
     case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;

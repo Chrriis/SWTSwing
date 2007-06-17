@@ -7,6 +7,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Text Modify event is posted to avoid conccurent modifications.
+- Key events are fixed.
 - Link implementation is improved.
 - Labels now handle their foreground/background/font correctly.
 - Fixed incorrect font styles returned from the font chooser.

@@ -4552,14 +4552,14 @@ Event createKeyEvent(java.awt.event.KeyEvent ke) {
   if(c == java.awt.event.KeyEvent.CHAR_UNDEFINED) {
     c = 0;
   }
-  if((modifiersEx & java.awt.event.KeyEvent.SHIFT_DOWN_MASK) != 0 && (modifiersEx & java.awt.event.KeyEvent.CTRL_DOWN_MASK) != 0) {
+//  if((modifiersEx & java.awt.event.KeyEvent.SHIFT_DOWN_MASK) != 0 && (modifiersEx & java.awt.event.KeyEvent.CTRL_DOWN_MASK) != 0) {
     int keyCode = ke.getKeyCode();
     if(keyCode >= java.awt.event.KeyEvent.VK_A && keyCode <= java.awt.event.KeyEvent.VK_Z) {
       event.keyCode = (char)('a' - java.awt.event.KeyEvent.VK_A + keyCode);
     } else if(keyCode >= java.awt.event.KeyEvent.VK_0 && keyCode <= java.awt.event.KeyEvent.VK_9) {
       event.keyCode = (char)('0' - java.awt.event.KeyEvent.VK_0 + keyCode);
     }
-  }
+//  }
   if(ke.getKeyLocation() != java.awt.event.KeyEvent.KEY_LOCATION_NUMPAD) {
     switch(ke.getKeyCode()) {
     case java.awt.event.KeyEvent.VK_ALT: event.keyCode = SWT.ALT; break;

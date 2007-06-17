@@ -1785,7 +1785,7 @@ public void processEvent(DocumentEvent e) {
     return;
   }
   try {
-    sendEvent(SWT.Modify, new Event());
+    postEvent(SWT.Modify, new Event());
   } catch(Throwable t) {
     UIThreadUtils.storeException(t);
   } finally {

@@ -398,6 +398,9 @@ public class Utils {
   }
   
   public static void throwUncheckedException(Throwable e) {
+    if(e == null) {
+      return;
+    }
     if(e instanceof Error) {
       throw (Error)e;
     } else if(e instanceof RuntimeException) {

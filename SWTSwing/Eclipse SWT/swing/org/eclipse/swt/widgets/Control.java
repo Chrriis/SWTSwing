@@ -4161,6 +4161,7 @@ void adjustMouseHoverState(java.awt.event.MouseEvent me) {
         }
       }
     };
+    mouseHoverThread.setDaemon(true);
     mouseHoverThread.start();
   }
 }

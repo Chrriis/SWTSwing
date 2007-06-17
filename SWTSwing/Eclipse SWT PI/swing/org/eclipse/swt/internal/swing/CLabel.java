@@ -82,6 +82,10 @@ class CSeparator extends JPanel implements CLabel {
   public Container getClientArea() {
     return separator;
   }
+  
+  public int getPreferredWidth() {
+    return getPreferredSize().width;
+  }
 
   public void setText(String text, int mnemonicIndex) {
   }
@@ -134,7 +138,16 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
 
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
-    userAttributeHandler = new UserAttributeHandler(this);
+    userAttributeHandler = new UserAttributeHandler(this) {
+      public void setForeground(Color foreground) {
+        super.setForeground(foreground);
+        adjustStyles();
+      }
+      public void setFont(Font font) {
+        super.setFont(font);
+        adjustStyles();
+      }
+    };
     init(style);
   }
 
@@ -220,6 +233,8 @@ public interface CLabel extends CControl {
 
   }
 
+  public int getPreferredWidth();
+  
   public void setText(String text, int mnemonicIndex);
 
   public void setAlignment(int alignment);

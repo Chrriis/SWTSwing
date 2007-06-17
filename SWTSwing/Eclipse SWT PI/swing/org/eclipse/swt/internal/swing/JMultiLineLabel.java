@@ -7,7 +7,10 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 
 import javax.swing.BoxLayout;
@@ -21,8 +24,19 @@ import javax.swing.text.View;
 
 public class JMultiLineLabel extends JPanel implements SwingConstants {
 
-  protected class InnerLabel extends JLabel {
+  protected static class InnerLabel extends JLabel {
 
+    protected String nonHtmlText;
+    
+    public InnerLabel(String text, int alignment, String nonHtmlText) {
+      super(text, alignment);
+      this.nonHtmlText = nonHtmlText;
+    }
+    
+    public String getNonHtmlText() {
+      return nonHtmlText;
+    }
+    
     public Dimension getPreferredSize() {
       Dimension preferredSize = super.getPreferredSize();
       if(getIcon() == null && getText().length() == 0) {
@@ -30,6 +44,7 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
       }
       return preferredSize;
     }
+
     public Dimension getMaximumSize() {
       return new Dimension(Integer.MAX_VALUE, super.getMaximumSize().height);
     }
@@ -42,11 +57,33 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
       }
     }
     
+    public Font getFont() {
+      Container parent = getParent();
+      return parent == null? super.getFont(): parent.getFont();
+    }
+    
+    public Color getBackground() {
+      Container parent = getParent();
+      return parent == null? super.getBackground(): parent.getBackground();
+    }
+    
+    public Color getForeground() {
+      Container parent = getParent();
+      return parent == null? super.getForeground(): parent.getForeground();
+    }
+    
+    public boolean isEnabled() {
+      Container parent = getParent();
+      return parent == null? super.isEnabled(): parent.isEnabled();
+    }
+    
   }
 
   public JMultiLineLabel() {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBackground(UIManager.getColor("Label.background"));
+    setForeground(UIManager.getColor("Label.foreground"));
+    setFont(UIManager.getFont("Label.font"));
     setOpaque(false);
     createContent();
   }
@@ -54,6 +91,23 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
   protected String text = "";
   protected int mnemonicIndex = -1;
 
+  public int getPreferredWidth() {
+    int width = 0;
+    for(int i=getComponentCount()-1; i>=0; i--) {
+      InnerLabel innerLabel = (InnerLabel)getComponent(i);
+      String text = innerLabel.getText();
+      String nonHtmlText = innerLabel.getNonHtmlText();
+      innerLabel.setText(nonHtmlText);
+      width = Math.max(width, innerLabel.getPreferredSize().width);
+      innerLabel.setText(text);
+    }
+    return width;
+  }
+  
+  public int getMnemonicIndex() {
+    return mnemonicIndex;
+  }
+  
   public void setText(String text, int mnemonicIndex) {
     if(text == null) {
       text = "";
@@ -71,12 +125,17 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
     String[] labels = text.split("\n");
     int count = 0;
     for(int i=0; i<labels.length; i++) {
-      String label = labels[i];
-      if(isWrapping()) {
+      String nonHtmlLabel = labels[i];
+      String label = nonHtmlLabel;
+      boolean isWrapping = isWrapping();
+      if(isWrapping) {
         label = "<html>" + Utils.escapeSwingXML(label) + "</html>";
       }
-      InnerLabel innerLabel = new InnerLabel();
+      InnerLabel innerLabel = new InnerLabel(label, alignment, nonHtmlLabel);
       innerLabel.setHorizontalAlignment(alignment);
+      if(!isWrapping) {
+        innerLabel.putClientProperty("html", null);
+      }
       innerLabel.setText(label);
       int newCount = count + label.length() + 1;
       // TODO: check with HTML style what to do with mnemonics
@@ -86,6 +145,7 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
       count = newCount;
       add(innerLabel);
     }
+    adjustStyles();
     revalidate();
     repaint();
   }
@@ -146,6 +206,22 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
     d.width += insets.left + insets.right;
     d.height += insets.top + insets.bottom;
     return d;
+  }
+  
+  public void setFont(Font font) {
+    super.setFont(font);
+    adjustStyles();
+  }
+  
+  public void adjustStyles() {
+    if(!isWrapping()) {
+      return;
+    }
+    for(int i=getComponentCount()-1; i>=0; i--) {
+      InnerLabel innerLabel = (InnerLabel)getComponent(i);
+      innerLabel.updateUI();
+      innerLabel.reshape(getX(), getY(), getWidth(), getHeight());
+    }
   }
 
 }

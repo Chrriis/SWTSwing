@@ -740,7 +740,8 @@ public class JTreeTable extends JPanel implements Scrollable {
   public void setEnabled(boolean enabled) {
     super.setEnabled(enabled);
     table.setEnabled(enabled);
-    tree.setEnabled(enabled);
+    // TODO: weired disable state rendering. Have to check if it is a deficiency of Java or if it is a bug somewhere...
+//    tree.setEnabled(enabled);
   }
 
   public void requestFocus() {

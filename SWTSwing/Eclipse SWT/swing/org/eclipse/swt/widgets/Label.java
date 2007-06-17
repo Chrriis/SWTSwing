@@ -206,9 +206,13 @@ public int getAlignment () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
   checkWidget ();
-  if((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+  if((style & SWT.WRAP) != 0) {
     Dimension size = handle.getSize();
-    handle.setSize(wHint, 0);
+    if(wHint == SWT.DEFAULT) {
+      handle.setSize(((CLabel)handle).getPreferredWidth(), 0);
+    } else {
+      handle.setSize(wHint, 0);
+    }
     Point point = super.computeSize (wHint, hHint, changed);
     handle.setSize(size);
     return point;

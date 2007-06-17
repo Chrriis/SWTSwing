@@ -164,6 +164,7 @@ public FontData open () {
   }
   Color color = fontChooser.getNewColor();
   int height = Math.round(font.getSize() * 72.0f / dpi);
+  int style = font.getStyle();
   fontData = new FontData(font.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
   rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
   return fontData;

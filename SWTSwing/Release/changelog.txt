@@ -7,8 +7,11 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Link implementation is improved.
+- Labels now handle their foreground/background/font correctly.
+- Fixed incorrect font styles returned from the font chooser.
 - User calls that affect the selection don't trigger the event on a Table.
-- Exception propagation, including VM shutdown if no user threads, is in place.
+- Exception propagation is in place, including VM shutdown if no user threads.
 - Guard against exceptions/errors in the event loop.
 - Some conditions for range checking were wrong in List. This is fixed.
 - Focus handling is improved.

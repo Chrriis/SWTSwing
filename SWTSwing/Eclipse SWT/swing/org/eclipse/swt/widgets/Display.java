@@ -671,7 +671,9 @@ public void close () {
  */
 protected void create (DeviceData data) {
 	checkSubclass ();
-  checkDisplay (thread = Thread.currentThread (), true);
+	thread = Thread.currentThread ();
+	UIThreadUtils.setMainThread(thread);
+  checkDisplay (thread, true);
 	createDisplay (data);
 	register (this);
 	if (Default == null) Default = this;
@@ -2004,7 +2006,6 @@ AWTEvent event;
 public boolean readAndDispatch () {
 	checkDevice ();
   if(UIThreadUtils.isRealDispatch()) {
-    UIThreadUtils.setEventsEnabled(true);
     boolean result = UIThreadUtils.swingEventQueue.dispatchEvent();
     UIThreadUtils.throwStoredException();
     runDeferredEvents ();
@@ -2460,7 +2461,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
  */
 public boolean sleep () {
 	checkDevice ();
-  if(UIThreadUtils.isRealDispatch()) {
+	if(UIThreadUtils.isRealDispatch()) {
     return UIThreadUtils.swingEventQueue.sleep();
   }
   if(SwingUtilities.isEventDispatchThread()) {

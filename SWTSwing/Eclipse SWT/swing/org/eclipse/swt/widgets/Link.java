@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.util.EventObject;
 
 import javax.swing.event.HyperlinkEvent;
@@ -19,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CLink;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
@@ -107,6 +109,19 @@ public void addSelectionListener (SelectionListener listener) {
 void createHandleInit() {
   super.createHandleInit();
   state |= THEME_BACKGROUND;
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+  checkWidget ();
+  Dimension size = handle.getSize();
+  if(wHint == SWT.DEFAULT) {
+    handle.setSize(((CLink)handle).getPreferredWidth(), 0);
+  } else {
+    handle.setSize(wHint, 0);
+  }
+  Point point = super.computeSize (wHint, hHint, changed);
+  handle.setSize(size);
+  return point;
 }
 
 Container createHandle () {

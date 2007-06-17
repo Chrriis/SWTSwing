@@ -242,6 +242,7 @@ public class JFontChooser extends JDialog {
     fontSizeTextField.setText(String.valueOf(currentFont.getSize()));
     isFontBoldCheckBox.setSelected(currentFont.isBold());
     isFontItalicCheckBox.setSelected(currentFont.isItalic());
+    adjustPreview();
   }
 
   public void setDefaultColor(Color currentColor) {
@@ -250,6 +251,7 @@ public class JFontChooser extends JDialog {
     }
     newColor = currentColor;
     colorChooser.setColor(currentColor);
+    adjustPreview();
   }
 
 }

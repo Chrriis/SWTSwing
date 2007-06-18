@@ -25,11 +25,13 @@ import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TreeExpansionEvent;
@@ -87,6 +89,18 @@ class CTreeImplementation extends JScrollPane implements CTree {
   
   public CTreeImplementation(Tree tree, int style) {
     handle = tree;
+    setViewport(new JViewport() {
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
+      public Color getBackground() {
+        return CTreeImplementation.this != null? userAttributeHandler.getBackground(): super.getBackground();
+      }
+    });
     rootNode = new DefaultMutableTreeTableNode() {
       public void insert(MutableTreeNode newChild, int childIndex) {
         super.insert(newChild, childIndex);
@@ -193,11 +207,13 @@ class CTreeImplementation extends JScrollPane implements CTree {
         }
         return g;
       }
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
       protected void paintComponent (Graphics g) {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
-//        Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
@@ -207,10 +223,11 @@ class CTreeImplementation extends JScrollPane implements CTree {
     treeTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     treeTable.setCellRenderer(new DefaultTreeTableCellRenderer() {
       protected boolean isInitialized;
-      protected boolean isOpaque;
+      protected boolean isDefaultOpaque;
       protected Color defaultForeground;
       protected Color defaultBackground;
       protected Font defaultFont;
+      protected boolean isSelectionOpaque;
       protected Color selectionForeground;
       protected Color selectionBackground;
       protected Font selectionFont;
@@ -238,27 +255,33 @@ class CTreeImplementation extends JScrollPane implements CTree {
         if(!isInitialized) {
           Component c = super.getTreeTableCellRendererComponent(treeTable, "", true, expanded, leaf, row, column, hasFocus);
           if(c instanceof JComponent) {
-            isOpaque = ((JComponent)c).isOpaque();
+            isSelectionOpaque = ((JComponent)c).isOpaque();
           }
           selectionForeground = c.getForeground();
           selectionBackground = c.getBackground();
           selectionFont = c.getFont();
         }
-        Component c = super.getTreeTableCellRendererComponent(treeTable, value, isSelected, expanded, leaf, row, column, hasFocus);
         if(!isInitialized) {
+          Component c = super.getTreeTableCellRendererComponent(treeTable, "", false, expanded, leaf, row, column, hasFocus);
+          if(c instanceof JComponent) {
+            isDefaultOpaque = ((JComponent)c).isOpaque();
+          }
           defaultForeground = c.getForeground();
           defaultBackground = c.getBackground();
           defaultFont = c.getFont();
           isInitialized = true;
         }
+        Component c = super.getTreeTableCellRendererComponent(treeTable, value, isSelected, expanded, leaf, row, column, hasFocus);
         if(value == null) {
           return c;
         }
-        c.setForeground(isSelected? selectionForeground: defaultForeground);
-        c.setBackground(isSelected? selectionBackground: defaultBackground);
+        Color userForeground = userAttributeHandler.getForeground();
+        c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
+        Color userBackground = userAttributeHandler.getBackground();
+        c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
         c.setFont(isSelected? selectionFont: defaultFont);
         if(c instanceof JComponent) {
-          ((JComponent)c).setOpaque(isOpaque);
+          ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && treeTable.isOpaque());
         }
         CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)value;
         if(treeItemObject != null) {
@@ -271,11 +294,12 @@ class CTreeImplementation extends JScrollPane implements CTree {
             }
             label.setIcon(treeItemObject.getIcon());
           }
+          CTreeItem cTreeItem = treeItemObject.getTreeItem();
           Color foreground = treeItemObject.getForeground();
           if(foreground != null) {
             c.setForeground(foreground);
           } else {
-            foreground = treeItemObject.getTreeItem().getForeground();
+            foreground = cTreeItem.getForeground();
             if(foreground != null) {
               c.setForeground(foreground);
             }
@@ -288,8 +312,11 @@ class CTreeImplementation extends JScrollPane implements CTree {
               }
               c.setBackground(background);
             } else {
-              background = treeItemObject.getTreeItem().getBackground();
+              background = cTreeItem.getBackground();
               if(background != null) {
+                if(c instanceof JComponent) {
+                  ((JComponent)c).setOpaque(true);
+                }
                 c.setBackground(background);
               }
             }
@@ -298,7 +325,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
           if(font != null) {
             c.setFont(font);
           } else {
-            font = treeItemObject.getTreeItem().getFont();
+            font = cTreeItem.getFont();
             if(font != null) {
               c.setFont(font);
             }
@@ -324,7 +351,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
       protected void paintComponent(CellPainter c, Graphics g) {
         if(ignoreDrawForeground) {
           if(c instanceof JLabel) {
-            ((JLabel)c).setText(null);;
+            ((JLabel)c).setText(null);
           }
         }
         if(ignoreDrawBackground) {
@@ -344,6 +371,28 @@ class CTreeImplementation extends JScrollPane implements CTree {
           handle.processEvent(event);
         }
 //        graphics = null;
+      }
+      protected InnerTreeCellRenderer createInnerTreeCellRenderer() {
+        return new InnerTreeCellRenderer() {
+          protected boolean isCreated = true;
+          public Color getBackgroundNonSelectionColor() {
+            return getBackground();
+//            return !isCreated || !treeTable.isOpaque()? null: super.getBackgroundNonSelectionColor();
+          }
+          public Color getBackground() {
+            if(isOpaque()) {
+              return super.getBackground();
+            }
+            if(isCreated) {
+              if(!treeTable.isOpaque()) {
+                return null;
+              }
+              Color background = userAttributeHandler.getBackground();
+              return background != null? background: treeTable.getBackground();
+            }
+            return super.getBackground();
+          }
+        };
       }
     });
     JTableHeader tableHeader = treeTable.getTableHeader();
@@ -495,11 +544,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
     return treeTable.getPreferredColumnWidth(columnIndex);
   }
 
-//  protected ImageIcon backgroundImageIcon;
+  protected ImageIcon backgroundImageIcon;
 
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
-//    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
@@ -507,10 +555,12 @@ class CTreeImplementation extends JScrollPane implements CTree {
     case PREFERRED_BACKGROUND_INHERITANCE:
     case NO_BACKGROUND_INHERITANCE:
       setOpaque(true);
+      getViewport().setOpaque(true);
       treeTable.setOpaque(true);
       break;
     case BACKGROUND_INHERITANCE:
       setOpaque(false);
+      getViewport().setOpaque(false);
       treeTable.setOpaque(false);
       break;
     }

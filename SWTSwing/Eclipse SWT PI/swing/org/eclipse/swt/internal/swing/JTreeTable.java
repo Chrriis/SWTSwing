@@ -9,6 +9,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -209,8 +210,7 @@ public class JTreeTable extends JPanel implements Scrollable {
             g.dispose();
           }
         }
-        FirstColumnComponent firstColumnComponent = new FirstColumnComponent();
-        return firstColumnComponent;
+        return new FirstColumnComponent();
       }
       TreeNode node = (TreeNode)path.getLastPathComponent();
       if(node instanceof TreeTableNode) {
@@ -229,6 +229,10 @@ public class JTreeTable extends JPanel implements Scrollable {
     protected CTable() {
       enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
       setSelectionModel(tableSelectionModel);
+    }
+    
+    public boolean isOpaque() {
+      return JTreeTable.this.isOpaque();
     }
 
     public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
@@ -344,8 +348,15 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public JTreeTable() {
     super(new BorderLayout(0, 0));
-    table = new CTable();
-    setBackground(table.getBackground());
+    table = new CTable() {
+      {
+        JTreeTable.this.setBackground(super.getBackground());
+      }
+      public Color getBackground() {
+        return JTreeTable.this != null? JTreeTable.this.getBackground(): super.getBackground();
+      }
+    };
+//    setBackground(table.getBackground());
     add(table, BorderLayout.CENTER);
     tree = new JTree() {
       public boolean hasFocus() {

@@ -26,6 +26,7 @@ import java.util.EventObject;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -104,6 +105,18 @@ class CTableImplementation extends JScrollPane implements CTable {
   
   public CTableImplementation(Table table, int style) {
     handle = table;
+    setViewport(new JViewport() {
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
+      public Color getBackground() {
+        return CTableImplementation.this != null? userAttributeHandler.getBackground(): super.getBackground();
+      }
+    });
     this.table = new JTable(new CTableModel(table)) {
       public boolean getScrollableTracksViewportWidth() {
         if(handle.isDisposed()) {
@@ -201,11 +214,13 @@ class CTableImplementation extends JScrollPane implements CTable {
             return c;
           }
           CTableItem.TableItemObject tableItemObject = (CTableItem.TableItemObject)value;
-          c.setForeground(isSelected? selectionForeground: defaultForeground);
-          c.setBackground(isSelected? selectionBackground: defaultBackground);
+          Color userForeground = userAttributeHandler.getForeground();
+          c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
+          Color userBackground = userAttributeHandler.getBackground();
+          c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
           c.setFont(isSelected? selectionFont: defaultFont);
           if(c instanceof JComponent) {
-            ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque);
+            ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && table.isOpaque());
           }
           if(tableItemObject != null) {
             if(c instanceof JLabel) {
@@ -330,11 +345,13 @@ class CTableImplementation extends JScrollPane implements CTable {
         }
         return g;
       }
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
       protected void paintComponent (Graphics g) {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
         super.paintComponent(g);
-//        Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
@@ -595,11 +612,10 @@ class CTableImplementation extends JScrollPane implements CTable {
     return newWidth;
   }
 
-//  protected ImageIcon backgroundImageIcon;
+  protected ImageIcon backgroundImageIcon;
 
   public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
-//    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
+    this.backgroundImageIcon = backgroundImage == null? null: new ImageIcon(backgroundImage);
   }
 
   public void setBackgroundInheritance(int backgroundInheritanceType) {
@@ -607,10 +623,12 @@ class CTableImplementation extends JScrollPane implements CTable {
     case PREFERRED_BACKGROUND_INHERITANCE:
     case NO_BACKGROUND_INHERITANCE:
       setOpaque(true);
+      getViewport().setOpaque(true);
       table.setOpaque(true);
       break;
     case BACKGROUND_INHERITANCE:
       setOpaque(false);
+      getViewport().setOpaque(false);
       table.setOpaque(false);
       break;
     }

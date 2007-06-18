@@ -841,6 +841,7 @@ public void setBackground (Color color) {
   handle.setBackground(color == null? null: color.handle);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  parent.handle.repaint();
 }
 
 /**
@@ -872,6 +873,7 @@ public void setBackground (int index, Color color) {
   handle.getTreeItemObject(index).setBackground(color == null? null: color.handle);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  parent.handle.repaint();
 }
 
 /**
@@ -1000,6 +1002,7 @@ public void setForeground (Color color) {
   }
   handle.setForeground(color == null? null: color.handle);
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  parent.handle.repaint();
 }
 
 /**
@@ -1031,6 +1034,7 @@ public void setForeground (int index, Color color){
   handle.getTreeItemObject(index).setForeground(color == null? null: color.handle);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  parent.handle.repaint();
 }
 
 /**

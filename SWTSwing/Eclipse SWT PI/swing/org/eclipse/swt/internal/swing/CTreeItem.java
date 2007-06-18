@@ -155,8 +155,8 @@ public interface CTreeItem {
 
     protected Color background;
 
-    public void setBackground(Color color) {
-      background = color;
+    public void setBackground(Color background) {
+      this.background = background;
     }
 
     public Color getBackground() {
@@ -165,8 +165,8 @@ public interface CTreeItem {
 
     protected Color foreground;
 
-    public void setForeground(Color color) {
-      foreground = color;
+    public void setForeground(Color foreground) {
+      this.foreground = foreground;
     }
 
     public Color getForeground() {

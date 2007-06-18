@@ -28,8 +28,12 @@ public class DefaultTreeTableCellRenderer implements TreeTableCellRenderer {
     }
   }
   
-  protected InnerTreeCellRenderer renderer = new InnerTreeCellRenderer();
+  protected InnerTreeCellRenderer renderer = createInnerTreeCellRenderer();
 
+  protected InnerTreeCellRenderer createInnerTreeCellRenderer() {
+    return new InnerTreeCellRenderer();
+  }
+  
   protected void paintComponent(CellPainter c, Graphics g) {
     c.paintCell(g);
   }

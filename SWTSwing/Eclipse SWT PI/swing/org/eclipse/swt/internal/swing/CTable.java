@@ -114,10 +114,13 @@ class CTableImplementation extends JScrollPane implements CTable {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CTableImplementation.this != null? userAttributeHandler.getBackground(): super.getBackground();
+        return CTableImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     });
     this.table = new JTable(new CTableModel(table)) {
+      {
+        CTableImplementation.this.setBackground(super.getBackground());
+      }
       public boolean getScrollableTracksViewportWidth() {
         if(handle.isDisposed()) {
           return false;
@@ -214,9 +217,9 @@ class CTableImplementation extends JScrollPane implements CTable {
             return c;
           }
           CTableItem.TableItemObject tableItemObject = (CTableItem.TableItemObject)value;
-          Color userForeground = userAttributeHandler.getForeground();
+          Color userForeground = userAttributeHandler.foreground;
           c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
-          Color userBackground = userAttributeHandler.getBackground();
+          Color userBackground = userAttributeHandler.background;
           c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
           c.setFont(isSelected? selectionFont: defaultFont);
           if(c instanceof JComponent) {

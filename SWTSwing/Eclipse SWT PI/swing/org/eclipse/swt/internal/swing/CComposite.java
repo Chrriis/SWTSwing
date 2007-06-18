@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
@@ -84,11 +85,16 @@ class CCompositeImplementation extends JPanel implements CComposite {
       public boolean isOptimizedDrawingEnabled() {
         return getComponentCount() < 2 || Utils.isFlatLayout(handle);
       }
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
       protected void paintComponent (Graphics g) {
         graphics = g;
         putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
+        if(!(getParent() instanceof JViewport)) {
+          Utils.paintTiledImage(this, g, backgroundImageIcon);
+        }
         super.paintComponent(g);
-        Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
         graphics = null;
@@ -108,7 +114,23 @@ class CCompositeImplementation extends JPanel implements CComposite {
     };
     userAttributeHandler = new UserAttributeHandler(panel);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-      JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane scrollPane = new UnmanagedScrollPane((style & SWT.V_SCROLL) != 0? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS: JScrollPane.VERTICAL_SCROLLBAR_NEVER, (style & SWT.H_SCROLL) != 0? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {
+        protected DisconnectedViewport createDisconnectedViewport() {
+          return new DisconnectedViewport() {
+            protected boolean isCreated = true;
+            public boolean isOpaque() {
+              return backgroundImageIcon == null && super.isOpaque();
+            }
+            protected void paintComponent(Graphics g) {
+              Utils.paintTiledImage(this, g, backgroundImageIcon);
+              super.paintComponent(g);
+            }
+            public Color getBackground() {
+              return isCreated? userAttributeHandler.background: super.getBackground();
+            }
+          };
+        }
+      };
       this.scrollPane = scrollPane;
       scrollPane.setBorder(null);
       add(scrollPane, BorderLayout.CENTER);

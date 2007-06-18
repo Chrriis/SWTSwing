@@ -155,8 +155,8 @@ public interface CTreeItem {
 
     protected Color background;
 
-    public void setBackground(Color background) {
-      this.background = background;
+    public void setBackground(Color color) {
+      this.background = color;
     }
 
     public Color getBackground() {

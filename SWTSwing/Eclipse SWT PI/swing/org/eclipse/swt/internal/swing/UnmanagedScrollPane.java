@@ -19,15 +19,21 @@ class UnmanagedScrollPane extends JScrollPane {
     super(vsbPolicy, hsbPolicy);
   }
 
-  protected JViewport createViewport() {
-    return new JViewport() {
-      public void setViewPosition(Point p) {
-        // Do nothing to prevent auto scrolling
-      }
-      public void addChangeListener(ChangeListener l) {
-        // Do nothing to prevent auto scrolling
-      }
-    };
+  protected static class DisconnectedViewport extends JViewport {
+    public void setViewPosition(Point p) {
+      // Do nothing to prevent auto scrolling
+    }
+    public void addChangeListener(ChangeListener l) {
+      // Do nothing to prevent auto scrolling
+    }
+  }
+  
+  protected final JViewport createViewport() {
+    return createDisconnectedViewport();
+  }
+  
+  protected DisconnectedViewport createDisconnectedViewport() {
+    return new DisconnectedViewport();
   }
 
 }

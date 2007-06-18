@@ -98,7 +98,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CTreeImplementation.this != null? userAttributeHandler.getBackground(): super.getBackground();
+        return CTreeImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     });
     rootNode = new DefaultMutableTreeTableNode() {
@@ -275,9 +275,9 @@ class CTreeImplementation extends JScrollPane implements CTree {
         if(value == null) {
           return c;
         }
-        Color userForeground = userAttributeHandler.getForeground();
+        Color userForeground = userAttributeHandler.foreground;
         c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
-        Color userBackground = userAttributeHandler.getBackground();
+        Color userBackground = userAttributeHandler.background;
         c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
         c.setFont(isSelected? selectionFont: defaultFont);
         if(c instanceof JComponent) {
@@ -387,7 +387,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
               if(!treeTable.isOpaque()) {
                 return null;
               }
-              Color background = userAttributeHandler.getBackground();
+              Color background = userAttributeHandler.background;
               return background != null? background: treeTable.getBackground();
             }
             return super.getBackground();

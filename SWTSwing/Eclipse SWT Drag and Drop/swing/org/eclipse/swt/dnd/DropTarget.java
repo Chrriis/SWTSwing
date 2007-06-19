@@ -15,6 +15,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -157,6 +158,9 @@ public DropTarget(Control control, int style) {
       if(setDragEventData(event, e)) {
         int allowedOperations = event.operations;
         notifyListeners(notificationType, event);
+        if(!hasMetas()) {
+          lastAction = event.detail;
+        }
         if (event.detail == DND.DROP_DEFAULT) {
           event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
         }
@@ -183,45 +187,48 @@ public DropTarget(Control control, int style) {
     }
     public void drop(DropTargetDropEvent e) {
       DNDEvent event = new DNDEvent();
-      if(setDropEventData(event, e)) {
-        int allowedOperations = event.operations;
-        Object object = null;
-        for (int i = 0; i < transferAgents.length; i++){
-          if (transferAgents[i].isSupportedType(event.dataType)){
-            object = transferAgents[i].nativeToJava(event.dataType);
-            break;
-          }
-        }
-        if (object == null){
-          event.detail = DND.DROP_NONE;
-        }
-        try {
-          event.data = object;
-        } catch(Exception ex) {
-          ex.printStackTrace();
-        }
-        notifyListeners(DND.Drop, event);
-        if (event.detail == DND.DROP_DEFAULT) {
-          event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
-        }
-        int action = 0;
-        if ((allowedOperations & event.detail) != 0) {
-          action = Utils.convertDnDActionsToSwing(event.detail);
-        }
-        if(action == 0) {
-          e.rejectDrop();
-        } else {
-          e.acceptDrop(action);
-        }
-        e.dropComplete(true);
-        effect.showDropTargetEffect(event.feedback, event.x, event.y);
-      } else {
+      if(!setDropEventData(event, e)) {
         e.rejectDrop();
         e.dropComplete(false);
       }
+      int allowedOperations = event.operations;
+      int action = 0;
+      if (event.detail == DND.DROP_DEFAULT) {
+        event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+      }
+      if ((allowedOperations & event.detail) != 0) {
+        action = Utils.convertDnDActionsToSwing(event.detail);
+      }
+      if(action == 0) {
+        e.rejectDrop();
+        e.dropComplete(true);
+        return;
+      }
+      e.acceptDrop(action);
+      Object object = null;
+      for (int i = 0; i < transferAgents.length; i++){
+        if (transferAgents[i].isSupportedType(event.dataType)) {
+          object = transferAgents[i].nativeToJava(event.dataType);
+          break;
+        }
+      }
+      if (object == null){
+        event.detail = DND.DROP_NONE;
+      }
+      try {
+        event.data = object;
+      } catch(Exception ex) {
+        ex.printStackTrace();
+      }
+      notifyListeners(DND.Drop, event);
+      if(event.detail == DND.DROP_NONE) {
+        e.dropComplete(false);
+      } else {
+        e.dropComplete(true);
+      }
+      effect.showDropTargetEffect(event.feedback, event.x, event.y);
     }
 	}, true); 
-  
   // Drag under effect
 //	if (control instanceof Tree) {
 //		effect = new TreeDragAndDropEffect((Tree)control);
@@ -232,6 +239,12 @@ public DropTarget(Control control, int style) {
 //	} else {
 		effect = new NoDragAndDropEffect(control);
 //	}
+}
+
+protected int lastAction = DND.DROP_DEFAULT;
+
+protected boolean hasMetas() {
+  return (Utils.modifiersEx & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) != 0;
 }
 
 boolean setDragEventData(DNDEvent event, java.awt.dnd.DropTargetDragEvent e) {
@@ -264,7 +277,11 @@ boolean setDragEventData(DNDEvent event, java.awt.dnd.DropTargetDragEvent e) {
   event.dataType = event.dataTypes[0];
   event.item = effect.getItem(location.x, location.y);
   event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
-  event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+  if(hasMetas()) {
+    event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+  } else {
+    event.detail = lastAction;
+  }
   return true;
 }
 
@@ -298,7 +315,11 @@ boolean setDropEventData(DNDEvent event, java.awt.dnd.DropTargetDropEvent e) {
   event.dataType = event.dataTypes[0];
   event.item = effect.getItem(location.x, location.y);
   event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
-  event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+  if(hasMetas()) {
+    event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+  } else {
+    event.detail = lastAction;
+  }
   return true;
 }
 

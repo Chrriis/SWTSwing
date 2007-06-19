@@ -281,8 +281,7 @@ public class Display extends Device {
       protected Window hoveredWindow;
       public void eventDispatched(AWTEvent event) {
         java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
-        previousModifiersEx = modifiersEx;
-        modifiersEx = ie.getModifiersEx();
+        Utils.storeModifiersEx(ie.getModifiersEx());
         if(ie instanceof MouseEvent) {
           // It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
           Component component = ie.getComponent();
@@ -323,7 +322,7 @@ public class Display extends Device {
         }
         if(ie.getID() == KeyEvent.KEY_PRESSED) {
           int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
-          if((modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
+          if((Utils.modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
             Component component = ie.getComponent();
             Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
             if(window instanceof CShell) {
@@ -1820,15 +1819,12 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
   return new Rectangle(point.x, point.y, width, height);
 }
 
-static int previousModifiersEx;
-static int modifiersEx;
-
 static int getPreviousInputState() {
-  return convertModifiersEx(previousModifiersEx);
+  return convertModifiersEx(Utils.previousModifiersEx);
 }
 
 static int getInputState() {
-  return convertModifiersEx(modifiersEx);
+  return convertModifiersEx(Utils.modifiersEx);
 }
 
 static int convertModifiersEx(int modifiersEx) {

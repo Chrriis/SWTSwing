@@ -410,4 +410,12 @@ public class Utils {
     }
   }
   
+  public static int previousModifiersEx;
+  public static int modifiersEx;
+
+  public static void storeModifiersEx(int modifiersEx) {
+    Utils.previousModifiersEx = Utils.modifiersEx;
+    Utils.modifiersEx = modifiersEx;
+  }
+  
 }

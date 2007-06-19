@@ -209,7 +209,7 @@ public DragSource(Control control, int style) {
   if(isPropertySet) {
     java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
   } else {
-    // We don't use the default cross platform drag recognizer, because SWT does not wants a threshold, and we failed to set it to 0.
+    // We don't use the default cross platform drag recognizer, because SWT does not want a threshold, and we failed to set it to 0.
     new SWTDragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
   }
   for(int i=0; i<mouseListeners.length; i++) {
@@ -499,14 +499,17 @@ class SWTDragGestureListener implements DragGestureListener {
     e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
       int action;
       public void dragEnter(DragSourceDragEvent e) {
+        Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
         action = e.getDropAction();
       }
       public void dragOver(DragSourceDragEvent e) {
+        Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
         action = e.getDropAction();
         // TODO: set the cursor with given image
 //        e.getDragSourceContext().setCursor(dragCursor);
       }
       public void dropActionChanged(DragSourceDragEvent e) {
+        Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
         action = e.getDropAction();
       }
       public void dragExit(java.awt.dnd.DragSourceEvent e) {

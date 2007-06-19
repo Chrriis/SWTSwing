@@ -2,6 +2,7 @@ package chrriis.swtswing;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Display;
 
 public class SnippetLauncher {
@@ -185,7 +186,7 @@ public class SnippetLauncher {
       new Snippet(78, "drag text between two labels"),
 /**/      new NotWorkingSnippet(91, "drag leaf items in a tree"),
       new Snippet(79, "define my own data transfer type"),
-/**/      new NotWorkingSnippet(84, "define a default operation (in this example, Copy)"),
+      new Snippet(84, "define a default operation (in this example, Copy)"),
 /**/      new UnsupportedSnippet(83, "determine data types available (win32 only)"),
 /**/      new UnsupportedSnippet(158, "determine data types available (motif only)"),
 /**/      new NotWorkingSnippet(185, "Dropped data type depends on target item in table"),
@@ -321,15 +322,15 @@ public class SnippetLauncher {
       new Snippet(110, "find a table cell from mouse down (works for any table style)"),
       new Snippet(101, "insert a table item (at an index)"),
       new Snippet(106, "insert a table column (at an index)"),
-/**/      new NotWorkingSnippet(181, "make columns reorderable by dragging"),
+      new Snippet(181, "make columns reorderable by dragging"),
 /**/      new PartiallyWorkingSnippet(126, "place arbitrary controls in a table"),
       new Snippet(64, "print selected items in a table"),
       new Snippet(53, "remove selected items"),
 /**/      new NotWorkingSnippet(77, "resize columns as table resizes"),
       new Snippet(51, "scroll a table (set the top index)"),
 /**/      new PartiallyWorkingSnippet(52, "select an index (select and scroll)"),
-/**/      new NotWorkingSnippet(2, "sort a table by column"),
-/**/      new NotWorkingSnippet(192, "sort a table by column (virtual table, sort indicator)"),
+      new Snippet(2, "sort a table by column"),
+      new Snippet(192, "sort a table by column (virtual table, sort indicator)"),
       new Snippet(103, "update table item text"),
     }), new SnippetCategory("TableCursor", new Snippet[] {
 /**/      new NotWorkingSnippet(96, "navigate a table cells with arrow keys"),
@@ -390,7 +391,7 @@ public class SnippetLauncher {
     })
   };
     
-  protected static int snippetNumber = 111;
+  protected static int snippetNumber = 78;
 
   protected static boolean isRealDispatch = true;
 
@@ -453,7 +454,7 @@ public class SnippetLauncher {
       try {
         Class.forName("org.eclipse.swt.snippets.Snippet" + number).getMethod("main", new Class[] {String[].class}).invoke(null, new Object[] {args});
       } catch(InvocationTargetException e) {
-        e.getCause().printStackTrace();
+        Utils.throwUncheckedException(e.getCause());
       } catch(Exception e) {
         e.printStackTrace();
       }

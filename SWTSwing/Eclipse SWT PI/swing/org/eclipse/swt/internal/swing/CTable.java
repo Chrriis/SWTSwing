@@ -19,6 +19,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -338,18 +339,37 @@ class CTableImplementation extends JScrollPane implements CTable {
               org.eclipse.swt.widgets.TableColumn sortColumn = handle.getSortColumn();
               if(sortColumn != null) {
                 Rectangle bounds = getCellRect(-1, CTableImplementation.this.table.convertColumnIndexToView(handle.indexOf(sortColumn)), false);
+                TableColumn draggedColumn = getDraggedColumn();
+                Shape clip = g.getClip();
+                if(draggedColumn != null) {
+                  int draggedDistance = getDraggedDistance();
+                  if(((CTableColumn)draggedColumn).getTableColumn() == sortColumn) {
+                    bounds.x += draggedDistance;
+                  } else {
+                    Rectangle dragBounds = getCellRect(-1, CTableImplementation.this.table.convertColumnIndexToView(handle.indexOf(((CTableColumn)draggedColumn).getTableColumn())), true);
+                    dragBounds.x += draggedDistance;
+                    bounds.height = getHeight();
+                    if(bounds.x < dragBounds.x) {
+                      g.clipRect(0, 0, dragBounds.x, bounds.height);
+                    } else {
+                      int x = dragBounds.x + dragBounds.width;
+                      g.clipRect(x, 0, getWidth() - x, bounds.height);
+                    }
+                  }
+                }
                 paintSortArrow(g, bounds);
+                g.setClip(clip);
               }
             }
           }
           
           protected void paintSortArrow(Graphics g, Rectangle bounds) {
 //            Color color = new Color(11, 80, 48);             
-            Color color = getBackground();             
+            Color color = getBackground().darker();             
             int priority = 0;
-            int height = getFont().getSize();
+            int height = Math.round(getHeight() / 1.5f);
             int x = bounds.x + bounds.width;
-            int y = bounds.y + bounds.height;
+            int y = 1;
             boolean descending = handle.getSortDirection() == SWT.DOWN;
             // In a compound sort, make each succesive triangle 20% 
             // smaller than the previous one. 
@@ -540,7 +560,7 @@ class CTableImplementation extends JScrollPane implements CTable {
         int columnIndex = columnModel.getColumnIndexAtX(e.getX());
         if(columnIndex != -1) {
           CTableColumn column = (CTableColumn)columnModel.getColumn(columnIndex);
-          tableHeader.setReorderingAllowed(column.getTableColumn().getMoveable());
+//          tableHeader.setReorderingAllowed(column.getTableColumn().getMoveable());
         }
       }
     }

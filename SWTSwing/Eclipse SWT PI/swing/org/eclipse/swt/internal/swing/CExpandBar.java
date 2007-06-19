@@ -7,6 +7,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -16,6 +17,7 @@ import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -48,13 +50,22 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
       }
+    };
+    userAttributeHandler = new UserAttributeHandler(expandPane);
+    JViewport viewport = new JViewport() {
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
       protected void paintComponent(Graphics g) {
         Utils.paintTiledImage(this, g, backgroundImageIcon);
         super.paintComponent(g);
       }
+      public Color getBackground() {
+        return CExpandBarImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
     };
-    userAttributeHandler = new UserAttributeHandler(expandPane);
-    getViewport().setView(expandPane);
+    setViewport(viewport);
+    viewport.setView(expandPane);
     init(style);
   }
 

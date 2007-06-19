@@ -43,6 +43,8 @@ import org.eclipse.swt.internal.swing.UIThreadUtils;
  */
 public class Link extends Control {
   
+  String text;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -145,7 +147,7 @@ String getNameText () {
  */
 public String getText () {
   checkWidget ();
-  return ((CLink)handle).getLinkText();
+  return text == null? "": text;
 }
 
 boolean mnemonicHit (char key) {
@@ -224,6 +226,16 @@ public void setText (String string) {
   checkWidget ();
   if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
   checkWidget ();
+  this.text = string;
+  int mnemonicIndex = findMnemonicIndex(string);
+  if(mnemonicIndex > 0) {
+    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+//    mnemonicIndex -= mnemonicIndex - 1 - s.length();
+//    mnemonicIndex--;
+  } else {
+    string = string.replaceAll("&&", "&");
+  }
   ((CLink)handle).setLinkText(string);
 }
 

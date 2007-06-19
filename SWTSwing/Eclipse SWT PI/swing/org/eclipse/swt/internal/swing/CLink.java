@@ -14,13 +14,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Insets;
 import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.View;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
@@ -59,18 +62,12 @@ class CLinkImplementation extends JEditorPane implements CLink {
     setContentType("text/html");
     init(style);
   }
-
+  
   protected void init(int style) {
     setEditable(false);
     putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
-    setForeground(UIManager.getColor("Label.foreground"));
-    setBackground(UIManager.getColor("Label.background"));
-    setFont(UIManager.getFont("Label.font"));
     setOpaque(false);
     adjustStyles();
-    if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
-    }
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);
     Utils.installFocusListener(this, handle);
@@ -94,30 +91,32 @@ class CLinkImplementation extends JEditorPane implements CLink {
   
   protected void adjustStyles() {
     updateUI();
+    setForeground(UIManager.getColor("Label.foreground"));
+    setBackground(UIManager.getColor("Label.background"));
+    setFont(UIManager.getFont("Label.font"));
+    setMargin(new Insets(0, 0, 0, 0));
+    if((handle.getStyle() & SWT.BORDER) != 0) {
+      setBorder(UIManager.getBorder("TextField.border"));
+    }
     reshape(getX(), getY(), getWidth(), getHeight());
-  }
-
-  public Dimension getMaximumSize() {
-    return new Dimension(Integer.MAX_VALUE, super.getMaximumSize().height);
-  }
-
-  public Dimension getPreferredSize() {
-    Dimension size = getSize();
-    setSize(0, 0);
-    Dimension preferredSize = super.getPreferredSize();
-    setSize(preferredSize.width, Integer.MAX_VALUE);
-    preferredSize = super.getPreferredSize();
-    setSize(size);
-    return preferredSize;
   }
   
   public void reshape(int x, int y, int w, int h) {
     super.reshape(x, y, w, h);
-    Dimension preferredSize = super.getPreferredSize();
-    if(preferredSize.height != h) {
-      super.reshape(x, y, w, preferredSize.height);
+    View globalView = getUI().getRootView(this);
+    if(globalView != null) {
+      Border border = getBorder();
+      if(border != null) {
+        Insets insets = border.getBorderInsets(this);
+        w -= insets.left + insets.right;
+        h -= insets.top + insets.bottom;
+      }
+      globalView.setSize(w, h);
     }
-//    validate();
+  }
+
+  public Dimension getMaximumSize() {
+    return new Dimension(Integer.MAX_VALUE, super.getMaximumSize().height);
   }
 
   public boolean isOpaque() {
@@ -214,10 +213,6 @@ class CLinkImplementation extends JEditorPane implements CLink {
     return sb.toString();
   }
 
-  public String getLinkText() {
-    return text;
-  }
-
   public Color getBackground() {
     return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
   }
@@ -265,8 +260,6 @@ public interface CLink extends CControl {
 
   public int getPreferredWidth();
   
-  public String getLinkText();
-
   public void setLinkText(String text);
 
 }

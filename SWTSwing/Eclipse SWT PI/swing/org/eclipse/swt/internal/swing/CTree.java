@@ -279,7 +279,8 @@ class CTreeImplementation extends JScrollPane implements CTree {
         c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
         Color userBackground = userAttributeHandler.background;
         c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
-        c.setFont(isSelected? selectionFont: defaultFont);
+        Font userFont = userAttributeHandler.font;
+        c.setFont(isSelected? selectionFont: userFont != null? userFont: defaultFont);
         if(c instanceof JComponent) {
           ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && treeTable.isOpaque());
         }

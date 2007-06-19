@@ -1436,8 +1436,7 @@ public Cursor getSystemCursor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-  // TODO: Support non metal look and feels by finding the system font differently
-  return Font.swing_new(this, javax.swing.plaf.metal.MetalLookAndFeel.getSystemTextFont());
+  return Font.swing_new(this, UIManager.getFont("Label.font"));
 }
 
 /**

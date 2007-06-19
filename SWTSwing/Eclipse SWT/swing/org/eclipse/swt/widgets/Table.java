@@ -34,7 +34,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTableItem;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
-import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.swing.CTable.CellPaintEvent;
 
 /** 
@@ -233,6 +232,7 @@ public void clear (int index) {
   if(item != null) {
     item.clear();
   }
+  handle.repaint();
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 //	TableItem item = items [index];
@@ -296,6 +296,7 @@ public void clear (int start, int end) {
       item.clear();
     }
   }
+  handle.repaint();
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	if (!(0 <= start && start <= end && end < count)) {
 //		error (SWT.ERROR_INVALID_RANGE);
@@ -377,6 +378,7 @@ public void clear (int [] indices) {
 	    item.clear();
 	  }
 	}
+  handle.repaint();
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	for (int i=0; i<indices.length; i++) {
 //		if (!(0 <= indices [i] && indices [i] < count)) {
@@ -446,6 +448,7 @@ public void clearAll () {
       item.clear();
     }
   }
+  handle.repaint();
 //	LVITEM lvItem = null;
 //	boolean cleared = false;
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -693,6 +696,10 @@ void destroyItem (TableColumn column) {
     javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
     columnModel.addColumn(tableColumn);
   }
+  if(sortColumn == column) {
+    sortColumn = null;
+    sortDirection = SWT.NONE;
+  }
   handle.repaint();
 }
 
@@ -786,13 +793,7 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-  Utils.notImplemented(); int[] order = new int[getColumnCount()]; for(int i=0; i<order.length; i++) {order[i] = i;} return order;
-//	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
-//	if (count == 1 && columns [0] == null) return new int [0];
-//	int [] order = new int [count];
-//	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
-//	return order;
+	return ((CTable)handle).getColumnOrder();
 }
 
 /**
@@ -1147,6 +1148,10 @@ public int [] getSelectionIndices () {
   return selectedIndices;
 }
 
+TableColumn sortColumn;
+int sortDirection;
+
+
 /**
  * Returns the column which shows the sort indicator for
  * the receiver. The value may be null if no column shows
@@ -1165,8 +1170,7 @@ public int [] getSelectionIndices () {
  */
 public TableColumn getSortColumn () {
   checkWidget ();
-  Utils.notImplemented(); return null;
-//  return sortColumn;
+  return sortColumn;
 }
 
 /**
@@ -1187,8 +1191,7 @@ public TableColumn getSortColumn () {
  */
 public int getSortDirection () {
   checkWidget ();
-  Utils.notImplemented(); return SWT.NONE;
-//  return sortDirection;
+  return sortDirection;
 }
 
 /**
@@ -1769,7 +1772,9 @@ public void selectAll () {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-  Utils.notImplemented();
+  int columnCount = getColumnCount();
+  if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+  ((CTable)handle).setColumnOrder(order);
 //	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 //	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
 //	if (count == 1 && columns [0] == null) {
@@ -2341,14 +2346,8 @@ public void setSelection (int start, int end) {
 public void setSortColumn (TableColumn column) {
   checkWidget ();
   if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
-//  if (sortColumn != null && !sortColumn.isDisposed ()) {
-//    sortColumn.setSortDirection (SWT.NONE);
-//  }
-//  sortColumn = column;
-//  if (sortColumn != null && sortDirection != SWT.NONE) {
-//    sortColumn.setSortDirection (sortDirection);
-//  }
+  sortColumn = column;
+  handle.repaint();
 }
 
 /**
@@ -2367,11 +2366,8 @@ public void setSortColumn (TableColumn column) {
 public void setSortDirection (int direction) {
   checkWidget ();
   if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
-  Utils.notImplemented();
-//  sortDirection = direction;
-//  if (sortColumn != null && !sortColumn.isDisposed ()) {
-//    sortColumn.setSortDirection (direction);
-//  }
+  sortDirection = direction;
+  handle.repaint();
 }
 
 /**

@@ -26,6 +26,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -99,14 +100,23 @@ class CTextMulti extends JScrollPane implements CText {
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
       }
+    };
+    userAttributeHandler = new UserAttributeHandler(textArea);
+    setFocusable(false);
+    JViewport viewport = new JViewport() {
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
       protected void paintComponent(Graphics g) {
         Utils.paintTiledImage(this, g, backgroundImageIcon);
         super.paintComponent(g);
       }
+      public Color getBackground() {
+        return CTextMulti.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
     };
-    userAttributeHandler = new UserAttributeHandler(textArea);
-    setFocusable(false);
-    getViewport().setView(textArea);
+    setViewport(viewport);
+    viewport.setView(textArea);
     init(style);
   }
 

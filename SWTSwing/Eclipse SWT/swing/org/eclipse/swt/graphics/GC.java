@@ -1609,7 +1609,29 @@ public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
-  String[] tokens = string.replaceAll("\t", "    ") .split("\n");
+	if((flags & SWT.DRAW_TRANSPARENT) != 0) {
+	  string = string.replaceAll("\t", "    ");
+	}
+	int mnemonicIndex = -1;
+	if((flags & SWT.DRAW_MNEMONIC) != 0) {
+	  // Copied from Label
+	  mnemonicIndex = findMnemonicIndex(string);
+	  if(mnemonicIndex > 0) {
+	    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+	    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+	    mnemonicIndex -= mnemonicIndex - 1 - s.length();
+	    mnemonicIndex--;
+	  } else {
+	    string = string.replaceAll("&&", "&");
+	  }
+	  // TODO: if the mnemonic index is not -1, then draw a line under the char.
+	}
+	String[] tokens;
+	if((flags & SWT.DRAW_DELIMITER) != 0) {
+	  tokens = string.split("\n");
+	} else {
+	  tokens = new String[] {string};
+	}
   boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
   java.awt.FontMetrics fm = handle.getFontMetrics();
   int fmHeight = fm.getHeight();
@@ -1693,6 +1715,19 @@ public void drawText (String string, int x, int y, int flags) {
 //		}
 //	}
 //	OS.SetBkMode(handle, oldBkMode);
+}
+
+// Copied from Widget
+int findMnemonicIndex (String string) {
+  int index = 0;
+  int length = string.length ();
+  do {
+    while (index < length && string.charAt (index) != '&') index++;
+    if (++index >= length) return -1;
+    if (string.charAt (index) != '&') return index;
+    index++;
+  } while (index < length);
+  return -1;
 }
 
 /**

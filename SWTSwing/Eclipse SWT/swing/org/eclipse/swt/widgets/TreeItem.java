@@ -941,6 +941,7 @@ public void setFont (Font font){
   }
   handle.setFont(font == null? null: font.handle);
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  parent.handle.repaint();
 }
 
 
@@ -973,6 +974,7 @@ public void setFont (int index, Font font) {
   handle.getTreeItemObject(index).setFont(font == null? null: font.handle);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  parent.handle.repaint();
 }
 
 /**

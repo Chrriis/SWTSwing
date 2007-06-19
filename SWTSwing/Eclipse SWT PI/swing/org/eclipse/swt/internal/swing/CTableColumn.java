@@ -70,6 +70,10 @@ class CTableColumnImplementation extends TableColumn implements CTableColumn {
   public String getToolTipText() {
     return toolTipText;
   }
+  
+  public org.eclipse.swt.widgets.TableColumn getTableColumn() {
+    return handle;
+  }
 
 }
 
@@ -95,5 +99,7 @@ public interface CTableColumn {
   public void setToolTipText(String toolTipText);
   
   public String getToolTipText();
+  
+  public org.eclipse.swt.widgets.TableColumn getTableColumn();
 
 }

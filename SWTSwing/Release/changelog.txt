@@ -7,6 +7,10 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Table sorting is implemented.
+- Table packing is improved.
+- Flags handling in GC.drawText(...) is improved.
+- The system font works better accross look and feels now.
 - Text Modify event is posted to avoid conccurent modifications.
 - Key events should be fixed.
 - Link implementation is improved.

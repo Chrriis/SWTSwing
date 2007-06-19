@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -127,17 +128,26 @@ class CComboSimple extends JPanel implements CCombo {
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
       }
-      protected void paintComponent(Graphics g) {
-        Utils.paintTiledImage(this, g, backgroundImageIcon);
-        super.paintComponent(g);
-      }
     };
     list.setCellRenderer(new DefaultListCellRenderer() {
       public boolean isOpaque() {
         return list.isOpaque() && super.isOpaque();
       }
     });
-    scrollPane.setViewportView(list);
+    JViewport viewport = new JViewport() {
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
+      public Color getBackground() {
+        return CComboSimple.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+    };
+    scrollPane.setViewport(viewport);
+    viewport.setView(list);
     list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     add(scrollPane, BorderLayout.CENTER);
     this.handle = combo;

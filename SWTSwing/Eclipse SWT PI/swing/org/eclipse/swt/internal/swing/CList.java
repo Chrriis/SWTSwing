@@ -25,6 +25,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -71,10 +72,6 @@ class CListImplementation extends JScrollPane implements CList {
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
       }
-      protected void paintComponent(Graphics g) {
-        Utils.paintTiledImage(this, g, backgroundImageIcon);
-        super.paintComponent(g);
-      }
     };
     this.list.setCellRenderer(new DefaultListCellRenderer() {
       public boolean isOpaque() {
@@ -82,7 +79,20 @@ class CListImplementation extends JScrollPane implements CList {
       }
     });
     userAttributeHandler = new UserAttributeHandler(this.list);
-    getViewport().setView(this.list);
+    JViewport viewport = new JViewport() {
+      public boolean isOpaque() {
+        return backgroundImageIcon == null && super.isOpaque();
+      }
+      protected void paintComponent(Graphics g) {
+        Utils.paintTiledImage(this, g, backgroundImageIcon);
+        super.paintComponent(g);
+      }
+      public Color getBackground() {
+        return CListImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+      }
+    };
+    setViewport(viewport);
+    viewport.setView(this.list);
     init(style);
   }
 

@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
 
@@ -53,6 +54,12 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
       super.reshape(x, y, w, h);
       View globalView = (View)getClientProperty(BasicHTML.propertyKey);
       if(globalView != null) {
+        Border border = getBorder();
+        if(border != null) {
+          Insets insets = border.getBorderInsets(this);
+          w -= insets.left + insets.right;
+          h -= insets.top + insets.bottom;
+        }
         globalView.setSize(w, h);
       }
     }

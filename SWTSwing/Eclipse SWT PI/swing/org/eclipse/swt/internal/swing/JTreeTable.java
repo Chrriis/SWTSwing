@@ -41,6 +41,7 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.plaf.UIResource;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -716,8 +717,8 @@ public class JTreeTable extends JPanel implements Scrollable {
     }
     int count = getRowCount();
     int newWidth = Math.max(getColumnModel().getColumn(columnIndex).getMinWidth(), 10);
-    TreeTableCellRenderer renderer = getCellRenderer();
     // TODO: is there a better way than this hack?
+    TreeTableCellRenderer renderer = getCellRenderer();
     for(int i=0; i<count; i++) {
       TreePath treePath = getPathForRow(i);
       DefaultMutableTreeTableNode treeTableNode = (DefaultMutableTreeTableNode)treePath.getLastPathComponent();
@@ -725,6 +726,16 @@ public class JTreeTable extends JPanel implements Scrollable {
       java.awt.Component component = renderer.getTreeTableCellRendererComponent(this, value, false, isExpanded(treePath), treeTableNode.isLeaf(), i, columnIndex, false);
       newWidth = Math.max(newWidth, (int)component.getPreferredSize().getWidth());
     }
+//    TableModel model = table.getModel();
+//    for(int i=0; i<count; i++) {
+//      javax.swing.table.TableCellRenderer renderer = table.getCellRenderer(i, columnIndex);
+//      java.awt.Component component = renderer.getTableCellRendererComponent(table, model.getValueAt(i, columnIndex), false, false, i, columnIndex);
+//      newWidth = Math.max(newWidth, (int)component.getPreferredSize().getWidth());
+//    }
+    JTableHeader tableHeader = getTableHeader();
+    TableColumn column = tableHeader.getColumnModel().getColumn(columnIndex);
+    java.awt.Component component = tableHeader.getDefaultRenderer().getTableCellRendererComponent(table, column.getHeaderValue(), false, false, -1, columnIndex);
+    newWidth = Math.max(newWidth, (int)component.getPreferredSize().getWidth());
     return newWidth;
   }
 

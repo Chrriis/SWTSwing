@@ -138,6 +138,9 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
 
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
+    setForeground(UIManager.getColor("Label.foreground"));
+    setBackground(UIManager.getColor("Label.background"));
+    setFont(UIManager.getFont("Label.font"));
     userAttributeHandler = new UserAttributeHandler(this) {
       public void setForeground(Color foreground) {
         super.setForeground(foreground);

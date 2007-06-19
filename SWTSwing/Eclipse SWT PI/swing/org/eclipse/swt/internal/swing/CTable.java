@@ -20,7 +20,9 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
@@ -36,14 +38,18 @@ import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.swing.CTableItem.TableItemObject;
@@ -105,7 +111,7 @@ class CTableImplementation extends JScrollPane implements CTable {
   
   public CTableImplementation(Table table, int style) {
     handle = table;
-    setViewport(new JViewport() {
+    JViewport viewport = new JViewport() {
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
       }
@@ -116,7 +122,8 @@ class CTableImplementation extends JScrollPane implements CTable {
       public Color getBackground() {
         return CTableImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
-    });
+    };
+    setViewport(viewport);
     this.table = new JTable(new CTableModel(table)) {
       {
         CTableImplementation.this.setBackground(super.getBackground());
@@ -221,7 +228,8 @@ class CTableImplementation extends JScrollPane implements CTable {
           c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
           Color userBackground = userAttributeHandler.background;
           c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
-          c.setFont(isSelected? selectionFont: defaultFont);
+          Font userFont = userAttributeHandler.font;
+          c.setFont(isSelected? selectionFont: userFont != null? userFont: defaultFont);
           if(c instanceof JComponent) {
             ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && table.isOpaque());
           }
@@ -273,7 +281,7 @@ class CTableImplementation extends JScrollPane implements CTable {
             }
             // TODO: Complete with other properties from tableItemObject
           }
-          if(column != 0 || !isCheckType) {
+          if(column != table.convertColumnIndexToView(0) || !isCheckType) {
             return c;
           }
           CheckBoxCellRenderer checkBoxCellRenderer = new CheckBoxCellRenderer(c);
@@ -323,6 +331,66 @@ class CTableImplementation extends JScrollPane implements CTable {
               return null;
             }
             return ((CTableColumn)columnModel.getColumn(index)).getToolTipText();
+          }
+          public void paint(Graphics g) {
+            super.paint(g);
+            if(handle.getSortDirection() != SWT.NONE) {
+              org.eclipse.swt.widgets.TableColumn sortColumn = handle.getSortColumn();
+              if(sortColumn != null) {
+                Rectangle bounds = getCellRect(-1, CTableImplementation.this.table.convertColumnIndexToView(handle.indexOf(sortColumn)), false);
+                paintSortArrow(g, bounds);
+              }
+            }
+          }
+          
+          protected void paintSortArrow(Graphics g, Rectangle bounds) {
+//            Color color = new Color(11, 80, 48);             
+            Color color = getBackground();             
+            int priority = 0;
+            int height = getFont().getSize();
+            int x = bounds.x + bounds.width;
+            int y = bounds.y + bounds.height;
+            boolean descending = handle.getSortDirection() == SWT.DOWN;
+            // In a compound sort, make each succesive triangle 20% 
+            // smaller than the previous one. 
+            int dx = (int)(height/2*Math.pow(0.8, priority));
+            if(bounds.width < dx * 3) {
+              return;
+            }
+            x -= dx * 2;
+            if(dx % 2 != 0) {
+              dx++;
+            }
+            int dy = descending ? dx / 2 : -dx / 2;
+            // Align icon (roughly) with font baseline. 
+            y = y + 4*height/6 + (descending ? -dy : 0);
+            int shift = descending ? 1 : -1;
+            g.translate(x, y);
+
+            g.setColor(color);
+            g.fillPolygon(new int[] {0, dx / 2, dx, 0}, new int[] {0, dy, 0, 0}, 4);
+
+            // Right diagonal. 
+            g.setColor(color.darker());
+            g.drawLine(dx / 2, dy, 0, 0);
+            g.drawLine(dx / 2, dy + shift, 0, shift);
+            
+            // Left diagonal. 
+            g.setColor(color.brighter());
+            g.drawLine(dx / 2, dy, dx, 0);
+            g.drawLine(dx / 2, dy + shift, dx, shift);
+            
+            // Horizontal line. 
+            if (descending) {
+                g.setColor(color.darker().darker());
+            } else {
+//                g.setColor(color.brighter().brighter());
+                g.setColor(color.brighter());
+            }
+            g.drawLine(dx, 0, 0, 0);
+
+            g.setColor(color);
+            g.translate(-x, -y);
           }
         };
       }
@@ -449,7 +517,59 @@ class CTableImplementation extends JScrollPane implements CTable {
     };
     userAttributeHandler = new UserAttributeHandler(this.table);
     this.table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-    JTableHeader tableHeader = this.table.getTableHeader();
+    final JTableHeader tableHeader = this.table.getTableHeader();
+    class HeaderMouseListener extends MouseAdapter implements MouseMotionListener {
+      public void mouseClicked(MouseEvent e) {
+        TableColumnModel columnModel = tableHeader.getColumnModel();
+        int columnIndex = columnModel.getColumnIndexAtX(e.getX());
+        if(columnIndex != -1) {
+          CTableColumn column = (CTableColumn)columnModel.getColumn(columnIndex);
+          column.getTableColumn().processEvent(e);
+        }
+      }
+      public void mouseEntered(MouseEvent e) {
+        setHeaderOrderingState(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        setHeaderOrderingState(e);
+      }
+      public void mouseDragged(MouseEvent e) {
+      }
+      protected void setHeaderOrderingState(MouseEvent e) {
+        TableColumnModel columnModel = tableHeader.getColumnModel();
+        int columnIndex = columnModel.getColumnIndexAtX(e.getX());
+        if(columnIndex != -1) {
+          CTableColumn column = (CTableColumn)columnModel.getColumn(columnIndex);
+          tableHeader.setReorderingAllowed(column.getTableColumn().getMoveable());
+        }
+      }
+    }
+    tableHeader.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+      public void columnAdded(TableColumnModelEvent e) {
+      }
+      public void columnMarginChanged(ChangeEvent e) {
+      }
+      public void columnMoved(TableColumnModelEvent e) {
+        if(isAdjustingColumnOrder) {
+          return;
+        }
+        int toIndex = e.getToIndex();
+        int fromIndex = e.getFromIndex();
+        if(fromIndex != toIndex) {
+          CTableColumn cTableColumn = (CTableColumn)getColumnModel().getColumn(toIndex);
+          cTableColumn.getTableColumn().processEvent(e);
+          cTableColumn = (CTableColumn)getColumnModel().getColumn(fromIndex);
+          cTableColumn.getTableColumn().processEvent(e);
+        }
+      }
+      public void columnRemoved(TableColumnModelEvent e) {
+      }
+      public void columnSelectionChanged(ListSelectionEvent e) {
+      }
+    });
+    HeaderMouseListener headerMouseListener = new HeaderMouseListener();
+    tableHeader.addMouseListener(headerMouseListener);
+    tableHeader.addMouseMotionListener(headerMouseListener);
     final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();
     tableHeader.setDefaultRenderer(new TableCellRenderer() {
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -474,7 +594,6 @@ class CTableImplementation extends JScrollPane implements CTable {
     javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
     columnModel.addColumn(tableColumn);
     setFocusable(false);
-    JViewport viewport = getViewport();
     viewport.setView(this.table);
     viewport.setBackground(this.table.getBackground());
     setColumnHeader(createViewport());
@@ -498,6 +617,7 @@ class CTableImplementation extends JScrollPane implements CTable {
 //    if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 //      setBorder(null);
 //    }
+//    table.setAutoCreateRowSorter(true);
     if((style & SWT.FULL_SELECTION) == 0) {
       // Not perfect because it does not prevent the selection of the first cell by clicking anywhere on the row.
       table.setCellSelectionEnabled(true);
@@ -607,11 +727,16 @@ class CTableImplementation extends JScrollPane implements CTable {
       return newWidth;
     }
     // TODO: is there a better way than this hack?
+    TableModel model = table.getModel();
     for(int i=0; i<count; i++) {
-      javax.swing.table.TableCellRenderer renderer = getCellRenderer(i, columnIndex);
-      java.awt.Component component = renderer.getTableCellRendererComponent(table, getModel().getValueAt(i, columnIndex), false, false, i, columnIndex);
+      javax.swing.table.TableCellRenderer renderer = table.getCellRenderer(i, columnIndex);
+      java.awt.Component component = renderer.getTableCellRendererComponent(table, model.getValueAt(i, columnIndex), false, false, i, columnIndex);
       newWidth = Math.max(newWidth, (int)component.getPreferredSize().getWidth());
     }
+    JTableHeader tableHeader = getTableHeader();
+    TableColumn column = tableHeader.getColumnModel().getColumn(columnIndex);
+    java.awt.Component component = tableHeader.getDefaultRenderer().getTableCellRendererComponent(table, column.getHeaderValue(), false, false, -1, columnIndex);
+    newWidth = Math.max(newWidth, (int)component.getPreferredSize().getWidth());
     return newWidth;
   }
 
@@ -724,6 +849,28 @@ class CTableImplementation extends JScrollPane implements CTable {
     super.setEnabled(enabled);
     table.setEnabled(enabled);
   }
+  
+  protected boolean isAdjustingColumnOrder;
+  
+  public void setColumnOrder(int[] order) {
+    isAdjustingColumnOrder = true;
+    for(int i=0; i<order.length; i++) {
+      table.moveColumn(table.convertColumnIndexToView(order[i]), i);
+    }
+    isAdjustingColumnOrder = false;
+    for(int i=0; i<order.length; i++) {
+      CTableColumn cTableColumn = (CTableColumn)getColumnModel().getColumn(i);
+      cTableColumn.getTableColumn().processEvent(new TableColumnModelEvent(table.getColumnModel(), i, order[i]));
+    }
+  }
+  
+  public int[] getColumnOrder() {
+    int[] order = new int[table.getColumnCount()];
+    for(int i=0; i<order.length; i++) {
+      order[i] = table.convertColumnIndexToModel(i);
+    }
+    return order;
+  }
 
 }
 
@@ -805,4 +952,8 @@ public interface CTable extends CComposite {
   
   public void moveColumn(int column, int targetColumn);
 
+  public void setColumnOrder(int[] order);
+  
+  public int[] getColumnOrder();
+  
 }

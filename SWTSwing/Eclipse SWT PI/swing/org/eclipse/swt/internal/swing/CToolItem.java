@@ -91,8 +91,8 @@ class CToolItemRadio extends JToggleButton implements CToolItem {
     setVerticalTextPosition(BOTTOM);
     setMargin(new Insets(0, 1, 0, 1));
     Utils.installMouseListener(this, handle.getParent());
-    addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
+    addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
         handle.processEvent(e);
       }
     });

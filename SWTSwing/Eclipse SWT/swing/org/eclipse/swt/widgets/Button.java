@@ -15,6 +15,7 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
@@ -28,6 +29,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CButton;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
@@ -578,6 +580,8 @@ boolean setRadioSelection (boolean value) {
 //	return super.setSavedFocus ();
 //}
 
+boolean isAdjustingSelection;
+
 /**
  * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
  * <code>RADIO</code>, or <code>TOGGLE</code>.
@@ -597,7 +601,9 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
+	isAdjustingSelection = true;
   ((CButton)handle).setSelected(selected);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -799,7 +805,8 @@ public void setText (String string) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && !hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  case ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && (isAdjustingSelection || !hooks(SWT.Selection))) { super.processEvent(e); return; } break;
+  case ItemEvent.ITEM_STATE_CHANGED: if(isAdjustingSelection || !hooks(SWT.Selection)) { super.processEvent(e); return; } break;
   case KeyEvent.KEY_PRESSED:
     if((style & SWT.RADIO) != 0) {
       switch(((KeyEvent)e).getKeyCode()) {
@@ -831,16 +838,29 @@ public void processEvent(AWTEvent e) {
     case ActionEvent.ACTION_PERFORMED:
       if((style & SWT.RADIO) != 0) {
         if(!getSelection()) {
-          setSelection(true);
+          ((CButton)handle).setSelected(true);
         }
-        Component[] components = handle.getParent().getComponents();
-        for(int i=0; i<components.length; i++) {
-          Component component = components[i];
-          if(component instanceof JRadioButton && component != handle) {
-            ((JRadioButton)component).setSelected(false);
+        if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+          Component[] components = handle.getParent().getComponents();
+          for(int i=0; i<components.length; i++) {
+            Component component = components[i];
+            if(component instanceof JRadioButton && component != handle) {
+              JRadioButton radioButton = (JRadioButton)component;
+              if(radioButton.isSelected()) {
+                radioButton.setSelected(false);
+                if(!isAdjustingSelection && hooks(SWT.Selection)) {
+                  ((CControl)radioButton).getSWTHandle().sendEvent (SWT.Selection);
+                }
+              }
+            }
           }
         }
       }
+      if(!isAdjustingSelection && hooks(SWT.Selection)) {
+        sendEvent (SWT.Selection);
+      }
+      break;
+    case ItemEvent.ITEM_STATE_CHANGED:
       if(hooks(SWT.Selection)) {
         sendEvent (SWT.Selection);
       }

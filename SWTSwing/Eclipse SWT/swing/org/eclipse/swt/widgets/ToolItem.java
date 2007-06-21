@@ -13,7 +13,6 @@ package org.eclipse.swt.widgets;
  
 import java.awt.AWTEvent;
 import java.awt.Container;
-import java.awt.event.ItemEvent;
 
 import javax.swing.ImageIcon;
 
@@ -648,10 +647,14 @@ boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
-		sendEvent (SWT.Selection);
+		if(!isAdjustingSelection) {
+		  sendEvent (SWT.Selection);
+		}
 	}
 	return true;
 }
+
+boolean isAdjustingSelection;
 
 /**
  * Sets the selection state of the receiver.
@@ -671,7 +674,9 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
+	isAdjustingSelection = true;
   ((CToolItem)handle).setSelected(selected);
+  isAdjustingSelection = false;
 }
 
 /**
@@ -860,25 +865,8 @@ public void setWidth (int width) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case java.awt.event.ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) return; break;
-  case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
-    if(!handle.isShowing()) {
-      return;
-    }
-    if((style & SWT.RADIO) != 0 && (parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-      // No event sending, so no need to be in an exclusive section
-      java.awt.event.ItemEvent ie = (java.awt.event.ItemEvent)e;
-      if(ie.getStateChange() == ItemEvent.SELECTED) {
-        selectRadio();
-        if(!hooks(SWT.Selection)) return;
-        break;
-      }
-      return;
-    } else if((style & SWT.CHECK) != 0 && hooks(SWT.Selection)) {
-      break;
-    }
-    return;
-  }
+  case java.awt.event.ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && (isAdjustingSelection || !hooks(SWT.Selection))) return; break;
+  case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: if(isAdjustingSelection || !hooks(SWT.Selection)) return; break;
   default: return;
   }
   if(isDisposed()) {
@@ -894,14 +882,20 @@ public void processEvent(AWTEvent e) {
     case java.awt.event.ActionEvent.ACTION_PERFORMED: {
       java.awt.event.ActionEvent ae = (java.awt.event.ActionEvent)e;
       Event event = new Event();
-      if("Arrow".equals(ae.getActionCommand())) {
+      if((style & SWT.RADIO) != 0) {
+        if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+          selectRadio();
+        }
+      } else if("Arrow".equals(ae.getActionCommand())) {
         event.detail = SWT.ARROW;
       }
       sendEvent(SWT.Selection, event);
       break;
     }
     case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
-      sendEvent(SWT.Selection);
+      if(!isAdjustingSelection) {
+        sendEvent(SWT.Selection);
+      }
       break;
     }
     }

@@ -880,16 +880,17 @@ public void processEvent(AWTEvent e) {
   try {
     switch(id) {
     case java.awt.event.ActionEvent.ACTION_PERFORMED: {
-      java.awt.event.ActionEvent ae = (java.awt.event.ActionEvent)e;
       Event event = new Event();
       if((style & SWT.RADIO) != 0) {
         if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
           selectRadio();
         }
-      } else if("Arrow".equals(ae.getActionCommand())) {
+      } else if("Arrow".equals(((java.awt.event.ActionEvent)e).getActionCommand())) {
         event.detail = SWT.ARROW;
       }
-      sendEvent(SWT.Selection, event);
+      if(!isAdjustingSelection) {
+        sendEvent(SWT.Selection, event);
+      }
       break;
     }
     case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {

@@ -1448,7 +1448,7 @@ boolean isTabItem () {
 //	if ((code & OS.DLGC_WANTALLKEYS) != 0) return false;
 //	if ((code & OS.DLGC_WANTARROWS) != 0) return false;
 //	if ((code & OS.DLGC_WANTTAB) != 0) return false;
-	return false;
+	return !isTabGroup();
 }
 
 /**

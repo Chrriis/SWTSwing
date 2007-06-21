@@ -18,10 +18,13 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CToolBar;
 import org.eclipse.swt.internal.swing.Utils;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -133,6 +136,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
   }
   return new Point(cSize.x, preferredSize.height);
 //  return cSize;
+}
+
+Control [] _getChildren () {
+  Component[] children = ((CControl)handle).getClientArea().getComponents();
+  if(children.length == 0) {
+    return new Control[0];
+  }
+  ArrayList controlsList = new ArrayList(children.length);
+  if(itemList != null) {
+    for(int i=0; i<itemList.size(); i++) {
+      Control control = ((ToolItem)itemList.get(i)).getControl();
+      if(control != null) {
+        controlsList.add(control);
+      }
+    }
+  }
+  return (Control[])controlsList.toArray(new Control[0]);
 }
 
 boolean autoAddChildren() {

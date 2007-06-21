@@ -1348,15 +1348,16 @@ public void setVisible (boolean visible) {
 	if(handle.isVisible() == visible) {
 	  return;
 	}
+	boolean isFocusable = handle instanceof Window? ((Window)handle).getFocusableWindowState(): true;
   handle.setVisible(visible);
   if(visible) {
     if(initialFocusedControl != null) {
       initialFocusedControl.setFocus();
       initialFocusedControl = null;
-//    } else {
-//      if(handle.isFocusable()) {
-//        if (!traverseGroup (true)) setFocus ();
-//      }
+    } else {
+      if(isFocusable) {
+        if (!traverseGroup (true)) setFocus ();
+      }
     }
   }
 //	if (drawCount != 0) {

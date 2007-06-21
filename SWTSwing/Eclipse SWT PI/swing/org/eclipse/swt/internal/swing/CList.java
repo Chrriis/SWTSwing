@@ -122,7 +122,9 @@ class CListImplementation extends JScrollPane implements CList {
     });
     list.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        handle.processEvent(e);
+        if(!isAdjustingSelection) {
+          handle.processEvent(e);
+        }
       }
     });
   }
@@ -131,8 +133,20 @@ class CListImplementation extends JScrollPane implements CList {
     return list.isFocusable();
   }
   
+  protected boolean isAdjustingSelection;
+  
   public void requestFocus() {
     list.requestFocus();
+    if(list.getModel().getSize() > 0 && list.getSelectedIndex() < 0) {
+      isAdjustingSelection = true;
+      ListSelectionModel selectionModel = list.getSelectionModel();
+      if(selectionModel.getLeadSelectionIndex() < 0) {
+        selectionModel.setAnchorSelectionIndex(0);
+        selectionModel.setLeadSelectionIndex(0);
+        selectionModel.clearSelection();
+      }
+      isAdjustingSelection = false;
+    }
   }
 
   public void setFont(Font font) {

@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Radio button group navigation with keyboard is implemented.
 - Drag and drop is improved.
 - Table sorting is implemented.
 - Table packing is improved.

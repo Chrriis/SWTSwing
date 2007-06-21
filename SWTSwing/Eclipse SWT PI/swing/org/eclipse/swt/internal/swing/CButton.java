@@ -8,7 +8,6 @@
 package org.eclipse.swt.internal.swing;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -19,10 +18,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.plaf.basic.BasicArrowButton;
 
@@ -386,16 +385,6 @@ class CButtonRadio extends JIconRadioButton implements CButton {
     Utils.installComponentListener(this, handle);
     addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if(!isSelected()) {
-          setSelected(true);
-        }
-        Component[] components = getParent().getComponents();
-        for(int i=0; i<components.length; i++) {
-          Component component = components[i];
-          if(component instanceof JRadioButton && component != CButtonRadio.this) {
-            ((JRadioButton)component).setSelected(false);
-          }
-        }
         handle.processEvent(e);
       }
     });
@@ -403,6 +392,16 @@ class CButtonRadio extends JIconRadioButton implements CButton {
 
   public Container getClientArea() {
     return this;
+  }
+  
+  public void requestFocus() {
+    super.requestFocus();
+    if(!isSelected()) {
+      ButtonModel model = getModel();
+      if(!model.isPressed()) {
+        doClick();
+      }
+    }
   }
 
   public void setAlignment(int alignment) {
@@ -486,5 +485,7 @@ public interface CButton extends CControl {
   public void doClick();
 
   public void setDisplayedMnemonicIndex(int mnemonicIndex);
+
+  public void setMnemonic(char mnemonic);
 
 }

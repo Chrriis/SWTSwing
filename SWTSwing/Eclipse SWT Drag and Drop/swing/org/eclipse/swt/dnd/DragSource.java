@@ -496,6 +496,7 @@ class SWTDragGestureListener implements DragGestureListener {
     if (imageData != null) {
       dragCursor = new Image(display, imageData);
     }
+    Utils.isLocalDragAndDropInProgress = true;
     e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
       int action;
       public void dragEnter(DragSourceDragEvent e) {
@@ -515,6 +516,7 @@ class SWTDragGestureListener implements DragGestureListener {
       public void dragExit(java.awt.dnd.DragSourceEvent e) {
       }
       public void dragDropEnd(DragSourceDropEvent e) {
+        Utils.isLocalDragAndDropInProgress = false;
         DNDEvent event = new DNDEvent();
         event.widget = DragSource.this;
         event.time = Utils.getCurrentTime();

@@ -13,6 +13,7 @@ package org.eclipse.swt.dnd;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.KeyEvent;
@@ -145,6 +146,7 @@ public DropTarget(Control control, int style) {
 	});
 	new java.awt.dnd.DropTarget(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new java.awt.dnd.DropTargetListener() {
 	  public void dragEnter(java.awt.dnd.DropTargetDragEvent e) {
+	    lastAction = DND.DROP_DEFAULT;
       processDropTargetDragEvent(e, DND.DragEnter);
     }
     public void dragOver(DropTargetDragEvent e) {
@@ -158,7 +160,7 @@ public DropTarget(Control control, int style) {
       if(setDragEventData(event, e)) {
         int allowedOperations = event.operations;
         notifyListeners(notificationType, event);
-        if(!hasMetas()) {
+        if(Utils.isLocalDragAndDropInProgress && !hasMetas()) {
           lastAction = event.detail;
         }
         if (event.detail == DND.DROP_DEFAULT) {
@@ -204,7 +206,9 @@ public DropTarget(Control control, int style) {
         e.dropComplete(true);
         return;
       }
-      e.acceptDrop(action);
+      // We accept the drop as a move, to be able to move the data if the user changes the detail of the event to a move.
+      boolean isLocalTransfer = e.isLocalTransfer();
+      e.acceptDrop(isLocalTransfer? action: DnDConstants.ACTION_MOVE);
       Object object = null;
       for (int i = 0; i < transferAgents.length; i++){
         if (transferAgents[i].isSupportedType(event.dataType)) {
@@ -221,9 +225,8 @@ public DropTarget(Control control, int style) {
         ex.printStackTrace();
       }
       notifyListeners(DND.Drop, event);
-      if(event.detail == DND.DROP_NONE) {
-        e.dropComplete(false);
-      } else {
+      // We validated the drop only if it is a move, so that the initiator deletes the data on its side.
+      if(event.detail == DND.DROP_MOVE) {
         e.dropComplete(true);
       }
       effect.showDropTargetEffect(event.feedback, event.x, event.y);
@@ -241,7 +244,7 @@ public DropTarget(Control control, int style) {
 //	}
 }
 
-protected int lastAction = DND.DROP_DEFAULT;
+protected int lastAction;
 
 protected boolean hasMetas() {
   return (Utils.modifiersEx & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) != 0;
@@ -277,7 +280,7 @@ boolean setDragEventData(DNDEvent event, java.awt.dnd.DropTargetDragEvent e) {
   event.dataType = event.dataTypes[0];
   event.item = effect.getItem(location.x, location.y);
   event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
-  if(hasMetas()) {
+  if(!Utils.isLocalDragAndDropInProgress || hasMetas()) {
     event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
   } else {
     event.detail = lastAction;
@@ -315,7 +318,7 @@ boolean setDropEventData(DNDEvent event, java.awt.dnd.DropTargetDropEvent e) {
   event.dataType = event.dataTypes[0];
   event.item = effect.getItem(location.x, location.y);
   event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
-  if(hasMetas()) {
+  if(!Utils.isLocalDragAndDropInProgress || hasMetas()) {
     event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
   } else {
     event.detail = lastAction;

@@ -418,4 +418,6 @@ public class Utils {
     Utils.modifiersEx = modifiersEx;
   }
   
+  public static boolean isLocalDragAndDropInProgress;
+  
 }

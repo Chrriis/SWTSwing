@@ -12,10 +12,13 @@ package org.eclipse.swt.widgets;
 
 
 import java.awt.AWTEvent;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 
 import org.eclipse.swt.SWT;
@@ -384,6 +387,10 @@ boolean isTabItem () {
 	return super.isTabItem ();
 }
 
+boolean isTabGroup() {
+  return (style & SWT.RADIO) == 0;
+}
+
 boolean mnemonicHit (char ch) {
 	if (!setFocus ()) return false;
 	/*
@@ -636,6 +643,9 @@ public void setText (String string) {
   }
   CButton cButton = (CButton)handle;
   cButton.setText(string);
+  if(mnemonicIndex >= 0) {
+    cButton.setMnemonic(string.charAt(mnemonicIndex));
+  }
   cButton.setDisplayedMnemonicIndex(mnemonicIndex);
 }
 
@@ -789,7 +799,21 @@ public void setText (String string) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  case ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && !hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+  case KeyEvent.KEY_PRESSED:
+    if((style & SWT.RADIO) != 0) {
+      switch(((KeyEvent)e).getKeyCode()) {
+      case KeyEvent.VK_UP:
+      case KeyEvent.VK_LEFT:
+      case KeyEvent.VK_DOWN:
+      case KeyEvent.VK_RIGHT:
+        break;
+      default:
+        super.processEvent(e);
+        return;
+      }
+    }
+    break;
   default: { super.processEvent(e); return; }
   }
   if(isDisposed()) {
@@ -805,7 +829,56 @@ public void processEvent(AWTEvent e) {
   try {
     switch(id) {
     case ActionEvent.ACTION_PERFORMED:
-      sendEvent (SWT.Selection);
+      if((style & SWT.RADIO) != 0) {
+        if(!getSelection()) {
+          setSelection(true);
+        }
+        Component[] components = handle.getParent().getComponents();
+        for(int i=0; i<components.length; i++) {
+          Component component = components[i];
+          if(component instanceof JRadioButton && component != handle) {
+            ((JRadioButton)component).setSelected(false);
+          }
+        }
+      }
+      if(hooks(SWT.Selection)) {
+        sendEvent (SWT.Selection);
+      }
+      break;
+    case KeyEvent.KEY_PRESSED:
+      if((style & SWT.RADIO) != 0) {
+        boolean isBackward = false;
+        switch(((KeyEvent)e).getKeyCode()) {
+        case KeyEvent.VK_UP:
+        case KeyEvent.VK_LEFT:
+          isBackward = true;
+        case KeyEvent.VK_DOWN:
+        case KeyEvent.VK_RIGHT:
+          Component[] components = handle.getParent().getComponents();
+          int index = 0;
+          for(index=0; index<components.length; index++) {
+            Component component = components[index];
+            if(component == handle) {
+              break;
+            }
+          }
+          for(int i=0; i<components.length; i++) {
+            Component component;
+            if(isBackward) {
+              component = components[(components.length - i + index - 1) % components.length];
+            } else {
+              component = components[(i + index + 1) % components.length];
+            }
+            if(component instanceof JRadioButton) {
+              if(component != handle) {
+                ((JRadioButton)component).requestFocus();
+              }
+              break;
+            }
+          }
+          break;
+        }
+      }
       break;
     }
     super.processEvent(e);

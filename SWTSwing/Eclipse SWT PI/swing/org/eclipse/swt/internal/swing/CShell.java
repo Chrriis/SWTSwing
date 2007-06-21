@@ -16,8 +16,12 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
@@ -247,6 +251,29 @@ class CShellFrame extends JFrame implements CShell {
     setFocusableWindowState((handle.getStyle() & SWT.TITLE) != 0);
   }
   
+  protected static void adjustLocation(Window window, Window parent) {
+    if(parent == null) {
+      return;
+    }
+    GraphicsConfiguration nGC = parent.getGraphicsConfiguration();
+    if(nGC == null) {
+      return;
+    }
+    Point p = window.getLocation();
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice[] gs = ge.getScreenDevices();
+    for(int j=0; j<gs.length; j++) { 
+      GraphicsDevice gd = gs[j];
+      GraphicsConfiguration gc = gd.getDefaultConfiguration();
+      Rectangle bounds = gc.getBounds();
+      if(bounds.contains(p)) {
+        Rectangle nBounds = nGC.getBounds();
+        window.setLocation(nBounds.x + p.x - bounds.x, nBounds.y + p.y - bounds.y);
+        break;
+      }
+    }
+  }
+  
   public void show() {
     if(!isVisible()) {
       isPaintActive = true;
@@ -258,7 +285,11 @@ class CShellFrame extends JFrame implements CShell {
           }
         });
       }
+      boolean isLocationByPlatform = isLocationByPlatform();
       super.show();
+      if(isLocationByPlatform) {
+        adjustLocation(this, getOwner());
+      }
       setFocusableWindowState((handle.getStyle() & SWT.NO_FOCUS) == 0);
       getModalityHandler().setEnabled(true);
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...
@@ -605,6 +636,29 @@ class CShellDialog extends JDialog implements CShell {
     setFocusableWindowState((handle.getStyle() & SWT.TITLE) != 0);
   }
   
+  protected static void adjustLocation(Window window, Window parent) {
+    if(parent == null) {
+      return;
+    }
+    GraphicsConfiguration nGC = parent.getGraphicsConfiguration();
+    if(nGC == null) {
+      return;
+    }
+    Point p = window.getLocation();
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice[] gs = ge.getScreenDevices();
+    for(int j=0; j<gs.length; j++) { 
+      GraphicsDevice gd = gs[j];
+      GraphicsConfiguration gc = gd.getDefaultConfiguration();
+      Rectangle bounds = gc.getBounds();
+      if(bounds.contains(p)) {
+        Rectangle nBounds = nGC.getBounds();
+        window.setLocation(nBounds.x + p.x - bounds.x, nBounds.y + p.y - bounds.y);
+        break;
+      }
+    }
+  }
+  
   public void show() {
     if(!isVisible()) {
       isPaintActive = true;
@@ -616,7 +670,11 @@ class CShellDialog extends JDialog implements CShell {
           }
         });
       }
+      boolean isLocationByPlatform = isLocationByPlatform();
       super.show();
+      if(isLocationByPlatform) {
+        adjustLocation(this, getOwner());
+      }
       setFocusableWindowState((handle.getStyle() & SWT.NO_FOCUS) == 0);
       getModalityHandler().setEnabled(true);
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...

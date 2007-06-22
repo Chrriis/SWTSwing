@@ -1151,7 +1151,6 @@ public int [] getSelectionIndices () {
 TableColumn sortColumn;
 int sortDirection;
 
-
 /**
  * Returns the column which shows the sort indicator for
  * the receiver. The value may be null if no column shows
@@ -1885,6 +1884,7 @@ void setFocusIndex (int index) {
   if(index < 0 || index >= getItemCount()) return;
   DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
   selectionModel.addSelectionInterval(index, index);
+  selectionModel.setAnchorSelectionIndex(index);
   selectionModel.setLeadSelectionIndex(index);
 }
 

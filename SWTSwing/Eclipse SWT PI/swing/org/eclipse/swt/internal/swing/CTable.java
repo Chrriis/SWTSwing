@@ -73,16 +73,21 @@ class CTableImplementation extends JScrollPane implements CTable {
 
   protected class CheckBoxCellRenderer extends JPanel {
     protected JStateCheckBox checkBox = new JStateCheckBox();
-    public CheckBoxCellRenderer(Component c) {
+    protected Component component;
+    public CheckBoxCellRenderer(Component component) {
       super(new BorderLayout(0, 0));
+      this.component = component;
       setOpaque(false);
       checkBox.setOpaque(false);
       add(checkBox, BorderLayout.WEST);
-      add(c, BorderLayout.CENTER);
+      add(component, BorderLayout.CENTER);
       addNotify();
     }
     public JStateCheckBox getStateCheckBox() {
       return checkBox;
+    }
+    public Component getComponent() {
+      return component;
     }
   }
 
@@ -128,6 +133,9 @@ class CTableImplementation extends JScrollPane implements CTable {
     this.table = new JTable(new CTableModel(table)) {
       {
         CTableImplementation.this.setBackground(super.getBackground());
+      }
+      public boolean isCellSelected(int row, int column) {
+        return super.isCellSelected(row, column) || isRowSelected(row);
       }
       public boolean getScrollableTracksViewportWidth() {
         if(handle.isDisposed()) {
@@ -218,71 +226,66 @@ class CTableImplementation extends JScrollPane implements CTable {
 //            defaultFont = c.getFont();
 //            isInitialized = true;
 //          }
-          if(value == null) {
-            return c;
-          }
-          if(!(value instanceof CTableItem.TableItemObject)) {
-            return c;
-          }
-          CTableItem.TableItemObject tableItemObject = (CTableItem.TableItemObject)value;
-          Color userForeground = userAttributeHandler.foreground;
-          c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
-          Color userBackground = userAttributeHandler.background;
-          c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
-          Font userFont = userAttributeHandler.font;
-          c.setFont(isSelected? selectionFont: userFont != null? userFont: defaultFont);
-          if(c instanceof JComponent) {
-            ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && table.isOpaque());
-          }
-          if(tableItemObject != null) {
-            if(c instanceof JLabel) {
-              TableColumn tableColumn = table.getColumnModel().getColumn(table.convertColumnIndexToView(column));
-              JLabel label = (JLabel)c;
-              if(tableColumn instanceof CTableColumn) {
-                CTableColumn cTableColumn = (CTableColumn)tableColumn;
-                label.setHorizontalAlignment(cTableColumn.getAlignment());
-              }
-              label.setIcon(tableItemObject.getIcon());
+          if(value != null) {
+            CTableItem.TableItemObject tableItemObject = (CTableItem.TableItemObject)value;
+            Color userForeground = userAttributeHandler.foreground;
+            c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
+            Color userBackground = userAttributeHandler.background;
+            c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
+            Font userFont = userAttributeHandler.font;
+            c.setFont(isSelected? selectionFont: userFont != null? userFont: defaultFont);
+            if(c instanceof JComponent) {
+              ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && table.isOpaque());
             }
-            CTableItem cTableItem = tableItemObject.getTableItem();
-            Color foreground = tableItemObject.getForeground();
-            if(foreground != null) {
-              c.setForeground(foreground);
-            } else {
-              foreground = cTableItem.getForeground();
+            if(tableItemObject != null) {
+              if(c instanceof JLabel) {
+                TableColumn tableColumn = table.getColumnModel().getColumn(table.convertColumnIndexToView(column));
+                JLabel label = (JLabel)c;
+                if(tableColumn instanceof CTableColumn) {
+                  CTableColumn cTableColumn = (CTableColumn)tableColumn;
+                  label.setHorizontalAlignment(cTableColumn.getAlignment());
+                }
+                label.setIcon(tableItemObject.getIcon());
+              }
+              CTableItem cTableItem = tableItemObject.getTableItem();
+              Color foreground = tableItemObject.getForeground();
               if(foreground != null) {
                 c.setForeground(foreground);
-              }
-            }
-            if(!isSelected) {
-              Color background = tableItemObject.getBackground();
-              if(background != null) {
-                if(c instanceof JComponent) {
-                  ((JComponent)c).setOpaque(true);
-                }
-                c.setBackground(background);
               } else {
-                background = cTableItem.getBackground();
+                foreground = cTableItem.getForeground();
+                if(foreground != null) {
+                  c.setForeground(foreground);
+                }
+              }
+              if(!isSelected) {
+                Color background = tableItemObject.getBackground();
                 if(background != null) {
                   if(c instanceof JComponent) {
                     ((JComponent)c).setOpaque(true);
                   }
                   c.setBackground(background);
+                } else {
+                  background = cTableItem.getBackground();
+                  if(background != null) {
+                    if(c instanceof JComponent) {
+                      ((JComponent)c).setOpaque(true);
+                    }
+                    c.setBackground(background);
+                  }
+                }
+              }
+              Font font = tableItemObject.getFont();
+              if(font != null) {
+                c.setFont(font);
+              } else {
+                font = cTableItem.getFont();
+                if(font != null) {
+                  c.setFont(font);
                 }
               }
             }
-            Font font = tableItemObject.getFont();
-            if(font != null) {
-              c.setFont(font);
-            } else {
-              font = cTableItem.getFont();
-              if(font != null) {
-                c.setFont(font);
-              }
-            }
-            // TODO: Complete with other properties from tableItemObject
           }
-          if(column != table.convertColumnIndexToView(0) || !isCheckType) {
+          if(!isCheckType || column != table.convertColumnIndexToView(0)) {
             return c;
           }
           CheckBoxCellRenderer checkBoxCellRenderer = new CheckBoxCellRenderer(c);
@@ -362,7 +365,6 @@ class CTableImplementation extends JScrollPane implements CTable {
               }
             }
           }
-          
           protected void paintSortArrow(Graphics g, Rectangle bounds) {
 //            Color color = new Color(11, 80, 48);             
             Color color = getBackground().darker();             
@@ -560,7 +562,7 @@ class CTableImplementation extends JScrollPane implements CTable {
         int columnIndex = columnModel.getColumnIndexAtX(e.getX());
         if(columnIndex != -1) {
           CTableColumn column = (CTableColumn)columnModel.getColumn(columnIndex);
-//          tableHeader.setReorderingAllowed(column.getTableColumn().getMoveable());
+          tableHeader.setReorderingAllowed(column.getTableColumn().getMoveable());
         }
       }
     }
@@ -576,9 +578,10 @@ class CTableImplementation extends JScrollPane implements CTable {
         int toIndex = e.getToIndex();
         int fromIndex = e.getFromIndex();
         if(fromIndex != toIndex) {
-          CTableColumn cTableColumn = (CTableColumn)getColumnModel().getColumn(toIndex);
+          TableColumnModel columnModel = getColumnModel();
+          CTableColumn cTableColumn = (CTableColumn)columnModel.getColumn(toIndex);
           cTableColumn.getTableColumn().processEvent(e);
-          cTableColumn = (CTableColumn)getColumnModel().getColumn(fromIndex);
+          cTableColumn = (CTableColumn)columnModel.getColumn(fromIndex);
           cTableColumn.getTableColumn().processEvent(e);
         }
       }
@@ -713,7 +716,20 @@ class CTableImplementation extends JScrollPane implements CTable {
   }
 
   public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
-    return table.getCellRect(row, column, includeSpacing);
+    Rectangle cellRect = table.getCellRect(row, column, includeSpacing);
+    if(isCheckType && column == 0) {
+      Component c = getCellRenderer(row, column).getTableCellRendererComponent(table, getModel().getValueAt(row, column), false, false, row, column);
+      c.setBounds(cellRect);
+      c.validate();
+      if(c instanceof CheckBoxCellRenderer) {
+        CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
+        c = checkBoxCellRenderer.getComponent();
+        int dx = c.getBounds().x;
+        cellRect.x += dx;
+        cellRect.width -= dx;
+      }
+    }
+    return cellRect;
   }
 
   public TableColumnModel getColumnModel() {
@@ -891,6 +907,31 @@ class CTableImplementation extends JScrollPane implements CTable {
     }
     return order;
   }
+  
+  public Rectangle getImageBounds(int row, int column) {
+    Component c = getCellRenderer(row, column).getTableCellRendererComponent(table, getModel().getValueAt(row, column), false, false, row, column);
+    Rectangle cellRect = table.getCellRect(row, column, false);
+    c.setBounds(cellRect);
+    c.validate();
+    Rectangle bounds = new Rectangle();
+    if(c instanceof CheckBoxCellRenderer) {
+      CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
+      c = checkBoxCellRenderer.getComponent();
+      bounds.x += c.getBounds().x;
+    }
+    if(c instanceof JLabel) {
+      Rectangle iconR = new Rectangle();
+      JLabel label = (JLabel)c;
+      SwingUtilities.layoutCompoundLabel(label.getFontMetrics(label.getFont()), label.getText(), label.getIcon(), label.getVerticalAlignment(), label.getHorizontalAlignment(), label.getVerticalTextPosition(), label.getHorizontalTextPosition(), new Rectangle(), iconR, new Rectangle(), label.getIconTextGap());
+      bounds.x += iconR.x;
+      bounds.y += iconR.y;
+      bounds.width = iconR.width;
+      bounds.height = iconR.height;
+    }
+    bounds.x += cellRect.x;
+    bounds.y += cellRect.y;
+    return bounds;
+  }
 
 }
 
@@ -975,5 +1016,7 @@ public interface CTable extends CComposite {
   public void setColumnOrder(int[] order);
   
   public int[] getColumnOrder();
+  
+  public Rectangle getImageBounds(int row, int column);
   
 }

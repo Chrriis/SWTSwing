@@ -538,14 +538,14 @@ void removeControl (Control control) {
 //	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
 //}
 
-public boolean setParent (Composite parent) {
-	checkWidget ();
-	if (!super.setParent (parent)) return false;
-	// TODO: how to add, assuming the new parent is a toolbar?
-  Utils.notImplemented(); return false;
-//	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
-//	return true;
-}
+//public boolean setParent (Composite parent) {
+//	checkWidget ();
+//	if (!super.setParent (parent)) return false;
+//	// TODO: how to add, if the new parent is a coolbar?
+//  Utils.notImplemented(); return false;
+////	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
+////	return true;
+//}
 
 boolean setTabItemFocus () {
 	int index = 0;

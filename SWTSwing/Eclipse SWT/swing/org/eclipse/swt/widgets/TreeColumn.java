@@ -11,8 +11,13 @@
 package org.eclipse.swt.widgets;
 
  
+import java.awt.AWTEvent;
+import java.beans.PropertyChangeEvent;
+import java.util.EventObject;
+
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
+import javax.swing.event.TableColumnModelEvent;
 import javax.swing.table.TableColumn;
 
 import org.eclipse.swt.SWT;
@@ -23,6 +28,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeColumn;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -221,6 +227,8 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+boolean moveable;
+
 /**
  * Gets the moveable attribute. A column that is
  * not moveable cannot be reordered by the user 
@@ -243,8 +251,7 @@ public int getAlignment () {
  */
 public boolean getMoveable () {
   checkWidget ();
-  Utils.notImplemented(); return false;
-//  return moveable;
+  return moveable;
 }
 
 String getNameText () {
@@ -298,8 +305,7 @@ public boolean getResizable () {
  */
 public String getToolTipText () {
   checkWidget();
-  Utils.notImplemented(); return null;
-//  return toolTipText;
+  return handle.getToolTipText();
 }
 
 /**
@@ -508,8 +514,7 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
   checkWidget ();
-  Utils.notImplemented();
-//  this.moveable = moveable;
+  this.moveable = moveable;
 }
 
 /**
@@ -553,7 +558,7 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
   checkWidget();
-  Utils.notImplemented();
+  handle.setToolTipText(string);
 //  toolTipText = string;
 //  int hwndHeaderToolTip = parent.headerToolTipHandle;
 //  if (hwndHeaderToolTip == 0) {
@@ -576,6 +581,69 @@ public void setWidth (int width) {
 	checkWidget ();
 //	((TableColumn)handle).setWidth(width);
 	((TableColumn)handle).setPreferredWidth(width);
+}
+
+public void processEvent(AWTEvent e) {
+  int id = e.getID();
+  switch(id) {
+  case java.awt.event.MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.Selection)) return; break;
+  }
+  if(isDisposed()) {
+    return;
+  }
+  UIThreadUtils.startExclusiveSection(getDisplay());
+  if(isDisposed()) {
+    UIThreadUtils.stopExclusiveSection();
+    return;
+  }
+  try {
+    switch(id) {
+    case java.awt.event.MouseEvent.MOUSE_CLICKED: {
+      sendEvent(SWT.Selection);
+      break;
+    }
+    }
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
+  }
+}
+
+public void processEvent(EventObject e) {
+  if(e instanceof PropertyChangeEvent) {
+    if(!hooks(SWT.Resize) && !hooks(SWT.Move) || !"width".equals(((PropertyChangeEvent)e).getPropertyName())) { return; }
+  } else if(e instanceof TableColumnModelEvent) {
+    if(!hooks(SWT.Move)) { return; }
+  } else {
+    return;
+  }
+  if(isDisposed()) {
+    return;
+  }
+  UIThreadUtils.startExclusiveSection(getDisplay());
+  if(isDisposed()) {
+    UIThreadUtils.stopExclusiveSection();
+    return;
+  }
+  try {
+    if(e instanceof PropertyChangeEvent) {
+      String propertyName = ((PropertyChangeEvent)e).getPropertyName();
+      if("width".equals(propertyName)) {
+        sendEvent(SWT.Resize);
+        int columnCount = parent.getColumnCount();
+        for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
+          parent.getColumn(i).sendEvent(SWT.Move);
+        }
+      }
+    } else if(e instanceof TableColumnModelEvent) {
+      sendEvent(SWT.Move);
+    }
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
+  }
 }
 
 }

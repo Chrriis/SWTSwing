@@ -1109,7 +1109,7 @@ public void setVisibleItemCount (int count) {
 
 boolean traverseEscape () {
 	if ((style & SWT.DROP_DOWN) != 0) {
-    Utils.notImplemented();
+	  return ((CCombo)handle).isPopupVisible();
 //		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
 //			OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
 //			return true;

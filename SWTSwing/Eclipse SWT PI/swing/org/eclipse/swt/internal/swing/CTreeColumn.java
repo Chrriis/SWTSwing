@@ -52,6 +52,20 @@ class CTreeColumnImplementation extends TableColumn implements CTreeColumn {
   public int getAlignment() {
     return alignment;
   }
+  
+  protected String toolTipText;
+
+  public void setToolTipText(String toolTipText) {
+    this.toolTipText = toolTipText;
+  }
+  
+  public String getToolTipText() {
+    return toolTipText;
+  }
+  
+  public TreeColumn getTreeColumn() {
+    return handle;
+  }
 
 }
 
@@ -73,5 +87,11 @@ public interface CTreeColumn {
   public void setAlignment(int alignment);
 
   public int getAlignment();
+  
+  public void setToolTipText(String toolTipText);
+  
+  public String getToolTipText();
+  
+  public TreeColumn getTreeColumn();
 
 }

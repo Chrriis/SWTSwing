@@ -324,6 +324,10 @@ class CListImplementation extends JScrollPane implements CList {
     list.setEnabled(enabled);
   }
   
+  public int getFocusIndex() {
+    return list.getSelectionModel().getLeadSelectionIndex();
+  }
+  
 }
 
 public interface CList extends CScrollable {
@@ -380,5 +384,7 @@ public interface CList extends CScrollable {
   public void setFirstVisibleIndex(int index);
 
   public Rectangle getCellBounds(int index);
+  
+  public int getFocusIndex();
 
 }

@@ -343,6 +343,10 @@ class CComboSimple extends JPanel implements CCombo {
   public Dimension getEditorSize() {
     return textField.getSize();
   }
+  
+  public boolean isPopupVisible() {
+    return false;
+  }
 
 }
 
@@ -613,5 +617,7 @@ public interface CCombo extends CComposite {
   public int getEditorTextLimit();
 
   public Dimension getEditorSize();
+  
+  public boolean isPopupVisible();
 
 }

@@ -242,7 +242,7 @@ public Table getParent () {
 	return parent;
 }
 
-protected boolean moveable;
+boolean moveable;
 
 /**
  * Gets the moveable attribute. A column that is
@@ -623,11 +623,7 @@ public void setWidth (int width) {
 public void processEvent(AWTEvent e) {
   int id = e.getID();
   switch(id) {
-  case java.awt.event.MouseEvent.MOUSE_CLICKED: {
-    java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-    
-    break;
-  }
+  case java.awt.event.MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.Selection)) return; break;
   }
   if(isDisposed()) {
     return;

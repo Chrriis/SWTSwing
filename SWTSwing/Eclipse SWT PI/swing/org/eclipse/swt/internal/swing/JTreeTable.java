@@ -184,7 +184,6 @@ public class JTreeTable extends JPanel implements Scrollable {
   protected TableCellRenderer tableCellRenderer = new TableCellRenderer() {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
       final TreePath path = tree.getPathForRow(row);
-      column = table.convertColumnIndexToModel(column);
       if(column == 0) {
         class FirstColumnComponent extends JComponent implements CellPainter {
           public void paintComponent(Graphics g) {
@@ -215,7 +214,7 @@ public class JTreeTable extends JPanel implements Scrollable {
       }
       TreeNode node = (TreeNode)path.getLastPathComponent();
       if(node instanceof TreeTableNode) {
-        value = ((TreeTableNode)node).getUserObject(column);
+        value = ((TreeTableNode)node).getUserObject(table.convertColumnIndexToModel(column));
       }
       hasFocus = false;
       if(!isFullLineSelection()) {
@@ -230,12 +229,17 @@ public class JTreeTable extends JPanel implements Scrollable {
     protected CTable() {
       enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
       setSelectionModel(tableSelectionModel);
+      JTreeTable.this.setBackground(super.getBackground());
+    }
+    
+    public Color getBackground() {
+      return JTreeTable.this != null? JTreeTable.this.getBackground(): super.getBackground();
     }
     
     public boolean isOpaque() {
       return JTreeTable.this.isOpaque();
     }
-
+    
     public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
       Rectangle cellBounds = super.getCellRect(row, column, includeSpacing);
       Rectangle rowBounds = tree.getRowBounds(row);
@@ -297,7 +301,7 @@ public class JTreeTable extends JPanel implements Scrollable {
         MouseEvent me = (MouseEvent)e;
         Point point = me.getPoint();
         int row = rowAtPoint(point);
-        Rectangle treeRect = getCellRect(row, convertColumnIndexToView(0), false);
+        Rectangle treeRect = getCellRect(row, 0, false);
         if(!treeRect.contains(point)) {
           if(isFullLineSelection()) {
             super.processEvent(e);
@@ -349,14 +353,8 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public JTreeTable() {
     super(new BorderLayout(0, 0));
-    table = new CTable() {
-      {
-        JTreeTable.this.setBackground(super.getBackground());
-      }
-      public Color getBackground() {
-        return JTreeTable.this != null? JTreeTable.this.getBackground(): super.getBackground();
-      }
-    };
+    table = new CTable();
+    table.setTableHeader(createDefaultTableHeader());
 //    setBackground(table.getBackground());
     add(table, BorderLayout.CENTER);
     tree = new JTree() {
@@ -371,7 +369,11 @@ public class JTreeTable extends JPanel implements Scrollable {
     tree.setOpaque(false);
     tree.setCellRenderer(new TreeCellRenderer() {
       public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-        if(value instanceof DefaultMutableTreeNode) {
+        if(value instanceof TreeTableNode) {
+          if(getColumnCount() > 0) {
+            value = ((TreeTableNode)value).getUserObject(convertColumnIndexToModel(0));
+          }
+        } else if(value instanceof DefaultMutableTreeNode) {
           value = ((DefaultMutableTreeNode)value).getUserObject();
         }
         return renderer.getTreeTableCellRendererComponent(JTreeTable.this, value, selected, expanded, leaf, row, 0, !isFullLineSelection() && hasFocus);
@@ -417,6 +419,10 @@ public class JTreeTable extends JPanel implements Scrollable {
     });
     table.setModel(tableModel);
     setGridVisible(true);
+  }
+  
+  protected JTableHeader createDefaultTableHeader() {
+    return new JTableHeader(getColumnModel());
   }
 
   protected boolean isGridVisible;

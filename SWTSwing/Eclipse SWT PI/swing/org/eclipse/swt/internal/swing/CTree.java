@@ -19,8 +19,11 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.PaintEvent;
 import java.util.EventObject;
 
@@ -34,6 +37,10 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -68,16 +75,21 @@ class CTreeImplementation extends JScrollPane implements CTree {
 
   protected class CheckBoxCellRenderer extends JPanel {
     protected JStateCheckBox checkBox = new JStateCheckBox();
-    public CheckBoxCellRenderer(Component c) {
+    protected Component component;
+    public CheckBoxCellRenderer(Component component) {
       super(new BorderLayout(0, 0));
+      this.component = component;
       setOpaque(false);
       checkBox.setOpaque(false);
       add(checkBox, BorderLayout.WEST);
-      add(c, BorderLayout.CENTER);
+      add(component, BorderLayout.CENTER);
       addNotify();
     }
     public JStateCheckBox getStateCheckBox() {
       return checkBox;
+    }
+    public Component getComponent() {
+      return component;
     }
   }
 
@@ -109,6 +121,95 @@ class CTreeImplementation extends JScrollPane implements CTree {
       }
     };
     treeTable = new JTreeTable(new DefaultTreeModel(rootNode)) {
+      protected JTableHeader createDefaultTableHeader() {
+        return new JTableHeader(getColumnModel()) {
+          public String getToolTipText(MouseEvent e) {
+            int index = columnModel.getColumnIndexAtX(e.getX());
+            if(index < 0) {
+              return null;
+            }
+            return ((CTreeColumn)columnModel.getColumn(index)).getToolTipText();
+          }
+          public void paint(Graphics g) {
+            super.paint(g);
+            if(handle.getSortDirection() != SWT.NONE) {
+              org.eclipse.swt.widgets.TreeColumn sortColumn = handle.getSortColumn();
+              if(sortColumn != null) {
+                Rectangle bounds = getCellRect(-1, CTreeImplementation.this.treeTable.convertColumnIndexToView(handle.indexOf(sortColumn)), false);
+                TableColumn draggedColumn = getDraggedColumn();
+                Shape clip = g.getClip();
+                if(draggedColumn != null) {
+                  int draggedDistance = getDraggedDistance();
+                  if(((CTreeColumn)draggedColumn).getTreeColumn() == sortColumn) {
+                    bounds.x += draggedDistance;
+                  } else {
+                    Rectangle dragBounds = getCellRect(-1, CTreeImplementation.this.treeTable.convertColumnIndexToView(handle.indexOf(((CTreeColumn)draggedColumn).getTreeColumn())), true);
+                    dragBounds.x += draggedDistance;
+                    bounds.height = getHeight();
+                    if(bounds.x < dragBounds.x) {
+                      g.clipRect(0, 0, dragBounds.x, bounds.height);
+                    } else {
+                      int x = dragBounds.x + dragBounds.width;
+                      g.clipRect(x, 0, getWidth() - x, bounds.height);
+                    }
+                  }
+                }
+                paintSortArrow(g, bounds);
+                g.setClip(clip);
+              }
+            }
+          }
+          protected void paintSortArrow(Graphics g, Rectangle bounds) {
+//            Color color = new Color(11, 80, 48);             
+            Color color = getBackground().darker();             
+            int priority = 0;
+            int height = Math.round(getHeight() / 1.5f);
+            int x = bounds.x + bounds.width;
+            int y = 1;
+            boolean descending = handle.getSortDirection() == SWT.DOWN;
+            // In a compound sort, make each succesive triangle 20% 
+            // smaller than the previous one. 
+            int dx = (int)(height/2*Math.pow(0.8, priority));
+            if(bounds.width < dx * 3) {
+              return;
+            }
+            x -= dx * 2;
+            if(dx % 2 != 0) {
+              dx++;
+            }
+            int dy = descending ? dx / 2 : -dx / 2;
+            // Align icon (roughly) with font baseline. 
+            y = y + 4*height/6 + (descending ? -dy : 0);
+            int shift = descending ? 1 : -1;
+            g.translate(x, y);
+
+            g.setColor(color);
+            g.fillPolygon(new int[] {0, dx / 2, dx, 0}, new int[] {0, dy, 0, 0}, 4);
+
+            // Right diagonal. 
+            g.setColor(color.darker());
+            g.drawLine(dx / 2, dy, 0, 0);
+            g.drawLine(dx / 2, dy + shift, 0, shift);
+            
+            // Left diagonal. 
+            g.setColor(color.brighter());
+            g.drawLine(dx / 2, dy, dx, 0);
+            g.drawLine(dx / 2, dy + shift, dx, shift);
+            
+            // Horizontal line. 
+            if (descending) {
+                g.setColor(color.darker().darker());
+            } else {
+//                g.setColor(color.brighter().brighter());
+                g.setColor(color.brighter());
+            }
+            g.drawLine(dx, 0, 0, 0);
+
+            g.setColor(color);
+            g.translate(-x, -y);
+          }
+        };
+      }
       public boolean getScrollableTracksViewportWidth() {
         return handle.isDisposed()? false: handle.getColumnCount() == 0 && getPreferredSize().width < getParent().getWidth();
       }
@@ -272,68 +373,66 @@ class CTreeImplementation extends JScrollPane implements CTree {
           isInitialized = true;
         }
         Component c = super.getTreeTableCellRendererComponent(treeTable, value, isSelected, expanded, leaf, row, column, hasFocus);
-        if(value == null) {
-          return c;
-        }
-        Color userForeground = userAttributeHandler.foreground;
-        c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
-        Color userBackground = userAttributeHandler.background;
-        c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
-        Font userFont = userAttributeHandler.font;
-        c.setFont(isSelected? selectionFont: userFont != null? userFont: defaultFont);
-        if(c instanceof JComponent) {
-          ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && treeTable.isOpaque());
-        }
-        CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)value;
-        if(treeItemObject != null) {
-          if(c instanceof JLabel) {
-            TableColumn tableColumn = treeTable.getColumnModel().getColumn(treeTable.convertColumnIndexToView(column));
-            JLabel label = (JLabel)c;
-            if(tableColumn instanceof CTreeColumn) {
-              CTreeColumn treeColumn = (CTreeColumn)tableColumn;
-              label.setHorizontalAlignment(treeColumn.getAlignment());
-            }
-            label.setIcon(treeItemObject.getIcon());
+        if(value != null) {
+          Color userForeground = userAttributeHandler.foreground;
+          c.setForeground(isSelected? selectionForeground: userForeground != null? userForeground: defaultForeground);
+          Color userBackground = userAttributeHandler.background;
+          c.setBackground(isSelected? selectionBackground: userBackground != null? userBackground: defaultBackground);
+          Font userFont = userAttributeHandler.font;
+          c.setFont(isSelected? selectionFont: userFont != null? userFont: defaultFont);
+          if(c instanceof JComponent) {
+            ((JComponent)c).setOpaque(isSelected? isSelectionOpaque: isDefaultOpaque && treeTable.isOpaque());
           }
-          CTreeItem cTreeItem = treeItemObject.getTreeItem();
-          Color foreground = treeItemObject.getForeground();
-          if(foreground != null) {
-            c.setForeground(foreground);
-          } else {
-            foreground = cTreeItem.getForeground();
+          CTreeItem.TreeItemObject treeItemObject = (CTreeItem.TreeItemObject)value;
+          if(treeItemObject != null) {
+            if(c instanceof JLabel) {
+              TableColumn tableColumn = treeTable.getColumnModel().getColumn(column);
+              JLabel label = (JLabel)c;
+              if(tableColumn instanceof CTreeColumn) {
+                CTreeColumn treeColumn = (CTreeColumn)tableColumn;
+                label.setHorizontalAlignment(treeColumn.getAlignment());
+              }
+              label.setIcon(treeItemObject.getIcon());
+            }
+            CTreeItem cTreeItem = treeItemObject.getTreeItem();
+            Color foreground = treeItemObject.getForeground();
             if(foreground != null) {
               c.setForeground(foreground);
-            }
-          }
-          if(!isSelected) {
-            Color background = treeItemObject.getBackground();
-            if(background != null) {
-              if(c instanceof JComponent) {
-                ((JComponent)c).setOpaque(true);
-              }
-              c.setBackground(background);
             } else {
-              background = cTreeItem.getBackground();
+              foreground = cTreeItem.getForeground();
+              if(foreground != null) {
+                c.setForeground(foreground);
+              }
+            }
+            if(!isSelected) {
+              Color background = treeItemObject.getBackground();
               if(background != null) {
                 if(c instanceof JComponent) {
                   ((JComponent)c).setOpaque(true);
                 }
                 c.setBackground(background);
+              } else {
+                background = cTreeItem.getBackground();
+                if(background != null) {
+                  if(c instanceof JComponent) {
+                    ((JComponent)c).setOpaque(true);
+                  }
+                  c.setBackground(background);
+                }
+              }
+            }
+            Font font = treeItemObject.getFont();
+            if(font != null) {
+              c.setFont(font);
+            } else {
+              font = cTreeItem.getFont();
+              if(font != null) {
+                c.setFont(font);
               }
             }
           }
-          Font font = treeItemObject.getFont();
-          if(font != null) {
-            c.setFont(font);
-          } else {
-            font = cTreeItem.getFont();
-            if(font != null) {
-              c.setFont(font);
-            }
-          }
-          // TODO: Complete with other properties from treeItemObject
         }
-        if(column != 0 || !isCheckType) {
+        if(!isCheckType || column != 0) {
           return c;
         }
         CheckBoxCellRenderer checkBoxCellRenderer = new CheckBoxCellRenderer(c);
@@ -396,7 +495,60 @@ class CTreeImplementation extends JScrollPane implements CTree {
         };
       }
     });
-    JTableHeader tableHeader = treeTable.getTableHeader();
+    final JTableHeader tableHeader = treeTable.getTableHeader();
+    class HeaderMouseListener extends MouseAdapter implements MouseMotionListener {
+      public void mouseClicked(MouseEvent e) {
+        TableColumnModel columnModel = tableHeader.getColumnModel();
+        int columnIndex = columnModel.getColumnIndexAtX(e.getX());
+        if(columnIndex != -1) {
+          CTreeColumn column = (CTreeColumn)columnModel.getColumn(columnIndex);
+          column.getTreeColumn().processEvent(e);
+        }
+      }
+      public void mouseEntered(MouseEvent e) {
+        setHeaderOrderingState(e);
+      }
+      public void mouseMoved(MouseEvent e) {
+        setHeaderOrderingState(e);
+      }
+      public void mouseDragged(MouseEvent e) {
+      }
+      protected void setHeaderOrderingState(MouseEvent e) {
+        TableColumnModel columnModel = tableHeader.getColumnModel();
+        int columnIndex = columnModel.getColumnIndexAtX(e.getX());
+        if(columnIndex != -1) {
+          CTreeColumn column = (CTreeColumn)columnModel.getColumn(columnIndex);
+          tableHeader.setReorderingAllowed(column.getTreeColumn().getMoveable());
+        }
+      }
+    }
+    tableHeader.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+      public void columnAdded(TableColumnModelEvent e) {
+      }
+      public void columnMarginChanged(ChangeEvent e) {
+      }
+      public void columnMoved(TableColumnModelEvent e) {
+        if(isAdjustingColumnOrder) {
+          return;
+        }
+        int toIndex = e.getToIndex();
+        int fromIndex = e.getFromIndex();
+        if(fromIndex != toIndex) {
+          TableColumnModel columnModel = getColumnModel();
+          CTreeColumn cTreeColumn = (CTreeColumn)columnModel.getColumn(toIndex);
+          cTreeColumn.getTreeColumn().processEvent(e);
+          cTreeColumn = (CTreeColumn)columnModel.getColumn(fromIndex);
+          cTreeColumn.getTreeColumn().processEvent(e);
+        }
+      }
+      public void columnRemoved(TableColumnModelEvent e) {
+      }
+      public void columnSelectionChanged(ListSelectionEvent e) {
+      }
+    });
+    HeaderMouseListener headerMouseListener = new HeaderMouseListener();
+    tableHeader.addMouseListener(headerMouseListener);
+    tableHeader.addMouseMotionListener(headerMouseListener);
     final TableCellRenderer headerRenderer = tableHeader.getDefaultRenderer();
     tableHeader.setDefaultRenderer(new TableCellRenderer() {
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -523,7 +675,27 @@ class CTreeImplementation extends JScrollPane implements CTree {
   }
 
   public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
-    return treeTable.getCellRect(row, column, includeSpacing);
+    Rectangle cellRect = treeTable.getCellRect(row, column, includeSpacing);
+    if(column == 0) {
+      int dx = treeTable.getInnerTree().getRowBounds(row).x;
+      cellRect.x += dx;
+      cellRect.width -= dx;
+    }
+    if(isCheckType && column == 0) {
+      TreePath treePath = treeTable.getPathForRow(row);
+      DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode)treePath.getLastPathComponent();
+      Object value = node.getUserObject();
+      Component c = treeTable.getCellRenderer().getTreeTableCellRendererComponent(treeTable, value, treeTable.isRowSelected(row), treeTable.isExpanded(treePath), node.isLeaf(), row, column, false);
+      c.setBounds(cellRect);
+      if(c instanceof CheckBoxCellRenderer) {
+        CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
+        c = checkBoxCellRenderer.getComponent();
+        int dx = c.getBounds().x;
+        cellRect.x += dx;
+        cellRect.width -= dx;
+      }
+    }
+    return cellRect;
   }
 
   public int getRowForPath(TreePath path) {
@@ -636,6 +808,63 @@ class CTreeImplementation extends JScrollPane implements CTree {
   public void requestFocus() {
     treeTable.requestFocus();
   }
+  
+  protected boolean isAdjustingColumnOrder;
+  
+  public void setColumnOrder(int[] order) {
+    isAdjustingColumnOrder = true;
+    JTable table = treeTable.getInnerTable();
+    for(int i=0; i<order.length; i++) {
+      table.moveColumn(table.convertColumnIndexToView(order[i]), i);
+    }
+    isAdjustingColumnOrder = false;
+    for(int i=0; i<order.length; i++) {
+      CTreeColumn cTreeColumn = (CTreeColumn)getColumnModel().getColumn(i);
+      cTreeColumn.getTreeColumn().processEvent(new TableColumnModelEvent(table.getColumnModel(), i, order[i]));
+    }
+  }
+  
+  public int[] getColumnOrder() {
+    JTable table = treeTable.getInnerTable();
+    int[] order = new int[table.getColumnCount()];
+    for(int i=0; i<order.length; i++) {
+      order[i] = table.convertColumnIndexToModel(i);
+    }
+    return order;
+  }
+  
+  public Rectangle getImageBounds(int row, int column) {
+    TreePath treePath = treeTable.getPathForRow(row);
+    DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode)treePath.getLastPathComponent();
+    Object value = node.getUserObject();
+    Component c = treeTable.getCellRenderer().getTreeTableCellRendererComponent(treeTable, value, treeTable.isRowSelected(row), treeTable.isExpanded(treePath), node.isLeaf(), row, column, false);
+    Rectangle cellRect = treeTable.getCellRect(row, column, false);
+    if(column == 0) {
+      int dx = treeTable.getInnerTree().getRowBounds(row).x;
+      cellRect.x += dx;
+      cellRect.width -= dx;
+    }
+    c.setBounds(cellRect);
+    Rectangle bounds = new Rectangle();
+    if(c instanceof CheckBoxCellRenderer) {
+      CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
+      c = checkBoxCellRenderer.getComponent();
+      bounds.x += c.getBounds().x;
+    }
+    if(c instanceof JLabel) {
+      Rectangle iconR = new Rectangle();
+      JLabel label = (JLabel)c;
+      SwingUtilities.layoutCompoundLabel(label.getFontMetrics(label.getFont()), label.getText(), label.getIcon(), label.getVerticalAlignment(), label.getHorizontalAlignment(), label.getVerticalTextPosition(), label.getHorizontalTextPosition(), new Rectangle(), iconR, new Rectangle(), label.getIconTextGap());
+      bounds.x += iconR.x;
+      bounds.y += iconR.y;
+      bounds.width = iconR.width;
+      bounds.height = iconR.height;
+    }
+    if(column == 0) {
+      bounds.x += treeTable.getInnerTree().getRowBounds(row).x;
+    }
+    return bounds;
+  }
 
 }
 
@@ -723,5 +952,11 @@ public interface CTree extends CComposite {
   public TreePath getPathForRow(int index);
 
   public void setHeaderVisible(boolean isHeaderVisible);
+  
+  public void setColumnOrder(int[] order);
+  
+  public int[] getColumnOrder();
+  
+  public Rectangle getImageBounds(int row, int column);
 
 }

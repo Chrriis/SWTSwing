@@ -555,9 +555,9 @@ void createWidget () {
       ((JComponent)clientArea).revalidate();
       clientArea.repaint();
     }
-    if(parent instanceof Shell && parent.getChildren().length == 0) {
-      handle.requestFocus();
-    }
+//    if(parent instanceof Shell && parent.getChildren().length == 0) {
+//      handle.requestFocus();
+//    }
   }
     // TODO: should have a fixInitSize like in old implementation <- Note it seems to be fixed now, but have to check
 //    if(handle.getSize().equals(new java.awt.Dimension(0, 0))) {

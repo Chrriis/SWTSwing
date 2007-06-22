@@ -24,7 +24,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.internal.swing.CList;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
-import org.eclipse.swt.internal.swing.Utils;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -263,7 +262,7 @@ public void deselectAll () {
  */
 public int getFocusIndex () {
 	checkWidget ();
-  Utils.notImplemented(); return -1;
+  return ((CList)handle).getFocusIndex();
 //	int result = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 //	if (result == 0) {
 //		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);

@@ -35,7 +35,6 @@ import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.swing.DefaultMutableTreeTableNode;
@@ -281,7 +280,7 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
  */
 public void clear (int index, boolean all) {
   checkWidget ();
-  Utils.notImplemented();
+  getItem(index).clearAll(all);
 //  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 //  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
 //  hItem = findItem (hItem, index);
@@ -316,7 +315,9 @@ public void clear (int index, boolean all) {
  */
 public void clearAll (boolean all) {
   checkWidget ();
-  Utils.notImplemented();
+  for(int i=getItemCount()-1; i>=0; i--) {
+    getItem(i).clearAll(all);
+  }
 //  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 //  if (hItem == 0) return;
 //  TVITEM tvItem = new TVITEM ();
@@ -534,6 +535,10 @@ void destroyItem (TreeColumn column) {
     javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
     columnModel.addColumn(tableColumn);
   }
+  if(sortColumn == column) {
+    sortColumn = null;
+    sortDirection = SWT.NONE;
+  }
   handle.repaint();
 }
 
@@ -728,7 +733,7 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
   checkWidget ();
-  Utils.notImplemented(); int[] order = new int[getColumnCount()]; for(int i=0; i<order.length; i++) {order[i] = i;} return order;
+  return ((CTree)handle).getColumnOrder();
 //  if (hwndHeader == 0) return new int [0];
 //  int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 //  int [] order = new int [count];
@@ -1009,6 +1014,9 @@ public int getSelectionCount () {
   return ((CTree)handle).getSelectionModel().getSelectionCount();
 }
 
+TreeColumn sortColumn;
+int sortDirection;
+
 /**
  * Returns the column which shows the sort indicator for
  * the receiver. The value may be null if no column shows
@@ -1027,8 +1035,7 @@ public int getSelectionCount () {
  */
 public TreeColumn getSortColumn () {
   checkWidget ();
-  Utils.notImplemented(); return null;
-//  return sortColumn;
+  return sortColumn;
 }
 
 /**
@@ -1049,8 +1056,7 @@ public TreeColumn getSortColumn () {
  */
 public int getSortDirection () {
   checkWidget ();
-  Utils.notImplemented(); return SWT.NONE;
-//  return sortDirection;
+  return sortDirection;
 }
 
 /**
@@ -1648,8 +1654,10 @@ public void selectAll () {
 public void setColumnOrder (int [] order) {
   checkWidget ();
   if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+  int columnCount = getColumnCount();
+  if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+  ((CTree)handle).setColumnOrder(order);
 //  int count = 0;
-  Utils.notImplemented();
 //  if (hwndHeader != 0) {
 //    count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 //  }
@@ -1852,14 +1860,8 @@ public void setSelection (TreeItem [] items) {
 public void setSortColumn (TreeColumn column) {
   checkWidget ();
   if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
-//  if (sortColumn != null && !sortColumn.isDisposed ()) {
-//    sortColumn.setSortDirection (SWT.NONE);
-//  }
-//  sortColumn = column;
-//  if (sortColumn != null && sortDirection != SWT.NONE) {
-//    sortColumn.setSortDirection (sortDirection);
-//  }
+  sortColumn = column;
+  handle.repaint();
 }
 
 /**
@@ -1878,11 +1880,8 @@ public void setSortColumn (TreeColumn column) {
 public void setSortDirection (int direction) {
   checkWidget ();
   if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
-  Utils.notImplemented();
-//  sortDirection = direction;
-//  if (sortColumn != null && !sortColumn.isDisposed ()) {
-//    sortColumn.setSortDirection (direction);
-//  }
+  sortDirection = direction;
+  handle.repaint();
 }
 
 /**
@@ -3632,7 +3631,7 @@ public void processEvent(EventObject e) {
         if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
         if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
         event.gc = new GC(this);
-        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        event.gc.handle.clip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
 //        event.gc.isSwingPainting = true;
         sendEvent(SWT.EraseItem, event);
         if(event.doit) {
@@ -3664,7 +3663,7 @@ public void processEvent(EventObject e) {
         if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
         if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
         event.gc = new GC(this);
-        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        event.gc.handle.clip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
         sendEvent(SWT.PaintItem, event);
         break;
       }
@@ -3680,7 +3679,7 @@ public void processEvent(EventObject e) {
         event.item = treeItem;
         event.index = cellPaintEvent.column;
         event.gc = new GC(this);
-//        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+//        event.gc.handle.clip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
         sendEvent(SWT.MeasureItem, event);
 //        cellPaintEvent.rowHeight -= event.height - cellBounds.height;
         cellPaintEvent.rowHeight = event.height;

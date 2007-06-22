@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTable;
 import org.eclipse.swt.internal.swing.CTableItem;
 import org.eclipse.swt.internal.swing.Utils;
+import org.eclipse.swt.internal.swing.CTableItem.TableItemObject;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -151,6 +152,22 @@ CTableItem createHandle () {
 void clear () {
 	text = "";
 	image = null;
+	handle.setBackground(null);
+	handle.setForeground(null);
+	handle.setFont(null);
+	handle.setChecked(false);
+	handle.setGrayed(false);
+	int count = parent.getColumnCount();
+	for(int i=0; i<count; i++) {
+	  TableItemObject tableItemObject = handle.getTableItemObject(count);
+	  tableItemObject.setText(null);
+	  tableItemObject.setBackground(null);
+	  tableItemObject.setForeground(null);
+	  tableItemObject.setFont(null);
+	  tableItemObject.setIcon(null);
+	}
+	int itemIndex = parent.indexOf (this);
+	((CTable)parent.handle).getModel().fireTableRowsUpdated(itemIndex, itemIndex);
 //	strings = null;
 //	images = null;
 //	imageIndent = 0;
@@ -229,7 +246,7 @@ public Rectangle getBounds () {
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   int itemIndex = parent.indexOf (this);
   if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-  Utils.notImplemented(); return new Rectangle (0, 0, 0, 0);
+  return getBounds(0);
 //  RECT rect = getBounds (itemIndex, 0, true, false, false);
 //  int width = rect.right - rect.left, height = rect.bottom - rect.top;
 //  return new Rectangle (rect.left, rect.top, width, height);
@@ -404,11 +421,11 @@ public Image getImage (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
-  Utils.notImplemented(); return null;
 //	if (images != null) {
 //		if (0 <= index && index < images.length) return images [index];
 //	}
-//	return null;
+	Utils.notImplemented();
+	return null;
 }
 
 /**
@@ -430,7 +447,10 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-  Utils.notImplemented(); Rectangle bounds = getBounds(index); bounds.width = 0; return bounds;
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
+  java.awt.Rectangle imageBounds = ((CTable)parent.handle).getImageBounds(itemIndex, index);
+  return new Rectangle(imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height);
 //	RECT rect = getBounds (itemIndex, index, false, true);
 //	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 //	return new Rectangle (rect.left, rect.top, width, height);
@@ -810,14 +830,14 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
   handle.getTableItemObject(index).setIcon(image != null? new ImageIcon(image.handle): null);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTable)parent.handle).getModel().fireTableCellUpdated(index, index);
   parent.adjustColumnWidth();
 //
 //  
-//  int count = Math.max (1, parent.getColumnCount ());
-//	if (0 > index || index > count - 1) return;
 //	if (images == null && index != 0) images = new Image [count];
 //	if (images != null) {
 //		if (image != null && image.type == SWT.ICON) {

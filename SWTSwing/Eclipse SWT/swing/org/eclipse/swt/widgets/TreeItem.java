@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.swing.Utils;
+import org.eclipse.swt.internal.swing.CTreeItem.TreeItemObject;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -257,7 +258,20 @@ CTreeItem createHandle () {
  */
 public void clear (int index, boolean all) {
   checkWidget ();
-  Utils.notImplemented();
+  TreeItemObject treeItemObject = handle.getTreeItemObject(index);
+  treeItemObject.setText(null);
+  treeItemObject.setBackground(null);
+  treeItemObject.setForeground(null);
+  treeItemObject.setFont(null);
+  treeItemObject.setIcon(null);
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+  if(all) {
+    TreeItem[] items = getItems();
+    for(int i=0; i<items.length; i++) {
+      items[i].clear(index, all);
+    }
+  }
 //  int hwnd = parent.handle;
 //  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 //  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
@@ -293,7 +307,19 @@ public void clear (int index, boolean all) {
  */
 public void clearAll (boolean all) {
   checkWidget ();
-  Utils.notImplemented();
+  text = "";
+  image = null;
+  handle.setBackground(null);
+  handle.setForeground(null);
+  handle.setFont(null);
+  handle.setChecked(false);
+  handle.setGrayed(false);
+  int count = parent.getColumnCount();
+  for(int i=0; i<count; i++) {
+    clear(i, all);
+  }
+  if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 //  int hwnd = parent.handle;
 //  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 //  if (hItem == 0) return;
@@ -393,6 +419,7 @@ public Rectangle getBounds (int index) {
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
   CTree tree = (CTree)parent.handle;
   int row = tree.getRowForPath(new TreePath(handle.getPath()));
+  if(row == -1) return new Rectangle(0, 0, 0, 0);
   java.awt.Rectangle rect = tree.getCellRect(row, index, false);
   return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
@@ -668,7 +695,15 @@ public Image getImage (int index) {
 public Rectangle getImageBounds (int index) {
   checkWidget();
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  Utils.notImplemented(); return new Rectangle(0, 0, 0, 0);
+
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count -1) return new Rectangle(0, 0, 0, 0);
+  CTree cTree = ((CTree)parent.handle);
+  int row = cTree.getRowForPath(new TreePath(handle.getPath()));
+  java.awt.Rectangle imageBounds = ((CTree)parent.handle).getImageBounds(row, index);
+  return new Rectangle(imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height);
+  
+//  java.awt.Color color = handle.getTreeItemObject(index).getForeground();
 //	RECT rect = getBounds (index, false, true, false);
 //	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 //	return new Rectangle (rect.left, rect.top, width, height);

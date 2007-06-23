@@ -199,7 +199,7 @@ public class JTreeTable extends JPanel implements Scrollable {
             rowBounds.width += rowBounds.x;
             rowBounds.x = 0;
             g = g.create();
-            int width = JTreeTable.this.table.getColumnModel().getColumn(JTreeTable.this.table.convertColumnIndexToView(0)).getWidth();
+            int width = JTreeTable.this.table.getColumnModel().getColumn(0).getWidth();
             g.clipRect(0, 0, width, rowBounds.height);
             if(isFullLineSelection() && JTreeTable.this.table.isRowSelected(row)) {
               g.setColor(JTreeTable.this.table.getSelectionBackground());

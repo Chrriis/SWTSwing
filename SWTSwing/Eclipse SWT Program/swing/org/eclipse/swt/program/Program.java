@@ -13,6 +13,7 @@ package org.eclipse.swt.program;
  
 import java.awt.Desktop;
 import java.io.File;
+import java.net.URI;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
@@ -92,12 +93,22 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	Desktop desktop = Desktop.getDesktop();
   try {
-    Desktop.getDesktop().open(new File(fileName));
+    desktop.open(new File(fileName));
     return true;
   } catch(Exception e) {
-    return false;
+    try {
+      URI uri = new URI(fileName);
+      if(fileName.startsWith("mailto:")) {
+        desktop.mail(uri);
+      } else if(fileName.startsWith("http:") || fileName.startsWith("https:") || fileName.startsWith("ftp:")) {
+        desktop.browse(uri);
+      }
+    } catch(Exception ex) {
+    }
   }
+  return false;
 }
 
 /**

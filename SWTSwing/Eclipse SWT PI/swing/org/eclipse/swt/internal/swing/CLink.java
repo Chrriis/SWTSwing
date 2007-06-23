@@ -48,6 +48,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
   }
   
   public CLinkImplementation(Link link, int style) {
+    setFocusable(false);
     this.handle = link;
     userAttributeHandler = new UserAttributeHandler(this) {
       public void setForeground(Color foreground) {

@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.swing.CControl;
+import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class provide a surface for drawing
@@ -154,7 +155,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
     Shape clip = gc.handle.getClip();
     gc.handle.clipRect(x, y, width, height);
     Dimension size = handle.getSize();
-    gc.handle.drawImage(new ImageIcon(backgroundImage.handle).getImage(), 0, 0, size.width, size.height, null);
+    Utils.paintTiledImage(gc.handle.getGraphics(), new ImageIcon(backgroundImage.handle), 0, 0, size.width, size.height);
     gc.handle.setClip(clip);
   } else {
     java.awt.Color oldColor = gc.handle.getColor();

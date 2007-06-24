@@ -54,6 +54,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
+import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
@@ -1214,7 +1215,7 @@ public boolean getVisible () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public Graphics2D internal_new_GC (GCData data) {
+public CGC internal_new_GC (GCData data) {
 	checkWidget();
   if(data != null) {
     int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1233,15 +1234,20 @@ public Graphics2D internal_new_GC (GCData data) {
     data.hFont = handle.getFont();
   }
   Component component = ((CControl)handle).getClientArea();
-  Graphics2D g2D = (Graphics2D)component.getGraphics();
-  if(g2D != null) {
-    Point internalOffset = getInternalOffset();
-    g2D.translate(-internalOffset.x, -internalOffset.y);
+  final Graphics2D g2D = (Graphics2D)component.getGraphics();
+  if(g2D == null) {
+    return null;
   }
+  Point internalOffset = getInternalOffset();
+  g2D.translate(-internalOffset.x, -internalOffset.y);
 //  java.awt.Point point = new java.awt.Point(0, 0);
 //  point = SwingUtilities.convertPoint(component, point, handle);
 //  g2D.translate(-point.x, -point.y);
-  return g2D;
+  return new CGC.CGCGraphics2D() {
+    public Graphics2D getGraphics() {
+      return g2D;
+    }
+  };
 //	int hwnd = handle;
 //	if (data != null && data.hwnd != 0) {
 //		hwnd = data.hwnd;
@@ -1290,7 +1296,7 @@ public Graphics2D internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (Graphics2D hDC, GCData data) {
+public void internal_dispose_GC (CGC hDC, GCData data) {
 	checkWidget ();
 //	Component hwnd = handle;
 //	if (data != null && data.hwnd != null) {

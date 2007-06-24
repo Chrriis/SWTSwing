@@ -28,14 +28,30 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.File;
 import java.text.AttributedCharacterIterator;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.print.PrintService;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttribute;
+import javax.print.attribute.standard.Destination;
+import javax.print.attribute.standard.PageRanges;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.DeviceData;
+import org.eclipse.swt.graphics.GCData;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -69,7 +85,7 @@ public final class Printer extends Device {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public PrintService handle;
+	public PrinterJob handle;
 
 	/**
 	 * the printer data describing this printer
@@ -169,12 +185,21 @@ public Printer(PrinterData data) {
  */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
+	PrintService selectedPrintService = null;
   PrintService[] printServices = PrinterJob.lookupPrintServices();
   for(int i=0; i<printServices.length; i++) {
     PrintService printService = printServices[i];
     if(printService.getClass().getName().equals(data.driver) && printService.getName().equals(data.name)) {
-      handle = printService;
+      selectedPrintService = printService;
       break;
+    }
+  }
+  handle = PrinterJob.getPrinterJob();
+  if(selectedPrintService == null) {
+    try {
+      handle.setPrintService(selectedPrintService);
+    } catch(Exception e) {
+      e.printStackTrace();
     }
   }
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -193,7 +218,7 @@ protected void create(DeviceData deviceData) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public Graphics2D internal_new_GC (GCData data) {
+public CGC internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
   Utils.notImplemented(); return null;
 //	if (data != null) {
@@ -225,7 +250,7 @@ public Graphics2D internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (Graphics2D hDC, GCData data) {
+public void internal_dispose_GC (CGC hDC, GCData data) {
 	if (data != null) hDC.dispose();
 }
 
@@ -252,6 +277,39 @@ public void internal_dispose_GC (Graphics2D hDC, GCData data) {
  */
 public boolean startJob(String jobName) {
 	checkDevice();
+	handle.setJobName(jobName);
+	handle.setCopies(data.copyCount);
+  java.util.List printRequestAttributeList = new ArrayList();
+  if(data.printToFile) {
+    printRequestAttributeList.add(new Destination(new File(data.fileName).toURI()));
+  }
+  if(data.scope == PrinterData.PAGE_RANGE) {
+    printRequestAttributeList.add(new PageRanges(data.startPage, data.endPage));
+  }
+  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet();
+  if(data.otherData != null) {
+    hashPrintRequestAttributeSet.addAll(data.otherData);
+  }
+  hashPrintRequestAttributeSet.addAll(new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0])));
+  handle.setPrintable(new Printable() {
+    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+      System.err.println("1: " + Thread.currentThread());
+      handle.cancel();
+      return NO_SUCH_PAGE;
+    }
+  });
+  try {
+    handle.print(hashPrintRequestAttributeSet);
+  } catch(Exception e) {
+    e.printStackTrace();
+  }
+  System.err.println("2: " + Thread.currentThread());
+//  handle.setPrintable(new Printable() {
+//    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+//      //TODO: implement
+//      return PAGE_EXISTS;
+//    }
+//  });
   Utils.notImplemented(); return false;
 //	DOCINFO di = new DOCINFO();
 //	di.cbSize = DOCINFO.sizeof;
@@ -293,6 +351,11 @@ public boolean startJob(String jobName) {
  */
 public void endJob() {
 	checkDevice();
+//  try {
+//    handle.print(hashPrintRequestAttributeSet);
+//  } catch(Exception e) {
+//    e.printStackTrace();
+//  }
   Utils.notImplemented();
 //	OS.EndDoc(handle);
 }

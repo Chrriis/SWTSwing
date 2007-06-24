@@ -378,6 +378,11 @@ public class Utils {
 //  }
 
   public static void paintTiledImage(Component component, Graphics g, ImageIcon backgroundImageIcon) {
+    Dimension size = component.getSize();
+    paintTiledImage(g, backgroundImageIcon, 0, 0, size.width, size.height);
+  }
+  
+  public static void paintTiledImage(Graphics g, ImageIcon backgroundImageIcon, int x, int y, int width, int height) {
     if(backgroundImageIcon == null) {
       return;
     }
@@ -386,13 +391,12 @@ public class Utils {
     if(iconWidth <= 0 || iconHeight <= 0) {
       return;
     }
-    Dimension size = component.getSize();
-    int xCount = size.width / iconWidth + (size.width % iconWidth == 0? 0: 1);
-    int yCount = size.height / iconHeight + (size.height % iconHeight == 0? 0: 1);
+    int xCount = width / iconWidth + (width % iconWidth == 0? 0: 1);
+    int yCount = height / iconHeight + (height % iconHeight == 0? 0: 1);
     Image image = backgroundImageIcon.getImage();
-    for(int x=0; x<xCount; x++) {
-      for(int y=0; y<yCount; y++) {
-        g.drawImage(image, x * iconWidth, y * iconHeight, null);
+    for(int i=0; i<xCount; i++) {
+      for(int j=0; j<yCount; j++) {
+        g.drawImage(image, i * iconWidth + x, j * iconHeight + y, null);
       }
     }
   }

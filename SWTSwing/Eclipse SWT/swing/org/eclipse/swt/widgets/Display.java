@@ -64,6 +64,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
+import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.CShell;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
@@ -1561,7 +1562,7 @@ public Thread getThread () {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
-public Graphics2D internal_new_GC (GCData data) {
+public CGC internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
   if (data != null) {
     data.device = this;
@@ -1580,17 +1581,32 @@ public Graphics2D internal_new_GC (GCData data) {
 //	}
 //	return hDC;
   Frame[] frames = Frame.getFrames ();
+  Graphics2D g = null;
   for (int i = 0; i < frames.length; i++) {
     if (frames[i].isActive ()) {
-      return (Graphics2D) frames[i].getGraphics ();
+      g = (Graphics2D) frames[i].getGraphics ();
+      break;
     }
   }
-  for (int i = 0; i < frames.length; i++) {
-    if (frames[i].isShowing()) {
-      return (Graphics2D) frames[i].getGraphics ();
+  if(g == null) {
+    for (int i = 0; i < frames.length; i++) {
+      if (frames[i].isShowing()) {
+        g = (Graphics2D) frames[i].getGraphics ();
+      }
     }
   }
-  return (Graphics2D) frames[0].getGraphics ();
+  if(g == null) {
+    g = (Graphics2D) frames[0].getGraphics ();
+  }
+  if(g == null) {
+    return null;
+  }
+  final Graphics2D g2D = g;
+  return new CGC.CGCGraphics2D() {
+    public Graphics2D getGraphics() {
+      return g2D;
+    }
+  };
 }
 
 /**
@@ -1619,7 +1635,7 @@ protected void init () {
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (Graphics2D handle, GCData data) {
+public void internal_dispose_GC (CGC handle, GCData data) {
 	handle.dispose();
 }
 

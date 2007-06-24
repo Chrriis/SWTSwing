@@ -11,9 +11,23 @@
 package org.eclipse.swt.printing;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.swing.Utils;
+import java.awt.print.PrinterJob;
+import java.io.File;
+import java.util.ArrayList;
+
+import javax.print.PrintService;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttribute;
+import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.Destination;
+import javax.print.attribute.standard.PageRanges;
+import javax.print.attribute.standard.SheetCollate;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.widgets.Dialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Instances of this class allow the user to select
@@ -218,7 +232,41 @@ protected void checkSubclass() {
  * </ul>
  */
 public PrinterData open() {
-  Utils.notImplemented(); return null;
+  PrinterJob printerJob = PrinterJob.getPrinterJob();
+  java.util.List printRequestAttributeList = new ArrayList();
+  if(printToFile) {
+    printRequestAttributeList.add(new Destination(new File("out.prn").toURI()));
+  }
+  if(scope == PrinterData.PAGE_RANGE) {
+    printRequestAttributeList.add(new PageRanges(startPage, endPage));
+  }
+  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0]));
+  if(!printerJob.printDialog(hashPrintRequestAttributeSet)) {
+    return null;
+  }
+  Destination destination = (Destination)hashPrintRequestAttributeSet.get(Destination.class);
+  printToFile = destination != null;
+  PageRanges pageRanges = (PageRanges)hashPrintRequestAttributeSet.get(PageRanges.class);
+  if(pageRanges == null) {
+    scope = PrinterData.ALL_PAGES;
+  } else {
+    scope = PrinterData.PAGE_RANGE;
+    int[][] members = pageRanges.getMembers();
+    startPage = members[0][0];
+    endPage = members[0][1];
+  }
+  PrintService printService = printerJob.getPrintService();
+  PrinterData printerData = new PrinterData(printService.getClass().getName(), printService.getName());
+  Copies copies = (Copies)hashPrintRequestAttributeSet.get(Copies.class);
+  printerData.copyCount = copies != null? copies.getValue(): 1;
+  printerData.collate = hashPrintRequestAttributeSet.get(SheetCollate.class) == SheetCollate.COLLATED;
+  printerData.startPage = startPage;
+  printerData.endPage = endPage;
+  printerData.scope = scope;
+  printerData.printToFile = printToFile;
+  printerData.fileName = destination != null? destination.getURI().toString(): null;
+  printerData.otherData = hashPrintRequestAttributeSet;
+  return printerData;
 //	PRINTDLG pd = new PRINTDLG();
 //	pd.lStructSize = PRINTDLG.sizeof;
 //	Control parent = getParent();

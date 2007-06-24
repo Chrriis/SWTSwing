@@ -11,14 +11,15 @@
 package org.eclipse.swt.graphics;
 
  
-import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.internal.swing.CGC;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -724,7 +725,7 @@ protected void init () {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public abstract Graphics2D internal_new_GC (GCData data);
+public abstract CGC internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -739,7 +740,7 @@ public abstract Graphics2D internal_new_GC (GCData data);
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public abstract void internal_dispose_GC (Graphics2D handle, GCData data);
+public abstract void internal_dispose_GC (CGC handle, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,

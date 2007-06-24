@@ -640,11 +640,17 @@ public boolean startJob(String jobName) {
       return NO_SUCH_PAGE;
     }
   });
+  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = getHashPrintRequestAttributeSet();
   try {
-    handle.print(getHashPrintRequestAttributeSet());
+    handle.print(hashPrintRequestAttributeSet);
   } catch(Exception e) {
 //    e.printStackTrace();
   }
+//  PageFormat pageFormat = handle.getPageFormat(hashPrintRequestAttributeSet);
+//  Paper paper = pageFormat.getPaper();
+//  paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
+//  pageFormat.setPaper(paper);
+//  referencePageFormat = handle.validatePage(pageFormat);
   pageCount = 0;
   pageCommandList = new ArrayList();
   firstPageCommand = cgcCommands[0];

@@ -7,11 +7,16 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Image;
 import java.awt.Paint;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -32,6 +37,9 @@ public class NullGraphics2D extends Graphics2D {
   
   protected Font systemFont;
   
+  public NullGraphics2D() {
+    this(null);
+  }
   public NullGraphics2D(Font systemFont) {
     this.systemFont = systemFont;
   }
@@ -47,7 +55,7 @@ public class NullGraphics2D extends Graphics2D {
   }
   public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
   }
-  public boolean drawImage(java.awt.Image img, AffineTransform xform, ImageObserver obs) {
+  public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
     return true;
   }
   public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
@@ -64,11 +72,11 @@ public class NullGraphics2D extends Graphics2D {
   }
   public void fill(Shape s) {
   }
-  protected java.awt.Color background = java.awt.Color.BLACK;
-  public java.awt.Color getBackground() {
+  protected Color background = Color.BLACK;
+  public Color getBackground() {
     return background;
   }
-  public java.awt.Composite getComposite() {
+  public Composite getComposite() {
     return null;
   }
   public GraphicsConfiguration getDeviceConfiguration() {
@@ -92,7 +100,7 @@ public class NullGraphics2D extends Graphics2D {
   public AffineTransform getTransform() {
     return null;
   }
-  public boolean hit(java.awt.Rectangle rect, Shape s, boolean onStroke) {
+  public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
     return false;
   }
   public void rotate(double theta, double x, double y) {
@@ -101,10 +109,10 @@ public class NullGraphics2D extends Graphics2D {
   }
   public void scale(double sx, double sy) {
   }
-  public void setBackground(java.awt.Color color) {
+  public void setBackground(Color color) {
     background = color;
   }
-  public void setComposite(java.awt.Composite comp) {
+  public void setComposite(Composite comp) {
   }
   public void setPaint(Paint paint) {
   }
@@ -137,22 +145,22 @@ public class NullGraphics2D extends Graphics2D {
   }
   public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
   }
-  public boolean drawImage(java.awt.Image img, int x, int y, java.awt.Color bgcolor, ImageObserver observer) {
+  public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer) {
     return true;
   }
-  public boolean drawImage(java.awt.Image img, int x, int y, ImageObserver observer) {
+  public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
     return true;
   }
-  public boolean drawImage(java.awt.Image img, int x, int y, int width, int height, java.awt.Color bgcolor, ImageObserver observer) {
+  public boolean drawImage(Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
     return true;
   }
-  public boolean drawImage(java.awt.Image img, int x, int y, int width, int height, ImageObserver observer) {
+  public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) {
     return true;
   }
-  public boolean drawImage(java.awt.Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, java.awt.Color bgcolor, ImageObserver observer) {
+  public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, Color bgcolor, ImageObserver observer) {
     return true;
   }
-  public boolean drawImage(java.awt.Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
+  public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
     return true;
   }
   public void drawLine(int x1, int y1, int x2, int y2) {
@@ -178,33 +186,35 @@ public class NullGraphics2D extends Graphics2D {
   public Shape getClip() {
     return null;
   }
-  public java.awt.Rectangle getClipBounds() {
+  public Rectangle getClipBounds() {
     return null;
   }
-  public java.awt.Color getColor() {
-    return null;
+  public Color getColor() {
+    return color;
   }
-  protected java.awt.Font font;
-  public java.awt.Font getFont() {
+  protected Font font;
+  public Font getFont() {
     if(font == null) {
       return systemFont;
     }
     return font;
   }
-  public java.awt.FontMetrics getFontMetrics(java.awt.Font f) {
+  public FontMetrics getFontMetrics(Font f) {
     return Toolkit.getDefaultToolkit().getFontMetrics(f);
   }
   public void setClip(int x, int y, int width, int height) {
   }
   public void setClip(Shape clip) {
   }
-  public void setColor(java.awt.Color c) {
+  protected Color color;
+  public void setColor(Color color) {
+    this.color = color;
   }
-  public void setFont(java.awt.Font font) {
+  public void setFont(Font font) {
     this.font = font;
   }
   public void setPaintMode() {
   }
-  public void setXORMode(java.awt.Color c1) {
+  public void setXORMode(Color c1) {
   }
 }

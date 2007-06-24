@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Printing is partially implemented.
 - Tree API is better covered.
 - A child Shell is shown on the same monitor as the parent (visible hack though)
 - RADIO exclusions in Composite and ToolBar is improved.

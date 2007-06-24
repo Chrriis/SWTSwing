@@ -11,10 +11,14 @@
 package org.eclipse.swt.printing;
 
 
+import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Image;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -35,6 +39,7 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.print.PrintService;
@@ -52,7 +57,7 @@ import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CGC;
-import org.eclipse.swt.internal.swing.Utils;
+import org.eclipse.swt.internal.swing.NullGraphics2D;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -195,7 +200,7 @@ protected void create(DeviceData deviceData) {
     }
   }
   handle = PrinterJob.getPrinterJob();
-  if(selectedPrintService == null) {
+  if(selectedPrintService != null) {
     try {
       handle.setPrintService(selectedPrintService);
     } catch(Exception e) {
@@ -203,6 +208,324 @@ protected void create(DeviceData deviceData) {
     }
   }
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
+}
+
+abstract class CGCCommand {
+  public abstract void run(CGC cgc);
+}
+
+volatile int pageCount;
+volatile List pageCommandList;
+volatile CGCCommand firstPageCommand;
+
+void addCommand(CGCCommand command) {
+  if(pageCount > 0) {
+    ((List)pageCommandList.get(pageCount - 1)).add(command);
+  }
+}
+
+class CGCRecorder extends CGC.CGCGraphics2D {
+  protected Graphics2D graphics2D = new NullGraphics2D();
+  public Graphics2D getGraphics() {
+    return graphics2D;
+  }
+  public void clip(final Shape s) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.clip(s);
+      }
+    });
+    super.clip(s);
+  }
+  public void clipRect(final int x, final int y, final int width, final int height) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        clipRect(x, y, width, height);
+      }
+    });
+    super.clipRect(x, y, width, height);
+  }
+  public void copyArea(final int x, final int y, final int width, final int height, final int dx, final int dy) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        copyArea(x, y, width, height, dx, dy);
+      }
+    });
+    super.copyArea(x, y, width, height, dx, dy);
+  }
+  public void dispose() {
+//    addCommand(new CGCCommand() {
+//      public void run(CGC cgc) {
+//        cgc.dispose();
+//      }
+//    });
+    super.dispose();
+  }
+  public void draw(final Shape s) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.draw(s);
+      }
+    });
+    super.draw(s);
+  }
+  public void drawArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawArc(x, y, width, height, startAngle, arcAngle);
+      }
+    });
+    super.drawArc(x, y, width, height, startAngle, arcAngle);
+  }
+  public boolean drawImage(final Image img, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1, final int sx2, final int sy2, final ImageObserver observer) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
+      }
+    });
+    return super.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
+  }
+  public void drawLine(final int x1, final int y1, final int x2, final int y2) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawLine(x1, y1, x2, y2);
+      }
+    });
+    super.drawLine(x1, y1, x2, y2);
+  }
+  public void drawOval(final int x, final int y, final int width, final int height) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawOval(x, y, width, height);
+      }
+    });
+    super.drawOval(x, y, width, height);
+  }
+  public void drawPolygon(final int[] points, final int[] points2, final int points3) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawPolygon(points, points2, points3);
+      }
+    });
+    super.drawPolygon(points, points2, points3);
+  }
+  public void drawPolyline(final int[] points, final int[] points2, final int points3) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawPolyline(points, points2, points3);
+      }
+    });
+    super.drawPolyline(points, points2, points3);
+  }
+  public void drawRect(final int x, final int y, final int width, final int height) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawRect(x, y, width, height);
+      }
+    });
+    super.drawRect(x, y, width, height);
+  }
+  public void drawRoundRect(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
+      }
+    });
+    super.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
+  }
+  public void drawString(final String str, final int x, final int y) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.drawString(str, x, y);
+      }
+    });
+    super.drawString(str, x, y);
+  }
+  public void fill(final Shape s) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.fill(s);
+      }
+    });
+    super.fill(s);
+  }
+  public void fillArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.fillArc(x, y, width, height, startAngle, arcAngle);
+      }
+    });
+    super.fillArc(x, y, width, height, startAngle, arcAngle);
+  }
+  public void fillOval(final int x, final int y, final int width, final int height) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.fillOval(x, y, width, height);
+      }
+    });
+    super.fillOval(x, y, width, height);
+  }
+  public void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.fillPolygon(xPoints, yPoints, nPoints);
+      }
+    });
+    super.fillPolygon(xPoints, yPoints, nPoints);
+  }
+  public void fillRect(final int x, final int y, final int width, final int height) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.fillRect(x, y, width, height);
+      }
+    });
+    super.fillRect(x, y, width, height);
+  }
+  public void fillRoundRect(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+      }
+    });
+    super.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+  }
+  public Color getBackground() {
+    return super.getBackground();
+  }
+  public Shape getClip() {
+    return super.getClip();
+  }
+  public Color getColor() {
+    return super.getColor();
+  }
+  public Composite getComposite() {
+    return super.getComposite();
+  }
+  public Font getFont() {
+    return super.getFont();
+  }
+  public FontMetrics getFontMetrics() {
+    return super.getFontMetrics();
+  }
+  public Paint getPaint() {
+    return super.getPaint();
+  }
+  public Object getRenderingHint(Key hintKey) {
+    return super.getRenderingHint(hintKey);
+  }
+  public RenderingHints getRenderingHints() {
+    return super.getRenderingHints();
+  }
+  public Stroke getStroke() {
+    return super.getStroke();
+  }
+  public AffineTransform getTransform() {
+    return super.getTransform();
+  }
+  public void setBackground(final Color background) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setBackground(background);
+      }
+    });
+    super.setBackground(background);
+  }
+  public void setClip(final Shape clip) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setClip(clip);
+      }
+    });
+    super.setClip(clip);
+  }
+  public void setColor(final Color color) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setColor(color);
+      }
+    });
+    super.setColor(color);
+  }
+  public void setComposite(final Composite comp) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setComposite(comp);
+      }
+    });
+    super.setComposite(comp);
+  }
+  public void setFont(final Font font) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setFont(font);
+      }
+    });
+    super.setFont(font);
+  }
+  public void setPaint(final Paint paint) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setPaint(paint);
+      }
+    });
+    super.setPaint(paint);
+  }
+  public void setPaintMode() {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setPaintMode();
+      }
+    });
+    super.setPaintMode();
+  }
+  public void setRenderingHint(final Key hintKey, final Object hintValue) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setRenderingHint(hintKey, hintValue);
+      }
+    });
+    super.setRenderingHint(hintKey, hintValue);
+  }
+  public void setRenderingHints(final Map hints) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setRenderingHints(hints);
+      }
+    });
+    super.setRenderingHints(hints);
+  }
+  public void setStroke(final Stroke s) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setStroke(s);
+      }
+    });
+    super.setStroke(s);
+  }
+  public void setTransform(final AffineTransform tx) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setTransform(tx);
+      }
+    });
+    super.setTransform(tx);
+  }
+  public void setXORMode(final Color c1) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setXORMode(c1);
+      }
+    });
+    super.setXORMode(c1);
+  }
+  public void transform(final AffineTransform tx) {
+    addCommand(new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.transform(tx);
+      }
+    });
+    super.transform(tx);
+  }
 }
 
 /**	 
@@ -220,7 +543,9 @@ protected void create(DeviceData deviceData) {
  */
 public CGC internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-  Utils.notImplemented(); return null;
+	CGCRecorder recorder = new CGCRecorder();
+	firstPageCommand.run(recorder);
+  return recorder;
 //	if (data != null) {
 //		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 //		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -254,6 +579,22 @@ public void internal_dispose_GC (CGC hDC, GCData data) {
 	if (data != null) hDC.dispose();
 }
 
+HashPrintRequestAttributeSet getHashPrintRequestAttributeSet() {
+  java.util.List printRequestAttributeList = new ArrayList();
+  if(data.printToFile) {
+    printRequestAttributeList.add(new Destination(new File(data.fileName).toURI()));
+  }
+  if(data.scope == PrinterData.PAGE_RANGE) {
+    printRequestAttributeList.add(new PageRanges(data.startPage, data.endPage));
+  }
+  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet();
+  if(data.otherData != null) {
+    hashPrintRequestAttributeSet.addAll(data.otherData);
+  }
+  hashPrintRequestAttributeSet.addAll(new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0])));
+  return hashPrintRequestAttributeSet;
+}
+
 /**
  * Starts a print job and returns true if the job started successfully
  * and false otherwise.
@@ -279,38 +620,34 @@ public boolean startJob(String jobName) {
 	checkDevice();
 	handle.setJobName(jobName);
 	handle.setCopies(data.copyCount);
-  java.util.List printRequestAttributeList = new ArrayList();
-  if(data.printToFile) {
-    printRequestAttributeList.add(new Destination(new File(data.fileName).toURI()));
-  }
-  if(data.scope == PrinterData.PAGE_RANGE) {
-    printRequestAttributeList.add(new PageRanges(data.startPage, data.endPage));
-  }
-  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet();
-  if(data.otherData != null) {
-    hashPrintRequestAttributeSet.addAll(data.otherData);
-  }
-  hashPrintRequestAttributeSet.addAll(new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0])));
+  final CGCCommand[] cgcCommands = new CGCCommand[1];
   handle.setPrintable(new Printable() {
-    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-      System.err.println("1: " + Thread.currentThread());
+    public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+      referencePageFormat = pageFormat;
+      final Font font = g.getFont();
+      final Color color = g.getColor();
+//      final Shape clip = g.getClip();
+      cgcCommands[0] = new CGCCommand() {
+        public void run(CGC cgc) {
+          cgc.setFont(font);
+          cgc.setColor(color);
+//          cgc.setClip(clip);
+        }
+      };
       handle.cancel();
       return NO_SUCH_PAGE;
     }
   });
   try {
-    handle.print(hashPrintRequestAttributeSet);
+    handle.print(getHashPrintRequestAttributeSet());
   } catch(Exception e) {
-    e.printStackTrace();
+//    e.printStackTrace();
   }
-  System.err.println("2: " + Thread.currentThread());
-//  handle.setPrintable(new Printable() {
-//    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-//      //TODO: implement
-//      return PAGE_EXISTS;
-//    }
-//  });
-  Utils.notImplemented(); return false;
+  pageCount = 0;
+  pageCommandList = new ArrayList();
+  firstPageCommand = cgcCommands[0];
+  // TODO: Check conditions that return false;
+  return true;
 //	DOCINFO di = new DOCINFO();
 //	di.cbSize = DOCINFO.sizeof;
 //	int hHeap = OS.GetProcessHeap();
@@ -351,12 +688,34 @@ public boolean startJob(String jobName) {
  */
 public void endJob() {
 	checkDevice();
-//  try {
-//    handle.print(hashPrintRequestAttributeSet);
-//  } catch(Exception e) {
-//    e.printStackTrace();
-//  }
-  Utils.notImplemented();
+  handle.setPrintable(new Printable() {
+    public int print(final Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+      if(pageIndex < 0 || pageIndex >= pageCount) {
+        return NO_SUCH_PAGE;
+      }
+      CGC cgc = new CGC.CGCGraphics2D() {
+        public Graphics2D getGraphics() {
+          return (Graphics2D)g;
+        }
+      };
+      List commandList = (List)pageCommandList.get(pageIndex);
+      int iX = (int)Math.round(referencePageFormat.getImageableX());
+      int iY = (int)Math.round(referencePageFormat.getImageableY());
+      g.translate(iX, iY);
+      for(int i=0; i<commandList.size(); i++) {
+        CGCCommand command = (CGCCommand)commandList.get(i);
+        command.run(cgc);
+      }
+      g.translate(-iX, -iY);
+      return PAGE_EXISTS;
+    }
+  });
+  try {
+    handle.print(getHashPrintRequestAttributeSet());
+  } catch(Exception e) {
+    e.printStackTrace();
+  }
+  pageCommandList = null;
 //	OS.EndDoc(handle);
 }
 
@@ -369,7 +728,8 @@ public void endJob() {
  */
 public void cancelJob() {
 	checkDevice();
-  Utils.notImplemented();
+  handle.cancel();
+  pageCommandList = null;
 //	OS.AbortDoc(handle);
 }
 
@@ -393,7 +753,10 @@ public void cancelJob() {
  */
 public boolean startPage() {
 	checkDevice();
-  Utils.notImplemented(); return false;
+  pageCount++;
+  pageCommandList.add(new ArrayList());
+  // TODO: find if false can happen
+  return true;
 //	int rc = OS.StartPage(handle);
 //	if (rc <= 0) OS.AbortDoc(handle);
 //	return rc > 0;
@@ -412,8 +775,7 @@ public boolean startPage() {
  */
 public void endPage() {
 	checkDevice();
-  Utils.notImplemented();
-//	OS.EndPage(handle);
+	//TODO: set the default attributes for the next page?
 }
 
 /**
@@ -450,11 +812,15 @@ public Point getDPI() {
  */
 public Rectangle getBounds() {
 	checkDevice();
-  Utils.notImplemented(); return new Rectangle(0, 0, 1, 1);
+  int width = (int)Math.round(referencePageFormat.getWidth());
+  int height = (int)Math.round(referencePageFormat.getHeight());
+  return new Rectangle(0, 0, width, height);
 //	int width = OS.GetDeviceCaps(handle, OS.PHYSICALWIDTH);
 //	int height = OS.GetDeviceCaps(handle, OS.PHYSICALHEIGHT);
 //	return new Rectangle(0, 0, width, height);
 }
+
+PageFormat referencePageFormat;
 
 /**
  * Returns a rectangle which describes the area of the
@@ -473,10 +839,9 @@ public Rectangle getBounds() {
  */
 public Rectangle getClientArea() {
 	checkDevice();
-  Utils.notImplemented(); return new Rectangle(0, 0, 1, 1);
-//	int width = OS.GetDeviceCaps(handle, OS.HORZRES);
-//	int height = OS.GetDeviceCaps(handle, OS.VERTRES);
-//	return new Rectangle(0, 0, width, height);
+	int width = (int)Math.round(referencePageFormat.getImageableWidth());
+	int height = (int)Math.round(referencePageFormat.getImageableHeight());
+  return new Rectangle(0, 0, width, height);
 }
 
 /**
@@ -511,16 +876,15 @@ public Rectangle getClientArea() {
  */
 public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
-  Utils.notImplemented(); return new Rectangle(x, y, width, height);
-//	int printX = -OS.GetDeviceCaps(handle, OS.PHYSICALOFFSETX);
-//	int printY = -OS.GetDeviceCaps(handle, OS.PHYSICALOFFSETY);
-//	int printWidth = OS.GetDeviceCaps(handle, OS.HORZRES);
-//	int printHeight = OS.GetDeviceCaps(handle, OS.VERTRES);
-//	int paperWidth = OS.GetDeviceCaps(handle, OS.PHYSICALWIDTH);
-//	int paperHeight = OS.GetDeviceCaps(handle, OS.PHYSICALHEIGHT);
-//	int hTrim = paperWidth - printWidth;
-//	int vTrim = paperHeight - printHeight;
-//	return new Rectangle(x + printX, y + printY, width + hTrim, height + vTrim);
+	Rectangle bounds = getBounds();
+  int iX = (int)Math.round(referencePageFormat.getImageableX());
+  int iY = (int)Math.round(referencePageFormat.getImageableY());
+	Rectangle clientArea = getClientArea();
+	int dX = clientArea.x - bounds.x;
+	int dY = clientArea.y - bounds.y;
+	int dW = clientArea.width - bounds.width;
+	int dH = clientArea.height - bounds.height;
+  return new Rectangle(x - dX - iX, y - dY - iY, width - dW, height - dH);
 }
 
 /**

@@ -3317,9 +3317,6 @@ public void setFillRule(int rule) {
  */
 public void setFont (Font font) {
   CGC handle = getCGC();
-  if(handle == null) {
-    getCGC();
-  }
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
     handle.setFont(data.device.systemFont);

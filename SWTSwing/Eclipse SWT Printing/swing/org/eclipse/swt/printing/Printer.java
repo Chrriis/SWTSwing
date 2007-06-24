@@ -277,10 +277,12 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     });
     super.drawArc(x, y, width, height, startAngle, arcAngle);
   }
-  public boolean drawImage(final Image img, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1, final int sx2, final int sy2, final ImageObserver observer) {
+  public boolean drawImage(Image img, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1, final int sx2, final int sy2, final ImageObserver observer) {
+    final BufferedImage image = new BufferedImage(sx2 - sx1, sy2 - sy1, BufferedImage.TYPE_INT_ARGB);
+    image.getGraphics().drawImage(img, 0, 0, image.getWidth(), image.getHeight(), sx1, sy1, sx2, sy2, observer);
     addCommand(new CGCCommand() {
       public void run(CGC cgc) {
-        cgc.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
+        cgc.drawImage(image, dx1, dy1, dx2, dy2, 0, 0, image.getWidth(), image.getHeight(), observer);
       }
     });
     return super.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);

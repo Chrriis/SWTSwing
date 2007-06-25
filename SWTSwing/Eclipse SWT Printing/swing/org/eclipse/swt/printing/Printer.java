@@ -225,7 +225,6 @@ void addCommand(CGCRecorder recorder, CGCCommand command) {
       lastRecorder = recorder;
       addCommand(recorder, recorder.getStateCommand());
     }
-//    initialState = recorder.getState();
     ((List)pageCommandList.get(pageCount - 1)).add(command);
   }
 }
@@ -840,15 +839,9 @@ public boolean startPage() {
 	checkDevice();
   pageCount++;
   pageCommandList.add(new ArrayList());
-//  if(lastRecorder != null) {
-//    addCommand(lastRecorder, lastRecorder.getStateCommand());
-//  }
   lastRecorder = null;
   // TODO: find if false can happen
   return true;
-//	int rc = OS.StartPage(handle);
-//	if (rc <= 0) OS.AbortDoc(handle);
-//	return rc > 0;
 }
 
 /**
@@ -1010,7 +1003,6 @@ protected void release() {
  * mechanism of the <code>Device</code> class.
  */
 protected void destroy() {
-//	if (handle != 0) OS.DeleteDC(handle);
 	handle = null;
 }
 

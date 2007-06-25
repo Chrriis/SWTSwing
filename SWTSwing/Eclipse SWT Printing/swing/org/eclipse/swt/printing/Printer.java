@@ -33,6 +33,8 @@ import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
@@ -695,38 +697,48 @@ public boolean startJob(String jobName) {
 	checkDevice();
 	handle.setJobName(jobName);
 	handle.setCopies(data.copyCount);
-  handle.setPrintable(new Printable() {
-    public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
-      Graphics2D g2D = (Graphics2D)g;
-//      int iX = (int)Math.round(pageFormat.getImageableX());
-//      int iY = (int)Math.round(pageFormat.getImageableY());
-//      g.translate(iX, iY);
-      referencePageFormat = pageFormat;
-      initialState = new State();
-      initialState.font = g2D.getFont();
-      initialState.background = g2D.getBackground();
-      initialState.color = g2D.getColor();
-      initialState.clip = g2D.getClip();
-      initialState.composite = g2D.getComposite();
-      initialState.renderingHints = g2D.getRenderingHints();
-      initialState.stroke = g2D.getStroke();
-      initialState.transform = g2D.getTransform();
-      initialState.fontRenderContext = g2D.getFontRenderContext();
-      handle.cancel();
-      return NO_SUCH_PAGE;
+  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = getHashPrintRequestAttributeSet();
+  PageFormat pageFormat = handle.getPageFormat(hashPrintRequestAttributeSet);
+  Paper paper = pageFormat.getPaper();
+  paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
+  pageFormat.setPaper(paper);
+  referencePageFormat = handle.validatePage(pageFormat);
+  handle.setPageable(new Pageable() {
+    public int getNumberOfPages() {
+      return UNKNOWN_NUMBER_OF_PAGES;
+    }
+    public Printable getPrintable(int pageIndex) {
+      return new Printable() {
+        public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+          Graphics2D g2D = (Graphics2D)g;
+    //      int iX = (int)Math.round(pageFormat.getImageableX());
+    //      int iY = (int)Math.round(pageFormat.getImageableY());
+    //      g.translate(iX, iY);
+//          referencePageFormat = pageFormat;
+          initialState = new State();
+          initialState.font = g2D.getFont();
+          initialState.background = g2D.getBackground();
+          initialState.color = g2D.getColor();
+          initialState.clip = g2D.getClip();
+          initialState.composite = g2D.getComposite();
+          initialState.renderingHints = g2D.getRenderingHints();
+          initialState.stroke = g2D.getStroke();
+          initialState.transform = g2D.getTransform();
+          initialState.fontRenderContext = g2D.getFontRenderContext();
+          handle.cancel();
+          return NO_SUCH_PAGE;
+        }
+      };
+    }
+    public PageFormat getPageFormat(int pageIndex) throws IndexOutOfBoundsException {
+      return referencePageFormat;
     }
   });
-  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = getHashPrintRequestAttributeSet();
   try {
     handle.print(hashPrintRequestAttributeSet);
   } catch(Exception e) {
 //    e.printStackTrace();
   }
-//  PageFormat pageFormat = handle.getPageFormat(hashPrintRequestAttributeSet);
-//  Paper paper = pageFormat.getPaper();
-//  paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
-//  pageFormat.setPaper(paper);
-//  referencePageFormat = handle.validatePage(pageFormat);
   pageCount = 0;
   pageCommandList = new ArrayList();
   // TODO: Check conditions that return false;
@@ -898,8 +910,8 @@ protected Point getDPI_() {
 public Rectangle getBounds() {
 	checkDevice();
 //	return getClientArea();
-  int width = (int)Math.round(referencePageFormat.getWidth());
-  int height = (int)Math.round(referencePageFormat.getHeight());
+  int width = (int)Math.round(referencePageFormat.getImageableWidth());
+  int height = (int)Math.round(referencePageFormat.getImageableHeight());
   return new Rectangle(0, 0, width, height);
 //	int width = OS.GetDeviceCaps(handle, OS.PHYSICALWIDTH);
 //	int height = OS.GetDeviceCaps(handle, OS.PHYSICALHEIGHT);

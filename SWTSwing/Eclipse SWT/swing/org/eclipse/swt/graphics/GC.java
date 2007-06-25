@@ -171,11 +171,9 @@ public GC(Drawable drawable, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   this.device = data.device = device;
+  data.background = java.awt.Color.WHITE;
 	init (drawable, data, handle);
 	if (device.tracking) device.new_Object(this);
-  // Default background should be white.
-  data.background = java.awt.Color.WHITE;
-  handle.setBackground(java.awt.Color.WHITE);
 }
 
 static int checkStyle(int style) {
@@ -1505,14 +1503,15 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
   CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  if(!isTransparent) {
-    java.awt.Color oldColor = handle.getColor();
-    handle.setColor(data.background);
-    Point extent = stringExtent(string);
-    fillRectangle(x, y, extent.x, extent.y);
-    handle.setColor(oldColor);
-  }
-  handle.drawString(string, x, y + handle.getFontMetrics().getMaxAscent());
+  drawText(string, x, y, 0);
+//  if(!isTransparent) {
+//    java.awt.Color oldColor = handle.getColor();
+//    handle.setColor(data.background);
+//    Point extent = stringExtent(string);
+//    fillRectangle(x, y, extent.x, extent.y);
+//    handle.setColor(oldColor);
+//  }
+//  handle.drawString(string, x, y + handle.getFontMetrics().getMaxAscent());
 //  // TODO: optimize if the ensureAreaClean works
 //  Point extent = stringExtent(string);
 //  ensureAreaClean(x, y, extent.x, extent.y);
@@ -1631,6 +1630,7 @@ public void drawText (String string, int x, int y, int flags) {
   boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
   java.awt.FontMetrics fm = handle.getFontMetrics();
   int fmHeight = fm.getHeight();
+  int maxAscent = fm.getMaxAscent();
   int currentHeight = 0;
   for(int i=0; i<tokens.length; i++) {
     y += currentHeight;
@@ -1641,7 +1641,6 @@ public void drawText (String string, int x, int y, int flags) {
       fillRectangle(x, y, stringExtent(tokens[i]).x, currentHeight);
       handle.setColor(oldColor);
     }
-    int maxAscent = fm.getMaxAscent();
     handle.drawString(tokens[i], x, y + maxAscent);
   }
   // TODO: optimize if the ensureAreaClean works
@@ -2868,8 +2867,15 @@ public boolean getXORMode() {
 //}
 
 void init(Drawable drawable, GCData data, CGC handle) {
-  handle.setColor(data.foreground);
-  handle.setFont(data.hFont);
+  if(data.foreground != null) {
+    handle.setColor(data.foreground);
+  }
+  if(data.background != null) {
+    handle.setBackground(data.background);
+  }
+  if(data.hFont != null) {
+    handle.setFont(data.hFont);
+  }
 //	int foreground = data.foreground;
 //	if (foreground != -1 && OS.GetTextColor(hDC) != foreground) {
 //		OS.SetTextColor(hDC, foreground);

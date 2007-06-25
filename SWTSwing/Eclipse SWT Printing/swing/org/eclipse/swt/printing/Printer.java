@@ -616,12 +616,8 @@ class CGCRecorder extends CGC.CGCGraphics2D {
  */
 public CGC internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-//	if(lastRecorder != null) {
-//	  return lastRecorder;
-//	}
 	CGCRecorder recorder = new CGCRecorder();
 	recorder.setState(initialState);
-//	lastRecorder = recorder;
   return recorder;
 //	if (data != null) {
 //		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1234,6 +1230,5 @@ class PrinterGraphics2D extends Graphics2D {
     graphics.setXORMode(c1);
   }
 }
-
 
 }

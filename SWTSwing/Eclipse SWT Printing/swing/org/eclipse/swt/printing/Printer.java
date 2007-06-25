@@ -221,10 +221,10 @@ CGCRecorder lastRecorder;
 
 void addCommand(CGCRecorder recorder, CGCCommand command) {
   if(pageCount > 0) {
-//    if(lastRecorder != recorder) {
+    if(lastRecorder != recorder) {
       lastRecorder = recorder;
-//      addCommand(recorder, recorder.getStateCommand());
-//    }
+      addCommand(recorder, recorder.getStateCommand());
+    }
 //    initialState = recorder.getState();
     ((List)pageCommandList.get(pageCount - 1)).add(command);
   }
@@ -615,12 +615,12 @@ class CGCRecorder extends CGC.CGCGraphics2D {
  */
 public CGC internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-	if(lastRecorder != null) {
-	  return lastRecorder;
-	}
+//	if(lastRecorder != null) {
+//	  return lastRecorder;
+//	}
 	CGCRecorder recorder = new CGCRecorder();
 	recorder.setState(initialState);
-	lastRecorder = recorder;
+//	lastRecorder = recorder;
   return recorder;
 //	if (data != null) {
 //		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -840,10 +840,10 @@ public boolean startPage() {
 	checkDevice();
   pageCount++;
   pageCommandList.add(new ArrayList());
-  if(lastRecorder != null) {
-    addCommand(lastRecorder, lastRecorder.getStateCommand());
-  }
-//  lastRecorder = null;
+//  if(lastRecorder != null) {
+//    addCommand(lastRecorder, lastRecorder.getStateCommand());
+//  }
+  lastRecorder = null;
   // TODO: find if false can happen
   return true;
 //	int rc = OS.StartPage(handle);

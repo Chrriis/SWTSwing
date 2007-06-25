@@ -25,15 +25,17 @@ import java.awt.RenderingHints.Key;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
+import java.util.HashMap;
 import java.util.Map;
 
-public class NullGraphics2D extends Graphics2D {
+public class NullGraphics2D extends Graphics2D implements Cloneable {
   
   protected Font systemFont;
   
@@ -77,28 +79,28 @@ public class NullGraphics2D extends Graphics2D {
     return background;
   }
   public Composite getComposite() {
-    return null;
+    return composite;
   }
   public GraphicsConfiguration getDeviceConfiguration() {
     return null;
   }
   public FontRenderContext getFontRenderContext() {
-    return null;
+    return getFontMetrics().getFontRenderContext();
   }
   public Paint getPaint() {
-    return null;
+    return paint;
   }
   public Object getRenderingHint(Key hintKey) {
     return null;
   }
   public RenderingHints getRenderingHints() {
-    return null;
+    return renderingHints;
   }
   public Stroke getStroke() {
-    return null;
+    return stroke;
   }
   public AffineTransform getTransform() {
-    return null;
+    return transform;
   }
   public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
     return false;
@@ -109,24 +111,40 @@ public class NullGraphics2D extends Graphics2D {
   }
   public void scale(double sx, double sy) {
   }
-  public void setBackground(Color color) {
-    background = color;
+  public void setBackground(Color background) {
+    this.background = background;
   }
-  public void setComposite(Composite comp) {
+  protected Composite composite;
+  public void setComposite(Composite composite) {
+    this.composite = composite;
   }
+  protected Paint paint;
   public void setPaint(Paint paint) {
+    this.paint = paint;
   }
   public void setRenderingHint(Key hintKey, Object hintValue) {
+    renderingHints.put(hintKey, hintValue);
   }
-  public void setRenderingHints(Map arg0) {
+  protected RenderingHints renderingHints = new RenderingHints(new HashMap());
+  public void setRenderingHints(Map renderingHints) {
+    this.renderingHints.putAll(renderingHints);
   }
-  public void setStroke(Stroke s) {
+  protected Stroke stroke;
+  public void setStroke(Stroke stroke) {
+    this.stroke = stroke;
   }
-  public void setTransform(AffineTransform Tx) {
+  protected AffineTransform transform;
+  public void setTransform(AffineTransform transform) {
+    this.transform = transform;
   }
   public void shear(double shx, double shy) {
   }
-  public void transform(AffineTransform Tx) {
+  public void transform(AffineTransform transform) {
+    if(this.transform != null) {
+      this.transform.concatenate(transform);
+    } else {
+      this.transform = transform;
+    }
   }
   public void translate(double tx, double ty) {
   }
@@ -135,11 +153,18 @@ public class NullGraphics2D extends Graphics2D {
   public void clearRect(int x, int y, int width, int height) {
   }
   public void clipRect(int x, int y, int width, int height) {
+    Area area = new Area(clip);
+    area.intersect(new Area(new Rectangle(x, y, width, height)));
+    clip = area;
   }
   public void copyArea(int x, int y, int width, int height, int dx, int dy) {
   }
   public Graphics create() {
-    return this;
+    try {
+      return (Graphics)clone();
+    } catch(Exception e) {
+      return null;
+    }
   }
   public void dispose() {
   }
@@ -184,10 +209,10 @@ public class NullGraphics2D extends Graphics2D {
   public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
   }
   public Shape getClip() {
-    return null;
+    return clip;
   }
   public Rectangle getClipBounds() {
-    return null;
+    return clip.getBounds();
   }
   public Color getColor() {
     return color;
@@ -203,8 +228,11 @@ public class NullGraphics2D extends Graphics2D {
     return Toolkit.getDefaultToolkit().getFontMetrics(f);
   }
   public void setClip(int x, int y, int width, int height) {
+    this.clip = new Rectangle(x, y, width, height);
   }
+  protected Shape clip;
   public void setClip(Shape clip) {
+    this.clip = clip;
   }
   protected Color color;
   public void setColor(Color color) {

@@ -216,12 +216,30 @@ abstract class CGCCommand {
 
 volatile int pageCount;
 volatile List pageCommandList;
-volatile CGCCommand firstPageCommand;
+volatile State initialState;
+CGCRecorder lastRecorder;
 
-void addCommand(CGCCommand command) {
+void addCommand(CGCRecorder recorder, CGCCommand command) {
   if(pageCount > 0) {
+//    if(lastRecorder != recorder) {
+      lastRecorder = recorder;
+//      addCommand(recorder, recorder.getStateCommand());
+//    }
+//    initialState = recorder.getState();
     ((List)pageCommandList.get(pageCount - 1)).add(command);
   }
+}
+
+class State {
+  Font font;
+  Color background;
+  Color color;
+  Shape clip;
+  Composite composite;
+  RenderingHints renderingHints;
+  Stroke stroke;
+  AffineTransform transform;
+  FontRenderContext fontRenderContext;
 }
 
 class CGCRecorder extends CGC.CGCGraphics2D {
@@ -229,8 +247,50 @@ class CGCRecorder extends CGC.CGCGraphics2D {
   public Graphics2D getGraphics() {
     return graphics2D;
   }
+  public void setState(State state) {
+    super.setFont(state.font);
+    super.setBackground(state.background);
+    super.setColor(state.color);
+    super.setClip(state.clip);
+    super.setComposite(state.composite);
+    super.setRenderingHints(state.renderingHints);
+    super.setStroke(state.stroke);
+    super.setTransform(state.transform);
+    setFontRenderContext(state.fontRenderContext);
+  }
+  public State getState() {
+    State state = new State();
+    state.font = super.getFont();
+    state.background = super.getBackground();
+    state.color = super.getColor();
+    state.clip = super.getClip();
+    state.composite = super.getComposite();
+    state.renderingHints = super.getRenderingHints();
+    state.stroke = super.getStroke();
+    state.transform = super.getTransform();
+    state.fontRenderContext = super.getFontRenderContext();
+    return state;
+  }
+  public CGCCommand getStateCommand() {
+    final State state = getState();
+    return new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setFont(state.font);
+        cgc.setColor(state.color);
+        cgc.setBackground(state.background);
+        cgc.setClip(state.clip);
+        cgc.setComposite(state.composite);
+        cgc.setRenderingHints(state.renderingHints);
+        cgc.setStroke(state.stroke);
+        cgc.setTransform(state.transform);
+        if(cgc instanceof CGCRecorder) {
+          ((CGCRecorder)cgc).setFontRenderContext(state.fontRenderContext);
+        }
+      }
+    };
+  }
   public void clip(final Shape s) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.clip(s);
       }
@@ -238,7 +298,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.clip(s);
   }
   public void clipRect(final int x, final int y, final int width, final int height) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         clipRect(x, y, width, height);
       }
@@ -246,7 +306,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.clipRect(x, y, width, height);
   }
   public void copyArea(final int x, final int y, final int width, final int height, final int dx, final int dy) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         copyArea(x, y, width, height, dx, dy);
       }
@@ -254,7 +314,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.copyArea(x, y, width, height, dx, dy);
   }
   public void dispose() {
-//    addCommand(new CGCCommand() {
+//    addCommand(this, new CGCCommand() {
 //      public void run(CGC cgc) {
 //        cgc.dispose();
 //      }
@@ -262,7 +322,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.dispose();
   }
   public void draw(final Shape s) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.draw(s);
       }
@@ -270,7 +330,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.draw(s);
   }
   public void drawArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawArc(x, y, width, height, startAngle, arcAngle);
       }
@@ -280,7 +340,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
   public boolean drawImage(Image img, final int dx1, final int dy1, final int dx2, final int dy2, final int sx1, final int sy1, final int sx2, final int sy2, final ImageObserver observer) {
     final BufferedImage image = new BufferedImage(sx2 - sx1, sy2 - sy1, BufferedImage.TYPE_INT_ARGB);
     image.getGraphics().drawImage(img, 0, 0, image.getWidth(), image.getHeight(), sx1, sy1, sx2, sy2, observer);
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawImage(image, dx1, dy1, dx2, dy2, 0, 0, image.getWidth(), image.getHeight(), observer);
       }
@@ -288,7 +348,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     return super.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
   }
   public void drawLine(final int x1, final int y1, final int x2, final int y2) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawLine(x1, y1, x2, y2);
       }
@@ -296,7 +356,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.drawLine(x1, y1, x2, y2);
   }
   public void drawOval(final int x, final int y, final int width, final int height) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawOval(x, y, width, height);
       }
@@ -304,7 +364,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.drawOval(x, y, width, height);
   }
   public void drawPolygon(final int[] points, final int[] points2, final int points3) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawPolygon(points, points2, points3);
       }
@@ -312,7 +372,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.drawPolygon(points, points2, points3);
   }
   public void drawPolyline(final int[] points, final int[] points2, final int points3) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawPolyline(points, points2, points3);
       }
@@ -320,7 +380,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.drawPolyline(points, points2, points3);
   }
   public void drawRect(final int x, final int y, final int width, final int height) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawRect(x, y, width, height);
       }
@@ -328,7 +388,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.drawRect(x, y, width, height);
   }
   public void drawRoundRect(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
       }
@@ -336,7 +396,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
   }
   public void drawString(final String str, final int x, final int y) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.drawString(str, x, y);
       }
@@ -344,7 +404,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.drawString(str, x, y);
   }
   public void fill(final Shape s) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.fill(s);
       }
@@ -352,7 +412,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.fill(s);
   }
   public void fillArc(final int x, final int y, final int width, final int height, final int startAngle, final int arcAngle) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.fillArc(x, y, width, height, startAngle, arcAngle);
       }
@@ -360,7 +420,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.fillArc(x, y, width, height, startAngle, arcAngle);
   }
   public void fillOval(final int x, final int y, final int width, final int height) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.fillOval(x, y, width, height);
       }
@@ -368,7 +428,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.fillOval(x, y, width, height);
   }
   public void fillPolygon(final int[] xPoints, final int[] yPoints, final int nPoints) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.fillPolygon(xPoints, yPoints, nPoints);
       }
@@ -376,7 +436,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.fillPolygon(xPoints, yPoints, nPoints);
   }
   public void fillRect(final int x, final int y, final int width, final int height) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.fillRect(x, y, width, height);
       }
@@ -384,7 +444,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.fillRect(x, y, width, height);
   }
   public void fillRoundRect(final int x, final int y, final int width, final int height, final int arcWidth, final int arcHeight) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
       }
@@ -409,6 +469,16 @@ class CGCRecorder extends CGC.CGCGraphics2D {
   public FontMetrics getFontMetrics() {
     return super.getFontMetrics();
   }
+  protected FontRenderContext fontRenderContext;
+  public void setFontRenderContext(FontRenderContext fontRenderContext) {
+    this.fontRenderContext = fontRenderContext;
+  }
+  public FontRenderContext getFontRenderContext() {
+    if(fontRenderContext != null) {
+      return fontRenderContext;
+    }
+    return super.getFontRenderContext();
+  }
   public Paint getPaint() {
     return super.getPaint();
   }
@@ -425,7 +495,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     return super.getTransform();
   }
   public void setBackground(final Color background) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setBackground(background);
       }
@@ -433,7 +503,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setBackground(background);
   }
   public void setClip(final Shape clip) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setClip(clip);
       }
@@ -441,7 +511,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setClip(clip);
   }
   public void setColor(final Color color) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setColor(color);
       }
@@ -449,7 +519,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setColor(color);
   }
   public void setComposite(final Composite comp) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setComposite(comp);
       }
@@ -457,7 +527,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setComposite(comp);
   }
   public void setFont(final Font font) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setFont(font);
       }
@@ -465,7 +535,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setFont(font);
   }
   public void setPaint(final Paint paint) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setPaint(paint);
       }
@@ -473,7 +543,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setPaint(paint);
   }
   public void setPaintMode() {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setPaintMode();
       }
@@ -481,7 +551,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setPaintMode();
   }
   public void setRenderingHint(final Key hintKey, final Object hintValue) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setRenderingHint(hintKey, hintValue);
       }
@@ -489,7 +559,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setRenderingHint(hintKey, hintValue);
   }
   public void setRenderingHints(final Map hints) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setRenderingHints(hints);
       }
@@ -497,7 +567,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setRenderingHints(hints);
   }
   public void setStroke(final Stroke s) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setStroke(s);
       }
@@ -505,7 +575,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setStroke(s);
   }
   public void setTransform(final AffineTransform tx) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setTransform(tx);
       }
@@ -513,7 +583,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setTransform(tx);
   }
   public void setXORMode(final Color c1) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.setXORMode(c1);
       }
@@ -521,7 +591,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setXORMode(c1);
   }
   public void transform(final AffineTransform tx) {
-    addCommand(new CGCCommand() {
+    addCommand(this, new CGCCommand() {
       public void run(CGC cgc) {
         cgc.transform(tx);
       }
@@ -545,8 +615,12 @@ class CGCRecorder extends CGC.CGCGraphics2D {
  */
 public CGC internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
+	if(lastRecorder != null) {
+	  return lastRecorder;
+	}
 	CGCRecorder recorder = new CGCRecorder();
-	firstPageCommand.run(recorder);
+	recorder.setState(initialState);
+	lastRecorder = recorder;
   return recorder;
 //	if (data != null) {
 //		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -622,20 +696,23 @@ public boolean startJob(String jobName) {
 	checkDevice();
 	handle.setJobName(jobName);
 	handle.setCopies(data.copyCount);
-  final CGCCommand[] cgcCommands = new CGCCommand[1];
   handle.setPrintable(new Printable() {
     public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+      Graphics2D g2D = (Graphics2D)g;
+//      int iX = (int)Math.round(pageFormat.getImageableX());
+//      int iY = (int)Math.round(pageFormat.getImageableY());
+//      g.translate(iX, iY);
       referencePageFormat = pageFormat;
-      final Font font = g.getFont();
-      final Color color = g.getColor();
-//      final Shape clip = g.getClip();
-      cgcCommands[0] = new CGCCommand() {
-        public void run(CGC cgc) {
-          cgc.setFont(font);
-          cgc.setColor(color);
-//          cgc.setClip(clip);
-        }
-      };
+      initialState = new State();
+      initialState.font = g2D.getFont();
+      initialState.background = g2D.getBackground();
+      initialState.color = g2D.getColor();
+      initialState.clip = g2D.getClip();
+      initialState.composite = g2D.getComposite();
+      initialState.renderingHints = g2D.getRenderingHints();
+      initialState.stroke = g2D.getStroke();
+      initialState.transform = g2D.getTransform();
+      initialState.fontRenderContext = g2D.getFontRenderContext();
       handle.cancel();
       return NO_SUCH_PAGE;
     }
@@ -653,7 +730,6 @@ public boolean startJob(String jobName) {
 //  referencePageFormat = handle.validatePage(pageFormat);
   pageCount = 0;
   pageCommandList = new ArrayList();
-  firstPageCommand = cgcCommands[0];
   // TODO: Check conditions that return false;
   return true;
 //	DOCINFO di = new DOCINFO();
@@ -707,14 +783,14 @@ public void endJob() {
         }
       };
       List commandList = (List)pageCommandList.get(pageIndex);
-      int iX = (int)Math.round(referencePageFormat.getImageableX());
-      int iY = (int)Math.round(referencePageFormat.getImageableY());
-      g.translate(iX, iY);
+//      int iX = (int)Math.round(referencePageFormat.getImageableX());
+//      int iY = (int)Math.round(referencePageFormat.getImageableY());
+//      g.translate(iX, iY);
       for(int i=0; i<commandList.size(); i++) {
         CGCCommand command = (CGCCommand)commandList.get(i);
         command.run(cgc);
       }
-      g.translate(-iX, -iY);
+//      g.translate(-iX, -iY);
       return PAGE_EXISTS;
     }
   });
@@ -724,6 +800,7 @@ public void endJob() {
     e.printStackTrace();
   }
   pageCommandList = null;
+  lastRecorder = null;
 //	OS.EndDoc(handle);
 }
 
@@ -763,6 +840,10 @@ public boolean startPage() {
 	checkDevice();
   pageCount++;
   pageCommandList.add(new ArrayList());
+  if(lastRecorder != null) {
+    addCommand(lastRecorder, lastRecorder.getStateCommand());
+  }
+//  lastRecorder = null;
   // TODO: find if false can happen
   return true;
 //	int rc = OS.StartPage(handle);
@@ -797,8 +878,11 @@ public void endPage() {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Point getDPI() {
+protected Point getDPI_() {
 	checkDevice();
+//  int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
+//  int dpi = (int)Math.round(Math.pow(72, 2) / resolution);
+//  return new Point(dpi, dpi);
   return new Point(72, 72);
 //	int dpiX = OS.GetDeviceCaps(handle, OS.LOGPIXELSX);
 //	int dpiY = OS.GetDeviceCaps(handle, OS.LOGPIXELSY);
@@ -820,6 +904,7 @@ public Point getDPI() {
  */
 public Rectangle getBounds() {
 	checkDevice();
+//	return getClientArea();
   int width = (int)Math.round(referencePageFormat.getWidth());
   int height = (int)Math.round(referencePageFormat.getHeight());
   return new Rectangle(0, 0, width, height);
@@ -847,9 +932,10 @@ PageFormat referencePageFormat;
  */
 public Rectangle getClientArea() {
 	checkDevice();
-	int width = (int)Math.round(referencePageFormat.getImageableWidth());
-	int height = (int)Math.round(referencePageFormat.getImageableHeight());
-  return new Rectangle(0, 0, width, height);
+	return getBounds();
+//	int width = (int)Math.round(referencePageFormat.getImageableWidth());
+//	int height = (int)Math.round(referencePageFormat.getImageableHeight());
+//  return new Rectangle(0, 0, width, height);
 }
 
 /**
@@ -884,15 +970,7 @@ public Rectangle getClientArea() {
  */
 public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkDevice();
-	Rectangle bounds = getBounds();
-  int iX = (int)Math.round(referencePageFormat.getImageableX());
-  int iY = (int)Math.round(referencePageFormat.getImageableY());
-	Rectangle clientArea = getClientArea();
-	int dX = clientArea.x - bounds.x;
-	int dY = clientArea.y - bounds.y;
-	int dW = clientArea.width - bounds.width;
-	int dH = clientArea.height - bounds.height;
-  return new Rectangle(x - dX - iX, y - dY - iY, width - dW, height - dH);
+  return new Rectangle(x, y, width, height);
 }
 
 /**

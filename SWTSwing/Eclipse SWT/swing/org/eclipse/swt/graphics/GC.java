@@ -23,6 +23,7 @@ import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 
@@ -1604,7 +1605,7 @@ public void drawText (String string, int x, int y, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
-	if((flags & SWT.DRAW_TRANSPARENT) != 0) {
+	if((flags & SWT.DRAW_TAB) != 0) {
 	  string = string.replaceAll("\t", "    ");
 	}
 	int mnemonicIndex = -1;
@@ -1630,20 +1631,18 @@ public void drawText (String string, int x, int y, int flags) {
   boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
   java.awt.FontMetrics fm = handle.getFontMetrics();
   int fmHeight = fm.getHeight();
-  if(!isTransparent) {
-    int width = 0;
-    int height = tokens.length * fmHeight;
-    for(int i=0; i<tokens.length; i++) {
-      width = Math.max(width, fm.stringWidth(tokens[i]));
-    }
-    java.awt.Color oldColor = handle.getColor();
-    handle.setColor(data.background);
-    fillRectangle(x, y, width, height);
-    handle.setColor(oldColor);
-  }
+  int currentHeight = 0;
   for(int i=0; i<tokens.length; i++) {
+    y += currentHeight;
+    currentHeight += fmHeight;
+    if(!isTransparent) {
+      java.awt.Color oldColor = handle.getColor();
+      handle.setColor(data.background);
+      fillRectangle(x, y, stringExtent(tokens[i]).x, currentHeight);
+      handle.setColor(oldColor);
+    }
     int maxAscent = fm.getMaxAscent();
-    handle.drawString(tokens[i], x, y + maxAscent + i * fmHeight);
+    handle.drawString(tokens[i], x, y + maxAscent);
   }
   // TODO: optimize if the ensureAreaClean works
 //  int width = 0;
@@ -2376,6 +2375,11 @@ public Rectangle getClipping() {
   CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if(userClip == null) {
+    Shape clip = handle.getClip();
+    if(clip != null) {
+      java.awt.Rectangle bounds = clip.getBounds();
+      return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
     if(drawable instanceof Control) {
       java.awt.Dimension size = ((CControl)((Control)drawable).handle).getClientArea().getSize();
       return new Rectangle(0, 0, size.width, size.height);
@@ -3813,10 +3817,11 @@ public Point stringExtent(String string) {
   CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  java.awt.FontMetrics fm = handle.getFontMetrics();
-  // TODO: check why the StyledText queries the stringExtent and this is null sometimes (cf RSSOwl)
-  if(fm == null) return new Point(0, 0);
-  return new Point(fm.stringWidth(string), fm.getMaxAscent() + fm.getMaxDescent());
+	return textExtent(string, 0);
+//  java.awt.FontMetrics fm = handle.getFontMetrics();
+//  // TODO: check why the StyledText queries the stringExtent and this is null sometimes (cf RSSOwl)
+//  if(fm == null) return new Point(0, 0);
+//  return new Point(fm.stringWidth(string), fm.getMaxAscent() + fm.getMaxDescent());
 }
 
 /**
@@ -3877,18 +3882,44 @@ public Point textExtent(String string, int flags) {
   CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  String[] tokens = string.replaceAll("\t", "    ") .split("\n");
-  java.awt.FontMetrics fm = handle.getFontMetrics();
-  // TODO: check why the CTabFolder queries the textExtent and this is null sometimes (cf Azureus, Details>Peers)
-  // Potential reason: the graphics is a NullGraphics. Have to check if it can still happen now.
-  if(fm == null) return new Point(0, 0);
-  int fmHeight = fm.getHeight();
-  int width = 0;
-  int height = tokens.length * fmHeight;
-  for(int i=0; i<tokens.length; i++) {
-    width = Math.max(width, fm.stringWidth(tokens[i]));
+  if((flags & SWT.DRAW_TAB) != 0) {
+    string = string.replaceAll("\t", "    ");
   }
-  return new Point(width, height);
+  int mnemonicIndex = -1;
+  if((flags & SWT.DRAW_MNEMONIC) != 0) {
+    // Copied from Label
+    mnemonicIndex = findMnemonicIndex(string);
+    if(mnemonicIndex > 0) {
+      String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+      string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+      mnemonicIndex -= mnemonicIndex - 1 - s.length();
+      mnemonicIndex--;
+    } else {
+      string = string.replaceAll("&&", "&");
+    }
+  }
+  String[] tokens;
+  if((flags & SWT.DRAW_DELIMITER) != 0) {
+    tokens = string.split("\n");
+  } else {
+    tokens = new String[] {string};
+  }
+//  boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
+  java.awt.FontMetrics fm = handle.getFontMetrics();
+  int fmHeight = fm.getHeight();
+  int currentHeight = fmHeight;
+  int maxWidth = 0;
+  int maxHeight = 0;
+  FontRenderContext fontRenderContext = handle.getFontRenderContext();
+  java.awt.Font font = handle.getFont();
+  for(int i=0; i<tokens.length; i++) {
+//    if(!isTransparent) {
+      maxWidth = Math.max(maxWidth, font.getStringBounds(tokens[i], fontRenderContext).getBounds().width);
+      maxHeight = currentHeight;
+//    }
+    currentHeight += fmHeight;
+  }
+  return new Point(maxWidth, maxHeight);
 }
 
 /**
@@ -3968,14 +3999,6 @@ Shape systemClip;
 CGC getCGC() {
   // TODO: extract the logic to the CGC.getGraphics() implementations
   if(handle == null) return null;
-  if(handle.getGraphics() instanceof NullGraphics2D) {
-    if(!(drawable instanceof Control)) {
-      CGC newHandle = drawable.internal_new_GC(data);
-      if(newHandle != null) {
-        handle = newHandle;
-      }
-    }
-  }
   if(!(drawable instanceof Control)) return handle;
   Container container = ((Control)drawable).handle;
   if(container == null) {
@@ -4073,21 +4096,26 @@ CGC getCGC() {
 //  }
 //}
 
-void setAttributes(CGC g1, CGC g2) {
+void setAttributes(CGC gc1, CGC gc2) {
+  if(gc1 == null || gc2 == null || gc1 == gc2) {
+    return;
+  }
+  Graphics2D g1 = gc1.getGraphics();
+  Graphics2D g2 = gc2.getGraphics();
   if(g1 == null || g2 == null || g1 == g2) {
     return;
   }
-  g2.setBackground(g1.getBackground());
+  gc2.setBackground(gc1.getBackground());
   if(userClip != null) {
-    g2.clip(userClip);
+    gc2.clip(userClip);
   }
-  g2.setColor(g1.getColor());
-  g2.setComposite(g1.getComposite());
-  g2.setFont(g1.getFont());
-  g2.setPaint(g1.getPaint());
-  g2.setRenderingHints(g1.getRenderingHints());
-  g2.setStroke(g1.getStroke());
-  g2.setTransform(g1.getTransform());
+  gc2.setColor(gc1.getColor());
+  gc2.setComposite(gc1.getComposite());
+  gc2.setFont(gc1.getFont());
+  gc2.setPaint(gc1.getPaint());
+  gc2.setRenderingHints(gc1.getRenderingHints());
+  gc2.setStroke(gc1.getStroke());
+  gc2.setTransform(gc1.getTransform());
 }
 
 }

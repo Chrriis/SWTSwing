@@ -11,7 +11,9 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
 
 /**
  * Instances of this class manage operating system resources that
@@ -257,7 +259,7 @@ public static Font swing_new(Device device, java.awt.Font handle) {
 	font.handle = handle;
 	font.device = device;
   int style = handle.getStyle();
-  int height = Math.round(handle.getSize() * 72.0f / device.getDPI().x);
+  int height = Math.round(handle.getSize() * 72.0f / device.getDPI_().x);
   font.fontData = new FontData(handle.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
 	return font;
 }

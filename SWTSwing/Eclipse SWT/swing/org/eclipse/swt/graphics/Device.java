@@ -410,13 +410,17 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-  int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
-  return new Point(resolution, resolution);
+	return getDPI_();
 //	int hDC = internal_new_GC (null);
 //	int dpiX = OS.GetDeviceCaps (hDC, OS.LOGPIXELSX);
 //	int dpiY = OS.GetDeviceCaps (hDC, OS.LOGPIXELSY);
 //	internal_dispose_GC (hDC, null);
 //	return new Point (dpiX, dpiY);
+}
+
+protected Point getDPI_() {
+  int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
+  return new Point(resolution, resolution);
 }
 
 /**

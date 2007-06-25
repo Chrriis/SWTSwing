@@ -18,6 +18,7 @@ import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.RenderingHints.Key;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.util.Map;
@@ -102,6 +103,9 @@ public interface CGC {
     }
     public FontMetrics getFontMetrics() {
       return getGraphics().getFontMetrics();
+    }
+    public FontRenderContext getFontRenderContext() {
+      return getGraphics().getFontRenderContext();
     }
     public Paint getPaint() {
       return getGraphics().getPaint();
@@ -203,6 +207,7 @@ public interface CGC {
   public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight);
   
   public FontMetrics getFontMetrics();
+  public FontRenderContext getFontRenderContext();
   
   public void drawString(String str, int x, int y);
   

@@ -176,23 +176,58 @@ public Printer() {
  */
 public Printer(PrinterData data) {
 	super(checkNull(data));
-  computeDPI();
+  initPrinterData();
 }
 
-protected void computeDPI() {
-  if(dpiX != 0) {
+protected void initPrinterData() {
+  if(referencePageFormat != null) {
     return;
   }
   dpiX = 72;
   dpiY = 72;
   HashPrintRequestAttributeSet hashPrintRequestAttributeSet = getHashPrintRequestAttributeSet();
-  handle.setPrintable(new Printable() {
-    public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
-      AffineTransform transform = ((Graphics2D)g).getTransform();
-      dpiX = (int)Math.round(72 * transform.getScaleX());
-      dpiY = (int)Math.round(72 * transform.getScaleY());
-      handle.cancel();
-      return NO_SUCH_PAGE;
+  PageFormat pageFormat = handle.getPageFormat(hashPrintRequestAttributeSet);
+  Paper paper = pageFormat.getPaper();
+  paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
+  pageFormat.setPaper(paper);
+  referencePageFormat = handle.validatePage(pageFormat);
+  handle.setPageable(new Pageable() {
+    public int getNumberOfPages() {
+      return UNKNOWN_NUMBER_OF_PAGES;
+    }
+    public Printable getPrintable(int pageIndex) {
+      return new Printable() {
+        public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+          Graphics2D g2D = (Graphics2D)g;
+          AffineTransform transform = g2D.getTransform();
+          dpiX = (int)Math.round(72 * transform.getScaleX());
+          dpiY = (int)Math.round(72 * transform.getScaleY());
+    //      int iX = (int)Math.round(pageFormat.getImageableX());
+    //      int iY = (int)Math.round(pageFormat.getImageableY());
+    //      g.translate(iX, iY);
+//          referencePageFormat = pageFormat;
+          initialState = new State();
+          Font font = g2D.getFont();
+          font = font.deriveFont(font.getSize2D() * getDPI_().y / 72);
+//          g2D.setFont(font);
+          initialState.transform = g2D.getTransform();
+          initialState.transform.setToScale(1, 1);
+          g2D.setTransform(initialState.transform);
+          initialState.font = font;
+          initialState.background = g2D.getBackground();
+          initialState.color = g2D.getColor();
+          initialState.clip = g2D.getClip();
+          initialState.composite = g2D.getComposite();
+          initialState.renderingHints = g2D.getRenderingHints();
+          initialState.stroke = g2D.getStroke();
+          initialState.fontRenderContext = g2D.getFontRenderContext();
+          handle.cancel();
+          return NO_SUCH_PAGE;
+        }
+      };
+    }
+    public PageFormat getPageFormat(int pageIndex) throws IndexOutOfBoundsException {
+      return referencePageFormat;
     }
   });
   try {
@@ -713,54 +748,7 @@ HashPrintRequestAttributeSet getHashPrintRequestAttributeSet() {
 public boolean startJob(String jobName) {
 	checkDevice();
 	handle.setJobName(jobName);
-	handle.setCopies(data.copyCount);
-  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = getHashPrintRequestAttributeSet();
-  PageFormat pageFormat = handle.getPageFormat(hashPrintRequestAttributeSet);
-  Paper paper = pageFormat.getPaper();
-  paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
-  pageFormat.setPaper(paper);
-  referencePageFormat = handle.validatePage(pageFormat);
-  handle.setPageable(new Pageable() {
-    public int getNumberOfPages() {
-      return UNKNOWN_NUMBER_OF_PAGES;
-    }
-    public Printable getPrintable(int pageIndex) {
-      return new Printable() {
-        public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
-          Graphics2D g2D = (Graphics2D)g;
-    //      int iX = (int)Math.round(pageFormat.getImageableX());
-    //      int iY = (int)Math.round(pageFormat.getImageableY());
-    //      g.translate(iX, iY);
-//          referencePageFormat = pageFormat;
-          initialState = new State();
-          Font font = g2D.getFont();
-          font = font.deriveFont(font.getSize2D() * getDPI_().y / 72);
-//          g2D.setFont(font);
-          initialState.transform = g2D.getTransform();
-          initialState.transform.setToScale(1, 1);
-          g2D.setTransform(initialState.transform);
-          initialState.font = font;
-          initialState.background = g2D.getBackground();
-          initialState.color = g2D.getColor();
-          initialState.clip = g2D.getClip();
-          initialState.composite = g2D.getComposite();
-          initialState.renderingHints = g2D.getRenderingHints();
-          initialState.stroke = g2D.getStroke();
-          initialState.fontRenderContext = g2D.getFontRenderContext();
-          handle.cancel();
-          return NO_SUCH_PAGE;
-        }
-      };
-    }
-    public PageFormat getPageFormat(int pageIndex) throws IndexOutOfBoundsException {
-      return referencePageFormat;
-    }
-  });
-  try {
-    handle.print(hashPrintRequestAttributeSet);
-  } catch(Exception e) {
-//    e.printStackTrace();
-  }
+//	handle.setCopies(data.copyCount);
   pageCount = 0;
   pageCommandList = new ArrayList();
   // TODO: Check conditions that return false;
@@ -908,7 +896,7 @@ public void endPage() {
  */
 protected Point getDPI_() {
 	checkDevice();
-	computeDPI();
+	initPrinterData();
 //  int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
 //  int dpi = (int)Math.round(Math.pow(72, 2) / resolution);
 //  return new Point(dpi, dpi);

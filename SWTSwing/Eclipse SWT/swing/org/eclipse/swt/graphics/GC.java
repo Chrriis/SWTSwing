@@ -1503,7 +1503,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
   CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  drawText(string, x, y, 0);
+  drawText(string, x, y, isTransparent? SWT.DRAW_TRANSPARENT: 0);
 //  if(!isTransparent) {
 //    java.awt.Color oldColor = handle.getColor();
 //    handle.setColor(data.background);

@@ -2823,7 +2823,11 @@ public void getTransform(Transform transform) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	transform.handle = (AffineTransform) gcAT.clone();
+	if(gcAT == null) {
+	  transform.handle = handle.getTransform();
+	} else {
+	  transform.handle = (AffineTransform) gcAT.clone();
+	}
 }
 
 boolean isXORMode = false;

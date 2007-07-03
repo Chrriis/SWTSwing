@@ -28,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Instances of this class are graphics which have been prepared
@@ -1065,6 +1066,12 @@ void init(Device device, int width, int height) {
 	this.device = device;
 	type = SWT.BITMAP;
   handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+  if(!(device instanceof Display)) {
+    Graphics g = handle.getGraphics();
+    g.setColor(java.awt.Color.WHITE);
+    ((Graphics2D)g).setBackground(java.awt.Color.WHITE);
+    g.fillRect(0, 0, width, height);
+  }
 }
 
 static void init(Device device, Image image, ImageData data) {
@@ -1080,7 +1087,14 @@ static void init(Device device, Image image, ImageData data) {
 //	if(true) return;
   image.device = device;
   if(image.handle == null) {
-    image.handle = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
+    BufferedImage bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
+    image.handle = bufferedImage;
+    if(!(device instanceof Display)) {
+      Graphics g = bufferedImage.getGraphics();
+      g.setColor(java.awt.Color.WHITE);
+      ((Graphics2D)g).setBackground(java.awt.Color.WHITE);
+      g.fillRect(0, 0, data.width, data.height);
+    }
   }
   ImageData transparencyMask = data.getTransparencyMask();
   for(int x=image.handle.getWidth()-1; x >= 0; x--) {

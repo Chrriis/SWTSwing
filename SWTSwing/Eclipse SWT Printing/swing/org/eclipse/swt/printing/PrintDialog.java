@@ -18,10 +18,8 @@ import java.util.ArrayList;
 import javax.print.PrintService;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttribute;
-import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.Destination;
 import javax.print.attribute.standard.PageRanges;
-import javax.print.attribute.standard.SheetCollate;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -257,9 +255,9 @@ public PrinterData open() {
   }
   PrintService printService = printerJob.getPrintService();
   PrinterData printerData = new PrinterData(printService.getClass().getName(), printService.getName());
-  Copies copies = (Copies)hashPrintRequestAttributeSet.get(Copies.class);
-  printerData.copyCount = copies != null? copies.getValue(): 1;
-  printerData.collate = hashPrintRequestAttributeSet.get(SheetCollate.class) == SheetCollate.COLLATED;
+//  Copies copies = (Copies)hashPrintRequestAttributeSet.get(Copies.class);
+  printerData.copyCount = 1;//copies != null? copies.getValue(): 1;
+  printerData.collate = false;//hashPrintRequestAttributeSet.get(SheetCollate.class) == SheetCollate.COLLATED;
   printerData.startPage = startPage;
   printerData.endPage = endPage;
   printerData.scope = scope;

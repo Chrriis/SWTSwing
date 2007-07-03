@@ -176,7 +176,34 @@ public Printer() {
  */
 public Printer(PrinterData data) {
 	super(checkNull(data));
+  computeDPI();
 }
+
+protected void computeDPI() {
+  if(dpiX != 0) {
+    return;
+  }
+  dpiX = 72;
+  dpiY = 72;
+  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = getHashPrintRequestAttributeSet();
+  handle.setPrintable(new Printable() {
+    public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+      AffineTransform transform = ((Graphics2D)g).getTransform();
+      dpiX = (int)Math.round(72 * transform.getScaleX());
+      dpiY = (int)Math.round(72 * transform.getScaleY());
+      handle.cancel();
+      return NO_SUCH_PAGE;
+    }
+  });
+  try {
+    handle.print(hashPrintRequestAttributeSet);
+  } catch(Exception e) {
+//    e.printStackTrace();
+  }
+}
+
+protected int dpiX;
+protected int dpiY;
 
 /**	 
  * Creates the printer handle.
@@ -262,8 +289,8 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     state.composite = super.getComposite();
     state.renderingHints = super.getRenderingHints();
     state.stroke = super.getStroke();
-    state.transform = super.getTransform();
     state.fontRenderContext = super.getFontRenderContext();
+    state.transform = super.getTransform();
     return state;
   }
   public CGCCommand getStateCommand() {
@@ -277,10 +304,10 @@ class CGCRecorder extends CGC.CGCGraphics2D {
         cgc.setComposite(state.composite);
         cgc.setRenderingHints(state.renderingHints);
         cgc.setStroke(state.stroke);
-        cgc.setTransform(state.transform);
         if(cgc instanceof CGCRecorder) {
           ((CGCRecorder)cgc).setFontRenderContext(state.fontRenderContext);
         }
+        cgc.setTransform(state.transform);
       }
     };
   }
@@ -706,14 +733,19 @@ public boolean startJob(String jobName) {
     //      g.translate(iX, iY);
 //          referencePageFormat = pageFormat;
           initialState = new State();
-          initialState.font = g2D.getFont();
+          Font font = g2D.getFont();
+          font = font.deriveFont(font.getSize2D() * getDPI_().y / 72);
+//          g2D.setFont(font);
+          initialState.transform = g2D.getTransform();
+          initialState.transform.setToScale(1, 1);
+          g2D.setTransform(initialState.transform);
+          initialState.font = font;
           initialState.background = g2D.getBackground();
           initialState.color = g2D.getColor();
           initialState.clip = g2D.getClip();
           initialState.composite = g2D.getComposite();
           initialState.renderingHints = g2D.getRenderingHints();
           initialState.stroke = g2D.getStroke();
-          initialState.transform = g2D.getTransform();
           initialState.fontRenderContext = g2D.getFontRenderContext();
           handle.cancel();
           return NO_SUCH_PAGE;
@@ -774,13 +806,14 @@ public boolean startJob(String jobName) {
 public void endJob() {
 	checkDevice();
   handle.setPrintable(new Printable() {
-    public int print(final Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+    public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
       if(pageIndex < 0 || pageIndex >= pageCount) {
         return NO_SUCH_PAGE;
       }
+      final Graphics2D g2D = ((Graphics2D)g);
       CGC cgc = new CGC.CGCGraphics2D() {
         public Graphics2D getGraphics() {
-          return (Graphics2D)g;
+          return g2D;
         }
       };
       List commandList = (List)pageCommandList.get(pageIndex);
@@ -875,10 +908,11 @@ public void endPage() {
  */
 protected Point getDPI_() {
 	checkDevice();
+	computeDPI();
 //  int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
 //  int dpi = (int)Math.round(Math.pow(72, 2) / resolution);
 //  return new Point(dpi, dpi);
-  return new Point(72, 72);
+  return new Point(dpiX, dpiY);
 //	int dpiX = OS.GetDeviceCaps(handle, OS.LOGPIXELSX);
 //	int dpiY = OS.GetDeviceCaps(handle, OS.LOGPIXELSY);
 //	return new Point(dpiX, dpiY);
@@ -900,8 +934,9 @@ protected Point getDPI_() {
 public Rectangle getBounds() {
 	checkDevice();
 //	return getClientArea();
-  int width = (int)Math.round(referencePageFormat.getImageableWidth());
-  int height = (int)Math.round(referencePageFormat.getImageableHeight());
+	Point dpi = getDPI_();
+  int width = (int)Math.round(referencePageFormat.getImageableWidth() * dpi.x / 72.0);
+  int height = (int)Math.round(referencePageFormat.getImageableHeight() * dpi.y / 72.0);
   return new Rectangle(0, 0, width, height);
 //	int width = OS.GetDeviceCaps(handle, OS.PHYSICALWIDTH);
 //	int height = OS.GetDeviceCaps(handle, OS.PHYSICALHEIGHT);

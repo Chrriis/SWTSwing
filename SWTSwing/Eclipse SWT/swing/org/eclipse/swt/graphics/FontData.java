@@ -11,7 +11,9 @@
 package org.eclipse.swt.graphics;
 
 
-import org.eclipse.swt.*;
+import java.util.Map;
+
+import org.eclipse.swt.SWT;
 
 /**
  * Instances of this class describe operating system fonts.
@@ -40,6 +42,18 @@ import org.eclipse.swt.*;
 
 public final class FontData {
 	
+  /**
+   * A Swing font Map of TextAttributes
+   * (Warning: This field is platform dependent)
+   * <p>
+   * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+   * public API. It is marked public only so that it can be shared
+   * within the packages provided by SWT. It is not available on all
+   * platforms and should never be accessed from application code.
+   * </p>
+   */
+  public Map data;
+  
 	/**
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)
@@ -82,6 +96,7 @@ FontData(FontData fontData) {
   this.style = fontData.style;
   this.name = fontData.name;
   this.locale = fontData.locale;
+  this.data = fontData.data;
 }
 
 /**

@@ -14,6 +14,9 @@ package org.eclipse.swt.widgets;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.font.TextAttribute;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -154,7 +157,18 @@ public FontData open () {
     int height = Math.round(fontData.getHeight() * dpi / 72.0f);
     int style = fontData.getStyle();
     style = (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0));
-    fontChooser.setDefaultFont(new java.awt.Font(fontData.getName(), style, height));
+    
+    java.awt.Font defaultFont;
+    if(fontData.data != null) {
+      Map attributeMap = new HashMap(fontData.data);
+      attributeMap.put(TextAttribute.FAMILY, fontData.getName());
+      attributeMap.put(TextAttribute.POSTURE, (style & SWT.ITALIC) != 0? TextAttribute.POSTURE_OBLIQUE: TextAttribute.POSTURE_REGULAR);
+      attributeMap.put(TextAttribute.WEIGHT, (style & SWT.BOLD) != 0? TextAttribute.WEIGHT_BOLD: TextAttribute.WEIGHT_REGULAR);
+      defaultFont = new java.awt.Font(attributeMap);
+    } else {
+      defaultFont = new java.awt.Font(fontData.getName(), style, height);
+    }
+    fontChooser.setDefaultFont(defaultFont);
   }
   fontChooser.setModal(true);
   fontChooser.setVisible(true);
@@ -166,6 +180,7 @@ public FontData open () {
   int height = Math.round(font.getSize() * 72.0f / dpi);
   int style = font.getStyle();
   fontData = new FontData(font.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
+  fontData.data = font.getAttributes();
   rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
   return fontData;
 }

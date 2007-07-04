@@ -29,6 +29,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.font.TextAttribute;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -53,6 +55,8 @@ public class JFontChooser extends JDialog {
   private JComboBox fontNameComboBox;
   private JCheckBox isFontBoldCheckBox;
   private JCheckBox isFontItalicCheckBox;
+  private JCheckBox isFontStrikeThroughCheckBox;
+  private JCheckBox isFontUnderlineCheckBox;
   private JTextField fontSizeTextField;
   private JLabel previewLabel;
   private SimpleAttributeSet attributes;
@@ -90,11 +94,14 @@ public class JFontChooser extends JDialog {
         names.add(font.getFamily());
       }
     }
+    JPanel northPanel = new JPanel(new BorderLayout());
     JPanel fontPanel = new JPanel();
     fontNameComboBox = new JComboBox(names);
-    fontNameComboBox.setSelectedItem(fontNameComboBox.getFont().getFamily());
+    Font fontNameComboBoxFont = fontNameComboBox.getFont();
+    Map fontNameComboBoxAttributes = fontNameComboBoxFont.getAttributes();
+    fontNameComboBox.setSelectedItem(fontNameComboBoxFont.getFamily());
     fontNameComboBox.addActionListener(updateActionListener);
-    fontSizeTextField = new JTextField("" + fontNameComboBox.getFont().getSize(), 4);
+    fontSizeTextField = new JTextField("" + fontNameComboBoxFont.getSize(), 4);
     fontSizeTextField.setHorizontalAlignment(SwingConstants.RIGHT);
     fontSizeTextField.addActionListener(updateActionListener);
     fontSizeTextField.addFocusListener(new FocusAdapter() {
@@ -102,18 +109,29 @@ public class JFontChooser extends JDialog {
         adjustPreview();
       }
     });
-    isFontBoldCheckBox = new JCheckBox("Bold");
-    isFontBoldCheckBox.setSelected(fontNameComboBox.getFont().isBold());
-    isFontBoldCheckBox.addActionListener(updateActionListener);
-    isFontItalicCheckBox = new JCheckBox("Italic");
-    isFontItalicCheckBox.addActionListener(updateActionListener);
-    isFontItalicCheckBox.setSelected(fontNameComboBox.getFont().isItalic());
     fontPanel.add(fontNameComboBox);
     fontPanel.add(new JLabel(" Size: "));
     fontPanel.add(fontSizeTextField);
-    fontPanel.add(isFontBoldCheckBox);
-    fontPanel.add(isFontItalicCheckBox);
-    c.add(fontPanel, BorderLayout.NORTH);
+    northPanel.add(fontPanel, BorderLayout.NORTH);
+    JPanel optionsPanel = new JPanel();
+    isFontBoldCheckBox = new JCheckBox("Bold");
+    isFontBoldCheckBox.setSelected(fontNameComboBoxFont.isBold());
+    isFontBoldCheckBox.addActionListener(updateActionListener);
+    isFontItalicCheckBox = new JCheckBox("Italic");
+    isFontItalicCheckBox.addActionListener(updateActionListener);
+    isFontItalicCheckBox.setSelected(fontNameComboBoxFont.isItalic());
+    isFontStrikeThroughCheckBox = new JCheckBox("Strike Through");
+    isFontStrikeThroughCheckBox.setSelected(fontNameComboBoxAttributes.get(TextAttribute.STRIKETHROUGH) == TextAttribute.STRIKETHROUGH_ON);
+    isFontStrikeThroughCheckBox.addActionListener(updateActionListener);
+    isFontUnderlineCheckBox = new JCheckBox("Underline");
+    isFontUnderlineCheckBox.setSelected(fontNameComboBoxAttributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON);
+    isFontUnderlineCheckBox.addActionListener(updateActionListener);
+    optionsPanel.add(isFontBoldCheckBox);
+    optionsPanel.add(isFontItalicCheckBox);
+    optionsPanel.add(isFontStrikeThroughCheckBox);
+    optionsPanel.add(isFontUnderlineCheckBox);
+    northPanel.add(optionsPanel, BorderLayout.SOUTH);
+    c.add(northPanel, BorderLayout.NORTH);
     // Set up the color chooser panel and attach a change listener so that color
     // updates get reflected in our preview label.
     colorChooser = new JColorChooser(fontNameComboBox.getForeground());
@@ -187,6 +205,14 @@ public class JFontChooser extends JDialog {
     if (StyleConstants.isItalic(attributes) != isItalic) {
       StyleConstants.setItalic(attributes, isItalic);
     }
+    boolean isStrikeThrough = isFontStrikeThroughCheckBox.isSelected();
+    if (StyleConstants.isStrikeThrough(attributes) != isStrikeThrough) {
+      StyleConstants.setStrikeThrough(attributes, isStrikeThrough);
+    }
+    boolean isUnderline = isFontUnderlineCheckBox.isSelected();
+    if (StyleConstants.isUnderline(attributes) != isUnderline) {
+      StyleConstants.setUnderline(attributes, isUnderline);
+    }
     updatePreviewFont();
   }
   
@@ -195,10 +221,19 @@ public class JFontChooser extends JDialog {
     String name = StyleConstants.getFontFamily(attributes);
     boolean isBold = StyleConstants.isBold(attributes);
     boolean isItalic = StyleConstants.isItalic(attributes);
+    boolean isStrikeThrough = StyleConstants.isStrikeThrough(attributes);
+    boolean isUnderline = StyleConstants.isUnderline(attributes);
     int size = StyleConstants.getFontSize(attributes);
     // Bold and italic don't work properly in beta 4.
     Font f = new Font(name, (isBold ? Font.BOLD : 0) + (isItalic ? Font.ITALIC : 0), size);
-    previewLabel.setFont(f);
+    Map newFontAttributes = f.getAttributes();
+    if(isStrikeThrough) {
+      newFontAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+    }
+    if(isUnderline) {
+      newFontAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+    }
+    previewLabel.setFont(new Font(newFontAttributes));
   }
 
   // Get the appropriate color from our chooser and update previewLabel
@@ -233,15 +268,18 @@ public class JFontChooser extends JDialog {
     setVisible(false);
   }
 
-  public void setDefaultFont(Font currentFont) {
-    if (currentFont == null) {
+  public void setDefaultFont(Font defaultFont) {
+    if (defaultFont == null) {
       return;
     }
-    newFont = currentFont;
-    fontNameComboBox.setSelectedItem(currentFont.getFamily());
-    fontSizeTextField.setText(String.valueOf(currentFont.getSize()));
-    isFontBoldCheckBox.setSelected(currentFont.isBold());
-    isFontItalicCheckBox.setSelected(currentFont.isItalic());
+    newFont = defaultFont;
+    fontNameComboBox.setSelectedItem(defaultFont.getFamily());
+    fontSizeTextField.setText(String.valueOf(defaultFont.getSize()));
+    isFontBoldCheckBox.setSelected(defaultFont.isBold());
+    isFontItalicCheckBox.setSelected(defaultFont.isItalic());
+    Map currentFontAttributes = defaultFont.getAttributes();
+    isFontStrikeThroughCheckBox.setSelected(currentFontAttributes.get(TextAttribute.STRIKETHROUGH) == TextAttribute.STRIKETHROUGH_ON);
+    isFontUnderlineCheckBox.setSelected(currentFontAttributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON);
     adjustPreview();
   }
 

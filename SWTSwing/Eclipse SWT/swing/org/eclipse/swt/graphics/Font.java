@@ -11,6 +11,10 @@
 package org.eclipse.swt.graphics;
 
 
+import java.awt.font.TextAttribute;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
@@ -208,9 +212,17 @@ void init (Device device, FontData fd) {
   fontData = new FontData(fd);
   int style = fd.getStyle();
   int height = Math.round(fd.getHeight() * device.getDPI().x / 72.0f);
-  handle = new java.awt.Font(fd.getName(), 0
+  if(fontData.data != null) {
+    Map attributeMap = new HashMap(fontData.data);
+    attributeMap.put(TextAttribute.FAMILY, fd.getName());
+    attributeMap.put(TextAttribute.POSTURE, (style & SWT.ITALIC) != 0? TextAttribute.POSTURE_OBLIQUE: TextAttribute.POSTURE_REGULAR);
+    attributeMap.put(TextAttribute.WEIGHT, (style & SWT.BOLD) != 0? TextAttribute.WEIGHT_BOLD: TextAttribute.WEIGHT_REGULAR);
+    handle = new java.awt.Font(attributeMap);
+  } else {
+    handle = new java.awt.Font(fd.getName(), 0
         | (((style & SWT.ITALIC) != 0 ? java.awt.Font.ITALIC : 0))
         | (((style & SWT.BOLD) != 0 ? java.awt.Font.BOLD : 0)), height);
+  }
 //  handle = new java.awt.Font(fd.getName(), 0 | (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0)), fd.getHeight());
 }
 

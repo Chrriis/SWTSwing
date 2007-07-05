@@ -2826,7 +2826,7 @@ public void getTransform(Transform transform) {
 	if(gcAT == null) {
 	  transform.handle = new AffineTransform();
 	} else {
-	  transform.handle = (AffineTransform) gcAT.clone();
+	  transform.handle = new AffineTransform(gcAT);
 	}
 }
 

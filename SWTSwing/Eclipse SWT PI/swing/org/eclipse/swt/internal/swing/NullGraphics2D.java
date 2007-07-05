@@ -100,7 +100,7 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
     return stroke;
   }
   public AffineTransform getTransform() {
-    return transform;
+    return new AffineTransform(transform);
   }
   public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
     return false;
@@ -135,7 +135,7 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
   }
   protected AffineTransform transform;
   public void setTransform(AffineTransform transform) {
-    this.transform = transform;
+    this.transform = new AffineTransform(transform);
   }
   public void shear(double shx, double shy) {
   }

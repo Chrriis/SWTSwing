@@ -216,7 +216,7 @@ protected void initPrinterData() {
           initialState.font = font;
           initialState.background = g2D.getBackground();
           initialState.color = g2D.getColor();
-          initialState.clip = g2D.getClip();
+//          initialState.clip = g2D.getClip();
           initialState.composite = g2D.getComposite();
           initialState.renderingHints = g2D.getRenderingHints();
           initialState.stroke = g2D.getStroke();

@@ -143,7 +143,7 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
     if(this.transform != null) {
       this.transform.concatenate(transform);
     } else {
-      this.transform = transform;
+      this.transform = new AffineTransform(transform);
     }
   }
   public void translate(double tx, double ty) {

@@ -2824,7 +2824,7 @@ public void getTransform(Transform transform) {
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if(gcAT == null) {
-	  transform.handle = handle.getTransform();
+	  transform.handle = new AffineTransform();
 	} else {
 	  transform.handle = (AffineTransform) gcAT.clone();
 	}

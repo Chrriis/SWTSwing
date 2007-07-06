@@ -191,7 +191,14 @@ protected void initPrinterData() {
   paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
   pageFormat.setPaper(paper);
   referencePageFormat = handle.validatePage(pageFormat);
-  handle.setPageable(new Pageable() {
+  PrinterJob initPrinterJob = PrinterJob.getPrinterJob();
+  try {
+    // Should not happen since the handle has it.
+    initPrinterJob.setPrintService(handle.getPrintService());
+  } catch(Exception e) {
+    e.printStackTrace();
+  }
+  initPrinterJob.setPageable(new Pageable() {
     public int getNumberOfPages() {
       return UNKNOWN_NUMBER_OF_PAGES;
     }
@@ -202,9 +209,9 @@ protected void initPrinterData() {
           AffineTransform transform = g2D.getTransform();
           dpiX = (int)Math.round(72 * transform.getScaleX());
           dpiY = (int)Math.round(72 * transform.getScaleY());
-    //      int iX = (int)Math.round(pageFormat.getImageableX());
-    //      int iY = (int)Math.round(pageFormat.getImageableY());
-    //      g.translate(iX, iY);
+//          int iX = (int)Math.round(pageFormat.getImageableX());
+//          int iY = (int)Math.round(pageFormat.getImageableY());
+//          g.translate(iX, iY);
 //          referencePageFormat = pageFormat;
           initialState = new State();
           Font font = g2D.getFont();
@@ -231,7 +238,7 @@ protected void initPrinterData() {
     }
   });
   try {
-    handle.print(hashPrintRequestAttributeSet);
+    initPrinterJob.print(hashPrintRequestAttributeSet);
   } catch(Exception e) {
 //    e.printStackTrace();
   }
@@ -793,27 +800,37 @@ public boolean startJob(String jobName) {
  */
 public void endJob() {
 	checkDevice();
-  handle.setPrintable(new Printable() {
-    public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
-      if(pageIndex < 0 || pageIndex >= pageCount) {
-        return NO_SUCH_PAGE;
-      }
-      final Graphics2D g2D = ((Graphics2D)g);
-      CGC cgc = new CGC.CGCGraphics2D() {
-        public Graphics2D getGraphics() {
-          return g2D;
-        }
-      };
-      List commandList = (List)pageCommandList.get(pageIndex);
+  handle.setPageable(new Pageable() {
+    public int getNumberOfPages() {
+      return pageCount;
+    }
+    public Printable getPrintable(int pageIndex) throws IndexOutOfBoundsException {
+      return new Printable() {
+        public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
+          if(pageIndex < 0 || pageIndex >= pageCount) {
+            return NO_SUCH_PAGE;
+          }
+          final Graphics2D g2D = ((Graphics2D)g);
+          CGC cgc = new CGC.CGCGraphics2D() {
+            public Graphics2D getGraphics() {
+              return g2D;
+            }
+          };
+          List commandList = (List)pageCommandList.get(pageIndex);
 //      int iX = (int)Math.round(referencePageFormat.getImageableX());
 //      int iY = (int)Math.round(referencePageFormat.getImageableY());
 //      g.translate(iX, iY);
-      for(int i=0; i<commandList.size(); i++) {
-        CGCCommand command = (CGCCommand)commandList.get(i);
-        command.run(cgc);
-      }
+          for(int i=0; i<commandList.size(); i++) {
+            CGCCommand command = (CGCCommand)commandList.get(i);
+            command.run(cgc);
+          }
 //      g.translate(-iX, -iY);
-      return PAGE_EXISTS;
+          return PAGE_EXISTS;
+        }
+      };
+    }
+    public PageFormat getPageFormat(int pageIndex) throws IndexOutOfBoundsException {
+      return referencePageFormat;
     }
   });
   try {

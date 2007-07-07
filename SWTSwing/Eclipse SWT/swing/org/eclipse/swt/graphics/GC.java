@@ -153,7 +153,11 @@ public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData ();
 	data.style = checkStyle(style);
-	CGC handle = drawable.internal_new_GC(data);
+	Device device = data.device;
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+  this.device = data.device = device;
+  CGC handle = drawable.internal_new_GC(data);
   if(handle == null) {
     // When the component gets hidden, the graphics would be null. In that case we return a bogus graphics.
     final Graphics2D g = new NullGraphics2D(device.getSystemFont().handle);
@@ -166,10 +170,6 @@ public GC(Drawable drawable, int style) {
       }
     };
   }
-	Device device = data.device;
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  this.device = data.device = device;
   data.background = java.awt.Color.WHITE;
 	init (drawable, data, handle);
 	if (device.tracking) device.new_Object(this);

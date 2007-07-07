@@ -239,7 +239,7 @@ class CShellFrame extends JFrame implements CShell {
     });
   }
 
-  protected boolean isPaintActive;
+  protected boolean isPaintActive = true;
   
   public void paint(Graphics g) {
     if(isPaintActive) {
@@ -624,7 +624,7 @@ class CShellDialog extends JDialog implements CShell {
     });
   }
 
-  protected boolean isPaintActive;
+  protected boolean isPaintActive = true;
   
   public void paint(Graphics g) {
     if(isPaintActive) {

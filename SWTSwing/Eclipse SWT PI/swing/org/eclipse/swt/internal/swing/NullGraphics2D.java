@@ -37,15 +37,6 @@ import java.util.Map;
 
 public class NullGraphics2D extends Graphics2D implements Cloneable {
   
-  protected Font systemFont;
-  
-  public NullGraphics2D() {
-    this(null);
-  }
-  public NullGraphics2D(Font systemFont) {
-    this.systemFont = systemFont;
-  }
-  
   // TODO: save the attributes for the copyAttributes()
   public void addRenderingHints(Map arg0) {
   }
@@ -74,7 +65,7 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
   }
   public void fill(Shape s) {
   }
-  protected Color background = Color.BLACK;
+  protected Color background;
   public Color getBackground() {
     return background;
   }
@@ -219,9 +210,6 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
   }
   protected Font font;
   public Font getFont() {
-    if(font == null) {
-      return systemFont;
-    }
     return font;
   }
   public FontMetrics getFontMetrics(Font f) {

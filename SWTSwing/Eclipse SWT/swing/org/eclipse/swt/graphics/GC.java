@@ -14,10 +14,8 @@ package org.eclipse.swt.graphics;
 import java.awt.AWTException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Robot;
@@ -34,7 +32,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
-import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -158,18 +155,7 @@ public GC(Drawable drawable, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   this.device = data.device = device;
   CGC handle = drawable.internal_new_GC(data);
-  if(handle == null) {
-    // When the component gets hidden, the graphics would be null. In that case we return a bogus graphics.
-    final Graphics2D g = new NullGraphics2D(device.getSystemFont().handle);
-    handle = new CGC.CGCGraphics2D() {
-      public Graphics2D getGraphics() {
-        return g;
-      }
-      public Dimension getDeviceSize() {
-        return new Dimension(0, 0);
-      }
-    };
-  }
+  if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
   data.background = java.awt.Color.WHITE;
 	init (drawable, data, handle);
 	if (device.tracking) device.new_Object(this);
@@ -3698,14 +3684,20 @@ public void setTextAntialias(int antialias) {
  */
 public void setTransform(Transform transform) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (saveAT == null) {
 		saveAT = handle.getTransform();
 	} else {
 	  handle.setTransform(saveAT);
   }
-	gcAT = transform.handle;
-	handle.transform(transform.handle);
+	AffineTransform at;
+	if (transform == null) {
+	  at = new AffineTransform();
+	  gcAT = null;
+	} else {
+	  at = transform.handle;
+	  gcAT = at;
+	}
+	handle.transform(at);
 }
 
 /**

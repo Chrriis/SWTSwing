@@ -100,7 +100,7 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
     return stroke;
   }
   public AffineTransform getTransform() {
-    return new AffineTransform(transform);
+    return transform == null? new AffineTransform(): new AffineTransform(transform);
   }
   public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
     return false;

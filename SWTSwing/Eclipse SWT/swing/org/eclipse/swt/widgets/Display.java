@@ -66,6 +66,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.CShell;
+import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
@@ -1595,11 +1596,11 @@ public CGC internal_new_GC (GCData data) {
       }
     }
   }
-  if(g == null) {
-    g = (Graphics2D) frames[0].getGraphics ();
+  for (int i = 0; i < frames.length && g == null; i++) {
+    g = (Graphics2D) frames[i].getGraphics ();
   }
   if(g == null) {
-    return null;
+    g = new NullGraphics2D();
   }
   final Graphics2D g2D = g;
   return new CGC.CGCGraphics2D() {

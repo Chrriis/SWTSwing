@@ -1254,13 +1254,16 @@ public CGC internal_new_GC (GCData data) {
       if(internalSwingGraphics2D != sGraphics2D || graphics2D == null || graphics2D instanceof NullGraphics2D) {
         Graphics2D newGraphics2D = (Graphics2D)clientArea.getGraphics();
         if(newGraphics2D == null) {
-          newGraphics2D = new NullGraphics2D(getDisplay().getSystemFont().handle);
+          newGraphics2D = new NullGraphics2D();
+          newGraphics2D.setBackground(clientArea.getBackground());
+          newGraphics2D.setColor(clientArea.getForeground());
+          newGraphics2D.setFont(clientArea.getFont());
         }
         Point internalOffset = getInternalOffset();
         newGraphics2D.translate(-internalOffset.x, -internalOffset.y);
         if(graphics2D != null) {
-          newGraphics2D.setBackground(graphics2D.getBackground());
           resetClip = true;
+          newGraphics2D.setBackground(graphics2D.getBackground());
           newGraphics2D.setColor(graphics2D.getColor());
           newGraphics2D.setComposite(graphics2D.getComposite());
           newGraphics2D.setFont(graphics2D.getFont());

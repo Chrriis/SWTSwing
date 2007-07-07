@@ -1359,6 +1359,7 @@ public void setVisible (boolean visible) {
         if (!traverseGroup (true)) setFocus ();
       }
     }
+    layout();
   }
 //	if (drawCount != 0) {
 //		if (((state & HIDDEN) == 0) == visible) return;

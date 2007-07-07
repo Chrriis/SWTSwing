@@ -224,9 +224,9 @@ public class JTreeTable extends JPanel implements Scrollable {
     }
   };
 
-  class CTable extends JTable {
+  class InternalTable extends JTable {
 
-    protected CTable() {
+    protected InternalTable() {
       enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
       setSelectionModel(tableSelectionModel);
       JTreeTable.this.setBackground(super.getBackground());
@@ -353,7 +353,7 @@ public class JTreeTable extends JPanel implements Scrollable {
 
   public JTreeTable() {
     super(new BorderLayout(0, 0));
-    table = new CTable();
+    table = new InternalTable();
     table.setTableHeader(createDefaultTableHeader());
 //    setBackground(table.getBackground());
     add(table, BorderLayout.CENTER);

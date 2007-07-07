@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Shape;
 
 import javax.swing.ImageIcon;
@@ -151,17 +152,18 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
   checkWidget ();
   if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
   if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+  Graphics2D g = gc.handle.getGraphics();
   if(backgroundImage != null) {
-    Shape clip = gc.handle.getClip();
-    gc.handle.clipRect(x, y, width, height);
+    Shape clip = g.getClip();
+    g.clipRect(x, y, width, height);
     Dimension size = handle.getSize();
-    Utils.paintTiledImage(gc.handle.getGraphics(), new ImageIcon(backgroundImage.handle), 0, 0, size.width, size.height);
-    gc.handle.setClip(clip);
+    Utils.paintTiledImage(g, new ImageIcon(backgroundImage.handle), 0, 0, size.width, size.height);
+    g.setClip(clip);
   } else {
-    java.awt.Color oldColor = gc.handle.getColor();
-    gc.handle.setColor(getBackground().handle);
-    gc.handle.fillRect(x, y, width, height);
-    gc.handle.setColor(oldColor);
+    java.awt.Color oldColor = g.getColor();
+    g.setColor(getBackground().handle);
+    g.fillRect(x, y, width, height);
+    g.setColor(oldColor);
   }
 }
 

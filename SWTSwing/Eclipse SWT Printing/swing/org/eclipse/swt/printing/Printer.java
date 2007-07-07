@@ -13,6 +13,7 @@ package org.eclipse.swt.printing;
 
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -298,7 +299,7 @@ class State {
   Font font;
   Color background;
   Color color;
-  Shape clip;
+  Shape userClip;
   Composite composite;
   RenderingHints renderingHints;
   Stroke stroke;
@@ -315,7 +316,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     super.setFont(state.font);
     super.setBackground(state.background);
     super.setColor(state.color);
-    super.setClip(state.clip);
+    super.setUserClip(state.userClip);
     super.setComposite(state.composite);
     super.setRenderingHints(state.renderingHints);
     super.setStroke(state.stroke);
@@ -327,7 +328,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
     state.font = super.getFont();
     state.background = super.getBackground();
     state.color = super.getColor();
-    state.clip = super.getClip();
+    state.userClip = super.getUserClip();
     state.composite = super.getComposite();
     state.renderingHints = super.getRenderingHints();
     state.stroke = super.getStroke();
@@ -342,7 +343,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
         cgc.setFont(state.font);
         cgc.setColor(state.color);
         cgc.setBackground(state.background);
-        cgc.setClip(state.clip);
+        cgc.setUserClip(state.userClip);
         cgc.setComposite(state.composite);
         cgc.setRenderingHints(state.renderingHints);
         cgc.setStroke(state.stroke);
@@ -352,22 +353,6 @@ class CGCRecorder extends CGC.CGCGraphics2D {
         cgc.setTransform(state.transform);
       }
     };
-  }
-  public void clip(final Shape s) {
-    addCommand(this, new CGCCommand() {
-      public void run(CGC cgc) {
-        cgc.clip(s);
-      }
-    });
-    super.clip(s);
-  }
-  public void clipRect(final int x, final int y, final int width, final int height) {
-    addCommand(this, new CGCCommand() {
-      public void run(CGC cgc) {
-        clipRect(x, y, width, height);
-      }
-    });
-    super.clipRect(x, y, width, height);
   }
   public void copyArea(final int x, final int y, final int width, final int height, final int dx, final int dy) {
     addCommand(this, new CGCCommand() {
@@ -518,9 +503,6 @@ class CGCRecorder extends CGC.CGCGraphics2D {
   public Color getBackground() {
     return super.getBackground();
   }
-  public Shape getClip() {
-    return super.getClip();
-  }
   public Color getColor() {
     return super.getColor();
   }
@@ -565,14 +547,6 @@ class CGCRecorder extends CGC.CGCGraphics2D {
       }
     });
     super.setBackground(background);
-  }
-  public void setClip(final Shape clip) {
-    addCommand(this, new CGCCommand() {
-      public void run(CGC cgc) {
-        cgc.setClip(clip);
-      }
-    });
-    super.setClip(clip);
   }
   public void setColor(final Color color) {
     addCommand(this, new CGCCommand() {
@@ -661,6 +635,21 @@ class CGCRecorder extends CGC.CGCGraphics2D {
       }
     });
     super.transform(tx);
+  }
+  public void setUserClip(final Shape userClip) {
+    addCommand(this, new CGCCommand() {
+      public void run(CGC cgc) {
+        cgc.setUserClip(userClip);
+      }
+    });
+    super.setUserClip(userClip);
+  }
+  public Shape getUserClip() {
+    return super.getUserClip();
+  }
+  public Dimension getDeviceSize() {
+    Rectangle bounds = getBounds();
+    return new Dimension(bounds.width, bounds.height);
   }
 }
 
@@ -814,6 +803,10 @@ public void endJob() {
           CGC cgc = new CGC.CGCGraphics2D() {
             public Graphics2D getGraphics() {
               return g2D;
+            }
+            public Dimension getDeviceSize() {
+              Rectangle bounds = getBounds();
+              return new Dimension(bounds.width, bounds.height);
             }
           };
           List commandList = (List)pageCommandList.get(pageIndex);

@@ -313,10 +313,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         super.paintComponent(g);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
       }
     };

@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -1394,6 +1395,9 @@ public CGC internal_new_GC (GCData data) {
   return new CGC.CGCGraphics2D() {
     public Graphics2D getGraphics() {
       return g;
+    }
+    public Dimension getDeviceSize() {
+      return new Dimension(handle.getWidth(), handle.getHeight());
     }
   };
 }

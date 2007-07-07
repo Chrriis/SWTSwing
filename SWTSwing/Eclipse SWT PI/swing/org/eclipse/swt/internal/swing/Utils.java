@@ -54,7 +54,7 @@ public class Utils {
   protected static final String DEFAULT_ARROW_BUTTONS_PROPERTY = "swt.swing.defaultarrowbuttons";
   protected static final String APPLEMENUBAR_PROPERTY = "apple.laf.useScreenMenuBar";
 
-  public static final String SWTSwingPaintingClientProperty = "SWTSwingClientProperty";
+  public static final String SWTSwingGraphics2DClientProperty = "SWTSwingGraphics2DClientProperty";
 
   public static boolean isLightweightPopups() {
     return "true".equals(System.getProperty(LIGHTPOPUPS_PROPERTY));

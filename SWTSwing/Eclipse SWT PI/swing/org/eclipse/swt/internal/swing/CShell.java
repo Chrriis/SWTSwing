@@ -149,7 +149,7 @@ class CShellFrame extends JFrame implements CShell {
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         super.paintComponent(g);
         Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
@@ -163,7 +163,7 @@ class CShellFrame extends JFrame implements CShell {
             g2.dispose();
           }
         }
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
       }
       public void paint(Graphics g) {
@@ -529,7 +529,7 @@ class CShellDialog extends JDialog implements CShell {
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         super.paintComponent(g);
         Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
@@ -543,7 +543,7 @@ class CShellDialog extends JDialog implements CShell {
             g2.dispose();
           }
         }
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
       }
       public void paint(Graphics g) {

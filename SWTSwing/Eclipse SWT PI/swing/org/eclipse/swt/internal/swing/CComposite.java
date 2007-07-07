@@ -90,13 +90,13 @@ class CCompositeImplementation extends JPanel implements CComposite {
       }
       protected void paintComponent (Graphics g) {
         graphics = g;
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, Boolean.TRUE);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         if(!(getParent() instanceof JViewport)) {
           Utils.paintTiledImage(this, g, backgroundImageIcon);
         }
         super.paintComponent(g);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
-        putClientProperty(Utils.SWTSwingPaintingClientProperty, null);
+        putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
       }
       public Color getBackground() {

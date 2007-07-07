@@ -1606,6 +1606,10 @@ public CGC internal_new_GC (GCData data) {
     public Graphics2D getGraphics() {
       return g2D;
     }
+    public Dimension getDeviceSize() {
+      Rectangle bounds = getBounds();
+      return new Dimension(bounds.width, bounds.height);
+    }
   };
 }
 

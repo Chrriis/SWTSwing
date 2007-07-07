@@ -14,7 +14,7 @@ package org.eclipse.swt.graphics;
 import java.awt.AWTException;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -27,16 +27,12 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.Utils;
@@ -165,6 +161,9 @@ public GC(Drawable drawable, int style) {
       public Graphics2D getGraphics() {
         return g;
       }
+      public Dimension getDeviceSize() {
+        return new Dimension(0, 0);
+      }
     };
   }
 	Device device = data.device;
@@ -217,7 +216,6 @@ public void copyArea(Image image, int x, int y) {
 		return;
 	}
 	// TODO: what about other cases?
-	CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -294,7 +292,6 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * @since 3.1 
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
-  CGC handle = getCGC();
   // TODO: check what to do with the paint argument
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.copyArea(srcX, srcY, width, height, destX - srcX, destY - srcY);
@@ -503,7 +500,6 @@ public void dispose() {
  * </ul>
  */
 public void drawArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -536,7 +532,6 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  * @see #drawRectangle(int, int, int, int)
  */	 
 public void drawFocus (int x, int y, int width, int height) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   java.awt.Color newColor = oldColor;
@@ -579,7 +574,6 @@ public void drawFocus (int x, int y, int width, int height) {
  * </ul>
  */
 public void drawImage(Image image, int x, int y) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -619,7 +613,6 @@ public void drawImage(Image image, int x, int y) {
  * </ul>
  */
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
@@ -631,7 +624,6 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-  CGC handle = getCGC();
   if(srcWidth == -1) {
     srcWidth = srcImage.handle.getWidth();
   }
@@ -1170,7 +1162,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  * </ul>
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawLine(x1, y1, x2, y2);
 //  Point p1 = new Point(Math.min(x1, x2), Math.min(y1, y2));
@@ -1200,7 +1191,6 @@ public void drawLine (int x1, int y1, int x2, int y2) {
  * </ul>
  */	 
 public void drawOval (int x, int y, int width, int height) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawOval(x, y, width, height);
 //  ensureAreaClean(x, y, width, height);
@@ -1224,7 +1214,6 @@ public void drawOval (int x, int y, int width, int height) {
  * @since 3.1
  */
 public void drawPath (Path path) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	handle.draw(path.handle);
@@ -1250,7 +1239,6 @@ public void drawPath (Path path) {
  * @since 3.0
  */
 public void drawPoint (int x, int y) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawLine(x, y, x, y);
 //  ensureAreaClean(x, y, 1, 1);
@@ -1274,7 +1262,6 @@ public void drawPoint (int x, int y) {
  * </ul>
  */
 public void drawPolygon(int[] pointArray) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 //  int maxX = Integer.MIN_VALUE;
@@ -1313,7 +1300,6 @@ public void drawPolygon(int[] pointArray) {
  * </ul>
  */
 public void drawPolyline(int[] pointArray) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 //  int maxX = Integer.MIN_VALUE;
@@ -1350,7 +1336,6 @@ public void drawPolyline(int[] pointArray) {
  * </ul>
  */
 public void drawRectangle (int x, int y, int width, int height) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawRect(x, y, width, height);
 //  ensureAreaClean(x, y, width, height);
@@ -1399,7 +1384,6 @@ public void drawRectangle (Rectangle rect) {
  * </ul>
  */
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   handle.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
 //  ensureAreaClean(x, y, width, height);
@@ -1500,7 +1484,6 @@ public void drawString (String string, int x, int y) {
  * </ul>
  */
 public void drawString (String string, int x, int y, boolean isTransparent) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   drawText(string, x, y, isTransparent? SWT.DRAW_TRANSPARENT: 0);
@@ -1600,7 +1583,6 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
@@ -1770,7 +1752,6 @@ public boolean equals (Object object) {
  * @see #drawArc
  */
 public void fillArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1874,7 +1855,6 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
   java.awt.Color fromColor = handle.getColor();
@@ -1915,7 +1895,6 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  * @see #drawOval
  */	 
 public void fillOval (int x, int y, int width, int height) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -1952,7 +1931,6 @@ public void fillOval (int x, int y, int width, int height) {
  * @since 3.1
  */
 public void fillPath (Path path) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	// Set fill(winding) rule
@@ -1987,7 +1965,6 @@ public void fillPath (Path path) {
  * @see #drawPolygon	
  */
 public void fillPolygon(int[] pointArray) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   int maxX = Integer.MIN_VALUE;
@@ -2037,7 +2014,6 @@ public void fillPolygon(int[] pointArray) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (int x, int y, int width, int height) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -2076,7 +2052,6 @@ public void fillRectangle (int x, int y, int width, int height) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (Rectangle rect) {
-  CGC handle = getCGC();
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -2102,7 +2077,6 @@ public void fillRectangle (Rectangle rect) {
  * @see #drawRoundRectangle
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
   handle.setColor(data.background);
@@ -2185,7 +2159,6 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  * </ul>
  */
 public int getAdvanceWidth(char ch) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return handle.getFontMetrics().charWidth(ch);
 //	if (OS.IsWinCE) {
@@ -2228,7 +2201,6 @@ public int getAdvanceWidth(char ch) {
  * @since 3.1
  */
 public boolean getAdvanced() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data.advanced;
 }
@@ -2245,7 +2217,6 @@ public boolean getAdvanced() {
  * @since 3.1
  */
 public int getAlpha() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.alpha;
 }
@@ -2267,7 +2238,6 @@ public int getAlpha() {
  * @since 3.1
  */
 public int getAntialias() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   Object value = handle.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
   if(value == RenderingHints.VALUE_ANTIALIAS_OFF) return SWT.OFF;
@@ -2285,7 +2255,6 @@ public int getAntialias() {
  * </ul>
  */
 public Color getBackground() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return Color.swing_new(data.device, handle.getBackground());
 //	int color = OS.GetBkColor(handle);
@@ -2310,7 +2279,6 @@ public Color getBackground() {
  * @since 3.1
  */
 public Pattern getBackgroundPattern() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data.backgroundPattern;
 }
@@ -2332,7 +2300,6 @@ public Pattern getBackgroundPattern() {
  * </ul>
  */
 public int getCharWidth(char ch) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   // TODO: find the difference between advance width and char width
   return handle.getFontMetrics().charWidth(ch);
@@ -2371,22 +2338,14 @@ public int getCharWidth(char ch) {
  * </ul>
  */
 public Rectangle getClipping() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(userClip == null) {
-    Shape clip = handle.getClip();
-    if(clip != null) {
-      java.awt.Rectangle bounds = clip.getBounds();
-      return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
-    }
-    if(drawable instanceof Control) {
-      java.awt.Dimension size = ((CControl)((Control)drawable).handle).getClientArea().getSize();
-      return new Rectangle(0, 0, size.width, size.height);
-    }
-    // TODO: what to do for other types? Do they always have a clip region?
-    return new Rectangle(0, 0, 1, 1);
+  Shape userClip = handle.getUserClip();
+  java.awt.Rectangle bounds;
+  if(userClip != null) {
+    bounds = userClip.getBounds();
+  } else {
+    bounds = new java.awt.Rectangle(handle.getDeviceSize());
   }
-  java.awt.Rectangle bounds = userClip.getBounds();
   return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
@@ -2405,20 +2364,14 @@ public Rectangle getClipping() {
  * </ul>
  */
 public void getClipping (Region region) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  Shape clip = userClip;
-  if(clip == null) {
-    if(drawable instanceof Control) {
-      clip = new java.awt.Rectangle(((CControl)((Control)drawable).handle).getClientArea().getSize());
-    } else {
-      // TODO: what to do for other types? Do they always have a clip region?
-      clip = new java.awt.Rectangle(0, 0, 1, 1);
-    }
+  Shape userClip = handle.getUserClip();
+  if(userClip == null) {
+    userClip = new java.awt.Rectangle(handle.getDeviceSize());
   }
-  region.add(new Region(data.device, clip));
+  region.add(new Region(data.device, userClip));
 //	int result = OS.GetClipRgn (handle, region.handle);
 //	if (result != 1) {
 //		RECT rect = new RECT();
@@ -2467,7 +2420,6 @@ public void getClipping (Region region) {
  * @since 3.1
  */
 public int getFillRule() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return fillRule;
 }
@@ -2483,7 +2435,6 @@ public int getFillRule() {
  * </ul>
  */
 public Font getFont () {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return Font.swing_new(data.device, handle.getFont());
 }
@@ -2500,7 +2451,6 @@ public Font getFont () {
  * </ul>
  */
 public FontMetrics getFontMetrics() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return FontMetrics.swing_new(handle.getFontMetrics());
 }
@@ -2515,7 +2465,6 @@ public FontMetrics getFontMetrics() {
  * </ul>
  */
 public Color getForeground() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return Color.swing_new(data.device, handle.getColor());
 }
@@ -2535,7 +2484,6 @@ public Color getForeground() {
  * @since 3.1
  */
 public Pattern getForegroundPattern() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data.foregroundPattern;
 }
@@ -2561,7 +2509,6 @@ public Pattern getForegroundPattern() {
  * @since 3.2
  */
 public GCData getGCData() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return data;
 }
@@ -2580,7 +2527,6 @@ public GCData getGCData() {
  * @since 3.1
  */
 public int getInterpolation() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   Utils.notImplemented(); return SWT.DEFAULT;
 //  if (data.gdipGraphics == 0) return SWT.DEFAULT;
@@ -2612,7 +2558,6 @@ public int getInterpolation() {
  * @since 3.1 
  */
 public int getLineCap() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch(getCurrentBasicStroke().getEndCap()) {
     case BasicStroke.CAP_ROUND:
@@ -2636,7 +2581,6 @@ public int getLineCap() {
  * @since 3.1 
  */
 public int[] getLineDash() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   float[] dashArray = getCurrentBasicStroke().getDashArray();
   if(dashArray == null) return null;
@@ -2661,7 +2605,6 @@ public int[] getLineDash() {
  * @since 3.1 
  */
 public int getLineJoin() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch(getCurrentBasicStroke().getLineJoin()) {
     case BasicStroke.JOIN_BEVEL:
@@ -2685,7 +2628,6 @@ public int getLineJoin() {
  * </ul>
  */
 public int getLineStyle() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   float[] dashArray = getCurrentBasicStroke().getDashArray();
   if(dashArray == null) {
@@ -2746,7 +2688,6 @@ public int getLineStyle() {
  * </ul>
  */
 public int getLineWidth() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   return (int)getCurrentBasicStroke().getLineWidth();
 }
@@ -2770,7 +2711,6 @@ public int getLineWidth() {
  * @since 2.1.2
  */
 public int getStyle () {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.style;
 }
@@ -2792,7 +2732,6 @@ public int getStyle () {
  * @since 3.1
  */
 public int getTextAntialias() {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   Object value = handle.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
   if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_OFF) return SWT.OFF;
@@ -2819,7 +2758,6 @@ public int getTextAntialias() {
  * @since 3.1
  */
 public void getTransform(Transform transform) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2847,7 +2785,6 @@ boolean isXORMode = false;
  * </ul>
  */
 public boolean getXORMode() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   // TODO: Not a solution because if swing is used directly in future implementation, this does not detect.
   return isXORMode;
@@ -2957,9 +2894,8 @@ public int hashCode () {
  * </ul>
  */
 public boolean isClipped() {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return handle.getClip() != null;
+  return handle.getUserClip() != null;
 }
 
 /**
@@ -2973,7 +2909,6 @@ public boolean isClipped() {
  * @return <code>true</code> when the GC is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-  CGC handle = getCGC();
 	return handle == null;
 }
 
@@ -3025,7 +2960,6 @@ public boolean isDisposed() {
  * @since 3.1
  */
 public void setAdvanced(boolean advanced) {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   data.advanced = advanced;
 }
@@ -3051,7 +2985,6 @@ public void setAdvanced(boolean advanced) {
  * @since 3.1
  */
 public void setAntialias(int antialias) {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch (antialias) {
     case SWT.DEFAULT:
@@ -3080,7 +3013,6 @@ public void setAntialias(int antialias) {
  * @since 3.1
  */
 public void setAlpha(int alpha) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
 	AlphaComposite comp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, data.alpha / 255.0f);
@@ -3103,7 +3035,6 @@ public void setAlpha(int alpha) {
  * </ul>
  */
 public void setBackground (Color color) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3139,7 +3070,6 @@ public void setBackground (Color color) {
  * @since 3.1
  */
 public void setBackgroundPattern (Pattern pattern) {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   Utils.notImplemented();
@@ -3203,11 +3133,8 @@ public void setBackgroundPattern (Pattern pattern) {
  * </ul>
  */
 public void setClipping (int x, int y, int width, int height) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.setClip(systemClip);
-  userClip = new java.awt.Rectangle(x, y, width, height);
-  handle.clip(userClip);
+  setClipping(new Rectangle(x, y, width, height));
 }
 
 /**
@@ -3229,12 +3156,9 @@ public void setClipping (int x, int y, int width, int height) {
  * @since 3.1
  */
 public void setClipping (Path path) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.setClip(systemClip);
-  userClip = path.handle;
-	handle.clip(userClip);
+	handle.setUserClip(path.handle);
 }
 
 /**
@@ -3251,13 +3175,9 @@ public void setClipping (Path path) {
  * </ul>
  */
 public void setClipping (Rectangle rect) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (rect == null) {
-		handle.setClip(systemClip);
-	} else {
-		setClipping(rect.x, rect.y, rect.width, rect.height);
-	}
+	java.awt.Rectangle userClip = rect == null? null: new java.awt.Rectangle(rect.x, rect.y, rect.width, rect.height);
+	handle.setUserClip(userClip);
 }
 
 /**
@@ -3277,12 +3197,9 @@ public void setClipping (Rectangle rect) {
  * </ul>
  */
 public void setClipping (Region region) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.setClip(systemClip);
-  userClip = region.handle;
-  handle.clip(userClip);
+  handle.setUserClip(region.handle);
 }
 
 /** 
@@ -3302,7 +3219,6 @@ public void setClipping (Region region) {
  * @since 3.1
  */
 public void setFillRule(int rule) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (rule) {
 		case SWT.FILL_WINDING: 
@@ -3330,7 +3246,6 @@ public void setFillRule(int rule) {
  * </ul>
  */
 public void setFont (Font font) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
     handle.setFont(data.device.systemFont);
@@ -3355,7 +3270,6 @@ public void setFont (Font font) {
  * </ul>
  */
 public void setForeground (Color color) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3380,7 +3294,6 @@ public void setForeground (Color color) {
  * @since 3.1
  */
 public void setForegroundPattern (Pattern pattern) {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
   Utils.notImplemented();
@@ -3415,7 +3328,6 @@ public void setForegroundPattern (Pattern pattern) {
  * @since 3.1
  */
 public void setInterpolation(int interpolation) {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   Utils.notImplemented();
 //  if (data.gdipGraphics == 0 && interpolation == SWT.DEFAULT) return;
@@ -3449,7 +3361,6 @@ public void setInterpolation(int interpolation) {
  * @since 3.1 
  */
 public void setLineCap(int cap) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
 	int capStyle = 0;
@@ -3487,7 +3398,6 @@ public void setLineCap(int cap) {
  * @since 3.1 
  */
 public void setLineDash(int[] dashes) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   if(dashes == null) dashes = new int[0];
@@ -3515,7 +3425,6 @@ public void setLineDash(int[] dashes) {
  * @since 3.1 
  */
 public void setLineJoin(int join) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   int joinStyle = 0;
@@ -3551,7 +3460,6 @@ public void setLineJoin(int join) {
  * </ul>
  */
 public void setLineStyle(int lineStyle) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   float[] array = null;
@@ -3598,7 +3506,6 @@ public void setLineStyle(int lineStyle) {
  * </ul>
  */
 public void setLineWidth(int lineWidth) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   BasicStroke stroke = getCurrentBasicStroke();
   handle.setStroke(new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
@@ -3724,7 +3631,6 @@ public void setLineWidth(int lineWidth) {
  * @deprecated this functionality is not supported on some platforms
  */
 public void setXORMode(boolean xor) {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if(xor) {
     // need to check if "handle.setXORMode(getBackground().handle)" must be called any time the background color changes.
@@ -3756,7 +3662,6 @@ public void setXORMode(boolean xor) {
  * @since 3.1
  */
 public void setTextAntialias(int antialias) {
-  CGC handle = getCGC();
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   switch (antialias) {
     case SWT.DEFAULT:
@@ -3792,7 +3697,6 @@ public void setTextAntialias(int antialias) {
  * @since 3.1
  */
 public void setTransform(Transform transform) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (saveAT == null) {
@@ -3824,7 +3728,6 @@ public void setTransform(Transform transform) {
  * </ul>
  */
 public Point stringExtent(String string) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return textExtent(string, 0);
@@ -3889,7 +3792,6 @@ public Point textExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string, int flags) {
-  CGC handle = getCGC();
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
   if((flags & SWT.DRAW_TAB) != 0) {
@@ -3940,7 +3842,7 @@ public Point textExtent(String string, int flags) {
  */
 public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
-	return "GC {" + getCGC() + "}";
+	return "GC {" + handle + "}";
 }
 
 /**	 
@@ -3992,140 +3894,11 @@ static final float[] lineDashDotArray = new float[] {9, 6, 3, 6};
 static final float[] lineDashDotDotArray = new float[] {9, 3, 3, 3, 3, 3};
 
 BasicStroke getCurrentBasicStroke() {
-  CGC g2d = handle;
-  Stroke stroke = g2d.getStroke();
+  Stroke stroke = handle.getStroke();
   if(stroke instanceof BasicStroke) {
     return (BasicStroke)stroke;
   }
   return new BasicStroke();
-}
-
-boolean isSwingPainting = false;
-//Graphics2D validGraphics;
-
-Shape userClip;
-Shape systemClip;
-
-CGC getCGC() {
-  // TODO: extract the logic to the CGC.getGraphics() implementations
-  if(handle == null) return null;
-  if(!(drawable instanceof Control)) return handle;
-  Container container = ((Control)drawable).handle;
-  if(container == null) {
-    final Graphics2D nullGraphics = new NullGraphics2D(device.getSystemFont().handle);
-    CGC.CGCGraphics2D g = new CGC.CGCGraphics2D() {
-      public Graphics2D getGraphics() {
-        return nullGraphics;
-      }
-    };
-    setAttributes(handle, g);
-    return g;
-  }
-  Container clientArea = ((CControl)container).getClientArea();
-  Graphics2D g2D = (Graphics2D)clientArea.getGraphics();
-  if(g2D != null) {
-    systemClip = g2D.getClip();
-  }
-  isSwingPainting = clientArea instanceof JComponent && Boolean.TRUE.equals(((JComponent)clientArea).getClientProperty(Utils.SWTSwingPaintingClientProperty));
-  if(g2D != null) {
-    // Code is duplicated in Control.getInternalOffset() in inverse
-    if(clientArea != container) {
-      if(clientArea.getParent() instanceof JViewport) {
-        JViewport viewport = (JViewport)clientArea.getParent();
-        JViewport columnHeader = ((JScrollPane)viewport.getParent()).getColumnHeader();
-        int offsetX = 0;
-        int offsetY = 0;
-        java.awt.Point viewPosition = viewport.getViewPosition();
-        offsetX += viewPosition.x;
-        offsetY += viewPosition.y;
-        if(columnHeader != null && columnHeader.isVisible()) {
-          offsetY -= columnHeader.getHeight();
-        }
-        g2D.translate(offsetX, offsetY);
-      }
-    }
-  }
-  if(g2D == null) {
-    g2D = new NullGraphics2D(device.getSystemFont().handle);
-  }
-  final Graphics2D g2D_ = g2D;
-  CGC g = new CGC.CGCGraphics2D() {
-    public Graphics2D getGraphics() {
-      return g2D_;
-    }
-  };
-  setAttributes(handle, g);
-  handle = g;
-  return handle;
-//  // TODO: check that this optimization is correct.
-//  if(validGraphics != null) return validGraphics;
-//  Container container = ((Control)drawable).handle;
-//  Container clientArea = ((CControl)container).getClientArea();
-//  Graphics2D g = (Graphics2D)clientArea.getGraphics();
-////  for(Container parent = container; parent != null && parent.isLightweight(); parent = parent.getParent()) {
-////    if(!parent.isVisible()) {
-////      g.clipRect(0, 0, 0, 0);
-////      break;
-////    }
-////    g.translate(parent.getX(), parent.getY());
-////  }
-//  validGraphics = g;
-//  // Duplicate from Control.getInternalOffset()
-//  if(clientArea != container) {
-//    if(clientArea.getParent() instanceof JViewport) {
-//      JViewport columnHeader = ((JScrollPane)((JViewport)clientArea.getParent()).getParent()).getColumnHeader();
-//      if(columnHeader != null && columnHeader.isVisible()) {
-//        g.translate(0, -columnHeader.getHeight());
-//      }
-//    }
-//  }
-//  return g;
-}
-
-//void ensureAreaClean(int x, int y, int width, int height) {
-//  // TODO: check if this is useful
-//  if(isSwingPainting) return;
-//  if(!(drawable instanceof Control)) return;
-//  if(handle == null || handle instanceof NullGraphics) return;
-//  Control control = (Control)drawable;
-//  Composite parent = control.getParent();
-//  Component[] components = ((CControl)parent.handle).getClientArea().getComponents();
-//  if(components.length < 2) return;
-//  Container parentClientArea = ((CControl)parent.handle).getClientArea();
-//  java.awt.Rectangle rect = SwingUtilities.convertRectangle(((CControl)control.handle).getClientArea(), new java.awt.Rectangle(x, y, width, height), parentClientArea);
-//  boolean isFound = false;
-//  for(int i=components.length-1; i>=0; i--) {
-//    Component component = components[i];
-//    if(isFound && component instanceof JComponent) {
-//      java.awt.Rectangle rect2 = SwingUtilities.convertRectangle(parentClientArea, rect, component);
-//      component.repaint(rect2.x, rect2.y, rect2.width, rect2.height);
-//    }
-//    if(component == control.handle) {
-//      isFound = true;
-//    }
-//  }
-//}
-
-void setAttributes(CGC gc1, CGC gc2) {
-  if(gc1 == null || gc2 == null || gc1 == gc2) {
-    return;
-  }
-  Graphics2D g1 = gc1.getGraphics();
-  Graphics2D g2 = gc2.getGraphics();
-  if(g1 == null || g2 == null || g1 == g2) {
-    return;
-  }
-  gc2.setBackground(gc1.getBackground());
-  if(userClip != null) {
-    gc2.clip(userClip);
-  }
-  gc2.setColor(gc1.getColor());
-  gc2.setComposite(gc1.getComposite());
-  gc2.setFont(gc1.getFont());
-  gc2.setPaint(gc1.getPaint());
-  gc2.setRenderingHints(gc1.getRenderingHints());
-  gc2.setStroke(gc1.getStroke());
-  gc2.setTransform(gc1.getTransform());
 }
 
 }

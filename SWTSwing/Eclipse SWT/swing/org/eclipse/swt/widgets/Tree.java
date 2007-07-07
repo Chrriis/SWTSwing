@@ -3631,7 +3631,7 @@ public void processEvent(EventObject e) {
         if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
         if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
         event.gc = new GC(this);
-        event.gc.handle.clip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        event.gc.handle.setUserClip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
 //        event.gc.isSwingPainting = true;
         sendEvent(SWT.EraseItem, event);
         if(event.doit) {
@@ -3663,7 +3663,7 @@ public void processEvent(EventObject e) {
         if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
         if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
         event.gc = new GC(this);
-        event.gc.handle.clip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+        event.gc.handle.setUserClip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
         sendEvent(SWT.PaintItem, event);
         break;
       }

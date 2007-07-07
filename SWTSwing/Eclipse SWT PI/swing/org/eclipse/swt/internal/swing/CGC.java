@@ -9,6 +9,7 @@ package org.eclipse.swt.internal.swing;
 
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -26,12 +27,6 @@ import java.util.Map;
 public interface CGC {
 
   public static abstract class CGCGraphics2D implements CGC {
-    public void clip(Shape s) {
-      getGraphics().clip(s);
-    }
-    public void clipRect(int x, int y, int width, int height) {
-      getGraphics().clipRect(x, y, width, height);
-    }
     public void copyArea(int x, int y, int width, int height, int dx, int dy) {
       getGraphics().copyArea(x, y, width, height, dx, dy);
     }
@@ -89,9 +84,6 @@ public interface CGC {
     public Color getBackground() {
       return getGraphics().getBackground();
     }
-    public Shape getClip() {
-      return getGraphics().getClip();
-    }
     public Color getColor() {
       return getGraphics().getColor();
     }
@@ -125,9 +117,6 @@ public interface CGC {
     public void setBackground(Color background) {
       getGraphics().setBackground(background);
     }
-    public void setClip(Shape clip) {
-      getGraphics().setClip(clip);
-    }
     public void setColor(Color color) {
       getGraphics().setColor(color);
     }
@@ -160,6 +149,26 @@ public interface CGC {
     }
     public void transform(AffineTransform tx) {
       getGraphics().transform(tx);
+    }
+    protected Shape userClip;
+    protected Shape systemClip;
+    public void setUserClip(Shape userClip) {
+      if(this.userClip == null && userClip == null) {
+        return;
+      }
+      this.userClip = userClip;
+      Graphics2D g = getGraphics();
+      if(systemClip == null) {
+        systemClip = g.getClip();
+      } else {
+        g.setClip(systemClip);
+      }
+      if(userClip != null) {
+        g.clip(userClip);
+      }
+    }
+    public Shape getUserClip() {
+      return userClip;
     }
   }
   
@@ -219,12 +228,6 @@ public interface CGC {
   public RenderingHints getRenderingHints();
   public void setRenderingHints(Map hints);
   
-  public void clip(Shape s);
-  public Shape getClip();
-  public void setClip(Shape clip);
-  
-  public void clipRect(int x, int y, int width, int height);
-  
   public Composite getComposite();
   public void setComposite(Composite comp);
   
@@ -239,5 +242,9 @@ public interface CGC {
   public void setTransform(AffineTransform Tx);
   
   public void copyArea(int x, int y, int width, int height, int dx, int dy);
+  
+  public void setUserClip(Shape s);
+  public Shape getUserClip();
+  public Dimension getDeviceSize();
   
 }

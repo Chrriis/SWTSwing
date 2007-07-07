@@ -56,6 +56,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
+import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
@@ -1233,19 +1234,51 @@ public CGC internal_new_GC (GCData data) {
     data.background = handle.getBackground();
     data.hFont = handle.getFont();
   }
-  Component component = ((CControl)handle).getClientArea();
-  final Graphics2D g2D = (Graphics2D)component.getGraphics();
-  if(g2D == null) {
-    return null;
-  }
-  Point internalOffset = getInternalOffset();
-  g2D.translate(-internalOffset.x, -internalOffset.y);
+//  Component clientArea = ((CControl)handle).getClientArea();
+//  final Graphics2D g2D = (Graphics2D)clientArea.getGraphics();
+//  if(g2D == null) {
+//    return null;
+//  }
+//  Point internalOffset = getInternalOffset();
+//  g2D.translate(-internalOffset.x, -internalOffset.y);
 //  java.awt.Point point = new java.awt.Point(0, 0);
 //  point = SwingUtilities.convertPoint(component, point, handle);
 //  g2D.translate(-point.x, -point.y);
   return new CGC.CGCGraphics2D() {
+    protected Graphics2D internalSwingGraphics2D;
+    protected Graphics2D graphics2D;
     public Graphics2D getGraphics() {
-      return g2D;
+      Container clientArea = ((CControl)handle).getClientArea();
+      Graphics2D sGraphics2D = clientArea instanceof JComponent? (Graphics2D)((JComponent)clientArea).getClientProperty(Utils.SWTSwingGraphics2DClientProperty): null;
+      boolean resetClip = false;
+      if(internalSwingGraphics2D != sGraphics2D || graphics2D == null || graphics2D instanceof NullGraphics2D) {
+        Graphics2D newGraphics2D = (Graphics2D)clientArea.getGraphics();
+        if(newGraphics2D == null) {
+          newGraphics2D = new NullGraphics2D(getDisplay().getSystemFont().handle);
+        }
+        Point internalOffset = getInternalOffset();
+        newGraphics2D.translate(-internalOffset.x, -internalOffset.y);
+        if(graphics2D != null) {
+          newGraphics2D.setBackground(graphics2D.getBackground());
+          resetClip = true;
+          newGraphics2D.setColor(graphics2D.getColor());
+          newGraphics2D.setComposite(graphics2D.getComposite());
+          newGraphics2D.setFont(graphics2D.getFont());
+          newGraphics2D.setPaint(graphics2D.getPaint());
+          newGraphics2D.setRenderingHints(graphics2D.getRenderingHints());
+          newGraphics2D.setStroke(graphics2D.getStroke());
+          newGraphics2D.setTransform(graphics2D.getTransform());
+        }
+        graphics2D = newGraphics2D;
+        internalSwingGraphics2D = sGraphics2D;
+      }
+      if(resetClip) {
+        setUserClip(getUserClip());
+      }
+      return graphics2D;
+    }
+    public Dimension getDeviceSize() {
+      return ((CControl)handle).getClientArea().getSize();
     }
   };
 //	int hwnd = handle;

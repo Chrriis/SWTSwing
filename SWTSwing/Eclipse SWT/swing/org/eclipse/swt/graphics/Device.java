@@ -443,13 +443,18 @@ protected Point getDPI_() {
  */
 public FontData [] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-  if(!scalable) {
-    return new FontData[0];
-  }
+//  if(!scalable) {
+//    return new FontData[0];
+//  }
   // TODO: propose all styles?
   java.awt.Font[] fonts;
   if(faceName != null) {
-    fonts = new java.awt.Font[] {new java.awt.Font(faceName, java.awt.Font.PLAIN, 1)};
+    java.awt.Font font = new java.awt.Font(faceName, java.awt.Font.PLAIN, 1);
+    if(!"Dialog".equals(faceName) && "Dialog".equals(font.getFamily())) {
+      fonts = new java.awt.Font[0];
+    } else {
+      fonts = new java.awt.Font[] {font};
+    }
   } else {
     fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
   }

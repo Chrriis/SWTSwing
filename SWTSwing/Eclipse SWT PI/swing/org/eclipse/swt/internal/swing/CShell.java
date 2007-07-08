@@ -123,16 +123,16 @@ class CShellFrame extends JFrame implements CShell {
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
       public Color getBackground() {
-        return CShellFrame.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CShellFrame.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CShellFrame.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CShellFrame.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CShellFrame.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CShellFrame.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        return CShellFrame.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+        return CShellFrame.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected Graphics graphics;
       public Graphics getGraphics() {
@@ -503,16 +503,16 @@ class CShellDialog extends JDialog implements CShell {
     contentPane = getContentPane();
     JPanel panel = new JPanel(null) {
       public Color getBackground() {
-        return CShellDialog.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CShellDialog.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CShellDialog.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CShellDialog.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CShellDialog.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CShellDialog.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        return CShellDialog.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+        return CShellDialog.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected Graphics graphics;
       public Graphics getGraphics() {

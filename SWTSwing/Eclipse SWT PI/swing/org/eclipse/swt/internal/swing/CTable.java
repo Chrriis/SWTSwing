@@ -126,7 +126,7 @@ class CTableImplementation extends JScrollPane implements CTable {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CTableImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CTableImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     };
     setViewport(viewport);
@@ -417,16 +417,16 @@ class CTableImplementation extends JScrollPane implements CTable {
         };
       }
       public Color getBackground() {
-        return CTableImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CTableImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CTableImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CTableImplementation.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CTableImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CTableImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        return CTableImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+        return CTableImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected Graphics graphics;
       public Graphics getGraphics() {

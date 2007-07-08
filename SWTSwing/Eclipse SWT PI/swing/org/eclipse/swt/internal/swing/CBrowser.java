@@ -50,16 +50,16 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
     this.handle = browser;
     editorPane = new JEditorPane() {
       public Color getBackground() {
-        return CBrowserImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CBrowserImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CBrowserImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CBrowserImplementation.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CBrowserImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CBrowserImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        return CBrowserImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+        return CBrowserImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
     };
     userAttributeHandler = new UserAttributeHandler(editorPane);

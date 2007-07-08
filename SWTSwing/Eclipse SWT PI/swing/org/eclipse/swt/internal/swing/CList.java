@@ -58,16 +58,16 @@ class CListImplementation extends JScrollPane implements CList {
     this.handle = list;
     this.list = new JList(new DefaultListModel()) {
       public Color getBackground() {
-        return CListImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CListImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CListImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        return CListImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+        return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
@@ -88,7 +88,7 @@ class CListImplementation extends JScrollPane implements CList {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CListImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     };
     setViewport(viewport);

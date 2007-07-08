@@ -100,16 +100,16 @@ class CCompositeImplementation extends JPanel implements CComposite {
         graphics = null;
       }
       public Color getBackground() {
-        return CCompositeImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CCompositeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CCompositeImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CCompositeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CCompositeImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CCompositeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        return CCompositeImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+        return CCompositeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
     };
     userAttributeHandler = new UserAttributeHandler(panel);

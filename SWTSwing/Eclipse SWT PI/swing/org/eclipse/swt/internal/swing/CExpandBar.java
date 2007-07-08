@@ -61,7 +61,7 @@ class CExpandBarImplementation extends JScrollPane implements CExpandBar {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CExpandBarImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CExpandBarImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     };
     setViewport(viewport);

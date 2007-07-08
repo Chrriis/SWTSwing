@@ -77,13 +77,13 @@ class CTextMulti extends JScrollPane implements CText {
 //        return super.getCursor();
 //      }
       public Color getBackground() {
-        return CTextMulti.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CTextMulti.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CTextMulti.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CTextMulti.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CTextMulti.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CTextMulti.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
         if(CTextMulti.this == null) {
@@ -112,7 +112,7 @@ class CTextMulti extends JScrollPane implements CText {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CTextMulti.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CTextMulti.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     };
     setViewport(viewport);

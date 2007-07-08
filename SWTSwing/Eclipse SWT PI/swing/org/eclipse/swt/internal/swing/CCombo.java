@@ -75,13 +75,13 @@ class CComboSimple extends JPanel implements CCombo {
     super(new BorderLayout(0, 0));
     textField = new JTextField(7) {
       public Color getBackground() {
-        return CComboSimple.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CComboSimple.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CComboSimple.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
         if(CComboSimple.this == null) {
@@ -114,16 +114,16 @@ class CComboSimple extends JPanel implements CCombo {
         return preferredSize;
       }
       public Color getBackground() {
-        return CComboSimple.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CComboSimple.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CComboSimple.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
 //      public Cursor getCursor() {
-//        return CComboSimple.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+//        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
 //      }
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
@@ -143,7 +143,7 @@ class CComboSimple extends JPanel implements CCombo {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CComboSimple.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     };
     scrollPane.setViewport(viewport);

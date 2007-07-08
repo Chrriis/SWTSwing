@@ -110,7 +110,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
         super.paintComponent(g);
       }
       public Color getBackground() {
-        return CTreeImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CTreeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
     });
     rootNode = new DefaultMutableTreeTableNode() {
@@ -287,16 +287,16 @@ class CTreeImplementation extends JScrollPane implements CTree {
         return super.processMouseOnTreeRenderer(row, e, cellSize);
       }
       public Color getBackground() {
-        return CTreeImplementation.this != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+        return CTreeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
       }
       public Color getForeground() {
-        return CTreeImplementation.this != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+        return CTreeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
       }
       public Font getFont() {
-        return CTreeImplementation.this != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+        return CTreeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        return CTreeImplementation.this != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+        return CTreeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected Graphics graphics;
       public Graphics getGraphics() {

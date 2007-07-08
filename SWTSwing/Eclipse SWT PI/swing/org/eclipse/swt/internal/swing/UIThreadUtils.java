@@ -28,9 +28,6 @@ public class UIThreadUtils {
     protected AWTEvent event;
     public boolean sleep() {
       event = null;
-      if(!isEnabled) {
-        return true;
-      }
       try {
         event = getNextEvent();
       } catch(InterruptedException e) {}
@@ -48,21 +45,11 @@ public class UIThreadUtils {
       }
       return false;
     }
-    public void postEvent(AWTEvent theEvent) {
-      if(isEnabled) {
-        super.postEvent(theEvent);
-      }
-    }
     public void pop() {
       super.pop();
     }
   }
   
-  static volatile boolean isEnabled = true;
-  public static void setEventsEnabled(boolean isEnabled) {
-    UIThreadUtils.isEnabled = isEnabled;
-  }
-
   protected static Throwable exception;
   
   public static void storeException(Throwable exception) {

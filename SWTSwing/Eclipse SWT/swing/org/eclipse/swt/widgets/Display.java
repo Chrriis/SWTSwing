@@ -1124,8 +1124,7 @@ public boolean getHighContrast () {
 public int getIconDepth () {
 	checkDevice ();
   // TODO: is this correct?
-  int bitDepth = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getBitDepth();
-  return bitDepth == -1? 32: bitDepth;
+  return getDepth();
 }
 
 /**

@@ -290,7 +290,22 @@ class CShellFrame extends JFrame implements CShell {
       if(isLocationByPlatform) {
         adjustLocation(this, getOwner());
       }
-      setFocusableWindowState((handle.getStyle() & SWT.NO_FOCUS) == 0);
+      if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {
+        new Thread() {
+          public void run() {
+            try {
+              sleep(500);
+            } catch(Exception e) {}
+            SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                if(!getFocusableWindowState()) {
+                  setFocusableWindowState(true);
+                }
+              }
+            });
+          }
+        }.start();
+      }
       getModalityHandler().setEnabled(true);
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...
       if(isEventDispatchThread) {
@@ -675,7 +690,22 @@ class CShellDialog extends JDialog implements CShell {
       if(isLocationByPlatform) {
         adjustLocation(this, getOwner());
       }
-      setFocusableWindowState((handle.getStyle() & SWT.NO_FOCUS) == 0);
+      if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {
+        new Thread() {
+          public void run() {
+            try {
+              sleep(500);
+            } catch(Exception e) {}
+            SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                if(!getFocusableWindowState()) {
+                  setFocusableWindowState(true);
+                }
+              }
+            });
+          }
+        }.start();
+      }
       getModalityHandler().setEnabled(true);
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...
       if(isEventDispatchThread) {

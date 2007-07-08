@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
  
+import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
@@ -392,9 +393,13 @@ public int getDepth () {
 //	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
 //	internal_dispose_GC (hDC, null);
 //	return bits * planes;
-  // TODO: is thsi correct?
-  int bitDepth = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getBitDepth();
-  return bitDepth == -1? 32: bitDepth;
+  // TODO: is this correct?
+  DisplayMode displayMode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
+  if(displayMode == null) {
+    return 32;
+  }
+  int bitDepth = displayMode.getBitDepth();
+  return bitDepth == DisplayMode.BIT_DEPTH_MULTI? 32: bitDepth;
 }
 
 /**

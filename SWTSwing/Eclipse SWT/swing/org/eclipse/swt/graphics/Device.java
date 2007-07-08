@@ -443,9 +443,9 @@ protected Point getDPI_() {
  */
 public FontData [] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-//  if(!scalable) {
-//    return new FontData[0];
-//  }
+  if(!scalable) {
+    return new FontData[0];
+  }
   // TODO: propose all styles?
   java.awt.Font[] fonts;
   if(faceName != null) {

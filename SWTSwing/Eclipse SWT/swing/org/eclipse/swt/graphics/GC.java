@@ -25,13 +25,11 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 
-import javax.swing.UIManager;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
+import org.eclipse.swt.internal.swing.UIUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -520,21 +518,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
-  java.awt.Color newColor = oldColor;
-  try {
-    if(UIManager.getLookAndFeel() instanceof MetalLookAndFeel) {
-      newColor = MetalLookAndFeel.getFocusColor();
-    }
-  } catch(Exception e) {
-//    try {
-//      // Swing's Look and Feels have properties named ComponentName.focus, and we use JComponents. So let's remove the "J". 
-//      String focusName = drawable.getClass().getName();
-//      focusName = focusName.substring(focusName.lastIndexOf('.') + 2) + ".focus";
-//      // TODO: test this theory.
-//      newColor = UIManager.getColor(focusName);
-//    } catch(Exception ex) {}
-  }
-  handle.setColor(newColor);
+  handle.setColor(UIUtils.getFocusColor());
   handle.drawRect(x, y, width, height);
   handle.setColor(oldColor);
 //  ensureAreaClean(x, y, width, height);
@@ -3234,7 +3218,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
-    handle.setFont(data.device.systemFont);
+    handle.setFont(UIUtils.getSystemFont());
 	} else {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		handle.setFont(font.handle);

@@ -36,7 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
@@ -585,7 +584,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
   protected void init(int style) {
     isCheckType = (style & SWT.CHECK) != 0;
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     } else {
       setBorder(BorderFactory.createEmptyBorder());
     }

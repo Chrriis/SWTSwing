@@ -15,12 +15,10 @@ import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
-import javax.swing.UIManager;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
+import org.eclipse.swt.internal.swing.UIUtils;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -50,9 +48,6 @@ public abstract class Device implements Drawable {
 //	public int hPalette = 0;
 //	int [] colorRefCount;
 	
-	/* System Font */
-	java.awt.Font systemFont;
-
 //	/* Font Enumeration */
 //	int nFonts = 256;
 //	LOGFONT [] logFonts;
@@ -136,9 +131,6 @@ public Device(DeviceData data) {
   		errors = new Error [128];
   		objects = new Object [128];
   	}
-  	
-  	/* Initialize the system font slot */
-  	systemFont = getSystemFont().handle;
   }
 }
 
@@ -611,13 +603,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-  java.awt.Font systemFont;
-  if(UIManager.getLookAndFeel() instanceof MetalLookAndFeel) {
-    systemFont = MetalLookAndFeel.getSystemTextFont();
-  } else {
-    systemFont = UIManager.getFont("Panel.font");
-  }
-	return Font.swing_new (this, systemFont);
+	return Font.swing_new (this, UIUtils.getSystemFont());
 }
 
 /**

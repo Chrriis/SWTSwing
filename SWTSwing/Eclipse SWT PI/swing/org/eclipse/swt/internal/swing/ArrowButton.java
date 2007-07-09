@@ -13,7 +13,6 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 import javax.swing.JScrollBar;
-import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.metal.MetalScrollButton;
 
@@ -32,7 +31,7 @@ public class ArrowButton extends BasicArrowButton {
    */
   public ArrowButton(int direction) {
     super(direction);
-    setBorder(UIManager.getBorder("Button.border"));
+    setBorder(UIUtils.getButtonBorder());
     createArrowButton();
   }
   

@@ -27,7 +27,6 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JViewport;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -132,9 +131,7 @@ class CTextMulti extends JScrollPane implements CText {
 
   protected void init(int style) {
     // A multi line text field should have the same characteristics than a single-line one.
-    textArea.setBackground(UIManager.getColor("TextField.background"));
-    textArea.setForeground(UIManager.getColor("TextField.foreground"));
-    textArea.setFont(UIManager.getFont("TextField.font"));
+    UIUtils.applyTextFieldStyle(textArea);
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
       textArea.setBorder(null);

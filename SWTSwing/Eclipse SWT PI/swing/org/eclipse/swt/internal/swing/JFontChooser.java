@@ -146,9 +146,7 @@ public class JFontChooser extends JDialog {
     previewLabel.setForeground(colorChooser.getColor());
     previewPanel.add(previewLabel, BorderLayout.CENTER);
     // Add in the Ok and Cancel buttons for our dialog box. Let's reuse internationalized texts...
-    String okString = UIManager.getString("OptionPane.okButtonText");
-    String cancelString = UIManager.getString("OptionPane.cancelButtonText");
-    JButton okButton = new JButton(okString);
+    JButton okButton = new JButton(UIUtils.getOKButtonText());
     okButton.setToolTipText("Select the current font and color and clsoe the dialog");
     okButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {
@@ -156,7 +154,7 @@ public class JFontChooser extends JDialog {
       }
     });
     getRootPane().setDefaultButton(okButton);
-    JButton cancelButton = new JButton(cancelString);
+    JButton cancelButton = new JButton(UIUtils.getCancelButtonText());
     cancelButton.setToolTipText("Cancel the changes and close the dialog");
     cancelButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent ae) {

@@ -53,7 +53,7 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
 
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     } else {
       setBorder(null);
     }

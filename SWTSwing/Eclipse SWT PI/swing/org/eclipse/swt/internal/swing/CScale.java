@@ -15,7 +15,6 @@ import java.awt.Font;
 import java.awt.Image;
 
 import javax.swing.JSlider;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -56,7 +55,7 @@ class CScaleImplementation extends JSlider implements CScale {
     setValue(0);
     setOrientation((style & SWT.HORIZONTAL) != 0? JSlider.HORIZONTAL: JSlider.VERTICAL);
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     }
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);

@@ -15,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
-import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -26,6 +25,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.UIUtils;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -96,7 +96,7 @@ void createWidget () {
   }
 }
 
-Timer timer = new Timer (UIManager.getInt ("TextArea.caretBlinkRate"), new ActionListener () {
+Timer timer = new Timer (UIUtils.getCaretBlinkRate(), new ActionListener () {
   public void actionPerformed (ActionEvent e) {
     Caret.this.blink = !Caret.this.blink;
     if (Caret.this.parent != null) {

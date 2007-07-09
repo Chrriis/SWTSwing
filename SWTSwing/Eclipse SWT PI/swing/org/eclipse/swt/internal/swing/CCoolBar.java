@@ -11,7 +11,6 @@ import java.awt.Container;
 import java.awt.Image;
 
 import javax.swing.JScrollBar;
-import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
@@ -43,7 +42,7 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
 
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     }
   }
 

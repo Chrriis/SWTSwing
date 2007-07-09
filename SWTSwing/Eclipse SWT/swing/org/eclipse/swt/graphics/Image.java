@@ -29,6 +29,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
+import org.eclipse.swt.internal.swing.UIUtils;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -1386,7 +1387,7 @@ public CGC internal_new_GC (GCData data) {
     }
     data.device = device;
     data.image = this;
-    data.hFont = device.systemFont;
+    data.hFont = UIUtils.getSystemFont();
   }
   final Graphics2D g = (Graphics2D)handle.getGraphics();
   if(g == null) {

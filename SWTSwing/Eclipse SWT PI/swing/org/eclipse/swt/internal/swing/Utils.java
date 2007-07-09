@@ -28,6 +28,9 @@ import java.awt.event.MouseWheelListener;
 import java.util.Collections;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.LookAndFeel;
 
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.DND;
@@ -66,11 +69,40 @@ public class Utils {
     }
   }
 
-  public static String getLookAndFeel() {
+  protected static String getLookAndFeel() {
     return System.getProperty(LOOK_AND_FEEL_PROPERTY);
   }
 
-  public static Boolean isLookAndFeelDecorated() {
+  public static void installDefaultLookAndFeel() {
+    boolean isLookAndFeelInstalled = false;
+    String lafName = getLookAndFeel();
+    if(lafName != null) {
+      LookAndFeel lookAndFeel = javax.swing.UIManager.getLookAndFeel();
+      if(lookAndFeel != null && lafName.equals(lookAndFeel.getClass().getName())) {
+        isLookAndFeelInstalled = true;
+      } else {
+        try {
+          javax.swing.UIManager.setLookAndFeel(lafName);
+          isLookAndFeelInstalled = true;
+          Boolean isLookAndFeelDecorated = isLookAndFeelDecorated();
+          if(isLookAndFeelDecorated != null) {
+            boolean isLafDecorated = isLookAndFeelDecorated.booleanValue();
+            JFrame.setDefaultLookAndFeelDecorated(isLafDecorated);
+            JDialog.setDefaultLookAndFeelDecorated(isLafDecorated);
+          }
+        } catch(Exception e) {e.printStackTrace();}
+      }
+    }
+    // If no look and feel is specified, install one that looks native.
+    if(!isLookAndFeelInstalled) {
+      try {
+        javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
+      } catch(Exception e) {}
+    }
+  }
+  
+  
+  protected static Boolean isLookAndFeelDecorated() {
     String value = System.getProperty(LOOK_AND_FEEL_DECORATED_PROPERTY);
     return value == null? null: new Boolean(value);
   }

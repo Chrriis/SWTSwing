@@ -38,7 +38,6 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -627,7 +626,7 @@ class CTableImplementation extends JScrollPane implements CTable {
   protected void init(int style) {
     isCheckType = (style & SWT.CHECK) != 0;
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     } else {
       setBorder(BorderFactory.createEmptyBorder());
     }

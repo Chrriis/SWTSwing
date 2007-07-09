@@ -42,14 +42,10 @@ import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
-import javax.swing.LookAndFeel;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -58,7 +54,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.DeviceData;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -68,6 +63,7 @@ import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.CShell;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
+import org.eclipse.swt.internal.swing.UIUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -170,7 +166,7 @@ public class Display extends Device {
 	Tray tray;
 	
 	/* System Images Cache */
-	java.awt.Image errorIcon, infoIcon, questionIcon, warningIcon;
+	java.awt.Image errorIcon, workingIcon, infoIcon, questionIcon, warningIcon;
 
 	/* System Cursors Cache */
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
@@ -399,34 +395,10 @@ public Display () {
  */
 public Display (DeviceData data) {
 	super (data);
-  boolean isLookAndFeelInstalled = false;
   boolean lightweightPopups = Utils.isLightweightPopups();
   ToolTipManager.sharedInstance().setLightWeightPopupEnabled(lightweightPopups);
   JPopupMenu.setDefaultLightWeightPopupEnabled(lightweightPopups);
-  String lafName = Utils.getLookAndFeel();
-  if(lafName != null) {
-    LookAndFeel lookAndFeel = javax.swing.UIManager.getLookAndFeel();
-    if(lookAndFeel != null && lafName.equals(lookAndFeel.getClass().getName())) {
-      isLookAndFeelInstalled = true;
-    } else {
-      try {
-        javax.swing.UIManager.setLookAndFeel(lafName);
-        isLookAndFeelInstalled = true;
-        Boolean isLookAndFeelDecorated = Utils.isLookAndFeelDecorated();
-        if(isLookAndFeelDecorated != null) {
-          boolean isLafDecrated = isLookAndFeelDecorated.booleanValue();
-          JFrame.setDefaultLookAndFeelDecorated(isLafDecrated);
-          JDialog.setDefaultLookAndFeelDecorated(isLafDecrated);
-        }
-      } catch(Exception e) {e.printStackTrace();}
-    }
-  }
-  // If no look and feel is specified, install one that looks native.
-  if(!isLookAndFeelInstalled) {
-    try {
-      javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-    } catch(Exception e) {}
-  }
+  Utils.installDefaultLookAndFeel();
 }
 
 void paintComponentImmediately(Component component) {
@@ -1298,66 +1270,9 @@ public Thread getSyncThread () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	java.awt.Color swingColor;
-  switch(id) {
-    case SWT.COLOR_WIDGET_DARK_SHADOW:
-      swingColor = UIManager.getColor("controlDkShadow"); break;
-    case SWT.COLOR_WIDGET_NORMAL_SHADOW:
-      swingColor = UIManager.getColor("controlShadow"); break;
-    case SWT.COLOR_WIDGET_LIGHT_SHADOW:
-      swingColor = UIManager.getColor("controlLtHighlight"); break;
-    case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:
-      swingColor = UIManager.getColor("controlHighlight"); break;
-    case SWT.COLOR_WIDGET_BACKGROUND:
-      swingColor = UIManager.getColor("control"); break;
-    case SWT.COLOR_WIDGET_BORDER:
-      swingColor = UIManager.getColor("windowBorder"); break;
-    case SWT.COLOR_WIDGET_FOREGROUND:
-      swingColor = UIManager.getColor("controlText"); break;
-    case SWT.COLOR_LIST_FOREGROUND:
-      swingColor = UIManager.getColor("textText"); break;
-    case SWT.COLOR_LIST_BACKGROUND:
-      swingColor = UIManager.getColor("text"); break;
-    case SWT.COLOR_LIST_SELECTION:
-      swingColor = UIManager.getColor("textHighlight"); break;
-    case SWT.COLOR_LIST_SELECTION_TEXT:
-      swingColor = UIManager.getColor("textHighlightText"); break;
-    case SWT.COLOR_INFO_FOREGROUND:
-      swingColor = UIManager.getColor("infoText"); break;
-    case SWT.COLOR_INFO_BACKGROUND:
-      swingColor = UIManager.getColor("info"); break;
-    case SWT.COLOR_TITLE_FOREGROUND:
-      swingColor = UIManager.getColor("activeCaptionText"); break;
-    case SWT.COLOR_TITLE_BACKGROUND:
-      swingColor = UIManager.getColor("InternalFrame.activeTitleBackground");
-      if(swingColor == null) {
-        swingColor = UIManager.getColor("activeCaption");
-      }
-      break;
-    case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:
-      swingColor = UIManager.getColor("InternalFrame.activeTitleGradient");
-      if(swingColor == null) {
-        swingColor = UIManager.getColor("activeCaption");
-        swingColor = new java.awt.Color(Math.min(swingColor.getRed() + 20, 255), Math.min(swingColor.getGreen() + 20, 255), Math.min(swingColor.getBlue() + 20, 255), swingColor.getAlpha());
-      }
-      break;
-    case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:
-      swingColor = UIManager.getColor("inactiveCaptionText"); break;
-    case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:
-      swingColor = UIManager.getColor("InternalFrame.inactiveTitleBackground");
-      if(swingColor == null) {
-        swingColor = UIManager.getColor("inactiveCaption");
-      }
-      break;
-    case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:
-      swingColor = UIManager.getColor("InternalFrame.inactiveTitleGradient");
-      if(swingColor == null) {
-        swingColor = UIManager.getColor("inactiveCaption");
-        swingColor = new java.awt.Color(Math.min(swingColor.getRed() + 20, 255), Math.min(swingColor.getGreen() + 20, 255), Math.min(swingColor.getBlue() + 20, 255), swingColor.getAlpha());
-      }
-      break;
-    default:
-      return super.getSystemColor(id);
+	java.awt.Color swingColor = UIUtils.getSystemColor(id);
+	if(swingColor == null) {
+	  return super.getSystemColor(id);
   }
   return Color.swing_new(this, swingColor);
 }
@@ -1414,32 +1329,6 @@ public Cursor getSystemCursor (int id) {
 }
 
 /**
- * Returns a reasonable font for applications to use.
- * On some platforms, this will match the "default font"
- * or "system font" if such can be found.  This font
- * should not be free'd because it was allocated by the
- * system, not the application.
- * <p>
- * Typically, applications which want the default look
- * should simply not set the font on the widgets they
- * create. Widgets are always created with the correct
- * default font for the class of user-interface component
- * they represent.
- * </p>
- *
- * @return a font
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public Font getSystemFont () {
-	checkDevice ();
-  return Font.swing_new(this, UIManager.getFont("Label.font"));
-}
-
-/**
  * Returns the matching standard platform image for the given
  * constant, which should be one of the icon constants
  * specified in class <code>SWT</code>. This image should
@@ -1471,26 +1360,31 @@ public Image getSystemImage (int id) {
 	switch (id) {
 		case SWT.ICON_ERROR:
 			if (errorIcon == null) {
-        errorIcon = getImage(UIManager.getIcon("OptionPane.errorIcon"));
+        errorIcon = getImage(UIUtils.getSystemIcon(id));
 			}
 			hIcon = errorIcon;
 			break;
-		case SWT.ICON_WORKING:
 		case SWT.ICON_INFORMATION:
 			if (infoIcon == null) {
-        infoIcon = getImage(UIManager.getIcon("OptionPane.informationIcon"));
+        infoIcon = getImage(UIUtils.getSystemIcon(id));
 			}
 			hIcon = infoIcon;
 			break;
-		case SWT.ICON_QUESTION:
-			if (questionIcon == null) {
-        questionIcon = getImage(UIManager.getIcon("OptionPane.questionIcon"));
+		case SWT.ICON_WORKING:
+			if (workingIcon == null) {
+        workingIcon = getImage(UIUtils.getSystemIcon(id));
 			}
-			hIcon = questionIcon;
+			hIcon = workingIcon;
 			break;
+		case SWT.ICON_QUESTION:
+		  if (questionIcon == null) {
+		    questionIcon = getImage(UIUtils.getSystemIcon(id));
+		  }
+		  hIcon = questionIcon;
+		  break;
 		case SWT.ICON_WARNING:
 			if (warningIcon == null) {
-        warningIcon = getImage(UIManager.getIcon("OptionPane.warningIcon"));
+        warningIcon = getImage(UIUtils.getSystemIcon(id));
 			}
 			hIcon = warningIcon;
 			break;
@@ -2126,7 +2020,7 @@ protected void release () {
 }
 
 void releaseDisplay () {
-	errorIcon = infoIcon = questionIcon = warningIcon = null;
+	errorIcon = warningIcon = infoIcon = questionIcon = warningIcon = null;
 	bars = popups = null;
 }
 

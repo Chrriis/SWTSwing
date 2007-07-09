@@ -20,7 +20,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
@@ -63,7 +62,7 @@ class CSeparator extends JPanel implements CLabel {
 
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     }
     Utils.installMouseListener(separator, handle);
     Utils.installKeyListener(separator, handle);
@@ -138,9 +137,7 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
 
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
-    setForeground(UIManager.getColor("Label.foreground"));
-    setBackground(UIManager.getColor("Label.background"));
-    setFont(UIManager.getFont("Label.font"));
+    UIUtils.applyLabelStyle(this);
     userAttributeHandler = new UserAttributeHandler(this) {
       public void setForeground(Color foreground) {
         super.setForeground(foreground);
@@ -158,7 +155,7 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
     setFocusable(false);
     setWrapping((style & SWT.WRAP) != 0);
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     }
     if((style & SWT.RIGHT) != 0) {
       setAlignment(JMultiLineLabel.RIGHT);

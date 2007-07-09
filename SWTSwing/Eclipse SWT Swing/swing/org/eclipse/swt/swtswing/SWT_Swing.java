@@ -18,12 +18,12 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CShell;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
+import org.eclipse.swt.internal.swing.UIUtils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -34,7 +34,7 @@ public class SWT_Swing {
   public static class EmbeddedShell extends Shell implements CShell.CEmbeddedShell {
     
     static {
-      System.setProperty("swt.swing.laf", UIManager.getLookAndFeel().getClass().getName());
+      System.setProperty("swt.swing.laf", UIUtils.getLookAndFeel().getClass().getName());
     }
     
     protected EmbeddedShell() {

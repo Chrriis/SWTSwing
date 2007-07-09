@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -92,12 +91,10 @@ class CLinkImplementation extends JEditorPane implements CLink {
   
   protected void adjustStyles() {
     updateUI();
-    setForeground(UIManager.getColor("Label.foreground"));
-    setBackground(UIManager.getColor("Label.background"));
-    setFont(UIManager.getFont("Label.font"));
+    UIUtils.applyLabelStyle(this);
     setMargin(new Insets(0, 0, 0, 0));
     if((handle.getStyle() & SWT.BORDER) != 0) {
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
     }
     reshape(getX(), getY(), getWidth(), getHeight());
   }

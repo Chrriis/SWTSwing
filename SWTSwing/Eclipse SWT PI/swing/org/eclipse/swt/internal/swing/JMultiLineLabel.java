@@ -18,7 +18,6 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.View;
@@ -88,9 +87,7 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
 
   public JMultiLineLabel() {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    setBackground(UIManager.getColor("Label.background"));
-    setForeground(UIManager.getColor("Label.foreground"));
-    setFont(UIManager.getFont("Label.font"));
+    UIUtils.applyLabelStyle(this);
     setOpaque(false);
     createContent();
   }

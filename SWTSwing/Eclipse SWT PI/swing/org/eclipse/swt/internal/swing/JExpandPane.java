@@ -103,7 +103,7 @@ public class JExpandPane extends JPanel {
     public JExpandPaneItem(String title, Icon icon, Component component) {
       super(new BorderLayout(0, 0));
       this.component = component;
-      setBorder(UIManager.getBorder("TextField.border"));
+      setBorder(UIUtils.getStandardBorder());
       titleBar = new JToolBar();
       titleBar.setFloatable(false);
       titleBar.setLayout(new BorderLayout(0, 0));

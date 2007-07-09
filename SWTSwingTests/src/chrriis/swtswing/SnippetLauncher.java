@@ -148,7 +148,7 @@ public class SnippetLauncher {
       new Snippet(147, "prevent CR from going to the default button"),
     }), new SnippetCategory("Composite", new Snippet[] {
       new Snippet(9, "scroll a child control automatically"),
-/**/      new NotWorkingSnippet(75, "set the tab traversal order of children"),
+/**/      new PartiallyWorkingSnippet(75, "set the tab traversal order of children"),
       new Snippet(98, "create and dispose children of a composite"),
       new Snippet(115, "force radio behavior on two different composites"),
       new Snippet(46, "intercept mouse events (drag a button with the mouse)"),
@@ -253,8 +253,8 @@ public class SnippetLauncher {
     }), new SnippetCategory("Path", new Snippet[] {
       new Snippet(198, "Create a path from some text"),
     }), new SnippetCategory("Printing", new Snippet[] {
-/**/      new NotWorkingSnippet(132, "print \"Hello World!\" in black, outlined in red, to default printer"),
-/**/      new NotWorkingSnippet(133, "print text to printer, with word wrap and pagination"),
+      new Snippet(132, "print \"Hello World!\" in black, outlined in red, to default printer"),
+      new Snippet(133, "print text to printer, with word wrap and pagination"),
     }), new SnippetCategory("Program", new Snippet[] {
       new UnsupportedSnippet(32, "find the icon of the program that edits .bmp files"),
       new Snippet(105, "invoke an external batch file"),
@@ -328,7 +328,7 @@ public class SnippetLauncher {
       new Snippet(53, "remove selected items"),
 /**/      new NotWorkingSnippet(77, "resize columns as table resizes"),
       new Snippet(51, "scroll a table (set the top index)"),
-/**/      new PartiallyWorkingSnippet(52, "select an index (select and scroll)"),
+      new Snippet(52, "select an index (select and scroll)"),
       new Snippet(2, "sort a table by column"),
       new Snippet(192, "sort a table by column (virtual table, sort indicator)"),
       new Snippet(103, "update table item text"),
@@ -384,14 +384,14 @@ public class SnippetLauncher {
 /**/      new PartiallyWorkingSnippet(80, "limit selection to items that match a pattern"),
       new Snippet(90, "detect mouse down in a tree item"),
       new Snippet(170, "create a tree with columns"),
-/**/      new NotWorkingSnippet(193, "make columns reorderable by dragging"),
+      new Snippet(193, "make columns reorderable by dragging"),
       new Snippet(202, "virtual tree - lazy creation of sub nodes"),
     }), new SnippetCategory("TreeEditor", new Snippet[] {
 /**/      new NotWorkingSnippet(111, "edit the text of a tree item (in place, fancy)"),
     })
   };
-    
-  protected static int snippetNumber = 78;
+
+  protected static int snippetNumber = 133;
 
   protected static boolean isRealDispatch = true;
 

@@ -133,36 +133,52 @@ public class UIUtils {
       return UIManager.getColor("infoText");
     case SWT.COLOR_INFO_BACKGROUND:
       return UIManager.getColor("info");
-    case SWT.COLOR_TITLE_FOREGROUND:
-      return UIManager.getColor("activeCaptionText");
+    case SWT.COLOR_TITLE_FOREGROUND: {
+      Color swingColor = UIManager.getColor("activeCaptionText");
+      if(swingColor == null) {
+        swingColor = UIManager.getColor("Menu.selectionForeground");
+      }
+      return swingColor;
+    }
     case SWT.COLOR_TITLE_BACKGROUND: {
       Color swingColor = UIManager.getColor("InternalFrame.activeTitleBackground");
       if(swingColor == null) {
         swingColor = UIManager.getColor("activeCaption");
+        if(swingColor == null) {
+          swingColor = UIManager.getColor("Menu.selectionBackground");
+        }
       }
       return swingColor;
     }
     case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: {
       Color swingColor = UIManager.getColor("InternalFrame.activeTitleGradient");
       if(swingColor == null) {
-        swingColor = UIManager.getColor("activeCaption");
+        swingColor = getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
         swingColor = new java.awt.Color(Math.min(swingColor.getRed() + 20, 255), Math.min(swingColor.getGreen() + 20, 255), Math.min(swingColor.getBlue() + 20, 255), swingColor.getAlpha());
       }
       return swingColor;
     }
-    case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:
-      return UIManager.getColor("inactiveCaptionText");
+    case SWT.COLOR_TITLE_INACTIVE_FOREGROUND: {
+      Color swingColor = UIManager.getColor("inactiveCaptionText");
+      if(swingColor == null) {
+        swingColor = UIManager.getColor("Menu.foreground");
+      }
+      return swingColor;
+    }
     case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: {
       Color swingColor = UIManager.getColor("InternalFrame.inactiveTitleBackground");
       if(swingColor == null) {
         swingColor = UIManager.getColor("inactiveCaption");
+        if(swingColor == null) {
+          swingColor = UIManager.getColor("Menu.background");
+        }
       }
       return swingColor;
     }
     case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: {
       Color swingColor = UIManager.getColor("InternalFrame.inactiveTitleGradient");
       if(swingColor == null) {
-        swingColor = UIManager.getColor("inactiveCaption");
+        swingColor = getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
         swingColor = new java.awt.Color(Math.min(swingColor.getRed() + 20, 255), Math.min(swingColor.getGreen() + 20, 255), Math.min(swingColor.getBlue() + 20, 255), swingColor.getAlpha());
       }
       return swingColor;

@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Improvements to the compatibility with Linux.
 - GC is reviewed to simplify the code and improve performance.
 - Printing is implemented using recording.
 - Tree API is better covered.

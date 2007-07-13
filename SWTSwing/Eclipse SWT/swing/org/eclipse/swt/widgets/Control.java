@@ -1251,7 +1251,8 @@ public CGC internal_new_GC (GCData data) {
       Container clientArea = ((CControl)handle).getClientArea();
       Graphics2D sGraphics2D = clientArea instanceof JComponent? (Graphics2D)((JComponent)clientArea).getClientProperty(Utils.SWTSwingGraphics2DClientProperty): null;
       boolean resetClip = false;
-      if(internalSwingGraphics2D != sGraphics2D || graphics2D == null || graphics2D instanceof NullGraphics2D) {
+      // sGraphics2D == null is needed because it seems it is not always the same GC for the native component.
+      if(internalSwingGraphics2D != sGraphics2D || sGraphics2D == null || graphics2D == null || graphics2D instanceof NullGraphics2D) {
         Graphics2D newGraphics2D = (Graphics2D)clientArea.getGraphics();
         if(newGraphics2D == null) {
           newGraphics2D = new NullGraphics2D();

@@ -18,8 +18,6 @@ import javax.swing.Timer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -88,18 +86,13 @@ void createWidget () {
   isVisible = true;
   if (parent.getCaret () == null) {
     parent.setCaret (this);
-    parent.addPaintListener (new PaintListener () {
-      public void paintControl (PaintEvent e) {
-        paintCaret (e.gc);
-      }
-    });
   }
 }
 
 Timer timer = new Timer (UIUtils.getCaretBlinkRate(), new ActionListener () {
   public void actionPerformed (ActionEvent e) {
     Caret.this.blink = !Caret.this.blink;
-    if (Caret.this.parent != null) {
+    if (Caret.this.parent != null && Caret.this.parent.caret == Caret.this) {
       // XXX redraw rect is not correct. for now, redraw all.
       // Rectangle r = Caret.this.getBounds();
       // Caret.this.parent.redraw(x, r.y, r.width, r.height, true);

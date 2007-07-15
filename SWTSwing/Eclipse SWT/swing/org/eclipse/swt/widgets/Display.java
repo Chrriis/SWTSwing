@@ -183,7 +183,7 @@ public class Display extends Device {
 		{java.awt.event.KeyEvent.VK_ALT,	SWT.ALT},
 		{java.awt.event.KeyEvent.VK_SHIFT,	SWT.SHIFT},
 		{java.awt.event.KeyEvent.VK_CONTROL,	SWT.CONTROL},
-//		{java.awt.event.KeyEvent.VK_????,	SWT.COMMAND},
+		{java.awt.event.KeyEvent.VK_WINDOWS,	SWT.COMMAND},
 
 		/* NOT CURRENTLY USED */		
 //		{OS.VK_LBUTTON, SWT.BUTTON1},

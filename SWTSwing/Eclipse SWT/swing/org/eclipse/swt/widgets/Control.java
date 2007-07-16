@@ -1563,15 +1563,26 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget ();
-	if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-	  return;
-	}
   Container cParent = handle.getParent();
   if (control != null) {
     if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
     if (handle == control.handle) return;
     if (parent != control.parent) return;
-    // TODO: check that it works
+    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+      boolean isFound = false;
+      for(int i=cParent.getComponentCount()-1; i>=0; i--) {
+        isFound = control.handle == handle;
+        if(cParent.getComponent(i) == control.handle) {
+          cParent.remove(handle);
+          cParent.add(handle, isFound? i: i-1);
+          handle.invalidate();
+          cParent.validate();
+          cParent.repaint();
+          break;
+        }
+      }
+      return;
+    }
     int cOrder = cParent.getComponentZOrder(control.handle);
     int order = cParent.getComponentZOrder(handle);
     if(order < cOrder) {
@@ -1579,6 +1590,14 @@ public void moveAbove (Control control) {
     }
     cParent.setComponentZOrder(handle, cOrder);
   } else {
+    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+      cParent.remove(handle);
+      cParent.add(handle, 0);
+      handle.invalidate();
+      cParent.validate();
+      cParent.repaint();
+      return;
+    }
     cParent.setComponentZOrder(handle, 0);
   }
 //	int topHandle = topHandle (), hwndAbove = OS.HWND_TOP;
@@ -1625,15 +1644,26 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget ();
-	if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-	  return;
-	}
   Container cParent = handle.getParent();
   if (control != null) {
     if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
     if (handle == control.handle) return;
     if (parent != control.parent) return;
-    // TODO: check that it is correct
+    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+      boolean isFound = false;
+      for(int i=cParent.getComponentCount()-1; i>=0; i--) {
+        isFound = control.handle == handle;
+        if(cParent.getComponent(i) == control.handle) {
+          cParent.remove(handle);
+          cParent.add(handle, isFound? i: i+1);
+          handle.invalidate();
+          cParent.validate();
+          cParent.repaint();
+          break;
+        }
+      }
+      return;
+    }
     int cOrder = cParent.getComponentZOrder(control.handle);
     int order = cParent.getComponentZOrder(handle);
     if(order < cOrder) {
@@ -1641,6 +1671,14 @@ public void moveBelow (Control control) {
     }
     cParent.setComponentZOrder(handle, cOrder + 1);
   } else {
+    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+      cParent.remove(handle);
+      cParent.add(handle);
+      handle.invalidate();
+      cParent.validate();
+      cParent.repaint();
+      return;
+    }
     cParent.setComponentZOrder(handle, cParent.getComponentCount() - 1);
   }
 //	int topHandle = topHandle (), hwndAbove = OS.HWND_BOTTOM;

@@ -211,7 +211,7 @@ public Image(Device device, Image srcImage, int flag) {
       GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
       GraphicsDevice gs = ge.getDefaultScreenDevice();
       GraphicsConfiguration gc = gs.getDefaultConfiguration();
-      handle = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), srcImage.handle.getTransparency());
+      handle = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), srcImage.handle.getColorModel().getTransparency());
       Graphics g = handle.createGraphics();
       g.drawImage(image, 0, 0, null);
       g.dispose();
@@ -1546,7 +1546,7 @@ static BufferedImage duplicateImage(java.awt.Image handle) {
   GraphicsConfiguration gc = gs.getDefaultConfiguration();
   int transparency;
   if(handle instanceof BufferedImage) {
-    transparency = ((BufferedImage)handle).getTransparency();
+    transparency = ((BufferedImage)handle).getColorModel().getTransparency();
   } else {
     PixelGrabber pg = new PixelGrabber(handle, 0, 0, 1, 1, false);
     try {

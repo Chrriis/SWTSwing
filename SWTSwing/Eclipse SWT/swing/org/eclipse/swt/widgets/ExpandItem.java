@@ -22,6 +22,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.internal.swing.CExpandBar;
 import org.eclipse.swt.internal.swing.CExpandItem;
+import org.eclipse.swt.internal.swing.Compatibility;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -277,7 +278,11 @@ public void setExpanded (boolean expanded) {
 public void setHeight (int height) {
   checkWidget ();
   if (height < 0) return;
-  handle.setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
+  if(Compatibility.IS_JAVA_5_OR_GREATER) {
+    handle.setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
+  } else if(handle instanceof JComponent) {
+    ((JComponent)handle).setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
+  }
   ((JComponent)handle).revalidate();
   handle.repaint();
 }

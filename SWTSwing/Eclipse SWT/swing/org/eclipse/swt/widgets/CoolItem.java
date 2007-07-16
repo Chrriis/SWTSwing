@@ -14,6 +14,8 @@ package org.eclipse.swt.widgets;
 import java.awt.Container;
 import java.awt.Dimension;
 
+import javax.swing.JComponent;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
@@ -21,6 +23,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CCoolItem;
+import org.eclipse.swt.internal.swing.Compatibility;
 
 /**
  * Instances of this class are selectable user interface
@@ -363,7 +366,11 @@ public Point getPreferredSize () {
  */
 public void setPreferredSize (int width, int height) {
 	checkWidget ();
-  handle.setPreferredSize(new Dimension(width, height));
+	if(Compatibility.IS_JAVA_5_OR_GREATER) {
+	  handle.setPreferredSize(new Dimension(width, height));
+	} else if(handle instanceof JComponent) {
+    ((JComponent)handle).setPreferredSize(new Dimension(width, height));
+	}
   handle.invalidate();
   handle.validate();
   handle.repaint();
@@ -486,7 +493,11 @@ public Point getMinimumSize () {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-  handle.setMinimumSize(new Dimension(width, height));
+  if(Compatibility.IS_JAVA_5_OR_GREATER) {
+    handle.setMinimumSize(new Dimension(width, height));
+  } else if(handle instanceof JComponent) {
+    ((JComponent)handle).setMinimumSize(new Dimension(width, height));
+  }
 }
 
 /**

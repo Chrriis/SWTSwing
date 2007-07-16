@@ -23,6 +23,7 @@ import java.awt.event.MouseWheelEvent;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.widgets.Composite;
@@ -81,7 +82,11 @@ public class DisabledStatePanel extends JPanel {
     Component component = control.handle;
     Container parent = component.getParent();
     if(parent != null) {
-      parent.add(this, 0);
+      if(parent instanceof RootPaneContainer) {
+        ((RootPaneContainer)parent).getContentPane().add(this, 0);
+      } else {
+        parent.add(this, 0);
+      }
       revalidate();
       checkFocus();
     }

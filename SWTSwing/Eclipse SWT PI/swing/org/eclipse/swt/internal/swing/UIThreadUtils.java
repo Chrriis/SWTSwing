@@ -66,11 +66,17 @@ public class UIThreadUtils {
   
   public static void setMainThread(Thread mainThread) {
     UIThreadUtils.mainThread = mainThread;
-    if(!isRealDispatch()) {
-      mainThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-        public void uncaughtException(Thread thread, Throwable t) {
-          t.printStackTrace();
-          monitorShutdown();
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      Compatibility.run(new Runnable() {
+        public void run() {
+          if(!isRealDispatch()) {
+            UIThreadUtils.mainThread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+              public void uncaughtException(Thread thread, Throwable t) {
+                t.printStackTrace();
+                monitorShutdown();
+              }
+            });
+          }
         }
       });
     }

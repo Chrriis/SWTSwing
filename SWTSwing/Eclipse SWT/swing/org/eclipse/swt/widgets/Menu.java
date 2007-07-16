@@ -29,6 +29,7 @@ import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
@@ -1068,7 +1069,11 @@ public void setVisible (boolean visible) {
     if(hasLocation) {
       location = new java.awt.Point(x, y);
     } else {
-      location = MouseInfo.getPointerInfo().getLocation();
+      if(Compatibility.IS_JAVA_5_OR_GREATER) {
+        location = MouseInfo.getPointerInfo().getLocation();
+      } else {
+        location = new java.awt.Point(0, 0);
+      }
     }
     Shell shell = getShell();
     if(shell != null) {

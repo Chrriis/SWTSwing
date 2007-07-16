@@ -102,6 +102,10 @@ public class JTreeTable extends JPanel implements Scrollable {
         index1 = index0;
         index0 = tmp;
       }
+      if(index1 + 1 - index0 < 0) {
+        // Possible with Java 4: if an index is close to the boundaries of Integer.MAX/MIN_VALUE
+        return;
+      }
       TreePath[] treePaths = new TreePath[index1 + 1 - index0];
       for(int i=index0; i<=index1; i++) {
         treePaths[i - index0] = tree.getPathForRow(isReversed? index1 + index0 - i: i);

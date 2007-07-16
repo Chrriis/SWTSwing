@@ -358,7 +358,12 @@ public class Utils {
     if(System.getProperty("swt.swing.debug") == null) {
       return;
     }
-    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+    StackTraceElement[] stackTraceElements;
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      stackTraceElements = Thread.currentThread().getStackTrace();
+    } else {
+      stackTraceElements = new Exception().getStackTrace();
+    }
     int i = 0;
     for(; i<stackTraceElements.length; i++) {
       StackTraceElement stackElement = stackTraceElements[i];

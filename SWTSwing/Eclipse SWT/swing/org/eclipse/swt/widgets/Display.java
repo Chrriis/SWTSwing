@@ -325,9 +325,14 @@ public class Display extends Device {
             Component component = ie.getComponent();
             Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
             if(window instanceof CShell) {
-              java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
-              SwingUtilities.convertPointFromScreen(mouseLocation, window);
-              Component targetComponent = window.findComponentAt(mouseLocation);
+              Component targetComponent;
+              if(Compatibility.IS_JAVA_5_OR_GREATER) {
+                java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+                SwingUtilities.convertPointFromScreen(mouseLocation, window);
+                targetComponent = window.findComponentAt(mouseLocation);
+              } else {
+                targetComponent = null;
+              }
               for(; targetComponent != null && !(targetComponent instanceof CControl); targetComponent = targetComponent.getParent());
               Control control;
               if(targetComponent != null) {
@@ -852,6 +857,15 @@ Control getControl (Component handle) {
  */
 public Control getCursorControl () {
   checkDevice ();
+  if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+    for(Iterator it=componentToControlMap.values().iterator(); it.hasNext(); ) {
+      Control control = (Control)it.next();
+      if(control.mouseHoverThread != null) {
+        return control;
+      }
+    }
+    return null;
+  }
   java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
   // TODO: what about windows?
   Frame[] frames = Frame.getFrames();
@@ -879,6 +893,17 @@ public Control getCursorControl () {
  */
 public Point getCursorLocation () {
 	checkDevice ();
+  if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+    for(Iterator it=componentToControlMap.values().iterator(); it.hasNext(); ) {
+      Control control = (Control)it.next();
+      if(control.mouseHoverThread != null && control.mouseHoverEvent != null) {
+        java.awt.Point point = control.mouseHoverEvent.getPoint();
+        SwingUtilities.convertPointToScreen(point, control.mouseHoverEvent.getComponent());
+        return new Point(point.x, point.y);
+      }
+    }
+    return new Point(0, 0);
+  }
   java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
   return new Point(point.x, point.y);
 }

@@ -84,7 +84,9 @@ class CShellFrame extends JFrame implements CShell {
   
   public CShellFrame(Shell shell, int style) {
     this.handle = shell;
-    setLocationByPlatform(true);
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      setLocationByPlatform(true);
+    }
     init(style);
   }
   
@@ -97,7 +99,9 @@ class CShellFrame extends JFrame implements CShell {
     if(!isResizable) {
       setResizable(false);
     }
-    setAlwaysOnTop((style & SWT.ON_TOP) != 0);
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      setAlwaysOnTop((style & SWT.ON_TOP) != 0);
+    }
     boolean isDecorated = (style & SWT.TITLE) != 0;
     if(isDecorated) {
       if(JFrame.isDefaultLookAndFeelDecorated()) {
@@ -287,9 +291,8 @@ class CShellFrame extends JFrame implements CShell {
           }
         });
       }
-      boolean isLocationByPlatform = isLocationByPlatform();
       super.show();
-      if(isLocationByPlatform) {
+      if(Compatibility.IS_JAVA_5_OR_GREATER && isLocationByPlatform()) {
         adjustLocation(this, getOwner());
       }
       if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {
@@ -450,14 +453,18 @@ class CShellDialog extends JDialog implements CShell {
   
   public CShellDialog(Shell shell, CShellDialog parent, int style) {
     super(parent);
-    setLocationByPlatform(true);
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      setLocationByPlatform(true);
+    }
     this.handle = shell;
     init(style);
   }
 
   public CShellDialog(Shell shell, CShellFrame parent, int style) {
     super(parent);
-    setLocationByPlatform(true);
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      setLocationByPlatform(true);
+    }
     this.handle = shell;
     init(style);
   }
@@ -502,7 +509,9 @@ class CShellDialog extends JDialog implements CShell {
     if(!isResizable) {
       setResizable(false);
     }
-    setAlwaysOnTop((style & SWT.ON_TOP) != 0);
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      setAlwaysOnTop((style & SWT.ON_TOP) != 0);
+    }
     boolean isDecorated = (style & SWT.TITLE) != 0;
     if(isDecorated) {
       if(JDialog.isDefaultLookAndFeelDecorated()) {
@@ -696,9 +705,8 @@ class CShellDialog extends JDialog implements CShell {
           }
         });
       }
-      boolean isLocationByPlatform = isLocationByPlatform();
       super.show();
-      if(isLocationByPlatform) {
+      if(Compatibility.IS_JAVA_5_OR_GREATER && isLocationByPlatform()) {
         adjustLocation(this, getOwner());
       }
       if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {

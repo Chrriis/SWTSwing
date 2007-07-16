@@ -55,6 +55,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
+import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
@@ -1562,6 +1563,9 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget ();
+	if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+	  return;
+	}
   Container cParent = handle.getParent();
   if (control != null) {
     if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1621,6 +1625,9 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget ();
+	if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+	  return;
+	}
   Container cParent = handle.getParent();
   if (control != null) {
     if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -4154,12 +4161,11 @@ public boolean setParent (Composite parent) {
 //}
 
 private volatile long mouseHoverTimeStamp;
-private volatile Thread mouseHoverThread;
-private java.awt.event.MouseEvent mouseHoverEvent;
+volatile Thread mouseHoverThread;
+java.awt.event.MouseEvent mouseHoverEvent;
 
 void adjustMouseHoverState(java.awt.event.MouseEvent me) {
-  long now = System.currentTimeMillis();
-  mouseHoverTimeStamp = now + 500;
+  mouseHoverTimeStamp = System.currentTimeMillis() + 500;
   mouseHoverEvent = me;
   if(mouseHoverThread == null) {
     mouseHoverThread = new Thread("Mouse Hover Thread") {

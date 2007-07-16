@@ -401,8 +401,7 @@ class CShellFrame extends JFrame implements CShell {
   public void setIconImages(List imageList) {
     if(Compatibility.IS_JAVA_6_OR_GREATER) {
       super.setIconImages(imageList);
-    }
-    if(!imageList.isEmpty()) {
+    } else if(!imageList.isEmpty()) {
       super.setIconImage((Image)imageList.get(0));
     }
   }

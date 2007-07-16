@@ -245,7 +245,7 @@ class CTextMulti extends JScrollPane implements CText {
   }
 
   public char getEchoChar() {
-    return 0;
+    return '\0';
   }
 
   public void copy() {
@@ -490,6 +490,15 @@ class CTextField extends JPasswordField implements CText {
     super.setText(text.replaceAll("[\r\n]", ""));
   }
 
+  public void setEchoChar(char c) {
+    super.setEchoChar(c);
+    if(c == '\0') {
+      UIUtils.applyTextFieldStyle(this);
+    } else {
+      UIUtils.applyPasswordFieldStyle(this);
+    }
+  }
+  
   public void setTabSize(int tabSize) {
   }
 

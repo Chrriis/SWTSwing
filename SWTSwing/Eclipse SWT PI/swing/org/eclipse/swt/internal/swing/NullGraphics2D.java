@@ -76,7 +76,10 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
     return null;
   }
   public FontRenderContext getFontRenderContext() {
-    return getFontMetrics().getFontRenderContext();
+    if(Compatibility.IS_JAVA_6_OR_GREATER) {
+      return getFontMetrics().getFontRenderContext();
+    }
+    return new FontRenderContext(getTransform(), getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING) != RenderingHints.VALUE_ANTIALIAS_OFF, getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS) != RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
   }
   public Paint getPaint() {
     return paint;

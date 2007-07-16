@@ -17,6 +17,7 @@ import java.net.URI;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -93,6 +94,15 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if(!Compatibility.IS_JAVA_6_OR_GREATER) {
+	  ProcessBuilder pb = new ProcessBuilder(new String[] {fileName});
+	  try {
+	    pb.start();
+	    return true;
+	  } catch(Exception e) {
+	    return false;
+	  }
+	}
 	Desktop desktop = Desktop.getDesktop();
   try {
     desktop.open(new File(fileName));

@@ -36,7 +36,10 @@ import java.awt.event.PaintEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -392,6 +395,15 @@ class CShellFrame extends JFrame implements CShell {
     return super.getFocusableWindowState() && !isModallyBlocked();
   }
   
+  public void setIconImages(List imageList) {
+    if(Compatibility.IS_JAVA_6_OR_GREATER) {
+      super.setIconImages(imageList);
+    }
+    if(!imageList.isEmpty()) {
+      super.setIconImage((Image)imageList.get(0));
+    }
+  }
+
   protected boolean isModallyBlocked;
 
   public void setModallyBlocked(boolean isModallyBlocked) {
@@ -755,9 +767,6 @@ class CShellDialog extends JDialog implements CShell {
     // TODO: implement fake maximize/minimize?
   }
 
-//  public void setIconImage(Image image) {
-//  }
-
   public void setDefaultButton(CButton button) {
     if(button instanceof JButton) {
       getRootPane().setDefaultButton((JButton)button);
@@ -803,6 +812,18 @@ class CShellDialog extends JDialog implements CShell {
     return super.getFocusableWindowState() && !isModallyBlocked();
   }
   
+  public void setIconImage(Image image) {
+    if(Compatibility.IS_JAVA_6_OR_GREATER) {
+      super.setIconImage(image);
+    }
+  }
+  
+  public void setIconImages(List imageList) {
+    if(Compatibility.IS_JAVA_6_OR_GREATER) {
+      super.setIconImages(imageList);
+    }
+  }
+
   protected boolean isModallyBlocked;
 
   public void setModallyBlocked(boolean isModallyBlocked) {
@@ -945,9 +966,25 @@ public interface CShell extends CScrollable {
     protected static List applicationBlockerList = new ArrayList(0);
 
     protected static final CShell[] NO_BLOCKERS = new CShell[0];
+    protected static Set windowSet = new HashSet();
     
     public static void initialize() {
-      Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+      Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+      defaultToolkit.addAWTEventListener(new AWTEventListener() {
+        public void eventDispatched(AWTEvent event) {
+          if(event.getSource() instanceof Window) {
+            switch(event.getID()) {
+              case ComponentEvent.COMPONENT_SHOWN:
+                windowSet.add(event.getSource());
+                break;
+              case ComponentEvent.COMPONENT_HIDDEN:
+                windowSet.remove(event.getSource());
+                break;
+            }
+          }
+        }
+      }, ComponentEvent.COMPONENT_EVENT_MASK);
+      defaultToolkit.addAWTEventListener(new AWTEventListener() {
         public void eventDispatched(AWTEvent event) {
           InputEvent ie = (InputEvent)event;
           Component component = ie.getComponent();
@@ -1025,9 +1062,8 @@ public interface CShell extends CScrollable {
     protected boolean isEnabled;
     
     protected void adjustBlockedShells() {
-      Window[] windows = Window.getWindows();
-      for(int i=0; i<windows.length; i++) {
-        Window window = windows[i];
+      for(Iterator it=windowSet.iterator(); it.hasNext(); ) {
+        Window window = (Window)it.next();
         if(window instanceof CShell) {
           CShell cShell = (CShell)window;
           cShell.setModallyBlocked(cShell.getModalityHandler().isBlocked());

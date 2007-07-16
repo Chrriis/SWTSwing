@@ -61,6 +61,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.CShell;
+import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.UIUtils;
@@ -1416,7 +1417,7 @@ static java.awt.Image getImage(Icon icon) {
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
-  if (!SystemTray.isSupported()) {
+  if (!Compatibility.IS_JAVA_6_OR_GREATER || !SystemTray.isSupported()) {
     return null;
   }
 	return tray = new Tray (this, SWT.NONE);

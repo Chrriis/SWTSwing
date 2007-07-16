@@ -42,7 +42,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.AttributeSet;
@@ -121,9 +120,15 @@ public class JFontChooser extends JDialog {
     isFontItalicCheckBox.addActionListener(updateActionListener);
     isFontItalicCheckBox.setSelected(fontNameComboBoxFont.isItalic());
     isFontStrikeThroughCheckBox = new JCheckBox("Strike Through");
+    if(!Compatibility.IS_JAVA_6_OR_GREATER) {
+      isFontStrikeThroughCheckBox.setVisible(false);
+    }
     isFontStrikeThroughCheckBox.setSelected(fontNameComboBoxAttributes.get(TextAttribute.STRIKETHROUGH) == TextAttribute.STRIKETHROUGH_ON);
     isFontStrikeThroughCheckBox.addActionListener(updateActionListener);
     isFontUnderlineCheckBox = new JCheckBox("Underline");
+    if(!Compatibility.IS_JAVA_6_OR_GREATER) {
+      isFontUnderlineCheckBox.setVisible(false);
+    }
     isFontUnderlineCheckBox.setSelected(fontNameComboBoxAttributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON);
     isFontUnderlineCheckBox.addActionListener(updateActionListener);
     optionsPanel.add(isFontBoldCheckBox);

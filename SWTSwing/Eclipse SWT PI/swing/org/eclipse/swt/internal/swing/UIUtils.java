@@ -93,6 +93,13 @@ public class UIUtils {
     component.setBorder(UIManager.getBorder("TextField.border"));
   }
   
+  public static void applyPasswordFieldStyle(JComponent component) {
+    component.setForeground(UIManager.getColor("PasswordField.foreground"));
+    component.setBackground(UIManager.getColor("PasswordField.background"));
+    component.setFont(UIManager.getFont("PasswordField.font"));
+    component.setBorder(UIManager.getBorder("PasswordField.border"));
+  }
+  
   public static Border getDefaultWindowBorder() {
     return BorderFactory.createLineBorder(UIManager.getColor("controlDkShadow"));
   }

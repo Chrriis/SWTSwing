@@ -26,6 +26,8 @@ public class Compatibility {
    *   }};
    * }
    * </pre>
+   * Note that in the example above, the code is invoked in the constructor of this
+   * intermediate class.
    */
   public static abstract class ProtectedCode {
   }

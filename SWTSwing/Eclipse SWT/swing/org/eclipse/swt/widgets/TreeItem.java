@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeItem;
-import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.internal.swing.CTreeItem.TreeItemObject;
 
 /**
@@ -59,7 +58,7 @@ public class TreeItem extends Item {
 	TreeItem parentItem;
   ArrayList itemList;
 //	String [] strings;
-//	Image [] images;
+	Image [] images;
   boolean cached;
 //	int background = -1, foreground = -1, font = -1;
 //	int [] cellBackground, cellForeground, cellFont;
@@ -309,6 +308,7 @@ public void clearAll (boolean all) {
   checkWidget ();
   text = "";
   image = null;
+  images = null;
   handle.setBackground(null);
   handle.setForeground(null);
   handle.setFont(null);
@@ -670,11 +670,10 @@ public Image getImage (int index) {
   checkWidget();
   if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
-  Utils.notImplemented(); return null;
-//	if (images != null) {
-//		if (0 <= index && index < images.length) return images [index];
-//	}
-//	return null;
+	if (images != null) {
+		if (0 <= index && index < images.length) return images [index];
+	}
+	return null;
 }
 
 /**
@@ -808,6 +807,11 @@ void releaseHandle () {
 	super.releaseHandle ();
 	handle = null;
   parent = null;
+}
+
+void releaseWidget() {
+  super.releaseWidget();
+  images = null;
 }
 
 /**
@@ -1144,6 +1148,18 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
+  int count = Math.max (1, parent.getColumnCount ());
+  if (0 > index || index > count - 1) return;
+  if (images == null && index != 0) {
+    images = new Image [count];
+    images [0] = image;
+  }
+  if (images != null) {
+    if (image != null && image.type == SWT.ICON) {
+      if (image.equals (images [index])) return;
+    }
+    images [index] = image;
+  }
 	handle.getTreeItemObject(index).setIcon(image != null? new ImageIcon(image.handle): null);
   if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
   ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);

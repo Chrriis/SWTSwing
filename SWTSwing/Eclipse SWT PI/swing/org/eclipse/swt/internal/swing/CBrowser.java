@@ -75,11 +75,18 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
     editorPane.addHyperlinkListener(new HyperlinkListener() {
       public void hyperlinkUpdate(HyperlinkEvent e) {
         if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-          try {
-            forwardActionList.clear();
-            backActionList.add(getCurrentCommand());
-            editorPane.setPage(e.getURL());
-          } catch(Exception ex) {
+          URL url = e.getURL();
+          String urlString = url.toExternalForm();
+          BrowserLocationChangingEvent browserLocationChangingEvent = new BrowserLocationChangingEvent(CBrowserImplementation.this, urlString);
+          handle.processEvent(browserLocationChangingEvent);
+          if(!browserLocationChangingEvent.isConsumed()) {
+            try {
+              forwardActionList.clear();
+              backActionList.add(getCurrentCommand());
+              editorPane.setPage(url);
+              handle.processEvent(new BrowserLocationChangedEvent(CBrowserImplementation.this, urlString));
+            } catch(Exception ex) {
+            }
           }
         }
       }
@@ -154,14 +161,27 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
     if(url != null && url.startsWith("file://")) {
       url = "file:/" + url.substring("file://".length());
     }
-    try {
-      forwardActionList.clear();
-      backActionList.add(getCurrentCommand());
-      editorPane.setPage(url);
-      return true;
-    } catch(Exception e) {
-      return false;
+    BrowserLocationChangingEvent browserLocationChangingEvent = new BrowserLocationChangingEvent(CBrowserImplementation.this, url);
+    handle.processEvent(browserLocationChangingEvent);
+    if(!browserLocationChangingEvent.isConsumed()) {
+      try {
+        forwardActionList.clear();
+        backActionList.add(getCurrentCommand());
+        editorPane.setPage(url);
+        handle.processEvent(new BrowserLocationChangedEvent(CBrowserImplementation.this, url));
+        return true;
+      } catch(Exception ex) {
+      }
     }
+    return false;
+//    try {
+//      forwardActionList.clear();
+//      backActionList.add(getCurrentCommand());
+//      editorPane.setPage(url);
+//      return true;
+//    } catch(Exception e) {
+//      return false;
+//    }
   }
   
   public void refresh() {

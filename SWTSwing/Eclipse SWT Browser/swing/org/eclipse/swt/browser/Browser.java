@@ -11,11 +11,15 @@
 package org.eclipse.swt.browser;
 
 import java.awt.Container;
+import java.util.EventObject;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.internal.swing.BrowserLocationChangedEvent;
+import org.eclipse.swt.internal.swing.BrowserLocationChangingEvent;
 import org.eclipse.swt.internal.swing.CBrowser;
+import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
@@ -789,4 +793,49 @@ public void stop() {
 	checkWidget();
   ((CBrowser)handle).stop();
 }
+
+public void processEvent(EventObject e) {
+  if(e instanceof BrowserLocationChangingEvent) {
+//    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+  } else if(e instanceof BrowserLocationChangedEvent) {
+//    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+  } else { super.processEvent(e); return; }
+  UIThreadUtils.startExclusiveSection(getDisplay());
+  if(isDisposed()) {
+    UIThreadUtils.stopExclusiveSection();
+    super.processEvent(e);
+    return;
+  }
+  try {
+    if(e instanceof BrowserLocationChangingEvent) {
+      BrowserLocationChangingEvent browserLocationChangingEvent = (BrowserLocationChangingEvent)e;
+      LocationEvent newEvent = new LocationEvent(Browser.this);
+      newEvent.display = getDisplay();
+      newEvent.widget = Browser.this;
+      newEvent.location = browserLocationChangingEvent.getURL();
+      newEvent.doit = true;
+      for (int i = 0; i < locationListeners.length; i++) {
+        locationListeners[i].changing(newEvent);
+      }
+      if(!newEvent.doit) {
+        browserLocationChangingEvent.consume();
+      }
+    } else if(e instanceof BrowserLocationChangedEvent) {
+      BrowserLocationChangedEvent browserLocationChangedEvent = (BrowserLocationChangedEvent)e;
+      LocationEvent newEvent = new LocationEvent(Browser.this);
+      newEvent.display = getDisplay();
+      newEvent.widget = Browser.this;
+      newEvent.location = browserLocationChangedEvent.getURL();
+      for (int i = 0; i < locationListeners.length; i++) {
+        locationListeners[i].changed(newEvent);
+      }
+    }
+    super.processEvent(e);
+  } catch(Throwable t) {
+    UIThreadUtils.storeException(t);
+  } finally {
+    UIThreadUtils.stopExclusiveSection();
+  }
+}
+
 }

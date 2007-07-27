@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 
 import org.eclipse.swt.internal.swing.CCoolBar;
 import org.eclipse.swt.internal.swing.CCoolItem;
+import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.JCoolBarItem;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.*;
@@ -562,7 +563,11 @@ public int [] getWrapIndices () {
   ArrayList wrapIndiceList = new ArrayList();
   for(int i=1; i<components.length; i++) {
     if(((JCoolBarItem)components[i]).isWrapped()) {
-      wrapIndiceList.add(Integer.valueOf(i));
+      if(Compatibility.IS_JAVA_5_OR_GREATER) {
+        wrapIndiceList.add(Integer.valueOf(i));
+      } else {
+        wrapIndiceList.add(new Integer(i));
+      }
     }
   }
   int[] indices = new int[wrapIndiceList.size()];

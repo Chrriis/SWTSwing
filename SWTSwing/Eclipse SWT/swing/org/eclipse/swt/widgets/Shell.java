@@ -29,6 +29,7 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.internal.swing.CShell;
+import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
@@ -1171,7 +1172,9 @@ public void setImeInputMode (int mode) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-  handle.setMinimumSize(new java.awt.Dimension(width, height));
+  if(Compatibility.IS_JAVA_5_OR_GREATER) {
+    handle.setMinimumSize(new java.awt.Dimension(width, height));
+  }
 //	int widthLimit = 0, heightLimit = 0;
 //	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 //	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {

@@ -20,6 +20,7 @@ import javax.swing.filechooser.FileFilter;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.internal.swing.Compatibility;
 
 /**
  * Instances of this class allow the user to navigate
@@ -183,6 +184,9 @@ public String open () {
       fileChooser.addChoosableFileFilter(new FileFilter() {
         public boolean accept(File f) {
           if(f.isDirectory()) {
+            return true;
+          }
+          if(!Compatibility.IS_JAVA_5_OR_GREATER) {
             return true;
           }
           for(int i=0; i<filters.length; i++) {

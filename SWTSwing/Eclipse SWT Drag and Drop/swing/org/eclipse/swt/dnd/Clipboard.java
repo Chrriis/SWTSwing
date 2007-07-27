@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -299,11 +300,25 @@ public Object getContents(Transfer transfer, int clipboards) {
     TransferData[] supportedTypes = transfer.getSupportedTypes();
     for(int j=0; j<supportedTypes.length; j++) {
       TransferData transferData = supportedTypes[j];
-      DataFlavor flavor = transferData.dataFlavor;
-      if(clipboard.isDataFlavorAvailable(flavor)) {
+      if(Compatibility.IS_JAVA_5_OR_GREATER) {
+        DataFlavor flavor = transferData.dataFlavor;
+        if(clipboard.isDataFlavorAvailable(flavor)) {
+          try {
+            Transferable contents = clipboard.getContents(null);
+            if(contents != null) {
+              transferData.transferable = contents;
+              return transfer.nativeToJava(transferData);
+            }
+          } catch(Exception e) {
+          }
+        }
+      } else {
         try {
-          transferData.transferable = clipboard.getContents(null);
-          return transfer.nativeToJava(transferData);
+          Transferable contents = clipboard.getContents(null);
+          if(contents != null) {
+            transferData.transferable = contents;
+            return transfer.nativeToJava(transferData);
+          }
         } catch(Exception e) {
         }
       }

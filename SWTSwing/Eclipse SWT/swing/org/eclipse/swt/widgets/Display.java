@@ -1420,7 +1420,7 @@ public Image getSystemImage (int id) {
 }
 
 static java.awt.Image getImage(Icon icon) {
-  BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TRANSLUCENT);
+  BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
   Graphics g = image.getGraphics();
   icon.paintIcon(Utils.getDefaultComponent(), g, 0, 0);
   g.dispose();

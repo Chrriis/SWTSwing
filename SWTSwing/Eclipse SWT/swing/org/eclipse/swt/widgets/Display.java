@@ -408,7 +408,7 @@ public Display (DeviceData data) {
 }
 
 void paintComponentImmediately(Component component) {
-  synchronized(UIThreadUtils.UI_LOCK) {
+  synchronized(component.getTreeLock()) {
     RepaintManager repaintManager = RepaintManager.currentManager(component);
     repaintManager.validateInvalidComponents();
     repaintManager.paintDirtyRegions();

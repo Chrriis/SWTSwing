@@ -4409,6 +4409,24 @@ public void processEvent(AWTEvent e) {
       mouseHoverThread = null;
       sendEvent(SWT.MouseExit, createMouseEvent((java.awt.event.MouseEvent)e, false));
       break;
+    case java.awt.event.KeyEvent.KEY_TYPED: {
+//      if(!isTraversing) {
+//        java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+//        ke.setKeyCode(lastKeyCode);
+//        if (ke.getWhen () > lastPressed) {
+//          Event event = createKeyEvent (ke);
+//          sendEvent (SWT.KeyDown, event);
+//          sendEvent (SWT.KeyUp, event);
+//        }
+//      }
+      isTraversing = false;
+      break;
+//      java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+//      if(ke.getKeyChar() != '\t') {
+//        break;
+//      }
+//      e = new KeyEvent(ke.getComponent(), KeyEvent.KEY_PRESSED, ke.getWhen(), ke.getModifiers(), java.awt.event.KeyEvent.VK_TAB, '\t', ke.getKeyLocation());
+    }
     case java.awt.event.KeyEvent.KEY_PRESSED: {
       java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
       int pressedKeyCode = ke.getKeyCode();
@@ -4442,18 +4460,6 @@ public void processEvent(AWTEvent e) {
       }
       break;
     }
-    case java.awt.event.KeyEvent.KEY_TYPED:
-//      if(!isTraversing) {
-//        java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
-//        ke.setKeyCode(lastKeyCode);
-//        if (ke.getWhen () > lastPressed) {
-//          Event event = createKeyEvent (ke);
-//          sendEvent (SWT.KeyDown, event);
-//          sendEvent (SWT.KeyUp, event);
-//        }
-//      }
-      isTraversing = false;
-      break;
     case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
     case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;
     case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;

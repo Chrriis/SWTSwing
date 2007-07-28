@@ -83,6 +83,23 @@ class CShellFrame extends JFrame implements CShell {
     return userAttributeHandler;
   }
   
+  protected boolean areActivationEventsBlocked;
+  
+  public void setActivationEventsBlocked(boolean areActivationEventsBlocked) {
+    this.areActivationEventsBlocked = areActivationEventsBlocked;
+  }
+  
+  protected void processEvent(AWTEvent e) {
+    if(areActivationEventsBlocked) {
+      switch(e.getID()) {
+        case WindowEvent.WINDOW_ACTIVATED:
+        case WindowEvent.WINDOW_DEACTIVATED:
+          return;
+      }
+    }
+    super.processEvent(e);
+  }
+  
   public CShellFrame(Shell shell, int style) {
     this.handle = shell;
     if(Compatibility.IS_JAVA_5_OR_GREATER) {
@@ -292,9 +309,14 @@ class CShellFrame extends JFrame implements CShell {
           }
         });
       }
+      final Window owner = getOwner();
+      if((owner instanceof CShell && !getFocusableWindowState())) {
+        setActivationEventsBlocked(true);
+        ((CShell)owner).setActivationEventsBlocked(true);
+      }
       super.show();
       if(Compatibility.IS_JAVA_5_OR_GREATER && isLocationByPlatform()) {
-        adjustLocation(this, getOwner());
+        adjustLocation(this, owner);
       }
       if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {
         new Thread() {
@@ -404,6 +426,17 @@ class CShellFrame extends JFrame implements CShell {
     return super.getFocusableWindowState() && !isModallyBlocked();
   }
   
+  public void setFocusableWindowState(boolean focusableWindowState) {
+    if(focusableWindowState) {
+      Window owner = getOwner();
+      if(owner instanceof CShell) {
+        setActivationEventsBlocked(false);
+        ((CShell)owner).setActivationEventsBlocked(false);
+      }
+    }
+    super.setFocusableWindowState(focusableWindowState);
+  }
+  
   public void setIconImages(List imageList) {
     if(Compatibility.IS_JAVA_6_OR_GREATER) {
       super.setIconImages(imageList);
@@ -456,6 +489,23 @@ class CShellDialog extends JDialog implements CShell {
     return userAttributeHandler;
   }
   
+  protected boolean areActivationEventsBlocked;
+  
+  public void setActivationEventsBlocked(boolean areActivationEventsBlocked) {
+    this.areActivationEventsBlocked = areActivationEventsBlocked;
+  }
+  
+  protected void processEvent(AWTEvent e) {
+    if(areActivationEventsBlocked) {
+      switch(e.getID()) {
+        case WindowEvent.WINDOW_ACTIVATED:
+        case WindowEvent.WINDOW_DEACTIVATED:
+          return;
+      }
+    }
+    super.processEvent(e);
+  }
+  
   public CShellDialog(Shell shell, CShellDialog parent, int style) {
     super(parent);
     if(Compatibility.IS_JAVA_5_OR_GREATER) {
@@ -473,37 +523,6 @@ class CShellDialog extends JDialog implements CShell {
     this.handle = shell;
     init(style);
   }
-
-//  public void setVisible(final boolean isVisible) {
-//    if(isVisible && isModal()) {
-//      Display display = handle.getDisplay();
-//      if(display != null && display.getThread() == Thread.currentThread() || SwingUtilities.isEventDispatchThread()) {
-//        final Object LOCK = new Object();
-//        Thread t = new Thread(Utils.getSWTSwingUIThreadsNamePrefix() + "Modal shell opening") {
-//          public void run() {
-//            synchronized(LOCK) {
-//              LOCK.notify();
-//            }
-//            setVisible(isVisible);
-//          }
-//        };
-//        synchronized(LOCK) {
-//          t.start();
-//          try {
-//            LOCK.wait();
-//          } catch(Exception e) {}
-//          int count = 0;
-//          while(!isVisible() && count++ < 10) {
-//            try {
-//              Thread.sleep(10);
-//            } catch(Exception e) {}
-//          }
-//        }
-//        return;
-//      }
-//    }
-//    super.setVisible(isVisible);
-//  }
 
   protected void init(int style) {
     resetFocusableState();
@@ -710,9 +729,14 @@ class CShellDialog extends JDialog implements CShell {
           }
         });
       }
+      final Window owner = getOwner();
+      if((owner instanceof CShell && !getFocusableWindowState())) {
+        setActivationEventsBlocked(true);
+        ((CShell)owner).setActivationEventsBlocked(true);
+      }
       super.show();
       if(Compatibility.IS_JAVA_5_OR_GREATER && isLocationByPlatform()) {
-        adjustLocation(this, getOwner());
+        adjustLocation(this, owner);
       }
       if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {
         new Thread() {
@@ -830,6 +854,17 @@ class CShellDialog extends JDialog implements CShell {
     return super.getFocusableWindowState() && !isModallyBlocked();
   }
   
+  public void setFocusableWindowState(boolean focusableWindowState) {
+    if(focusableWindowState) {
+      Window owner = getOwner();
+      if(owner instanceof CShell) {
+        setActivationEventsBlocked(false);
+        ((CShell)owner).setActivationEventsBlocked(false);
+      }
+    }
+    super.setFocusableWindowState(focusableWindowState);
+  }
+  
   public void setIconImage(Image image) {
     if(Compatibility.IS_JAVA_6_OR_GREATER) {
       super.setIconImage(image);
@@ -883,6 +918,8 @@ class CShellPanel extends JPanel implements CShell {
   public UserAttributeHandler getUserAttributeHandler() {
     return userAttributeHandler;
   }
+  
+  public void setActivationEventsBlocked(boolean areActivationEventsBlocked) {}
   
   public CShellPanel(Shell shell, int style) {
     handle = shell;
@@ -1212,5 +1249,7 @@ public interface CShell extends CScrollable {
   public void setModallyBlocked(boolean isModallyBlocked);
   
   public boolean isModallyBlocked();
+  
+  public void setActivationEventsBlocked(boolean areActivationEventsBlocked);
   
 }

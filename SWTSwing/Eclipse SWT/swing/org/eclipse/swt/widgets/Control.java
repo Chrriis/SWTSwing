@@ -4421,11 +4421,6 @@ public void processEvent(AWTEvent e) {
 //      }
       isTraversing = false;
       break;
-//      java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
-//      if(ke.getKeyChar() != '\t') {
-//        break;
-//      }
-//      e = new KeyEvent(ke.getComponent(), KeyEvent.KEY_PRESSED, ke.getWhen(), ke.getModifiers(), java.awt.event.KeyEvent.VK_TAB, '\t', ke.getKeyLocation());
     }
     case java.awt.event.KeyEvent.KEY_PRESSED: {
       java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
@@ -4568,6 +4563,7 @@ private boolean processTraversalKey(java.awt.event.KeyEvent ke) {
   }
   event.doit = getTraversalKeyDefault(ke);
   if(hooks(SWT.Traverse)) {
+    event.doit = false;
     sendEvent(SWT.Traverse, event);
   }
   validateTraversalKey(ke, event);

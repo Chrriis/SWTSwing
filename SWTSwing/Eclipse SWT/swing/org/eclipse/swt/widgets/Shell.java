@@ -799,6 +799,10 @@ Composite findDeferredControl () {
   return layoutCount > 0 ? this : null;
 }
 
+protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
+  return false;
+}
+
 public boolean isEnabled () {
 	checkWidget ();
 	return getEnabled ();

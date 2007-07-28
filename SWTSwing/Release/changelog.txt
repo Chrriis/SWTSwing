@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Path should now be able to return its PathData.
 - Browser location events are implemented.
 - When possible, SWTSwing is compatible with Java 1.4 and Java 5.0.
 - Improvements to the compatibility with Linux.
@@ -14,7 +15,7 @@ Licence terms: EPL 1.0 (see licence.html)
 - Printing is implemented using recording.
 - Tree API is better covered.
 - A child Shell is shown on the same monitor as the parent (visible hack though)
-- RADIO exclusions in Composite and ToolBar is improved.
+- Radio exclusions in Composite and ToolBar is improved.
 - Radio button group navigation with keyboard is implemented.
 - Drag and drop is improved.
 - Table sorting is implemented.

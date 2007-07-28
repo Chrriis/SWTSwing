@@ -15,11 +15,15 @@ import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Arc2D;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.swing.Utils;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
 
 /**
  * Instances of this class represent paths through the two-dimensional
@@ -317,7 +321,52 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
   if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  Utils.notImplemented(); return null;
+  List typeList = new ArrayList();
+  List pointList = new ArrayList();
+  float[] values = new float[6];
+  for(PathIterator pathIterator = handle.getPathIterator(null); !pathIterator.isDone(); pathIterator.next()) {
+    switch(pathIterator.currentSegment(values)) {
+      case PathIterator.SEG_MOVETO:
+        typeList.add(new Byte((byte)SWT.PATH_MOVE_TO));
+        break;
+      case PathIterator.SEG_LINETO:
+        typeList.add(new Byte((byte)SWT.PATH_LINE_TO));
+        pointList.add(new Float(values[0]));
+        pointList.add(new Float(values[1]));
+        break;
+      case PathIterator.SEG_QUADTO:
+        typeList.add(new Byte((byte)SWT.PATH_QUAD_TO));
+        pointList.add(new Float(values[0]));
+        pointList.add(new Float(values[1]));
+        pointList.add(new Float(values[2]));
+        pointList.add(new Float(values[3]));
+        break;
+      case PathIterator.SEG_CUBICTO:
+        typeList.add(new Byte((byte)SWT.PATH_CUBIC_TO));
+        pointList.add(new Float(values[0]));
+        pointList.add(new Float(values[1]));
+        pointList.add(new Float(values[2]));
+        pointList.add(new Float(values[3]));
+        pointList.add(new Float(values[4]));
+        pointList.add(new Float(values[5]));
+        break;
+      case PathIterator.SEG_CLOSE:
+        typeList.add(new Byte((byte)SWT.PATH_CLOSE));
+        break;
+    }
+  }
+  byte[] types = new byte[typeList.size()];
+  for(int i=typeList.size()-1; i>=0; i--) {
+    types[i] = ((Byte)typeList.get(i)).byteValue();
+  }
+  float[] points = new float[pointList.size()];
+  for(int i=pointList.size()-1; i>=0; i--) {
+    points[i] = ((Float)typeList.get(i)).floatValue();
+  }
+  PathData result = new PathData();
+  result.types = types;
+  result.points = points;
+  return result;
 //  int count = Gdip.GraphicsPath_GetPointCount(handle);
 //  byte[] gdipTypes = new byte[count];
 //  float[] points = new float[count * 2];

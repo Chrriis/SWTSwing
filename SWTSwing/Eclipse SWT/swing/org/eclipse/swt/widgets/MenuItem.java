@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -617,9 +618,7 @@ public void setAccelerator (int accelerator) {
   if(vKey != 0) {
     key = vKey; 
   }
-  if(handle instanceof JMenu) {
-    ((JMenu)handle).setMnemonic(key);
-  } else {
+  if(!(handle instanceof JMenu)) {
     int modifiers = 0;
     if((accelerator & SWT.ALT) != 0) {
       modifiers |= java.awt.event.KeyEvent.ALT_DOWN_MASK;
@@ -708,7 +707,6 @@ public void setImage (Image image) {
  */
 public void setMenu (Menu menu) {
 	checkWidget ();
-
 	/* Check to make sure the new menu is valid */
 	if ((style & SWT.CASCADE) == 0) {
 		error (SWT.ERROR_MENUITEM_NOT_CASCADE);
@@ -722,7 +720,88 @@ public void setMenu (Menu menu) {
 			error (SWT.ERROR_INVALID_PARENT);
 		}
 	}
-
+	if(!(handle instanceof JMenu)) {
+    JMenu popup = new JMenu() {
+      public void menuSelectionChanged(boolean isIncluded) {
+        super.menuSelectionChanged(isIncluded);
+        if(!isIncluded) return;
+        if(!hooks(SWT.Arm)) return;
+        UIThreadUtils.startExclusiveSection(getDisplay());
+        if(isDisposed()) {
+          UIThreadUtils.stopExclusiveSection();
+          return;
+        }
+        try {
+//          Event event = new Event();
+//          event.stateMask = Display.getInputState();
+//          sendEvent(SWT.Arm, event);
+          sendEvent(SWT.Arm);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
+      }
+    };
+    popup.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+      public void popupMenuCanceled(PopupMenuEvent e) {
+      }
+      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        if(MenuItem.this.menu == null) return;
+        if(!MenuItem.this.menu.hooks(SWT.Hide)) return;
+        UIThreadUtils.startExclusiveSection(getDisplay());
+        if(isDisposed()) {
+          UIThreadUtils.stopExclusiveSection();
+          return;
+        }
+        try {
+          Event event = new Event();
+          event.widget = MenuItem.this.menu;
+          MenuItem.this.menu.sendEvent(SWT.Hide, event);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
+      }
+      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        if(MenuItem.this.menu == null) return;
+        if(!MenuItem.this.menu.hooks(SWT.Show)) return;
+        UIThreadUtils.startExclusiveSection(getDisplay());
+        if(isDisposed()) {
+          UIThreadUtils.stopExclusiveSection();
+          return;
+        }
+        try {
+          Event event = new Event();
+          event.widget = MenuItem.this.menu;
+          MenuItem.this.menu.sendEvent(SWT.Show, event);
+        } catch(Throwable t) {
+          UIThreadUtils.storeException(t);
+        } finally {
+          UIThreadUtils.stopExclusiveSection();
+        }
+      }
+    });
+    Container p = handle.getParent();
+    if(p != null) {
+      for(int i=p.getComponentCount()-1; i>=0; i--) {
+        if(p.getComponent(i) == handle) {
+          p.remove(handle);
+          p.add(popup, i);
+          break;
+        }
+      }
+    }
+    JMenuItem menuItem = (JMenuItem)handle;
+    popup.setText((menuItem).getText());
+    popup.setMnemonic((menuItem).getMnemonic());
+    popup.setToolTipText((menuItem).getToolTipText());
+    popup.setEnabled((menuItem).isEnabled());
+    popup.setSelected((menuItem).isSelected());
+    popup.setIcon((menuItem).getIcon());
+    handle = popup;
+	}
 	JMenu menuHandle = (JMenu)handle;
 	JPopupMenu popupMenu = menuHandle.getPopupMenu();
   popupMenu.removeAll();
@@ -950,71 +1029,7 @@ public void setText (String string) {
 void createHandle() {
   if((style & SWT.SEPARATOR) != 0) {
     handle = new JSeparator();
-  } else if((style & SWT.CASCADE) != 0) {
-    JMenu popup = new JMenu() {
-      public void menuSelectionChanged(boolean isIncluded) {
-        super.menuSelectionChanged(isIncluded);
-        if(!isIncluded) return;
-        if(!hooks(SWT.Arm)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-//          Event event = new Event();
-//          event.stateMask = Display.getInputState();
-//          sendEvent(SWT.Arm, event);
-          sendEvent(SWT.Arm);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    };
-    popup.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
-      public void popupMenuCanceled(PopupMenuEvent e) {
-      }
-      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        if(menu == null) return;
-        if(!menu.hooks(SWT.Hide)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-          Event event = new Event();
-          event.widget = menu;
-          menu.sendEvent(SWT.Hide, event);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        if(menu == null) return;
-        if(!menu.hooks(SWT.Show)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-          Event event = new Event();
-          event.widget = menu;
-          menu.sendEvent(SWT.Show, event);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    });
-    handle = popup;
-  } else if((style & SWT.PUSH) != 0) {
+  } else if((style & SWT.CASCADE) != 0 || (style & SWT.PUSH) != 0) {
     JMenuItem menuItem = new JMenuItem() {
       public void menuSelectionChanged(boolean isIncluded) {
         super.menuSelectionChanged(isIncluded);

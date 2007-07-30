@@ -25,10 +25,11 @@
       <zipfileset dir="../SWTSwing/Eclipse SWT PI/swing" prefix="src/swtswing"/>
       <zipfileset dir="../SWTSwing/Eclipse SWT Printing/swing" prefix="src/swtswing"/>
       <zipfileset dir="../SWTSwing/Eclipse SWT Program/swing" prefix="src/swtswing"/>
+      <zipfileset dir="../SWTSwing/Eclipse SWT Swing/swing" prefix="src/swtswing"/>
       <!-- SWT sources -->
       <zipfileset dir="../org.eclipse.swt/Eclipse SWT/common" prefix="src/swtswing">
         <exclude name="library/**"/>
-	  </zipfileset>
+	    </zipfileset>
       <zipfileset dir="../org.eclipse.swt/Eclipse SWT/common_j2se" prefix="src/swtswing"/>
       <zipfileset dir="../org.eclipse.swt/Eclipse SWT PI/common_j2se" prefix="src/swtswing"/>
       <zipfileset dir="../org.eclipse.swt/Eclipse SWT Accessibility/common" prefix="src/swtswing"/>

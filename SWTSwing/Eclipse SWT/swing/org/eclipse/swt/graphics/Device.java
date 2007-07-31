@@ -18,7 +18,7 @@ import java.awt.Toolkit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
-import org.eclipse.swt.internal.swing.UIUtils;
+import org.eclipse.swt.internal.swing.LookAndFeelUtils;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -603,7 +603,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.swing_new (this, UIUtils.getSystemFont());
+	return Font.swing_new (this, LookAndFeelUtils.getSystemFont());
 }
 
 /**

@@ -29,7 +29,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
-import org.eclipse.swt.internal.swing.UIUtils;
+import org.eclipse.swt.internal.swing.LookAndFeelUtils;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -518,7 +518,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   java.awt.Color oldColor = handle.getColor();
-  handle.setColor(UIUtils.getFocusColor());
+  handle.setColor(LookAndFeelUtils.getFocusColor());
   handle.drawRect(x, y, width, height);
   handle.setColor(oldColor);
 //  ensureAreaClean(x, y, width, height);
@@ -3218,7 +3218,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
-    handle.setFont(UIUtils.getSystemFont());
+    handle.setFont(LookAndFeelUtils.getSystemFont());
 	} else {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		handle.setFont(font.handle);

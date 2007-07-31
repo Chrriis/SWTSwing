@@ -55,7 +55,7 @@ class CScaleImplementation extends JSlider implements CScale {
     setValue(0);
     setOrientation((style & SWT.HORIZONTAL) != 0? JSlider.HORIZONTAL: JSlider.VERTICAL);
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIUtils.getStandardBorder());
+      setBorder(LookAndFeelUtils.getStandardBorder());
     }
     Utils.installMouseListener(this, handle);
     Utils.installKeyListener(this, handle);

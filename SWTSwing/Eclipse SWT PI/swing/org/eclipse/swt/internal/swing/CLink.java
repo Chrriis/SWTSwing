@@ -91,10 +91,10 @@ class CLinkImplementation extends JEditorPane implements CLink {
   
   protected void adjustStyles() {
     updateUI();
-    UIUtils.applyLabelStyle(this);
+    LookAndFeelUtils.applyLabelStyle(this);
     setMargin(new Insets(0, 0, 0, 0));
     if((handle.getStyle() & SWT.BORDER) != 0) {
-      setBorder(UIUtils.getStandardBorder());
+      setBorder(LookAndFeelUtils.getStandardBorder());
     }
     reshape(getX(), getY(), getWidth(), getHeight());
   }

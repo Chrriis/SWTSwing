@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.UIUtils;
+import org.eclipse.swt.internal.swing.LookAndFeelUtils;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -89,7 +89,7 @@ void createWidget () {
   }
 }
 
-Timer timer = new Timer (UIUtils.getCaretBlinkRate(), new ActionListener () {
+Timer timer = new Timer (LookAndFeelUtils.getCaretBlinkRate(), new ActionListener () {
   public void actionPerformed (ActionEvent e) {
     Caret.this.blink = !Caret.this.blink;
     if (Caret.this.parent != null && Caret.this.parent.caret == Caret.this) {

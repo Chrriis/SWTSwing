@@ -31,7 +31,7 @@ public class ArrowButton extends BasicArrowButton {
    */
   public ArrowButton(int direction) {
     super(direction);
-    setBorder(UIUtils.getButtonBorder());
+    setBorder(LookAndFeelUtils.getButtonBorder());
     createArrowButton();
   }
   

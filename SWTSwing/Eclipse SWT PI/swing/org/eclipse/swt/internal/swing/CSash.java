@@ -105,7 +105,7 @@ class CSashImplementation extends JPanel implements CSash {
 
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
-      divider.setBorder(UIUtils.getStandardBorder());
+      divider.setBorder(LookAndFeelUtils.getStandardBorder());
     }
     Utils.installMouseListener(divider, handle);
     Utils.installKeyListener(divider, handle);

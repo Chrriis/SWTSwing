@@ -599,10 +599,6 @@ void deregister () {
 
 void destroyWidget () {
 //	int hwnd = topHandle ();
-  Container parent = handle.getParent();
-  if(parent != null) {
-    parent.remove(handle);
-  }
   releaseHandle ();
 //	if (hwnd != 0) {
 //		OS.DestroyWindow (hwnd);
@@ -1832,7 +1828,13 @@ void releaseHandle () {
 }
 
 void releaseParent () {
-  parent.removeControl (this);
+  Container parent = handle.getParent();
+  if(parent != null) {
+    parent.remove(handle);
+    ((JComponent)parent).revalidate();
+    parent.repaint();
+  }
+  this.parent.removeControl (this);
 }
 
 void releaseWidget () {
@@ -3248,7 +3250,7 @@ boolean traverseReturn () {
  */
 public void update () {
 	checkWidget ();
-  display.paintComponentImmediately(handle);
+  Utils.paintComponentImmediately(handle);
 //	update (false);
 }
 
@@ -4271,6 +4273,8 @@ int lastPressedKeyCode;
 //int lastKeyCode;
 static Runnable focusLostRunnable;
 
+boolean isAdjustingSize;
+
 /**
  * The entry point for callbacks 
  * (Warning: This method is platform dependent)
@@ -4455,7 +4459,7 @@ public void processEvent(AWTEvent e) {
       }
       break;
     }
-    case ComponentEvent.COMPONENT_RESIZED: sendEvent(SWT.Resize); break;
+    case ComponentEvent.COMPONENT_RESIZED: if(!isAdjustingSize) sendEvent(SWT.Resize); break;
     case ComponentEvent.COMPONENT_MOVED: sendEvent(SWT.Move); break;
     case ComponentEvent.COMPONENT_SHOWN: sendEvent(SWT.Show); break;
     case ComponentEvent.COMPONENT_HIDDEN: sendEvent(SWT.Hide); break;

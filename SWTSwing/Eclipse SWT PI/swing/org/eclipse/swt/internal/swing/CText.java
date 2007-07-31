@@ -131,7 +131,7 @@ class CTextMulti extends JScrollPane implements CText {
 
   protected void init(int style) {
     // A multi line text field should have the same characteristics than a single-line one.
-    UIUtils.applyTextFieldStyle(textArea);
+    LookAndFeelUtils.applyTextFieldStyle(textArea);
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
       textArea.setBorder(null);
@@ -493,9 +493,9 @@ class CTextField extends JPasswordField implements CText {
   public void setEchoChar(char c) {
     super.setEchoChar(c);
     if(c == '\0') {
-      UIUtils.applyTextFieldStyle(this);
+      LookAndFeelUtils.applyTextFieldStyle(this);
     } else {
-      UIUtils.applyPasswordFieldStyle(this);
+      LookAndFeelUtils.applyPasswordFieldStyle(this);
     }
   }
   

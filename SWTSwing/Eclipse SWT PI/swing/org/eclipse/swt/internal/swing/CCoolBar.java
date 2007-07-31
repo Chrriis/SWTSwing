@@ -42,7 +42,7 @@ class CCoolBarImplementation extends JCoolBar implements CCoolBar {
 
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIUtils.getStandardBorder());
+      setBorder(LookAndFeelUtils.getStandardBorder());
     }
   }
 

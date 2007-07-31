@@ -20,9 +20,9 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.eclipse.swt.SWT;
 
-public class UIUtils {
+public class LookAndFeelUtils {
 
-  protected UIUtils() {}
+  protected LookAndFeelUtils() {}
   
   public static LookAndFeel getLookAndFeel() {
     return UIManager.getLookAndFeel();

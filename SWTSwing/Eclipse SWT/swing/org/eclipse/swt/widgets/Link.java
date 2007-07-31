@@ -14,6 +14,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.util.EventObject;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 
 import org.eclipse.swt.SWT;
@@ -115,6 +116,11 @@ void createHandleInit() {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
   checkWidget ();
+  SwingUtilities.invokeLater(new Runnable() {
+    public void run() {
+      isAdjustingSize = true;
+    }
+  });
   Dimension size = handle.getSize();
   if(wHint == SWT.DEFAULT) {
     handle.setSize(((CLink)handle).getPreferredWidth(), 0);
@@ -123,6 +129,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
   }
   Point point = super.computeSize (wHint, hHint, changed);
   handle.setSize(size);
+  SwingUtilities.invokeLater(new Runnable() {
+    public void run() {
+      isAdjustingSize = false;
+    }
+  });
   return point;
 }
 

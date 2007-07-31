@@ -17,6 +17,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -116,6 +117,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
   checkWidget ();
   Point cSize = super.computeSize (wHint, hHint, changed);
   if((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        isAdjustingSize = true;
+      }
+    });
     java.awt.Dimension size = handle.getSize();
     handle.setSize(wHint, Integer.MAX_VALUE);
     handle.validate();
@@ -127,6 +133,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
     }
     handle.setSize(size);
     handle.validate();
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        isAdjustingSize = false;
+      }
+    });
     return new Point(cSize.x, hHint != SWT.DEFAULT? hHint: maxHeight);
     // TODO: walk through all the components and compute the size for a fixed width.
   }

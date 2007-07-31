@@ -584,7 +584,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
   protected void init(int style) {
     isCheckType = (style & SWT.CHECK) != 0;
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIUtils.getStandardBorder());
+      setBorder(LookAndFeelUtils.getStandardBorder());
     } else {
       setBorder(BorderFactory.createEmptyBorder());
     }

@@ -31,6 +31,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.LookAndFeel;
+import javax.swing.RepaintManager;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.DND;
@@ -407,6 +409,20 @@ public class Utils {
       for(int i=0; i<children.length; i++) {
         dumpControlTree(children[i], depth + 1, referenceControl);
       }
+    }
+  }
+  
+  public static void paintComponentImmediately(Component component) {
+    if(SwingUtilities.isEventDispatchThread()) {
+      synchronized(component.getTreeLock()) {
+        RepaintManager repaintManager = RepaintManager.currentManager(component);
+        repaintManager.validateInvalidComponents();
+        repaintManager.paintDirtyRegions();
+      }
+      return;
+    }
+    synchronized(component.getTreeLock()) {
+      component.paint(component.getGraphics());
     }
   }
 

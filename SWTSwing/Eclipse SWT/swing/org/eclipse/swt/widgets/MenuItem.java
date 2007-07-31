@@ -618,7 +618,9 @@ public void setAccelerator (int accelerator) {
   if(vKey != 0) {
     key = vKey; 
   }
-  if(!(handle instanceof JMenu)) {
+  if(handle instanceof JMenu) {
+    ((JMenu)handle).setMnemonic(key);
+  } else {
     int modifiers = 0;
     if((accelerator & SWT.ALT) != 0) {
       modifiers |= java.awt.event.KeyEvent.ALT_DOWN_MASK;
@@ -789,23 +791,29 @@ public void setMenu (Menu menu) {
         if(p.getComponent(i) == handle) {
           p.remove(handle);
           p.add(popup, i);
+          if(p instanceof JComponent) {
+            ((JComponent)p).revalidate();
+          } else {
+            p.invalidate();
+            p.validate();
+          }
+          p.repaint();
           break;
         }
       }
     }
     JMenuItem menuItem = (JMenuItem)handle;
-    popup.setText((menuItem).getText());
-    popup.setMnemonic((menuItem).getMnemonic());
-    popup.setToolTipText((menuItem).getToolTipText());
-    popup.setEnabled((menuItem).isEnabled());
-    popup.setSelected((menuItem).isSelected());
-    popup.setIcon((menuItem).getIcon());
+    popup.setText(menuItem.getText());
+    popup.setMnemonic(menuItem.getMnemonic());
+//    popup.setToolTipText(menuItem.getToolTipText());
+    popup.setEnabled(menuItem.isEnabled());
+    popup.setSelected(menuItem.isSelected());
+    popup.setIcon(menuItem.getIcon());
     handle = popup;
 	}
 	JMenu menuHandle = (JMenu)handle;
 	JPopupMenu popupMenu = menuHandle.getPopupMenu();
   popupMenu.removeAll();
-
   /* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;

@@ -43,7 +43,6 @@ import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
-import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 
@@ -64,7 +63,7 @@ import org.eclipse.swt.internal.swing.CShell;
 import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
-import org.eclipse.swt.internal.swing.UIUtils;
+import org.eclipse.swt.internal.swing.LookAndFeelUtils;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -405,14 +404,6 @@ public Display (DeviceData data) {
   ToolTipManager.sharedInstance().setLightWeightPopupEnabled(lightweightPopups);
   JPopupMenu.setDefaultLightWeightPopupEnabled(lightweightPopups);
   Utils.installDefaultLookAndFeel();
-}
-
-void paintComponentImmediately(Component component) {
-  synchronized(component.getTreeLock()) {
-    RepaintManager repaintManager = RepaintManager.currentManager(component);
-    repaintManager.validateInvalidComponents();
-    repaintManager.paintDirtyRegions();
-  }
 }
 
 public static void main(final String[] args) {
@@ -1296,7 +1287,7 @@ public Thread getSyncThread () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	java.awt.Color swingColor = UIUtils.getSystemColor(id);
+	java.awt.Color swingColor = LookAndFeelUtils.getSystemColor(id);
 	if(swingColor == null) {
 	  return super.getSystemColor(id);
   }
@@ -1386,31 +1377,31 @@ public Image getSystemImage (int id) {
 	switch (id) {
 		case SWT.ICON_ERROR:
 			if (errorIcon == null) {
-        errorIcon = getImage(UIUtils.getSystemIcon(id));
+        errorIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = errorIcon;
 			break;
 		case SWT.ICON_INFORMATION:
 			if (infoIcon == null) {
-        infoIcon = getImage(UIUtils.getSystemIcon(id));
+        infoIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = infoIcon;
 			break;
 		case SWT.ICON_WORKING:
 			if (workingIcon == null) {
-        workingIcon = getImage(UIUtils.getSystemIcon(id));
+        workingIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = workingIcon;
 			break;
 		case SWT.ICON_QUESTION:
 		  if (questionIcon == null) {
-		    questionIcon = getImage(UIUtils.getSystemIcon(id));
+		    questionIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 		  }
 		  hIcon = questionIcon;
 		  break;
 		case SWT.ICON_WARNING:
 			if (warningIcon == null) {
-        warningIcon = getImage(UIUtils.getSystemIcon(id));
+        warningIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = warningIcon;
 			break;

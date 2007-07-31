@@ -62,7 +62,7 @@ class CSeparator extends JPanel implements CLabel {
 
   protected void init(int style) {
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIUtils.getStandardBorder());
+      setBorder(LookAndFeelUtils.getStandardBorder());
     }
     Utils.installMouseListener(separator, handle);
     Utils.installKeyListener(separator, handle);
@@ -137,7 +137,7 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
 
   public CLabelImplementation(Label label, int style) {
     this.handle = label;
-    UIUtils.applyLabelStyle(this);
+    LookAndFeelUtils.applyLabelStyle(this);
     userAttributeHandler = new UserAttributeHandler(this) {
       public void setForeground(Color foreground) {
         super.setForeground(foreground);
@@ -155,7 +155,7 @@ class CLabelImplementation extends JMultiLineLabel implements CLabel {
     setFocusable(false);
     setWrapping((style & SWT.WRAP) != 0);
     if((style & SWT.BORDER) != 0) {
-      setBorder(UIUtils.getStandardBorder());
+      setBorder(LookAndFeelUtils.getStandardBorder());
     }
     if((style & SWT.RIGHT) != 0) {
       setAlignment(JMultiLineLabel.RIGHT);

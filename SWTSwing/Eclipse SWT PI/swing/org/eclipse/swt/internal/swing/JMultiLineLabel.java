@@ -87,7 +87,7 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
 
   public JMultiLineLabel() {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    UIUtils.applyLabelStyle(this);
+    LookAndFeelUtils.applyLabelStyle(this);
     setOpaque(false);
     createContent();
   }

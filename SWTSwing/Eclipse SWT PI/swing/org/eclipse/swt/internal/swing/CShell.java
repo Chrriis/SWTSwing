@@ -53,7 +53,6 @@ import javax.swing.JRootPane;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
-import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
@@ -140,7 +139,7 @@ class CShellFrame extends JFrame implements CShell {
           ComponentBorderResizer.handle(this, rootPane);
         }
       } else if(!isDecorated && (style & SWT.NO_TRIM) == 0) {
-        rootPane.setBorder(UIUtils.getDefaultWindowBorder());
+        rootPane.setBorder(LookAndFeelUtils.getDefaultWindowBorder());
       }
     }
     // BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL
@@ -338,11 +337,7 @@ class CShellFrame extends JFrame implements CShell {
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...
       if(isEventDispatchThread) {
         paint(getGraphics());
-        synchronized(getTreeLock()) {
-          RepaintManager repaintManager = RepaintManager.currentManager(this);
-          repaintManager.validateInvalidComponents();
-          repaintManager.paintDirtyRegions();
-        }
+        Utils.paintComponentImmediately(this);
         isPaintActive = false;
       }
     }
@@ -556,7 +551,7 @@ class CShellDialog extends JDialog implements CShell {
           ComponentBorderResizer.handle(this, rootPane);
         }
       } else if(!isDecorated && (style & SWT.NO_TRIM) == 0) {
-        rootPane.setBorder(UIUtils.getDefaultWindowBorder());
+        rootPane.setBorder(LookAndFeelUtils.getDefaultWindowBorder());
       }
     }
     contentPane = getContentPane();
@@ -758,11 +753,7 @@ class CShellDialog extends JDialog implements CShell {
       // The following is to block paint events that occur when a shell is opened to allow direct GC drawing. Check if it is dangerous to do that...
       if(isEventDispatchThread) {
         paint(getGraphics());
-        synchronized(getTreeLock()) {
-          RepaintManager repaintManager = RepaintManager.currentManager(this);
-          repaintManager.validateInvalidComponents();
-          repaintManager.paintDirtyRegions();
-        }
+        Utils.paintComponentImmediately(this);
         isPaintActive = false;
       }
     }

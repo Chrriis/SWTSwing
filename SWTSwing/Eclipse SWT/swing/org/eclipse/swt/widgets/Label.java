@@ -16,6 +16,7 @@ import java.awt.Dimension;
 
 import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -207,6 +208,11 @@ public int getAlignment () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
   checkWidget ();
   if((style & SWT.WRAP) != 0) {
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        isAdjustingSize = true;
+      }
+    });
     Dimension size = handle.getSize();
     if(wHint == SWT.DEFAULT) {
       handle.setSize(((CLabel)handle).getPreferredWidth(), 0);
@@ -215,6 +221,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
     }
     Point point = super.computeSize (wHint, hHint, changed);
     handle.setSize(size);
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        isAdjustingSize = false;
+      }
+    });
     return point;
   }
   return super.computeSize (wHint, hHint, changed);

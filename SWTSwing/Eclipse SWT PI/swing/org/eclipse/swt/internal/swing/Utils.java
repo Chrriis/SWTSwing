@@ -13,6 +13,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -476,5 +477,33 @@ public class Utils {
   }
   
   public static boolean isLocalDragAndDropInProgress;
+  
+  protected static Point mouseLocation;
+  protected static Component mouseComponent;
+  
+  public static void trackMouseProperties(MouseEvent me) {
+    Component c = me.getComponent();
+    if(c.isShowing()) {
+      mouseLocation = me.getPoint();
+      SwingUtilities.convertPointToScreen(mouseLocation, c);
+      mouseComponent = c;
+    }
+  }
+  
+  public static Point getTrakedMouseLocation() {
+    return mouseLocation == null? new Point(0, 0): mouseLocation;
+  }
+  
+  public static Control getTrakedMouseControl() {
+    if(mouseComponent == null) {
+      return null;
+    }
+    for(Component c=mouseComponent; c != null; c = c.getParent()) {
+      if(c instanceof CControl) {
+        return ((CControl)c).getSWTHandle();
+      }
+    }
+    return null;
+  }
   
 }

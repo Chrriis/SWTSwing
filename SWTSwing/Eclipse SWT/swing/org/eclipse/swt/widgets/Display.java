@@ -281,6 +281,9 @@ public class Display extends Device {
         java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
         Utils.storeModifiersEx(ie.getModifiersEx());
         if(ie instanceof MouseEvent) {
+          if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+            Utils.trackMouseProperties((MouseEvent)ie);
+          }
           // It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
           Component component = ie.getComponent();
           Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
@@ -849,13 +852,7 @@ Control getControl (Component handle) {
 public Control getCursorControl () {
   checkDevice ();
   if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-    for(Iterator it=componentToControlMap.values().iterator(); it.hasNext(); ) {
-      Control control = (Control)it.next();
-      if(control.mouseHoverThread != null) {
-        return control;
-      }
-    }
-    return null;
+    return Utils.getTrakedMouseControl();
   }
   java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
   // TODO: what about windows?
@@ -885,15 +882,8 @@ public Control getCursorControl () {
 public Point getCursorLocation () {
 	checkDevice ();
   if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-    for(Iterator it=componentToControlMap.values().iterator(); it.hasNext(); ) {
-      Control control = (Control)it.next();
-      if(control.mouseHoverThread != null && control.mouseHoverEvent != null) {
-        java.awt.Point point = control.mouseHoverEvent.getPoint();
-        SwingUtilities.convertPointToScreen(point, control.mouseHoverEvent.getComponent());
-        return new Point(point.x, point.y);
-      }
-    }
-    return new Point(0, 0);
+    java.awt.Point point = Utils.getTrakedMouseLocation();
+    return new Point(point.x, point.y);
   }
   java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
   return new Point(point.x, point.y);

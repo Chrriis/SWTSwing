@@ -4201,8 +4201,8 @@ public boolean setParent (Composite parent) {
 //}
 
 private volatile long mouseHoverTimeStamp;
-volatile Thread mouseHoverThread;
-java.awt.event.MouseEvent mouseHoverEvent;
+private volatile Thread mouseHoverThread;
+private java.awt.event.MouseEvent mouseHoverEvent;
 
 void adjustMouseHoverState(java.awt.event.MouseEvent me) {
   mouseHoverTimeStamp = System.currentTimeMillis() + 500;

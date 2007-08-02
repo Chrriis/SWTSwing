@@ -4270,6 +4270,7 @@ public void processEvent(EventObject e) {
 
 boolean isTraversing;
 int lastPressedKeyCode;
+char lastPressedKeyChar;
 //int lastKeyCode;
 static Runnable focusLostRunnable;
 
@@ -4332,7 +4333,7 @@ public void processEvent(AWTEvent e) {
 //    }
     break;
   }
-  case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyUp)) {lastPressedKeyCode = -1; return;} break;
+  case java.awt.event.KeyEvent.KEY_RELEASED: if(!hooks(SWT.KeyUp)) {lastPressedKeyCode = -1; lastPressedKeyChar = '\0'; return;} break;
   case java.awt.event.KeyEvent.KEY_TYPED: if(!hooks(SWT.KeyDown)) {isTraversing = false; return;} break;
   case ComponentEvent.COMPONENT_RESIZED: if(!hooks(SWT.Resize)) return; break;
   case ComponentEvent.COMPONENT_MOVED: if(!hooks(SWT.Move)) return; break;
@@ -4423,6 +4424,17 @@ public void processEvent(AWTEvent e) {
 //          sendEvent (SWT.KeyUp, event);
 //        }
 //      }
+      java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+      if((ke.getModifiers() & KeyEvent.ALT_GRAPH_MASK) != 0) {
+        if(hooks(SWT.KeyDown)) {
+          KeyEvent ke2 = new KeyEvent(ke.getComponent(), KeyEvent.KEY_RELEASED, ke.getWhen(), ke.getModifiers(), lastPressedKeyCode, ke.getKeyChar(), ke.getKeyLocation());
+          Event event = createKeyEvent(ke2);
+          event.stateMask |= SWT.CTRL | SWT.ALT;
+          sendEvent(SWT.KeyDown, event);
+        }
+//        lastPressedKeyCode = ke.getKeyCode();
+        lastPressedKeyChar = ke.getKeyChar();
+      }
       isTraversing = false;
       break;
     }
@@ -4440,6 +4452,18 @@ public void processEvent(AWTEvent e) {
         if(isBlocked) break;
       }
       lastPressedKeyCode = pressedKeyCode;
+      int AltGrMask = KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK;
+      if((ke.getModifiers() & AltGrMask) == AltGrMask) {
+        boolean isBlocked = true;
+        switch(pressedKeyCode) {
+          case java.awt.event.KeyEvent.VK_CONTROL:
+          case java.awt.event.KeyEvent.VK_SHIFT:
+          case java.awt.event.KeyEvent.VK_ALT:
+            isBlocked = false;
+        }
+        if(isBlocked) break;
+      }
+      lastPressedKeyChar = ke.getKeyChar();
 //      lastKeyCode = lastPressedKeyCode;
       if(isTraversalKey(ke)) {
         isTraversing = processTraversalKey(ke);
@@ -4453,9 +4477,18 @@ public void processEvent(AWTEvent e) {
       break;
     }
     case java.awt.event.KeyEvent.KEY_RELEASED: {
+      java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent)e;
+      int AltGrMask = KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK;
+      boolean isSending = true;
+      if((ke.getModifiers() & AltGrMask) == AltGrMask) {
+        KeyEvent ke2 = new KeyEvent(ke.getComponent(), KeyEvent.KEY_RELEASED, ke.getWhen(), ke.getModifiers(), lastPressedKeyCode, lastPressedKeyChar, ke.getKeyLocation());
+        sendEvent(SWT.KeyUp, createKeyEvent(ke2));
+        isSending = false;
+      }
       lastPressedKeyCode = -1;
-      if(!isTraversing) {
-        sendEvent(SWT.KeyUp, createKeyEvent((java.awt.event.KeyEvent)e));
+      lastPressedKeyChar = '\0';
+      if(isSending && !isTraversing) {
+        sendEvent(SWT.KeyUp, createKeyEvent(ke));
       }
       break;
     }

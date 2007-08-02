@@ -13,8 +13,10 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
@@ -22,6 +24,9 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.Style;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.StyleSheet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -203,6 +208,9 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
       forwardActionList.clear();
       backActionList.add(getCurrentCommand());
       editorPane.setText(html);
+      if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+        adjustStyles();
+      }
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
           editorPane.scrollRectToVisible(new Rectangle(0, 0, 1, 1));
@@ -215,6 +223,33 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
     }
   }
   
+  protected void adjustStyles() {
+    StyleSheet styles = ((HTMLDocument)editorPane.getDocument()).getStyleSheet();
+    int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
+    for(Enumeration rules = styles.getStyleNames(); rules.hasMoreElements(); ) {
+      String rName = (String) rules.nextElement();
+      adjustStyle(styles, styles.getStyle(rName), screenResolution);
+    }
+  }
+  
+  protected static void adjustStyle(StyleSheet styles, Style rule, int screenResolution) {
+    for(Enumeration e=rule.getAttributeNames(); e.hasMoreElements(); ) {
+      Object name = e.nextElement();
+      Object value = rule.getAttribute(name);
+      if(value instanceof Style) {
+        adjustStyle(styles, (Style)value, screenResolution);
+      } else if(name instanceof javax.swing.text.html.CSS.Attribute) {
+        String s = value.toString();
+        if(s.endsWith("pt") || s.endsWith("px") || s.endsWith("mm") || s.endsWith("cm") || s.endsWith("pc") || s.endsWith("in")) {
+          try {
+            double d = new Double(s.substring(0, s.length() - 2)).doubleValue() * screenResolution / 72d;
+            styles.addCSSAttribute(rule, (javax.swing.text.html.CSS.Attribute)name, d + s.substring(s.length() - 2));
+          } catch(Exception ex) {}
+        }
+      }
+    }
+  }
+
 }
 
 public interface CBrowser extends CComposite {

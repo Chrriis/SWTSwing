@@ -486,7 +486,13 @@ public class Utils {
     if(c.isShowing()) {
       mouseLocation = me.getPoint();
       SwingUtilities.convertPointToScreen(mouseLocation, c);
-      mouseComponent = c;
+      if(me.getID() == MouseEvent.MOUSE_EXITED) {
+        if(mouseComponent == c) {
+          mouseComponent = null;
+        }
+      } else {
+        mouseComponent = c;
+      }
     }
   }
   

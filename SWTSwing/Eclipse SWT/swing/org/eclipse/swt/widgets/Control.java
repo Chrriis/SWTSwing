@@ -4275,6 +4275,7 @@ char lastPressedKeyChar;
 static Runnable focusLostRunnable;
 
 boolean isAdjustingSize;
+static boolean isDragging;
 
 /**
  * The entry point for callbacks 
@@ -4298,13 +4299,14 @@ public void processEvent(AWTEvent e) {
     break;
   }
   case java.awt.event.PaintEvent.PAINT: if(!hooks(SWT.Paint)) return; break;
-  case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.DragDetect) && !hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
   case java.awt.event.MouseEvent.MOUSE_MOVED: if(!hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
     if(!hooks(SWT.MouseDown) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_RELEASED: {
+    isDragging = false;
     if(!hooks(SWT.MouseUp) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
@@ -4368,7 +4370,14 @@ public void processEvent(AWTEvent e) {
       }
       break;
     }
-    case java.awt.event.MouseEvent.MOUSE_DRAGGED:
+    case java.awt.event.MouseEvent.MOUSE_DRAGGED: {
+      if(!isDragging) {
+        isDragging = true;
+        java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
+        sendEvent(SWT.DragDetect, createMouseEvent(me, false));
+      }
+      // Fall through
+    }
     case java.awt.event.MouseEvent.MOUSE_MOVED: {
       java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
       sendEvent(SWT.MouseMove, createMouseEvent(me, false));

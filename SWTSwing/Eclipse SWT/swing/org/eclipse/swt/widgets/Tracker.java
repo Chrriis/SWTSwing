@@ -11,13 +11,20 @@
 package org.eclipse.swt.widgets;
 
  
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+
+import javax.swing.SwingUtilities;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CControl;
+import org.eclipse.swt.internal.swing.JTracker;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**
@@ -41,18 +48,20 @@ import org.eclipse.swt.internal.swing.Utils;
  */
 public class Tracker extends Widget {
 	Control parent;
-	boolean tracking, cancelled, stippled;
-	Rectangle [] rectangles, proportions;
-	Rectangle bounds;
-	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
-	boolean inEvent = false;
-	int oldProc, oldX, oldY;
+	JTracker handle;
+	boolean stippled;
+//	boolean tracking, cancelled;
+//	Rectangle [] rectangles, proportions;
+//	Rectangle bounds;
+//	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
+//	boolean inEvent = false;
+//	int oldProc, oldX, oldY;
 
-	/*
-	* The following values mirror step sizes on Windows
-	*/
-	final static int STEPSIZE_SMALL = 1;
-	final static int STEPSIZE_LARGE = 9;
+//	/*
+//	* The following values mirror step sizes on Windows
+//	*/
+//	final static int STEPSIZE_SMALL = 1;
+//	final static int STEPSIZE_LARGE = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -89,6 +98,7 @@ public class Tracker extends Widget {
 public Tracker (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
+  createWidget ();
 }
 
 /**
@@ -133,6 +143,7 @@ public Tracker (Display display, int style) {
 	}
 	this.style = checkStyle (style);
 	this.display = display;
+  createWidget ();
 }
 
 /**
@@ -189,42 +200,42 @@ public void addKeyListener (KeyListener listener) {
 	addListener (SWT.KeyDown,typedListener);
 }
 
-Point adjustMoveCursor () {
-	int newX = bounds.x + bounds.width / 2;
-	int newY = bounds.y;
-  Utils.notImplemented(); return null;
-//	POINT pt = new POINT ();
-//	pt.x = newX;  pt.y = newY;
-//	/*
-//	 * Convert to screen coordinates iff needed
-// 	 */
-//	if (parent != null) {
-//		OS.ClientToScreen (parent.handle, pt);
+//Point adjustMoveCursor () {
+//	int newX = bounds.x + bounds.width / 2;
+//	int newY = bounds.y;
+//  Utils.notImplemented(); return null;
+////	POINT pt = new POINT ();
+////	pt.x = newX;  pt.y = newY;
+////	/*
+////	 * Convert to screen coordinates iff needed
+//// 	 */
+////	if (parent != null) {
+////		OS.ClientToScreen (parent.handle, pt);
+////	}
+////	OS.SetCursorPos (pt.x, pt.y);
+////	return new Point (pt.x, pt.y);
+//}
+
+//Point adjustResizeCursor () {
+//	int newX, newY;
+//
+//	if ((cursorOrientation & SWT.LEFT) != 0) {
+//		newX = bounds.x;
+//	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+//		newX = bounds.x + bounds.width;
+//	} else {
+//		newX = bounds.x + bounds.width / 2;
 //	}
-//	OS.SetCursorPos (pt.x, pt.y);
-//	return new Point (pt.x, pt.y);
-}
-
-Point adjustResizeCursor () {
-	int newX, newY;
-
-	if ((cursorOrientation & SWT.LEFT) != 0) {
-		newX = bounds.x;
-	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
-		newX = bounds.x + bounds.width;
-	} else {
-		newX = bounds.x + bounds.width / 2;
-	}
-
-	if ((cursorOrientation & SWT.UP) != 0) {
-		newY = bounds.y;
-	} else if ((cursorOrientation & SWT.DOWN) != 0) {
-		newY = bounds.y + bounds.height;
-	} else {
-		newY = bounds.y + bounds.height / 2;
-	}
-
-  Utils.notImplemented(); return null;
+//
+//	if ((cursorOrientation & SWT.UP) != 0) {
+//		newY = bounds.y;
+//	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+//		newY = bounds.y + bounds.height;
+//	} else {
+//		newY = bounds.y + bounds.height / 2;
+//	}
+//
+//  Utils.notImplemented(); return null;
 //	POINT pt = new POINT ();
 //	pt.x = newX;  pt.y = newY;
 //	/*
@@ -278,7 +289,7 @@ Point adjustResizeCursor () {
 //	}
 //		
 //	return new Point (pt.x, pt.y);
-}
+//}
 
 static int checkStyle (int style) {
 	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN)) == 0) {
@@ -298,48 +309,49 @@ static int checkStyle (int style) {
  */
 public void close () {
 	checkWidget ();
-	tracking = false;
+	handle.hide();
+//	tracking = false;
 }
 
-Rectangle computeBounds () {
-	int xMin = rectangles [0].x;
-	int yMin = rectangles [0].y;
-	int xMax = rectangles [0].x + rectangles [0].width;
-	int yMax = rectangles [0].y + rectangles [0].height;
-	
-	for (int i = 1; i < rectangles.length; i++) {
-		if (rectangles [i].x < xMin) xMin = rectangles [i].x;
-		if (rectangles [i].y < yMin) yMin = rectangles [i].y;
-		int rectRight = rectangles [i].x + rectangles [i].width;
-		if (rectRight > xMax) xMax = rectRight;		
-		int rectBottom = rectangles [i].y + rectangles [i].height;
-		if (rectBottom > yMax) yMax = rectBottom;
-	}
-	
-	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
-}
+//Rectangle computeBounds () {
+//	int xMin = rectangles [0].x;
+//	int yMin = rectangles [0].y;
+//	int xMax = rectangles [0].x + rectangles [0].width;
+//	int yMax = rectangles [0].y + rectangles [0].height;
+//	
+//	for (int i = 1; i < rectangles.length; i++) {
+//		if (rectangles [i].x < xMin) xMin = rectangles [i].x;
+//		if (rectangles [i].y < yMin) yMin = rectangles [i].y;
+//		int rectRight = rectangles [i].x + rectangles [i].width;
+//		if (rectRight > xMax) xMax = rectRight;		
+//		int rectBottom = rectangles [i].y + rectangles [i].height;
+//		if (rectBottom > yMax) yMax = rectBottom;
+//	}
+//	
+//	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
+//}
 
-Rectangle [] computeProportions (Rectangle [] rects) {
-	Rectangle [] result = new Rectangle [rects.length];
-	bounds = computeBounds ();
-	for (int i = 0; i < rects.length; i++) {
-		int x = 0, y = 0, width = 0, height = 0;
-		if (bounds.width != 0) {
-			x = (rects [i].x - bounds.x) * 100 / bounds.width;
-			width = rects [i].width * 100 / bounds.width;
-		} else {
-			width = 100;
-		}
-		if (bounds.height != 0) {
-			y = (rects [i].y - bounds.y) * 100 / bounds.height;
-			height = rects [i].height * 100 / bounds.height;
-		} else {
-			height = 100;
-		}
-		result [i] = new Rectangle (x, y, width, height);			
-	}
-	return result;
-}
+//Rectangle [] computeProportions (Rectangle [] rects) {
+//	Rectangle [] result = new Rectangle [rects.length];
+//	bounds = computeBounds ();
+//	for (int i = 0; i < rects.length; i++) {
+//		int x = 0, y = 0, width = 0, height = 0;
+//		if (bounds.width != 0) {
+//			x = (rects [i].x - bounds.x) * 100 / bounds.width;
+//			width = rects [i].width * 100 / bounds.width;
+//		} else {
+//			width = 100;
+//		}
+//		if (bounds.height != 0) {
+//			y = (rects [i].y - bounds.y) * 100 / bounds.height;
+//			height = rects [i].height * 100 / bounds.height;
+//		} else {
+//			height = 100;
+//		}
+//		result [i] = new Rectangle (x, y, width, height);			
+//	}
+//	return result;
+//}
 
 ///**
 // * Draw the rectangles displayed by the tracker.
@@ -372,6 +384,53 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 //	OS.ReleaseDC (hwndTrack, hDC);
 //}
 
+void createWidget () {
+  handle = new JTracker((style & SWT.RESIZE) != 0) {
+    protected void processMouseEvent(MouseEvent me) {
+      super.processMouseEvent(me);
+      if(Utils.capturedControl != null) {
+        Component target = ((CControl)Utils.capturedControl).getClientArea();
+        java.awt.Point point = SwingUtilities.convertPoint((Component)me.getSource(), me.getX(), me.getY(), target);
+        if(me.getID() == MouseEvent.MOUSE_WHEEL) {
+          MouseWheelEvent mwe = (MouseWheelEvent)me;
+          me = new MouseWheelEvent(target, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), point.x, point.y, mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation());
+        } else {
+          me = new MouseEvent(target, me.getID(), me.getWhen(), me.getModifiers(), point.x, point.y, me.getClickCount(), me.isPopupTrigger());
+        }
+        target.dispatchEvent(me);
+      }
+    }
+  };
+  handle.addTrackerListener(new JTracker.TrackerListener() {
+    public void trackerMoved(JTracker.TrackerEvent e) {
+      Event event = new Event();
+      event.x = e.getX();
+      event.y = e.getY();
+      sendEvent(SWT.Move, event);
+    }
+    public void trackerResized(JTracker.TrackerEvent e) {
+      Event event = new Event();
+      event.x = e.getX();
+      event.y = e.getY();
+      sendEvent(SWT.Resize, event);
+    }
+  });
+  int constraints = 0;
+  if((style & SWT.UP) != 0) {
+    constraints |= JTracker.UP_MASK;
+  }
+  if((style & SWT.LEFT) != 0) {
+    constraints |= JTracker.LEFT_MASK;
+  }
+  if((style & SWT.DOWN) != 0) {
+    constraints |= JTracker.DOWN_MASK;
+  }
+  if((style & SWT.RIGHT) != 0) {
+    constraints |= JTracker.RIGHT_MASK;
+  }
+  handle.setConstraints(constraints);
+}
+
 /**
  * Returns the bounds that are being drawn, expressed relative to the parent
  * widget.  If the parent is a <code>Display</code> then these are screen
@@ -386,11 +445,12 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
+	java.awt.Rectangle[] rectangles = handle.getRectangles();
 	int length = 0;
 	if (rectangles != null) length = rectangles.length;
 	Rectangle [] result = new Rectangle [length];
 	for (int i = 0; i < length; i++) {
-		Rectangle current = rectangles [i];
+		java.awt.Rectangle current = rectangles [i];
 		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
 	}
 	return result;
@@ -411,18 +471,18 @@ public boolean getStippled () {
 	return stippled;
 }
 
-void moveRectangles (int xChange, int yChange) {
-	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
-	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
-	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
-	if (yChange > 0 && ((style & SWT.DOWN) == 0)) yChange = 0;
-	if (xChange == 0 && yChange == 0) return;
-	bounds.x += xChange; bounds.y += yChange;
-	for (int i = 0; i < rectangles.length; i++) {
-		rectangles [i].x += xChange;
-		rectangles [i].y += yChange;
-	}
-}
+//void moveRectangles (int xChange, int yChange) {
+//	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
+//	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
+//	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
+//	if (yChange > 0 && ((style & SWT.DOWN) == 0)) yChange = 0;
+//	if (xChange == 0 && yChange == 0) return;
+//	bounds.x += xChange; bounds.y += yChange;
+//	for (int i = 0; i < rectangles.length; i++) {
+//		rectangles [i].x += xChange;
+//		rectangles [i].y += yChange;
+//	}
+//}
 
 /**
  * Displays the Tracker rectangles for manipulation by the user.  Returns when
@@ -438,24 +498,23 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget ();
-	if (rectangles == null) return false;
-	cancelled = false;
-	tracking = true;
+	if (!hasRectangles) return false;
+//	cancelled = false;
+//	tracking = true;
 
-	/*
-	* If exactly one of UP/DOWN is specified as a style then set the cursor
-	* orientation accordingly (the same is done for LEFT/RIGHT styles below).
-	*/
-	int vStyle = style & (SWT.UP | SWT.DOWN);
-	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
-		cursorOrientation |= vStyle;
-	}
-	int hStyle = style & (SWT.LEFT | SWT.RIGHT);
-	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
-		cursorOrientation |= hStyle;
-	}
-
-  Utils.notImplemented(); return false;
+//	/*
+//	* If exactly one of UP/DOWN is specified as a style then set the cursor
+//	* orientation accordingly (the same is done for LEFT/RIGHT styles below).
+//	*/
+//	int vStyle = style & (SWT.UP | SWT.DOWN);
+//	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
+//		cursorOrientation |= vStyle;
+//	}
+//	int hStyle = style & (SWT.LEFT | SWT.RIGHT);
+//	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
+//		cursorOrientation |= hStyle;
+//	}
+	return handle.show();
 //	/*
 //	* If this tracker is being created without a mouse drag then
 //	* we need to create a transparent window that fills the screen
@@ -609,116 +668,116 @@ public void removeKeyListener(KeyListener listener) {
 	eventTable.unhook (SWT.KeyDown, listener);
 }
 
-void resizeRectangles (int xChange, int yChange) {
-	/*
-	* If the cursor orientation has not been set in the orientation of
-	* this change then try to set it here.
-	*/
-	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
-		cursorOrientation |= SWT.LEFT;
-	}
-	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
-		cursorOrientation |= SWT.RIGHT;
-	}
-	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
-		cursorOrientation |= SWT.UP;
-	}
-	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
-		cursorOrientation |= SWT.DOWN;
-	}
-	
-	/*
-	 * If the bounds will flip about the x or y axis then apply the adjustment
-	 * up to the axis (ie.- where bounds width/height becomes 0), change the
-	 * cursor's orientation accordingly, and flip each Rectangle's origin (only
-	 * necessary for > 1 Rectangles) 
-	 */
-	if ((cursorOrientation & SWT.LEFT) != 0) {
-		if (xChange > bounds.width) {
-			if ((style & SWT.RIGHT) == 0) return;
-			cursorOrientation |= SWT.RIGHT;
-			cursorOrientation &= ~SWT.LEFT;
-			bounds.x += bounds.width;
-			xChange -= bounds.width;
-			bounds.width = 0;
-			if (proportions.length > 1) {
-				for (int i = 0; i < proportions.length; i++) {
-					Rectangle proportion = proportions [i];
-					proportion.x = 100 - proportion.x - proportion.width;
-				}
-			}
-		}
-	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
-		if (bounds.width < -xChange) {
-			if ((style & SWT.LEFT) == 0) return;
-			cursorOrientation |= SWT.LEFT;
-			cursorOrientation &= ~SWT.RIGHT;
-			xChange += bounds.width;
-			bounds.width = 0;
-			if (proportions.length > 1) {
-				for (int i = 0; i < proportions.length; i++) {
-					Rectangle proportion = proportions [i];
-					proportion.x = 100 - proportion.x - proportion.width;
-				}
-			}
-		}
-	}
-	if ((cursorOrientation & SWT.UP) != 0) {
-		if (yChange > bounds.height) {
-			if ((style & SWT.DOWN) == 0) return;
-			cursorOrientation |= SWT.DOWN;
-			cursorOrientation &= ~SWT.UP;
-			bounds.y += bounds.height;
-			yChange -= bounds.height;
-			bounds.height = 0;
-			if (proportions.length > 1) {
-				for (int i = 0; i < proportions.length; i++) {
-					Rectangle proportion = proportions [i];
-					proportion.y = 100 - proportion.y - proportion.height;
-				}
-			}
-		}
-	} else if ((cursorOrientation & SWT.DOWN) != 0) {
-		if (bounds.height < -yChange) {
-			if ((style & SWT.UP) == 0) return;
-			cursorOrientation |= SWT.UP;
-			cursorOrientation &= ~SWT.DOWN;
-			yChange += bounds.height;
-			bounds.height = 0;
-			if (proportions.length > 1) {
-				for (int i = 0; i < proportions.length; i++) {
-					Rectangle proportion = proportions [i];
-					proportion.y = 100 - proportion.y - proportion.height;
-				}
-			}
-		}
-	}
-	
-	// apply the bounds adjustment
-	if ((cursorOrientation & SWT.LEFT) != 0) {
-		bounds.x += xChange;
-		bounds.width -= xChange;
-	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
-		bounds.width += xChange;
-	}
-	if ((cursorOrientation & SWT.UP) != 0) {
-		bounds.y += yChange;
-		bounds.height -= yChange;
-	} else if ((cursorOrientation & SWT.DOWN) != 0) {
-		bounds.height += yChange;
-	}
-	
-	Rectangle [] newRects = new Rectangle [rectangles.length];
-	for (int i = 0; i < rectangles.length; i++) {
-		Rectangle proportion = proportions[i];
-		newRects[i] = new Rectangle (
-			proportion.x * bounds.width / 100 + bounds.x,
-			proportion.y * bounds.height / 100 + bounds.y,
-			proportion.width * bounds.width / 100,
-			proportion.height * bounds.height / 100);
-	}
-	rectangles = newRects;	
-}
+//void resizeRectangles (int xChange, int yChange) {
+//	/*
+//	* If the cursor orientation has not been set in the orientation of
+//	* this change then try to set it here.
+//	*/
+//	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
+//		cursorOrientation |= SWT.LEFT;
+//	}
+//	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+//		cursorOrientation |= SWT.RIGHT;
+//	}
+//	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+//		cursorOrientation |= SWT.UP;
+//	}
+//	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+//		cursorOrientation |= SWT.DOWN;
+//	}
+//	
+//	/*
+//	 * If the bounds will flip about the x or y axis then apply the adjustment
+//	 * up to the axis (ie.- where bounds width/height becomes 0), change the
+//	 * cursor's orientation accordingly, and flip each Rectangle's origin (only
+//	 * necessary for > 1 Rectangles) 
+//	 */
+//	if ((cursorOrientation & SWT.LEFT) != 0) {
+//		if (xChange > bounds.width) {
+//			if ((style & SWT.RIGHT) == 0) return;
+//			cursorOrientation |= SWT.RIGHT;
+//			cursorOrientation &= ~SWT.LEFT;
+//			bounds.x += bounds.width;
+//			xChange -= bounds.width;
+//			bounds.width = 0;
+//			if (proportions.length > 1) {
+//				for (int i = 0; i < proportions.length; i++) {
+//					Rectangle proportion = proportions [i];
+//					proportion.x = 100 - proportion.x - proportion.width;
+//				}
+//			}
+//		}
+//	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+//		if (bounds.width < -xChange) {
+//			if ((style & SWT.LEFT) == 0) return;
+//			cursorOrientation |= SWT.LEFT;
+//			cursorOrientation &= ~SWT.RIGHT;
+//			xChange += bounds.width;
+//			bounds.width = 0;
+//			if (proportions.length > 1) {
+//				for (int i = 0; i < proportions.length; i++) {
+//					Rectangle proportion = proportions [i];
+//					proportion.x = 100 - proportion.x - proportion.width;
+//				}
+//			}
+//		}
+//	}
+//	if ((cursorOrientation & SWT.UP) != 0) {
+//		if (yChange > bounds.height) {
+//			if ((style & SWT.DOWN) == 0) return;
+//			cursorOrientation |= SWT.DOWN;
+//			cursorOrientation &= ~SWT.UP;
+//			bounds.y += bounds.height;
+//			yChange -= bounds.height;
+//			bounds.height = 0;
+//			if (proportions.length > 1) {
+//				for (int i = 0; i < proportions.length; i++) {
+//					Rectangle proportion = proportions [i];
+//					proportion.y = 100 - proportion.y - proportion.height;
+//				}
+//			}
+//		}
+//	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+//		if (bounds.height < -yChange) {
+//			if ((style & SWT.UP) == 0) return;
+//			cursorOrientation |= SWT.UP;
+//			cursorOrientation &= ~SWT.DOWN;
+//			yChange += bounds.height;
+//			bounds.height = 0;
+//			if (proportions.length > 1) {
+//				for (int i = 0; i < proportions.length; i++) {
+//					Rectangle proportion = proportions [i];
+//					proportion.y = 100 - proportion.y - proportion.height;
+//				}
+//			}
+//		}
+//	}
+//	
+//	// apply the bounds adjustment
+//	if ((cursorOrientation & SWT.LEFT) != 0) {
+//		bounds.x += xChange;
+//		bounds.width -= xChange;
+//	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+//		bounds.width += xChange;
+//	}
+//	if ((cursorOrientation & SWT.UP) != 0) {
+//		bounds.y += yChange;
+//		bounds.height -= yChange;
+//	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+//		bounds.height += yChange;
+//	}
+//	
+//	Rectangle [] newRects = new Rectangle [rectangles.length];
+//	for (int i = 0; i < rectangles.length; i++) {
+//		Rectangle proportion = proportions[i];
+//		newRects[i] = new Rectangle (
+//			proportion.x * bounds.width / 100 + bounds.x,
+//			proportion.y * bounds.height / 100 + bounds.y,
+//			proportion.width * bounds.width / 100,
+//			proportion.height * bounds.height / 100);
+//	}
+//	rectangles = newRects;	
+//}
 
 /**
  * Sets the <code>Cursor</code> of the Tracker.  If this cursor is <code>null</code>
@@ -733,13 +792,15 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor(Cursor newCursor) {
 	checkWidget();
-	clientCursor = 0;
+//	clientCursor = 0;
 	if (newCursor != null) {
     Utils.notImplemented();
 //		clientCursor = newCursor.handle;
 //		if (inEvent) OS.SetCursor (clientCursor);
 	}
 }
+
+boolean hasRectangles;
 
 /**
  * Specifies the rectangles that should be drawn, expressed relative to the parent
@@ -758,14 +819,22 @@ public void setCursor(Cursor newCursor) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget ();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int length = rectangles.length;
-	this.rectangles = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
-		Rectangle current = rectangles [i];
-		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
-		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);
+//	int length = rectangles.length;
+//	this.rectangles = new Rectangle [length];
+//	for (int i = 0; i < length; i++) {
+//		Rectangle current = rectangles [i];
+//		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
+//		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);
+//	}
+	java.awt.Rectangle[] recs = new java.awt.Rectangle[rectangles.length];
+	for(int i=0; i<rectangles.length; i++) {
+	  Rectangle current = rectangles [i];
+	  if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
+	  recs[i] = new java.awt.Rectangle(current.x, current.y, current.width, current.height);
 	}
-	proportions = computeProportions (rectangles);
+	hasRectangles = true;
+	handle.setRectangles(recs);
+//	proportions = computeProportions (rectangles);
 }
 
 /**
@@ -781,6 +850,7 @@ public void setRectangles (Rectangle [] rectangles) {
 public void setStippled (boolean stippled) {
 	checkWidget ();
 	this.stippled = stippled;
+	handle.setAppearance(stippled? JTracker.THICK_BORDER_APPEARANCE: JTracker.SINGLE_LINE_APPEARANCE);
 }
 
 //int transparentProc (int hwnd, int msg, int wParam, int lParam) {

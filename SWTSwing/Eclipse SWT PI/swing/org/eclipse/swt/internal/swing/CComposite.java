@@ -7,6 +7,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -109,6 +110,12 @@ class CCompositeImplementation extends JPanel implements CComposite {
       }
       public Cursor getCursor() {
         return CCompositeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+      }
+      protected void processEvent(AWTEvent e) {
+        if(Utils.redispatchEvent(getSWTHandle(), e)) {
+          return;
+        }
+        super.processEvent(e);
       }
     };
     userAttributeHandler = new UserAttributeHandler(panel);

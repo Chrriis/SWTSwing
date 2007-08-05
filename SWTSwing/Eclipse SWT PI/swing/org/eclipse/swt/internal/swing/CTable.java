@@ -449,6 +449,9 @@ class CTableImplementation extends JScrollPane implements CTable {
         graphics = null;
       }
       protected void processEvent(AWTEvent e) {
+        if(Utils.redispatchEvent(getSWTHandle(), e)) {
+          return;
+        }
         if(e instanceof MouseEvent) {
           MouseEvent me = (MouseEvent)e;
           if(isCheckType) {

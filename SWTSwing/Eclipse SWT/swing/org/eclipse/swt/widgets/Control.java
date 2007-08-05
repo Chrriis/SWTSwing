@@ -2335,7 +2335,13 @@ public void setBounds (Rectangle rect) {
  */
 public void setCapture (boolean capture) {
 	checkWidget ();
-  Utils.notImplemented();
+	if (capture) {
+	  Utils.capturedControl = this;
+	} else {
+		if (Utils.capturedControl == this) {
+		  Utils.capturedControl = null;
+		}
+	}
 //	if (capture) {
 //		OS.SetCapture (handle);
 //	} else {
@@ -2343,6 +2349,24 @@ public void setCapture (boolean capture) {
 //			OS.ReleaseCapture ();
 //		}
 //	}
+}
+
+void sendMouseEvent(int eventType, Event event) {
+  if(Utils.capturedControl == null || Utils.capturedControl == this) {
+    sendEvent(eventType, event);
+    return;
+  }
+  Control control = Utils.capturedControl;
+  switch(eventType) {
+    case SWT.MouseDown:
+    case SWT.MouseUp:
+      Utils.capturedControl = null;
+      break;
+  }
+  java.awt.Point point = SwingUtilities.convertPoint(handle, event.x, event.y, control.handle);
+  event.x = point.x;
+  event.y = point.y;
+  control.sendEvent(eventType, event);
 }
 
 //void setCursor () {
@@ -4236,7 +4260,7 @@ void adjustMouseHoverState(java.awt.event.MouseEvent me) {
                       return;
                     }
                     try {
-                      sendEvent(SWT.MouseHover, createMouseEvent(me, false));
+                      sendMouseEvent(SWT.MouseHover, createMouseEvent(me, false));
                     } catch(Throwable t) {
                       UIThreadUtils.storeException(t);
                     } finally {
@@ -4295,23 +4319,23 @@ public void processEvent(AWTEvent e) {
     if(me.getClickCount() != 2) {
       return;
     }
-    if(!hooks(SWT.MouseDoubleClick)) return;
+    if(Utils.capturedControl == null && !hooks(SWT.MouseDoubleClick)) return;
     break;
   }
   case java.awt.event.PaintEvent.PAINT: if(!hooks(SWT.Paint)) return; break;
-  case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.DragDetect) && !hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
-  case java.awt.event.MouseEvent.MOUSE_MOVED: if(!hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_DRAGGED: if(Utils.capturedControl == null && !hooks(SWT.DragDetect) && !hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
+  case java.awt.event.MouseEvent.MOUSE_MOVED: if(Utils.capturedControl == null && !hooks(SWT.MouseMove) && !hooks(SWT.MouseHover)) return; break;
   case java.awt.event.MouseEvent.MOUSE_PRESSED: {
-    if(!hooks(SWT.MouseDown) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    if(Utils.capturedControl == null && !hooks(SWT.MouseDown) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_RELEASED: {
     isDragging = false;
-    if(!hooks(SWT.MouseUp) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
+    if(Utils.capturedControl == null && !hooks(SWT.MouseUp) && menu == null && (!hooks(SWT.MenuDetect) || !((java.awt.event.MouseEvent)e).isPopupTrigger())) return;
     break;
   }
   case java.awt.event.MouseEvent.MOUSE_WHEEL: {
-    if(!hooks(SWT.MouseWheel)) {
+    if(Utils.capturedControl == null && !hooks(SWT.MouseWheel)) {
       Object o = e.getSource();
       if(o instanceof Component && !(o instanceof Window)) {
         Component c = ((Component)o);
@@ -4380,14 +4404,14 @@ public void processEvent(AWTEvent e) {
     }
     case java.awt.event.MouseEvent.MOUSE_MOVED: {
       java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
-      sendEvent(SWT.MouseMove, createMouseEvent(me, false));
+      sendMouseEvent(SWT.MouseMove, createMouseEvent(me, false));
       adjustMouseHoverState(me);
       break;
     }
     case java.awt.event.MouseEvent.MOUSE_PRESSED: {
       java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
       Event event = createMouseEvent(me, true);
-      sendEvent(SWT.MouseDown, event);
+      sendMouseEvent(SWT.MouseDown, event);
       if((menu != null || hooks(SWT.MenuDetect)) && me.isPopupTrigger()) {
         java.awt.Point p = new java.awt.Point(event.x, event.y);
         SwingUtilities.convertPointToScreen(p, me.getComponent());
@@ -4401,7 +4425,7 @@ public void processEvent(AWTEvent e) {
     case java.awt.event.MouseEvent.MOUSE_RELEASED: {
       java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
       Event event = createMouseEvent(me, true);
-      sendEvent(SWT.MouseUp, event);
+      sendMouseEvent(SWT.MouseUp, event);
       if((menu != null || hooks(SWT.MenuDetect)) && me.isPopupTrigger()) {
         java.awt.Point p = new java.awt.Point(event.x, event.y);
         SwingUtilities.convertPointToScreen(p, me.getComponent());
@@ -4412,9 +4436,9 @@ public void processEvent(AWTEvent e) {
       }
       break;
     }
-    case java.awt.event.MouseEvent.MOUSE_CLICKED: sendEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
+    case java.awt.event.MouseEvent.MOUSE_CLICKED: sendMouseEvent(SWT.MouseDoubleClick, createMouseEvent((java.awt.event.MouseEvent)e, false)); break;
     case java.awt.event.MouseEvent.MOUSE_WHEEL: {
-      sendEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false));
+      sendMouseEvent(SWT.MouseWheel, createMouseEvent((java.awt.event.MouseEvent)e, false));
       adjustMouseHoverState((java.awt.event.MouseEvent)e);
       break;
     }

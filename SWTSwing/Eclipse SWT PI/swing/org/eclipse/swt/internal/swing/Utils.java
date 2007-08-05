@@ -7,6 +7,7 @@
  */
 package org.eclipse.swt.internal.swing;
 
+import java.awt.AWTEvent;
 import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -510,6 +511,25 @@ public class Utils {
       }
     }
     return null;
+  }
+  
+  public static Control capturedControl;
+  
+  public static boolean redispatchEvent(Control control, AWTEvent e) {
+    if(e instanceof MouseEvent && capturedControl != null && capturedControl != control) {
+      Component target = ((CControl)capturedControl.handle).getClientArea();
+      MouseEvent me = (MouseEvent)e;
+      java.awt.Point point = SwingUtilities.convertPoint((Component)me.getSource(), me.getX(), me.getY(), target);
+      if(me.getID() == MouseEvent.MOUSE_WHEEL) {
+        MouseWheelEvent mwe = (MouseWheelEvent)me;
+        me = new MouseWheelEvent(target, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), point.x, point.y, mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation());
+      } else {
+        me = new MouseEvent(target, me.getID(), me.getWhen(), me.getModifiers(), point.x, point.y, me.getClickCount(), me.isPopupTrigger());
+      }
+      target.dispatchEvent(me);
+      return true;
+    }
+    return false;
   }
   
 }

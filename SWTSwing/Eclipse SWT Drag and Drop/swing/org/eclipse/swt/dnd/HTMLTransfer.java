@@ -15,18 +15,17 @@ import java.awt.datatransfer.StringSelection;
 import java.io.Reader;
 
 /**
- * The class <code>TextTransfer</code> provides a platform specific mechanism 
- * for converting plain text represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.
+ * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
+ * for converting text in HTML format represented as a java <code>String</code> 
+ * to a platform specific representation of the data and vice versa.  See 
+ * <code>Transfer</code> for additional information.
  * 
- * <p>An example of a java <code>String</code> containing plain text is shown 
+ * <p>An example of a java <code>String</code> containing HTML text is shown 
  * below:</p>
  * 
  * <code><pre>
- *     String textData = "Hello World";
+ *     String htmlData = "<p>This is a paragraph of text.</p>";
  * </code></pre>
- * 
- * @see Transfer
  */
 public class HTMLTransfer extends Transfer {
 
@@ -35,9 +34,9 @@ private static HTMLTransfer _instance = new HTMLTransfer();
 private HTMLTransfer() {}
 
 /**
- * Returns the singleton instance of the TextTransfer class.
+ * Returns the singleton instance of the HTMLTransfer class.
  *
- * @return the singleton instance of the TextTransfer class
+ * @return the singleton instance of the HTMLTransfer class
  */
 public static HTMLTransfer getInstance () {
 	return _instance;

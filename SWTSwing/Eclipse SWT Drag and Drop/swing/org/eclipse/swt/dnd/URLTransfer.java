@@ -15,18 +15,20 @@ import java.awt.datatransfer.StringSelection;
 import java.net.URL;
 
 /**
- * The class <code>TextTransfer</code> provides a platform specific mechanism 
- * for converting plain text represented as a java <code>String</code> 
- * to a platform specific representation of the data and vice versa.
+ * The class <code>URLTransfer</code> provides a platform specific mechanism 
+ * for converting text in URL format represented as a java <code>String[]</code> 
+ * to a platform specific representation of the data and vice versa.  See 
+ * <code>Transfer</code> for additional information. The first string in the 
+ * array is mandatory and must contain the fully specified url.  The second 
+ * string in the array is optional and if present contains the title for the
+ * page.
  * 
- * <p>An example of a java <code>String</code> containing plain text is shown 
+ * <p>An example of a java <code>String[]</code> containing a URL is shown 
  * below:</p>
  * 
  * <code><pre>
- *     String textData = "Hello World";
+ *     String[] urlData = new String[] {"http://www.eclipse.org", "Eclipse.org Main Page"};
  * </code></pre>
- * 
- * @see Transfer
  */
 public class URLTransfer extends Transfer {
 
@@ -35,9 +37,9 @@ private static URLTransfer _instance = new URLTransfer();
 private URLTransfer() {}
 
 /**
- * Returns the singleton instance of the TextTransfer class.
+ * Returns the singleton instance of the URLTransfer class.
  *
- * @return the singleton instance of the TextTransfer class
+ * @return the singleton instance of the URLTransfer class
  */
 public static URLTransfer getInstance () {
 	return _instance;

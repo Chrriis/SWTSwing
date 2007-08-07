@@ -173,7 +173,7 @@ public class SnippetLauncher {
 /**/      new PartiallyWorkingSnippet(119, "create a color cursor from a source and a mask"),
       new Snippet(118, "create a color cursor from an image file"),
     }), new SnippetCategory("DirectoryDialog", new Snippet[] {
-/**/      new PartiallyWorkingSnippet(33, "prompt for a directory"),
+      new Snippet(33, "prompt for a directory"),
     }), new SnippetCategory("Display", new Snippet[] {
       new Snippet(60, "create two one shot timers (5000 ms, 2000 ms)"),
       new Snippet(16, "create one repeating timer (every 500 ms)"),
@@ -371,8 +371,8 @@ public class SnippetLauncher {
       new Snippet(125, "create emulated tool tips for items in a table"),
       new Snippet(225, "create a balloon tooltip for a tray item"),
     }), new SnippetCategory("Tracker", new Snippet[] {
-/**/      new NotWorkingSnippet(23, "create a tracker (drag on mouse down)"),
-/**/      new NotWorkingSnippet(31, "create a tracker (drag when \"torn off\")"),
+      new Snippet(23, "create a tracker (drag on mouse down)"),
+      new Snippet(31, "create a tracker (drag when \"torn off\")"),
     }), new SnippetCategory("Tray, TrayItem", new Snippet[] {
 /**/      new PartiallyWorkingSnippet(143, "place a popup menu on the system tray"),
     }), new SnippetCategory("Tree", new Snippet[] {
@@ -391,7 +391,7 @@ public class SnippetLauncher {
     })
   };
 
-  protected static int snippetNumber = 133;
+  protected static int snippetNumber = 23;
 
   protected static boolean isRealDispatch = true;
 

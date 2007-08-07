@@ -1344,17 +1344,76 @@ static void init(Device device, Image image, ImageData data) {
 }
 
 static void init(Device device, Image image, ImageData source, ImageData mask) {
-	ImageData imageData;
-	if (source.palette.isDirect) {
-		imageData = new ImageData(source.width, source.height, source.depth, source.palette);
-	} else {
-		RGB[] rgbs = source.getRGBs();
-		imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
-	}
-	System.arraycopy(source.data, 0, imageData.data, 0, imageData.data.length);
-	imageData.transparentPixel = source.transparentPixel;
-	imageData.maskPad = mask.scanlinePad;
-	imageData.maskData = mask.data;
+  /* Create a temporary image and locate the black pixel */
+  ImageData imageData;
+  int blackIndex = 0;
+  if (source.palette.isDirect) {
+    imageData = new ImageData(source.width, source.height, source.depth, source.palette);
+  } else {
+    RGB black = new RGB(0, 0, 0);
+    RGB[] rgbs = source.getRGBs();
+    if (source.transparentPixel != -1) {
+      /*
+       * The source had transparency, so we can use the transparent pixel
+       * for black.
+       */
+      RGB[] newRGBs = new RGB[rgbs.length];
+      System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
+      if (source.transparentPixel >= newRGBs.length) {
+        /* Grow the palette with black */
+        rgbs = new RGB[source.transparentPixel + 1];
+        System.arraycopy(newRGBs, 0, rgbs, 0, newRGBs.length);
+        for (int i = newRGBs.length; i <= source.transparentPixel; i++) {
+          rgbs[i] = new RGB(0, 0, 0);
+        }
+      } else {
+        newRGBs[source.transparentPixel] = black;
+        rgbs = newRGBs;
+      }
+      blackIndex = source.transparentPixel;
+      imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
+    } else {
+      while (blackIndex < rgbs.length) {
+        if (rgbs[blackIndex].equals(black)) break;
+        blackIndex++;
+      }
+      if (blackIndex == rgbs.length) {
+        /*
+         * We didn't find black in the palette, and there is no transparent
+         * pixel we can use.
+         */
+        if ((1 << source.depth) > rgbs.length) {
+          /* We can grow the palette and add black */
+          RGB[] newRGBs = new RGB[rgbs.length + 1];
+          System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
+          newRGBs[rgbs.length] = black;
+          rgbs = newRGBs;
+        } else {
+          /* No room to grow the palette */
+          blackIndex = -1;
+        }
+      }
+      imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
+    }
+  }
+  if (blackIndex == -1) {
+    /* There was no black in the palette, so just copy the data over */
+    System.arraycopy(source.data, 0, imageData.data, 0, imageData.data.length);
+  } else {
+    /* Modify the source image to contain black wherever the mask is 0 */
+    int[] imagePixels = new int[imageData.width];
+    int[] maskPixels = new int[mask.width];
+    for (int y = 0; y < imageData.height; y++) {
+      source.getPixels(0, y, imageData.width, imagePixels, 0);
+      mask.getPixels(0, y, mask.width, maskPixels, 0);
+      for (int i = 0; i < imagePixels.length; i++) {
+        if (maskPixels[i] == 0) imagePixels[i] = blackIndex;
+      }
+      imageData.setPixels(0, y, source.width, imagePixels, 0);
+    }
+  }
+  imageData.maskPad = mask.scanlinePad;
+  imageData.maskData = mask.data; 
 	init(device, image, imageData);
 }
 

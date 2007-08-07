@@ -425,6 +425,9 @@ class CTableImplementation extends JScrollPane implements CTable {
         return CTableImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
+        }
         return CTableImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected Graphics graphics;

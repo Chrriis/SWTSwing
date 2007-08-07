@@ -64,6 +64,9 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
         return CBrowserImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
+        }
         return CBrowserImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
     };

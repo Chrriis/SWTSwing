@@ -109,6 +109,9 @@ class CCompositeImplementation extends JPanel implements CComposite {
         return CCompositeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
+        }
         return CCompositeImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected void processEvent(AWTEvent e) {

@@ -11,7 +11,6 @@ import java.awt.AWTEvent;
 import java.awt.ActiveEvent;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.MenuComponent;
 import java.awt.MouseInfo;
@@ -66,14 +65,45 @@ public class JTracker {
   protected Rectangle[] rectangles;
   
   protected boolean isResizeType;
+  protected Point offset;
+  protected Rectangle clipBounds;
   
   public JTracker(boolean isResizeType) {
-    this.isResizeType = isResizeType;
+    this(null, isResizeType);
   }
   
-  protected JFrame sharedFrame;
+  public JTracker(Component component, boolean isResizeType) {
+    this.isResizeType = isResizeType;
+    if(component != null) {
+      offset = component.getLocationOnScreen();
+      clipBounds = new Rectangle(component.getSize());
+      Graphics g = component.getGraphics();
+      if(g != null) {
+        Rectangle gClipBounds = g.getClipBounds();
+        if(gClipBounds != null) {
+          clipBounds = gClipBounds.intersection(clipBounds);
+        }
+      }
+      clipBounds.x += offset.x;
+      clipBounds.y += offset.y;
+    }
+  }
+  
+  protected Window sharedOwnerWindow;
   
   public void setRectangles(Rectangle[] rectangles) {
+    if(rectangles != null) {
+      Rectangle[] rectanglesCopy = new Rectangle[rectangles.length];
+      for(int i=0; i<rectangles.length; i++) {
+        Rectangle rectangle = new Rectangle(rectangles[i]);
+        if(offset != null) {
+          rectangle.x += offset.x;
+          rectangle.y += offset.y;
+        }
+        rectanglesCopy[i] = rectangle;
+      }
+      rectangles = rectanglesCopy;
+    }
     this.rectangles = rectangles;
     if(rectangles == null) {
       rectangles = new Rectangle[0];
@@ -82,16 +112,15 @@ public class JTracker {
     for(int i=rectangles.length; i<windowsArray.length; i++) {
       Window[] windows = windowsArray[i];
       for(int j=0; j<windows.length; j++) {
-        windows[j].dispose();
+        Window window = windows[j];
+        if(window != null) {
+          window.dispose();
+        }
       }
     }
     System.arraycopy(windowsArray, 0, newWindowsArray, 0, Math.min(windowsArray.length, rectangles.length));
     windowsArray = newWindowsArray;
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        adjustWindows();
-      }
-    });
+    postAdjustWindows();
   }
   
   public Rectangle[] getRectangles() {
@@ -100,7 +129,12 @@ public class JTracker {
     }
     Rectangle[] newRectangles = new Rectangle[rectangles.length];
     for(int i=0; i<rectangles.length; i++) {
-      newRectangles[i] = new Rectangle(rectangles[i]);
+      Rectangle rectangle = new Rectangle(rectangles[i]);
+      if(offset != null) {
+        rectangle.x -= offset.x;
+        rectangle.y -= offset.y;
+      }
+      newRectangles[i] = rectangle;
     }
     return newRectangles;
   }
@@ -203,11 +237,7 @@ public class JTracker {
         }
       }
     }
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        adjustWindows();
-      }
-    });
+    postAdjustWindows();
     Object[] listeners = listenerList.getListenerList();
     TrackerEvent e = null;
     for(int i=listeners.length-2; i>=0; i-=2) {
@@ -228,18 +258,39 @@ public class JTracker {
   
   public void setAppearance(int appearance) {
     this.appearance = appearance;
-    SwingUtilities.invokeLater(new Runnable() {
+    postAdjustWindows();
+  }
+  
+  protected boolean isAdjusmentPending;
+  
+  protected void postAdjustWindows() {
+    if(isAdjusmentPending) {
+      return;
+    }
+    isAdjusmentPending = true;
+    new Thread() {
       public void run() {
-        adjustWindows();
+        try {
+          sleep(10);
+        } catch(Exception e) {}
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            adjustWindows();
+          }
+        });
       }
-    });
+    }.start();
   }
   
   protected void adjustWindows() {
+    isAdjusmentPending = false;
+//    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+//      return;
+//    }
     if(!isVisible || rectangles.length == 0) {
       return;
     }
-    int width = appearance == THICK_BORDER_APPEARANCE? 3: 1;
+    int borderWidth = appearance == THICK_BORDER_APPEARANCE? 3: 1;
     for(int i=0; i<rectangles.length; i++) {
       Rectangle rectangle = rectangles[i];
       Rectangle bounds = new Rectangle(rectangle);
@@ -259,54 +310,83 @@ public class JTracker {
       for(int j=0; j<4; j++) {
         Window window = windows[j];
         if(window == null) {
-          window = new Window(sharedFrame) {
-            public void paint(Graphics g) {
-              super.paint(g);
-              g.setColor(sharedFrame.getBackground());
-              Dimension size = getSize();
-              switch(appearance) {
-                case THICK_BORDER_APPEARANCE:
-                  for(int i=0; i<size.width; i++) {
-                    for(int j=0; j<size.height; j++) {
-                      if((i + j) % 2 == 0) {
-                        g.drawLine(i, j, i, j);
-                      }
-                    }
-                  }
-                  break;
-//                case SINGLE_LINE_APPEARANCE:
-//                  g.fillRect(0, 0, size.width, size.height);
-//                  break;
-              }
-            }
-            public boolean getFocusableWindowState() {
-              return false;
-            }
-            public boolean contains(int x, int y) {
-              return false;
-            }
-          };
+          window = createTrackerWindow(sharedOwnerWindow);
           if(Compatibility.IS_JAVA_5_OR_GREATER) {
             window.setAlwaysOnTop(true);
           }
-          window.setBackground(Color.BLACK);
           windows[j] = window;
         }
         Rectangle newBounds = null;
         switch(j) {
-          case 0: newBounds = new Rectangle(bounds.x, bounds.y, bounds.width, width); break;
-          case 1: newBounds = new Rectangle(bounds.x, bounds.y, width, bounds.height); break;
-          case 2: newBounds = new Rectangle(bounds.x, bounds.y + bounds.height - width, bounds.width, width); break;
-          case 3: newBounds = new Rectangle(bounds.x + bounds.width - width, bounds.y, width, bounds.height); break;
+          case 0: newBounds = new Rectangle(bounds.x, bounds.y, bounds.width, borderWidth); break;
+          case 1: newBounds = new Rectangle(bounds.x, bounds.y, borderWidth, bounds.height); break;
+          case 2: newBounds = new Rectangle(bounds.x, bounds.y + bounds.height - borderWidth, bounds.width, borderWidth); break;
+          case 3: newBounds = new Rectangle(bounds.x + bounds.width - borderWidth, bounds.y, borderWidth, bounds.height); break;
         }
-        if(!window.getBounds().equals(newBounds)) {
-          window.setBounds(newBounds);
+        if(clipBounds != null) {
+          newBounds = newBounds.intersection(clipBounds);
         }
-        if(isVisible) {
-          window.setVisible(true);
+        if(newBounds.width <= 0 || newBounds.height <= 0) {
+          window.setVisible(false);
+        } else {
+          if(!window.getBounds().equals(newBounds)) {
+            window.setBounds(newBounds);
+          }
+          if(window.isVisible() != isVisible) {
+            window.setVisible(isVisible);
+          }
         }
+        sharedOwnerWindow.setCursor(null);
       }
     }
+  }
+  
+  protected class TrackerWindow extends Window {
+    public TrackerWindow(Window ownerWindow) {
+      super(ownerWindow);
+      setBackground(Color.BLACK);
+    }
+    public void update(Graphics g) {
+      paint(g);
+    }
+    public void paint(Graphics g) {
+      super.paint(g);
+      Rectangle bounds = getBounds();
+      switch(appearance) {
+        case THICK_BORDER_APPEARANCE:
+          Color background = sharedOwnerWindow.getBackground();
+          for(int i=0; i<bounds.width; i++) {
+            for(int j=0; j<bounds.height; j++) {
+              if((i + j + bounds.x + bounds.y) % 2 == 0) {
+                g.setColor(Color.BLACK);
+                g.drawLine(i, j, i, j);
+              } else {
+                g.setColor(background);
+                g.drawLine(i, j, i, j);
+              }
+            }
+          }
+          break;
+        case SINGLE_LINE_APPEARANCE:
+          g.setColor(Color.BLACK);
+          if(bounds.width == 1) {
+            g.drawLine(0, 0, 0, bounds.height - 1);
+          } else {
+            g.drawLine(0, 0, bounds.width - 1, 0);
+          }
+          break;
+      }
+    }
+    public boolean getFocusableWindowState() {
+      return false;
+    }
+    public boolean contains(int x, int y) {
+      return false;
+    }
+  }
+  
+  protected TrackerWindow createTrackerWindow(Window ownerWindow) {
+    return new TrackerWindow(ownerWindow);
   }
   
   protected boolean isAdjusting;
@@ -315,7 +395,8 @@ public class JTracker {
    * @return true if the tracked was not canceled.
    */
   public boolean show() {
-    sharedFrame = new JFrame();
+    isGenericWindow = false;
+    sharedOwnerWindow = createSharedOwnerWindow();
     isCanceled = false;
     isVisible = true;
     if(Compatibility.IS_JAVA_5_OR_GREATER) {
@@ -342,13 +423,15 @@ public class JTracker {
           }
           if(dispatch) {
             ((Component)src).dispatchEvent(event);
-            if(!Compatibility.IS_JAVA_5_OR_GREATER) {
+            if(!Compatibility.IS_JAVA_5_OR_GREATER && isGenericWindow) {
               SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                   for(int i=0; i<windowsArray.length; i++) {
                     Window[] windows = windowsArray[i];
-                    for(int j=0; j<windows.length; j++) {
-                      windows[j].toFront();
+                    if(windows != null) {
+                      for(int j=0; j<windows.length; j++) {
+                        windows[j].toFront();
+                      }
                     }
                   }
                 }
@@ -359,6 +442,7 @@ public class JTracker {
           ((MenuComponent)src).dispatchEvent(event);
         }
       } catch(Exception e) {
+        e.printStackTrace();
       }
     }
     return !isCanceled;
@@ -369,15 +453,36 @@ public class JTracker {
     lastMouseLocation = null;
     for(int i=0; i<windowsArray.length; i++) {
       Window[] windows = windowsArray[i];
-      for(int j=0; j<windows.length; j++) {
-        Window window = windows[j];
-        if(window != null) {
-          window.dispose();
+      if(windows != null) {
+        for(int j=0; j<windows.length; j++) {
+          Window window = windows[j];
+          if(window != null) {
+            window.dispose();
+          }
         }
       }
     }
-    sharedFrame.dispose();
-    sharedFrame = null;
+    releaseSharedOwnerWindow(sharedOwnerWindow);
+    sharedOwnerWindow = null;
+  }
+  
+  public Point getLastMouseLocation() {
+    return lastMouseLocation;
+  }
+  
+  protected Window getSharedOwnerWindow() {
+    return sharedOwnerWindow;
+  }
+  
+  protected boolean isGenericWindow;
+  
+  protected Window createSharedOwnerWindow() {
+    isGenericWindow = true;
+    return new JFrame();
+  }
+  
+  protected void releaseSharedOwnerWindow(Window sharedOwnerWindow) {
+    sharedOwnerWindow.dispose();
   }
   
   public boolean isVisible() {

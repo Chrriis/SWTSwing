@@ -724,7 +724,7 @@ public boolean forceFocus () {
 	if(!handle.isFocusable()) return false;
 	if (!isVisible ()) {
 	  Window window = SwingUtilities.getWindowAncestor(handle);
-	  if(!window.isVisible()) {
+	  if(window != null && !window.isVisible()) {
 	    getShell().setInitialFocusedControl(this);
 	    return true;
 	  }
@@ -1244,7 +1244,11 @@ public CGC internal_new_GC (GCData data) {
   return new CGC.CGCGraphics2D() {
     protected Graphics2D internalSwingGraphics2D;
     protected Graphics2D graphics2D;
+    protected boolean isAdjusting;
     public Graphics2D getGraphics() {
+      if(isAdjusting) {
+        return graphics2D;
+      }
       Container clientArea = ((CControl)handle).getClientArea();
       Graphics2D sGraphics2D = clientArea instanceof JComponent? (Graphics2D)((JComponent)clientArea).getClientProperty(Utils.SWTSwingGraphics2DClientProperty): null;
       boolean resetClip = false;
@@ -1274,7 +1278,9 @@ public CGC internal_new_GC (GCData data) {
         internalSwingGraphics2D = sGraphics2D;
       }
       if(resetClip) {
+        isAdjusting = true;
         setUserClip(getUserClip());
+        isAdjusting = false;
       }
       return graphics2D;
     }

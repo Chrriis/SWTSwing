@@ -67,6 +67,9 @@ class CListImplementation extends JScrollPane implements CList {
         return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
+        }
         return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       public boolean isOpaque() {

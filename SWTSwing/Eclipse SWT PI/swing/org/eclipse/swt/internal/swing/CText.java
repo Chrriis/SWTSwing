@@ -85,8 +85,11 @@ class CTextMulti extends JScrollPane implements CText {
         return CTextMulti.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        if(CTextMulti.this == null) {
+        if(CTextMulti.this == null || userAttributeHandler == null) {
           return super.getCursor();
+        }
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
         }
         for(Control parent = handle; parent != null && parent.handle != null; parent = parent.getParent()) {
           Cursor cursor = ((CControl)parent.handle).getUserAttributeHandler().cursor;
@@ -571,6 +574,9 @@ class CTextField extends JPasswordField implements CText {
   public Cursor getCursor() {
     if(userAttributeHandler == null) {
       return super.getCursor();
+    }
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
     }
     for(Control parent = handle; parent != null && parent.handle != null; parent = parent.getParent()) {
       Cursor cursor = ((CControl)parent.handle).getUserAttributeHandler().cursor;

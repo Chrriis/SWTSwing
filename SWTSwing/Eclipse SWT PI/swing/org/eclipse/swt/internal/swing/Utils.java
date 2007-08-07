@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.AWTEvent;
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -67,7 +68,12 @@ public class Utils {
     return "true".equals(System.getProperty(LIGHTPOPUPS_PROPERTY));
   }
 
-  public static void adjustAppleMenuBar() {
+  public static void initializeProperties() {
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      // Specific Sun property to prevent heavyweight components from erasing their background.
+      // Used to enhance visual appearance of the tracker. On Java 1.4, tracker is not always on top so this helps to see it.
+      System.setProperty("sun.awt.noerasebackground", "true");
+    }
     if(System.getProperty(APPLEMENUBAR_PROPERTY) == null) {
       System.setProperty(APPLEMENUBAR_PROPERTY, "true");
     }
@@ -530,6 +536,12 @@ public class Utils {
       return true;
     }
     return false;
+  }
+  
+  public static Cursor globalCursor;
+  
+  public static void setGlobalCursor(Cursor globalCursor) {
+    Utils.globalCursor = globalCursor;
   }
   
 }

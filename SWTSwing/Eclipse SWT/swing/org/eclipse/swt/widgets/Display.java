@@ -273,7 +273,7 @@ public class Display extends Device {
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 
   static {
-    Utils.adjustAppleMenuBar();
+    Utils.initializeProperties();
     CShell.ModalityHandler.initialize();
     Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
       protected Window hoveredWindow;
@@ -862,7 +862,9 @@ public Control getCursorControl () {
     Component component = frame.findComponentAt(point);
     if(component != null) {
       Control control = findControl(component);
-      if(control != null) return control;
+      if(control != null) {
+        return control;
+      }
     }
   }
 	return null;

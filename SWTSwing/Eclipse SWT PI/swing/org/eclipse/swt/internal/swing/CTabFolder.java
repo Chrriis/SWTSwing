@@ -92,6 +92,9 @@ class CTabFolderImplementation extends JTabbedPane implements CTabFolder {
     return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
   }
   public Cursor getCursor() {
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
+    }
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
   

@@ -155,6 +155,9 @@ class CShellFrame extends JFrame implements CShell {
         return CShellFrame.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
+        }
         return CShellFrame.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected Graphics graphics;
@@ -461,6 +464,10 @@ class CShellFrame extends JFrame implements CShell {
   public boolean isEnabled() {
     return isEnabled;
   }
+  
+  public Cursor getCursor() {
+    return Utils.globalCursor != null? Utils.globalCursor: super.getCursor();
+  }
 
 }
 
@@ -566,6 +573,9 @@ class CShellDialog extends JDialog implements CShell {
         return CShellDialog.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
+        }
         return CShellDialog.this != null && userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
       }
       protected Graphics graphics;
@@ -888,6 +898,10 @@ class CShellDialog extends JDialog implements CShell {
   
   public boolean isEnabled() {
     return isEnabled;
+  }
+
+  public Cursor getCursor() {
+    return Utils.globalCursor != null? Utils.globalCursor: super.getCursor();
   }
 
 }

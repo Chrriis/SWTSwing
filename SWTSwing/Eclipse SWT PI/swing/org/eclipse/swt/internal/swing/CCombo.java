@@ -84,8 +84,11 @@ class CComboSimple extends JPanel implements CCombo {
         return CComboSimple.this != null && userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
       }
       public Cursor getCursor() {
-        if(CComboSimple.this == null) {
+        if(CComboSimple.this == null || userAttributeHandler == null) {
           return super.getCursor();
+        }
+        if(Utils.globalCursor != null) {
+          return Utils.globalCursor;
         }
         for(Control parent = handle; parent != null && parent.handle != null; parent = parent.getParent()) {
           Cursor cursor = ((CControl)parent.handle).getUserAttributeHandler().cursor;
@@ -529,6 +532,9 @@ class CComboImplementation extends JComboBox implements CCombo {
     return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
   }
   public Cursor getCursor() {
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
+    }
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
   

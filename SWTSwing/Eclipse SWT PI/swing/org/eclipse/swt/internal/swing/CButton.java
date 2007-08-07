@@ -108,6 +108,9 @@ class CButtonArrow extends ArrowButton implements CButton {
     return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
   }
   public Cursor getCursor() {
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
+    }
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
 
@@ -185,6 +188,9 @@ class CButtonPush extends JButton implements CButton {
     return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
   }
   public Cursor getCursor() {
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
+    }
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
 
@@ -263,6 +269,9 @@ class CButtonCheck extends JCheckBox implements CButton {
     return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
   }
   public Cursor getCursor() {
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
+    }
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
 
@@ -336,6 +345,9 @@ class CButtonToggle extends JToggleButton implements CButton {
     return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
   }
   public Cursor getCursor() {
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
+    }
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
 
@@ -423,6 +435,9 @@ class CButtonRadio extends JIconRadioButton implements CButton {
     return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
   }
   public Cursor getCursor() {
+    if(Utils.globalCursor != null) {
+      return Utils.globalCursor;
+    }
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
   

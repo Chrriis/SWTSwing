@@ -23,7 +23,8 @@ import java.util.ResourceBundle;
 
 import javax.swing.ImageIcon;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 
 /**
  * Instances of this class manage operating system resources that
@@ -261,10 +262,48 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	/* Convert depth to 1 */
 	mask = ImageData.convertMask(mask);
 	source = ImageData.convertMask(source);
+	
+	BufferedImage image = new BufferedImage(source.width, source.height, BufferedImage.TYPE_INT_ARGB);
+  PaletteData palette = source.palette;
+  if (palette.isDirect) {
+	  for(int x=0; x<source.width; x++) {
+	    for(int y=0; y<source.height; y++) {
+	      RGB rgb = source.palette.getRGB(source.getPixel(x, y));
+	      int pixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+	      rgb = mask.palette.getRGB(mask.getPixel(x, y));
+	      int pixelMask = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+	      if(pixelMask != 0) {
+	        int alpha = source.getAlpha(x, y);
+	        if(alpha > 0) {
+	          pixel = pixel & 0x00FFFFFF | alpha << 24;
+	          image.setRGB(x, y, pixel);
+	        }
+	      }
+	    }
+	  }
+	} else {
+    for(int x=0; x<source.width; x++) {
+      for(int y=0; y<source.height; y++) {
+        int pixel = source.getPixel(x, y);
+        RGB rgb = source.palette.getRGB(pixel);
+        int pixelRGB = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+        if(pixelRGB == 0) {
+          rgb = mask.palette.getRGB(mask.getPixel(x, y));
+          int pixelMaskRGB = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+          if(pixelMaskRGB > 0) {
+            image.setRGB(x, y, 0xFFFFFFFF);
+          } else {
+            image.setRGB(x, y, 0xFF000000);
+          }
+        }
+      }
+    }
+	}
+	
 //	/* Make sure source and mask scanline pad is 2 */
 //	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
 //	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
-  createCursor(new Image(device, source, mask).handle, hotspotX, hotspotY);
+  createCursor(image, hotspotX, hotspotY);
 	if (device.tracking) device.new_Object(this);
 }
 

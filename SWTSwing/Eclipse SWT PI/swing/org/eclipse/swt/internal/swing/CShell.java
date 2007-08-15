@@ -179,31 +179,8 @@ class CShellFrame extends JFrame implements CShell {
         super.paintComponent(g);
         Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
-        if(paintHandlerList != null) {
-          int size = paintHandlerList.size();
-          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellFrame.this);
-          for(int i=0; i<size; i++) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.translate(-origin.x, -origin.y);
-            ((PaintHandler)paintHandlerList.get(i)).paintComponent(g2);
-            g2.dispose();
-          }
-        }
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
-      }
-      public void paint(Graphics g) {
-        super.paint(g);
-        if(paintHandlerList != null) {
-          int size = paintHandlerList.size();
-          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellFrame.this);
-          for(int i=0; i<size; i++) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.translate(-origin.x, -origin.y);
-            ((PaintHandler)paintHandlerList.get(i)).paint(g2);
-            g2.dispose();
-          }
-        }
       }
     };
     userAttributeHandler = new UserAttributeHandler(panel);
@@ -383,22 +360,6 @@ class CShellFrame extends JFrame implements CShell {
     if(button instanceof JButton) {
       getRootPane().setDefaultButton((JButton)button);
     }
-  }
-
-  protected ArrayList paintHandlerList;
-
-  public void addPaintHandler(PaintHandler paintHandler) {
-    if(paintHandlerList == null) {
-      paintHandlerList = new ArrayList();
-    }
-    paintHandlerList.add(paintHandler);
-  }
-
-  public void removePaintHandler(PaintHandler paintHandler) {
-    if(paintHandlerList == null) {
-      return;
-    }
-    paintHandlerList.remove(paintHandler);
   }
 
   protected ImageIcon backgroundImageIcon;
@@ -597,31 +558,8 @@ class CShellDialog extends JDialog implements CShell {
         super.paintComponent(g);
         Utils.paintTiledImage(this, g, backgroundImageIcon);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
-        if(paintHandlerList != null) {
-          int size = paintHandlerList.size();
-          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellDialog.this);
-          for(int i=0; i<size; i++) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.translate(-origin.x, -origin.y);
-            ((PaintHandler)paintHandlerList.get(i)).paintComponent(g2);
-            g2.dispose();
-          }
-        }
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
-      }
-      public void paint(Graphics g) {
-        super.paint(g);
-        if(paintHandlerList != null) {
-          int size = paintHandlerList.size();
-          Point origin = SwingUtilities.convertPoint(this, new Point(0, 0), CShellDialog.this);
-          for(int i=0; i<size; i++) {
-            Graphics2D g2 = (Graphics2D)g.create();
-            g2.translate(-origin.x, -origin.y);
-            ((PaintHandler)paintHandlerList.get(i)).paint(g2);
-            g2.dispose();
-          }
-        }
       }
     };
     userAttributeHandler = new UserAttributeHandler(panel);
@@ -816,22 +754,6 @@ class CShellDialog extends JDialog implements CShell {
     }
   }
 
-  protected ArrayList paintHandlerList;
-
-  public void addPaintHandler(PaintHandler paintHandler) {
-    if(paintHandlerList == null) {
-      paintHandlerList = new ArrayList();
-    }
-    paintHandlerList.add(paintHandler);
-  }
-
-  public void removePaintHandler(PaintHandler paintHandler) {
-    if(paintHandlerList == null) {
-      return;
-    }
-    paintHandlerList.remove(paintHandler);
-  }
-
   protected ImageIcon backgroundImageIcon;
 
   public void setBackgroundImage(Image backgroundImage) {
@@ -974,10 +896,6 @@ class CShellPanel extends JPanel implements CShell {
   public void setJMenuBar(JMenuBar menuBar) {
   }
   public void setDefaultButton(CButton button) {
-  }
-  public void addPaintHandler(PaintHandler paintHandler) {
-  }
-  public void removePaintHandler(PaintHandler paintHandler) {
   }
   protected ModalityHandler modalityHandler = new ModalityHandler(this);
   public ModalityHandler getModalityHandler() {
@@ -1244,10 +1162,6 @@ public interface CShell extends CScrollable {
   public void setJMenuBar(JMenuBar menuBar);
 
   public void setDefaultButton(CButton button);
-
-  public void addPaintHandler(PaintHandler paintHandler);
-
-  public void removePaintHandler(PaintHandler paintHandler);
 
   public ModalityHandler getModalityHandler();
   

@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0005 (xxxxxxxxxxxxxxx):
 
+- Sash is improved when not using the SMOOTH style.
 - Tracker is partially implemented.
 - Path should now be able to return its PathData.
 - Browser location events are implemented.

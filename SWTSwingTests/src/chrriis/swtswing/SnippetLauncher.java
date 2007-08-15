@@ -303,7 +303,7 @@ public class SnippetLauncher {
 /**/      new PartiallyWorkingSnippet(222, "use bulleted lists in StyledText"),
       new Snippet(218, "use gradient background in StyledText"),
     }), new SnippetCategory("Swing/AWT", new Snippet[] {
-/**/      new PartiallyWorkingSnippet(135, "embed Swing/AWT in SWT"),
+      new Snippet(135, "embed Swing/AWT in SWT"),
       new Snippet(154, "embed a JTable in SWT (no flickering)"),
       new Snippet(155, "draw an X using AWT Graphics"),
       new Snippet(156, "convert between SWT Image and AWT BufferedImage"),

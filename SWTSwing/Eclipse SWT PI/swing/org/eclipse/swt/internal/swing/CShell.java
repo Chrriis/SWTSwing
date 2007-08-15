@@ -15,7 +15,6 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -1112,11 +1111,6 @@ public interface CShell extends CScrollable {
     }
   }
   
-  public static interface PaintHandler {
-    public void paintComponent(Graphics2D g);
-    public void paint(Graphics2D g);
-  }
-
   public static int MAXIMIZED_BOTH = JFrame.MAXIMIZED_BOTH;
   public static int ICONIFIED = JFrame.ICONIFIED;
   public static int NORMAL = JFrame.NORMAL;

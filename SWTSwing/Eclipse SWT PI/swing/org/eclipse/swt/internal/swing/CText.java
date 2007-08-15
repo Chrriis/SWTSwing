@@ -137,8 +137,8 @@ class CTextMulti extends JScrollPane implements CText {
     LookAndFeelUtils.applyTextFieldStyle(textArea);
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
-      textArea.setBorder(null);
     }
+    textArea.setBorder(null);
     if((style & SWT.WRAP) != 0) {
       textArea.setLineWrap(true);
       textArea.setWrapStyleWord(true);
@@ -433,6 +433,11 @@ class CTextField extends JPasswordField implements CText {
   protected void init(int style) {
     if((style & SWT.BORDER) == 0) {
       setBorder(null);
+    }
+    if((style & SWT.CENTER) != 0) {
+      setHorizontalAlignment(CENTER);
+    } else if((style & SWT.RIGHT) != 0) {
+      setHorizontalAlignment(RIGHT);
     }
     setEditable((style & SWT.READ_ONLY) == 0);
     Utils.installMouseListener(this, handle);

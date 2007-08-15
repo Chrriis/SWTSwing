@@ -64,14 +64,26 @@ class CSashImplementation extends JPanel implements CSash {
           }
           dragLocation = (handle.getStyle() & SWT.VERTICAL) != 0? getLocation().x: getLocation().y;
           splitterWindow = new Window(SwingUtilities.getWindowAncestor(CSashImplementation.this)) {
+            public void update(Graphics g) {
+              paint(g);
+            }
             public void paint(Graphics g) {
               super.paint(g);
-              g.setColor(Color.BLACK);
               Dimension size = getSize();
-              g.fillRect(0, 0, size.width, size.height);
+              Color background = getBackground();
+              for(int i=0; i<size.width; i++) {
+                for(int j=0; j<size.height; j++) {
+                  if((i + j) % 2 == 0) {
+                    g.setColor(Color.BLACK);
+                    g.drawLine(i, j, i, j);
+                  } else {
+                    g.setColor(background);
+                    g.drawLine(i, j, i, j);
+                  }
+                }
+              }
             }
           };
-          splitterWindow.setBackground(Color.BLACK);
           splitterWindow.setCursor(divider.getCursor());
           adjustWindowBounds();
           splitterWindow.setVisible(true);

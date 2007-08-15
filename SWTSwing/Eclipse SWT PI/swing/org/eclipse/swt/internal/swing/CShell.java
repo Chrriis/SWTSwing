@@ -181,6 +181,10 @@ class CShellFrame extends JFrame implements CShell {
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
       }
+      protected void addImpl(Component comp, Object constraints, int index) {
+        isPaintActive = true;
+        super.addImpl(comp, constraints, index);
+      }
     };
     userAttributeHandler = new UserAttributeHandler(panel);
     if((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
@@ -559,6 +563,10 @@ class CShellDialog extends JDialog implements CShell {
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, null);
         graphics = null;
+      }
+      protected void addImpl(Component comp, Object constraints, int index) {
+        isPaintActive = true;
+        super.addImpl(comp, constraints, index);
       }
     };
     userAttributeHandler = new UserAttributeHandler(panel);

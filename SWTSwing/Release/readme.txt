@@ -6,7 +6,8 @@ Licence terms: EPL 1.0 (see licence.html)
 
 1. What is SWTSwing?
 
-SWTSwing is an SWT port to Swing.
+SWTSwing is an implementation of SWT (version 3.2 for now) over Swing.
+
 SWT is a graphical library for Java that uses the native widgets offered by the
 operating system, at the cost of a thin native layer that is not part of the
 Java Runtime Environment.
@@ -14,27 +15,25 @@ If you need more information about SWT, go to http://www.eclipse.org/swt.
 
 A port to Swing has many benefits, including true portability (no native
 libraries), can act as a bridge between Swing and SWT components, support for
-look and feel.
+look and feels.
 
-SWTSwing requires the latest official version of the Java Runtime Environment in
-order to provide a maximum coverage of SWT features.
-The current version is Java 6.0.
+SWTSwing requires the latest official version of the Java Runtime Environment
+(6.0) in order to provide a maximum coverage of the SWT API. It can be used on
+on older runtimes (1.4+) with a few less functionalities.
 
 
 2. How to use it?
 
 Remove the SWT jars and native libraries from your application's class path, and
 add SWTSwing.jar. A usual way to proceed is to rename "SWTSwing.jar" to
-"swt.jar" and replace the original "swt.jar" with the new one.
+"swt.jar" and replace the original "swt.jar" (make a backup) with the new one.
 
-If everything is OK, your application runs using Swing's widgets.
-
-If you have the possibility, let SWTSwing run your UI code in its UI thread. To
-do this, place your UI code in a Runnable object, and invoke
-Display.swtExec(runnable)
+For increased performance, let SWTSwing run your UI code in its UI thread. To do
+this, place your UI code in a Runnable object, and invoke
+org.eclipse.swt.widgets.Display.Display.swtExec(runnable)
 Alternatively, if your application uses the main thread as the UI thread, you
-can use the special Display.main(String[]) method, with the first parameter
-being the main class of your application, followed by the normal parameters.
+can use the special org.eclipse.swt.widgets.Display.main(String[]) method, with
+the first parameter being your main class, followed by its parameters.
 If this is isn't possible, the library works with decreased performance.
 
 You can set the Look And Feel of your application by setting the system property
@@ -55,18 +54,14 @@ org.eclipse.swt.widgets.Display org.eclipse.core.launcher.Main
 The Snippet launcher is there to demonstrate the current support of the
 snippets: simply launch SWTSwingSnippetLauncher.jar.
 
+The SWT control example shows the support of the controls with SWTSwing:
+http://swtswing.sf.net/webstart/SWTSwingControlExample.jnlp
+
 
 4. What is the development status?
 
-Many snippets, some small code samples provided by the SWT team to test SWT
-ports) are running flawlessly.
-
-Some more complex examples, like the ones provided by the SWT team, and some
-simple applications do work on SWTSwing too, and the goal is now to make more of
-these real world test cases to be supported.
-
-The Eclipse Java SDK is able to run with SWTSwing. It has a few problems still,
-but a lot is working already.
+Many snippets, small to complex code samples and real applications work on
+SWTSwing.
 
 For more detailed information about the current implementation status, visit
 SWTSwing's website.
@@ -84,4 +79,5 @@ on the SWTSwing web site.
 
 6. How to contribute?
 
-If you are interested in helping the project, simply send me an e-mail.
+If you are interested in helping the project, simply send me an e-mail. Nice
+e-mails in general are always welcome!

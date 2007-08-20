@@ -5,7 +5,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 ---------------------------------- Change log ----------------------------------
 
-* Version 3.2.0005 (xxxxxxxxxxxxxxx):
+* Version 3.2.0005 (August 20, 2007):
 
 - Sash is improved when not using the SMOOTH style.
 - Tracker is partially implemented.

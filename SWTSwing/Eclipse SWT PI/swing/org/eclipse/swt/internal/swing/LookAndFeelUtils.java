@@ -56,19 +56,29 @@ public class LookAndFeelUtils {
     return UIManager.getInt ("TextArea.caretBlinkRate");
   }
   
-  public static Icon getSystemIcon(int icon) {
-    switch(icon) {
+  public static Icon getSystemIcon(int iconID) {
+    String key;
+    switch(iconID) {
     case SWT.ICON_ERROR:
-      return UIManager.getIcon("OptionPane.errorIcon");
+      key = "OptionPane.errorIcon";
+      break;
     case SWT.ICON_QUESTION:
-      return UIManager.getIcon("OptionPane.questionIcon");
+      key = "OptionPane.questionIcon";
+      break;
     case SWT.ICON_WARNING:
-      return UIManager.getIcon("OptionPane.warningIcon");
+      key = "OptionPane.warningIcon";
+      break;
 //    case SWT.ICON_WORKING:
 //    case SWT.ICON_INFORMATION:
     default:
-      return UIManager.getIcon("OptionPane.informationIcon");
+      key = "OptionPane.informationIcon";
+      break;
     }
+    Icon icon = UIManager.getIcon(key);
+    if(icon == null) {
+      icon = new MetalLookAndFeel().getDefaults().getIcon(key);
+    }
+    return icon;
   }
   
   public static Border getButtonBorder() {

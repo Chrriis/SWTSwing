@@ -5,6 +5,11 @@ Licence terms: EPL 1.0 (see licence.html)
 
 ---------------------------------- Change log ----------------------------------
 
+* Version 3.2.0006 (xxxxxxxxxxxxxxx):
+
+- System images are taken from the Metal L&F when the system L&F returns null.
+
+
 * Version 3.2.0005 (August 20, 2007):
 
 - Sash is improved when not using the SMOOTH style.

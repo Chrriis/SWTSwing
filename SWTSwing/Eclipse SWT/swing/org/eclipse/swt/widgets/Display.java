@@ -2428,12 +2428,7 @@ public boolean sleep () {
  */
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-  if(isValidThread ()) {
-    synchronizer.runAsyncMessages(true);
-    runnable.run();
-  } else {
-    synchronizer.syncExec (runnable);
-  }
+  synchronizer.syncExec (runnable);
 }
 
 /**

@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0006 (xxxxxxxxxxxxxxx):
 
+- Synchronisation execution was done in a wrong place. 
 - System images are taken from the Metal L&F when the system L&F returns null.
 
 

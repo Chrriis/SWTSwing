@@ -361,6 +361,27 @@ public class Utils {
   }
 
   /**
+   * Get the line number for debuggin purposes.
+   * @return The line number of the caller, or a negative number if it could not be obtained.
+   */
+  public static int getLineNumber() {
+    StackTraceElement[] stackTraceElements;
+    if(Compatibility.IS_JAVA_5_OR_GREATER) {
+      stackTraceElements = Thread.currentThread().getStackTrace();
+    } else {
+      stackTraceElements = new Exception().getStackTrace();
+    }
+    int i = 0;
+    for(; i<stackTraceElements.length; i++) {
+      StackTraceElement stackElement = stackTraceElements[i];
+      if(stackElement.getClassName().equals("org.eclipse.swt.internal.swing.Utils") && stackElement.getMethodName().equals("getLineNumber")) {
+        return stackTraceElements[i + 1].getLineNumber();
+      }
+    }
+    return -1;
+  }
+  
+  /**
    * Indicates that the method is not implemented. It prints the corresponding frame from
    * the stack trace to the standard error if the "swt.swing.debug" property is defined.
    */

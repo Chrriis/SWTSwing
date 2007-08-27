@@ -1164,25 +1164,22 @@ public Monitor [] getMonitors () {
     GraphicsDevice gd = gs[j];
     // Always true isnt'it?
 //    if(gd.getType() == GraphicsDevice.TYPE_RASTER_SCREEN) {
-      GraphicsConfiguration[] gcs = gd.getConfigurations();
-      for (int i=0; i < gcs.length; i++) {
-        GraphicsConfiguration gc = gcs[i];
-        Monitor monitor = new Monitor();
-        monitor.handle = gc;
-        java.awt.Rectangle bounds = gc.getBounds();
-        if(boundsSet.add(bounds)) {
-          monitor.x = bounds.x;
-          monitor.y = bounds.y;
-          monitor.width = bounds.width;
-          monitor.height = bounds.height;
-          java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
-          monitor.clientX = bounds.x + insets.left;
-          monitor.clientY = bounds.y + insets.top;
-          monitor.clientWidth = bounds.width - insets.left - insets.right;
-          monitor.clientHeight = bounds.height - insets.top - insets.bottom;
-          monitorsList.add(monitor);
-        }
-      }
+    GraphicsConfiguration gc = gd.getDefaultConfiguration();
+    Monitor monitor = new Monitor();
+    monitor.handle = gc;
+    java.awt.Rectangle bounds = gc.getBounds();
+    if(boundsSet.add(bounds)) {
+      monitor.x = bounds.x;
+      monitor.y = bounds.y;
+      monitor.width = bounds.width;
+      monitor.height = bounds.height;
+      java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+      monitor.clientX = bounds.x + insets.left;
+      monitor.clientY = bounds.y + insets.top;
+      monitor.clientWidth = bounds.width - insets.left - insets.right;
+      monitor.clientHeight = bounds.height - insets.top - insets.bottom;
+      monitorsList.add(monitor);
+    }
 //    }
   }
   return (Monitor[])monitorsList.toArray(new Monitor[0]);

@@ -796,9 +796,14 @@ public Shell getActiveShell () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-  // TODO: support multiple monitors
-  Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-  return new Rectangle(0, 0, d.width, d.height);
+	java.awt.Rectangle rectangle = new java.awt.Rectangle();
+  GraphicsEnvironment ge = GraphicsEnvironment.
+  getLocalGraphicsEnvironment();
+  GraphicsDevice[] gs = ge.getScreenDevices();
+  for(int j=0; j<gs.length; j++) {
+    rectangle.add(gs[j].getDefaultConfiguration().getBounds());
+  }
+  return new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
 /**
@@ -827,10 +832,7 @@ public static synchronized Display getCurrent () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-  // TODO: check screen configuration API to find real bounds for multi screens
-  GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-  java.awt.Rectangle rectangle = ge.getMaximumWindowBounds();
-  return new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+  return getBounds();
 }
 
 Control getControl (Component handle) {

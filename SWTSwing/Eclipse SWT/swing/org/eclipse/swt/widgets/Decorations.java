@@ -658,7 +658,8 @@ String getNameText () {
  */
 public String getText () {
 	checkWidget ();
-  return ((CShell)handle).getTitle();
+  String title = ((CShell)handle).getTitle();
+  return title == null? "": title;
 }
 
 public boolean isReparentable () {

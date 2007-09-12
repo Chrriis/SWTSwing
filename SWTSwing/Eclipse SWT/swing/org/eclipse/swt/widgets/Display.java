@@ -286,6 +286,9 @@ public class Display extends Device {
           }
           // It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
           Component component = ie.getComponent();
+          if(component == null) {
+            return;
+          }
           Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
           switch(ie.getID()) {
           case MouseEvent.MOUSE_WHEEL:

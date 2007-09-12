@@ -215,6 +215,9 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
   public Font getFont() {
     return font;
   }
+  public FontMetrics getFontMetrics() {
+    return getFontMetrics(getFont());
+  }
   public FontMetrics getFontMetrics(Font f) {
     return Toolkit.getDefaultToolkit().getFontMetrics(f);
   }

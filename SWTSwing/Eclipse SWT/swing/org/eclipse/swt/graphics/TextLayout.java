@@ -746,7 +746,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	GC gc = new GC(device);
 	gc.setFont(this.font != null ? this.font : device.getSystemFont());
 	FontMetrics metrics = gc.getFontMetrics();
-	int ascent = Math.max(metrics.getAscent(), this.ascent);
+	// This is a bug in SWT: the leading is omited...
+	// TODO: Check if SWT 3.3+ has added this fix
+	int ascent = Math.max(metrics.getAscent() + metrics.getLeading(), this.ascent);
+//	int ascent = Math.max(metrics.getAscent(), this.ascent);
 	int descent = Math.max(metrics.getDescent(), this.descent);
 	if (text.length() != 0) {
 		StyleItem[] lineRuns = runs[lineIndex];

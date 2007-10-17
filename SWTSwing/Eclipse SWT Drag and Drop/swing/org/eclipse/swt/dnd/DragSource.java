@@ -196,7 +196,7 @@ public DragSource(Control control, int style) {
   } catch(Throwable e) {
     isPropertySet = false;
   }
-  Container swingComponent = ((CControl)control.handle).getSwingComponent();
+  Container swingComponent = ((CControl)control.handle).getClientArea();
   // We need to be first to process the mouse event.
   MouseListener[] mouseListeners = swingComponent.getMouseListeners();
   for(int i=0; i<mouseListeners.length; i++) {
@@ -207,7 +207,7 @@ public DragSource(Control control, int style) {
     swingComponent.removeMouseMotionListener(mouseMotionListeners[i]);
   }
   if(isPropertySet) {
-    java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
+    java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
   } else {
     // We don't use the default cross platform drag recognizer, because SWT does not want a threshold, and we failed to set it to 0.
     new SWTDragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());

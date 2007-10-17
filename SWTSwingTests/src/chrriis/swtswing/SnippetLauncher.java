@@ -186,7 +186,7 @@ public class SnippetLauncher {
       new Snippet(78, "drag text between two labels"),
 /**/      new NotWorkingSnippet(91, "drag leaf items in a tree"),
       new Snippet(79, "define my own data transfer type"),
-      new Snippet(84, "define a default operation (in this example, Copy)"),
+/**/      new PartiallyWorkingSnippet(84, "define a default operation (in this example, Copy)"),
 /**/      new UnsupportedSnippet(83, "determine data types available (win32 only)"),
 /**/      new UnsupportedSnippet(158, "determine data types available (motif only)"),
 /**/      new NotWorkingSnippet(185, "Dropped data type depends on target item in table"),
@@ -391,7 +391,7 @@ public class SnippetLauncher {
     })
   };
 
-  protected static int snippetNumber = 23;
+  protected static int snippetNumber = 143;
 
   protected static boolean isRealDispatch = true;
 

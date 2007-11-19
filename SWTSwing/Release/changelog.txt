@@ -7,6 +7,7 @@ Licence terms: EPL 1.0 (see licence.html)
 
 * Version 3.2.0006 (xxxxxxxxxxxxxxx):
 
+- Coordinate mapping from Display class now considers parent offsets properly.
 - DragSource now uses the mouse-related component of the hierarchy to hook DnD.
 - Fix in the StyledText widget generating stack overflow.
 - Regression: hovering the tray item was generating exceptions.

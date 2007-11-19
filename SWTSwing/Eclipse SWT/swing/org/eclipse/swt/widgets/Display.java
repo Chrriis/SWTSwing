@@ -1723,20 +1723,20 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
   java.awt.Point point = new java.awt.Point(x, y);
   if(from == null) {
     if(to == null) return new Rectangle(x, y, width, height);
-    Point offset = to.parent == null? new Point(0, 0): to.parent.getInternalOffset();
-    point.x -= offset.x;
-    point.y -= offset.y;
+    Point offset = to.getInternalOffset();
+    point.x += offset.x;
+    point.y += offset.y;
     SwingUtilities.convertPointFromScreen(point, ((CControl)to.handle).getClientArea());
   } else {
-    Point offset = from.parent == null? new Point(0, 0): from.parent.getInternalOffset();
+    Point offset = from.getInternalOffset();
     point.x -= offset.x;
     point.y -= offset.y;
     if(to == null) {
       SwingUtilities.convertPointToScreen(point, ((CControl)from.handle).getClientArea());
     } else {
-      offset = to.parent == null? new Point(0, 0): to.parent.getInternalOffset();
-      point.x -= offset.x;
-      point.y -= offset.y;
+      offset = to.getInternalOffset();
+      point.x += offset.x;
+      point.y += offset.y;
       point = SwingUtilities.convertPoint(((CControl)from.handle).getClientArea(), point, ((CControl)to.handle).getClientArea());
     }
   }

@@ -566,8 +566,10 @@ class CTableImplementation extends JScrollPane implements CTable {
         TableColumnModel columnModel = tableHeader.getColumnModel();
         int columnIndex = columnModel.getColumnIndexAtX(e.getX());
         if(columnIndex != -1) {
-          CTableColumn column = (CTableColumn)columnModel.getColumn(columnIndex);
-          tableHeader.setReorderingAllowed(column.getTableColumn().getMoveable());
+          TableColumn column = columnModel.getColumn(columnIndex);
+          if(column instanceof CTableColumn) {
+            tableHeader.setReorderingAllowed(((CTableColumn)column).getTableColumn().getMoveable());
+          }
         }
       }
     }

@@ -86,7 +86,7 @@ class CCompositeImplementation extends JPanel implements CComposite {
         return getComponentCount() < 2 || Utils.isFlatLayout(handle);
       }
       public boolean isOpaque() {
-        return backgroundImageIcon == null && super.isOpaque();
+        return (CCompositeImplementation.this == null || backgroundImageIcon == null) && super.isOpaque();
       }
       protected void paintComponent (Graphics g) {
         graphics = g;

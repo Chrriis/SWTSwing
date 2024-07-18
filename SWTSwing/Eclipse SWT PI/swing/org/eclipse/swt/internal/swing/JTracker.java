@@ -311,9 +311,7 @@ public class JTracker {
         Window window = windows[j];
         if(window == null) {
           window = createTrackerWindow(sharedOwnerWindow);
-          if(Compatibility.IS_JAVA_5_OR_GREATER) {
-            window.setAlwaysOnTop(true);
-          }
+          window.setAlwaysOnTop(true);
           windows[j] = window;
         }
         Rectangle newBounds = null;
@@ -399,9 +397,7 @@ public class JTracker {
     sharedOwnerWindow = createSharedOwnerWindow();
     isCanceled = false;
     isVisible = true;
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      lastMouseLocation = MouseInfo.getPointerInfo().getLocation();
-    }
+    lastMouseLocation = MouseInfo.getPointerInfo().getLocation();
     adjustWindows();
     // We assume we are in the event dispatch thread, so we simulate modality here.
     while(isVisible) {
@@ -423,20 +419,6 @@ public class JTracker {
           }
           if(dispatch) {
             ((Component)src).dispatchEvent(event);
-            if(!Compatibility.IS_JAVA_5_OR_GREATER && isGenericWindow) {
-              SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                  for(int i=0; i<windowsArray.length; i++) {
-                    Window[] windows = windowsArray[i];
-                    if(windows != null) {
-                      for(int j=0; j<windows.length; j++) {
-                        windows[j].toFront();
-                      }
-                    }
-                  }
-                }
-              });
-            }
           }
         } else if (src instanceof MenuComponent) {
           ((MenuComponent)src).dispatchEvent(event);

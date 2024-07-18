@@ -100,9 +100,7 @@ class CShellFrame extends JFrame implements CShell {
   
   public CShellFrame(Shell shell, int style) {
     this.handle = shell;
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      setLocationByPlatform(true);
-    }
+    setLocationByPlatform(true);
     init(style);
   }
   
@@ -115,9 +113,7 @@ class CShellFrame extends JFrame implements CShell {
     if(!isResizable) {
       setResizable(false);
     }
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      setAlwaysOnTop((style & SWT.ON_TOP) != 0);
-    }
+    setAlwaysOnTop((style & SWT.ON_TOP) != 0);
     boolean isDecorated = (style & SWT.TITLE) != 0;
     if(isDecorated) {
       if(JFrame.isDefaultLookAndFeelDecorated()) {
@@ -297,7 +293,7 @@ class CShellFrame extends JFrame implements CShell {
         ((CShell)owner).setActivationEventsBlocked(true);
       }
       super.show();
-      if(Compatibility.IS_JAVA_5_OR_GREATER && isLocationByPlatform()) {
+      if(isLocationByPlatform()) {
         adjustLocation(this, owner);
       }
       if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {
@@ -399,14 +395,6 @@ class CShellFrame extends JFrame implements CShell {
     super.setFocusableWindowState(focusableWindowState);
   }
   
-  public void setIconImages(List imageList) {
-    if(Compatibility.IS_JAVA_6_OR_GREATER) {
-      super.setIconImages(imageList);
-    } else if(!imageList.isEmpty()) {
-      super.setIconImage((Image)imageList.get(0));
-    }
-  }
-
   protected boolean isModallyBlocked;
 
   public void setModallyBlocked(boolean isModallyBlocked) {
@@ -474,18 +462,14 @@ class CShellDialog extends JDialog implements CShell {
   
   public CShellDialog(Shell shell, CShellDialog parent, int style) {
     super(parent);
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      setLocationByPlatform(true);
-    }
+    setLocationByPlatform(true);
     this.handle = shell;
     init(style);
   }
 
   public CShellDialog(Shell shell, CShellFrame parent, int style) {
     super(parent);
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      setLocationByPlatform(true);
-    }
+    setLocationByPlatform(true);
     this.handle = shell;
     init(style);
   }
@@ -499,9 +483,7 @@ class CShellDialog extends JDialog implements CShell {
     if(!isResizable) {
       setResizable(false);
     }
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      setAlwaysOnTop((style & SWT.ON_TOP) != 0);
-    }
+    setAlwaysOnTop((style & SWT.ON_TOP) != 0);
     boolean isDecorated = (style & SWT.TITLE) != 0;
     if(isDecorated) {
       if(JDialog.isDefaultLookAndFeelDecorated()) {
@@ -685,7 +667,7 @@ class CShellDialog extends JDialog implements CShell {
         ((CShell)owner).setActivationEventsBlocked(true);
       }
       super.show();
-      if(Compatibility.IS_JAVA_5_OR_GREATER && isLocationByPlatform()) {
+      if(isLocationByPlatform()) {
         adjustLocation(this, owner);
       }
       if(!getFocusableWindowState() && (handle.getStyle() & SWT.NO_FOCUS) == 0) {
@@ -795,18 +777,6 @@ class CShellDialog extends JDialog implements CShell {
     super.setFocusableWindowState(focusableWindowState);
   }
   
-  public void setIconImage(Image image) {
-    if(Compatibility.IS_JAVA_6_OR_GREATER) {
-      super.setIconImage(image);
-    }
-  }
-  
-  public void setIconImages(List imageList) {
-    if(Compatibility.IS_JAVA_6_OR_GREATER) {
-      super.setIconImages(imageList);
-    }
-  }
-
   protected boolean isModallyBlocked;
 
   public void setModallyBlocked(boolean isModallyBlocked) {
@@ -898,7 +868,7 @@ class CShellPanel extends JPanel implements CShell {
   }
   public void setIconImage(Image image) {
   }
-  public void setIconImages(List imageList) {
+  public void setIconImages(List<? extends Image> imageList) {
   }
   public void setJMenuBar(JMenuBar menuBar) {
   }
@@ -1159,7 +1129,7 @@ public interface CShell extends CScrollable {
 
   public void setIconImage(Image image);
 
-  public void setIconImages(List imageList);
+  public void setIconImages(List<? extends Image> imageList);
 
   public void setJMenuBar(JMenuBar menuBar);
 

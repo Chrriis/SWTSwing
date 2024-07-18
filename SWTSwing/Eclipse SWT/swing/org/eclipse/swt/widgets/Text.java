@@ -23,6 +23,8 @@ import javax.swing.text.BadLocationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SegmentEvent;
+import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyListener;
@@ -50,6 +52,7 @@ import org.eclipse.swt.internal.swing.UIThreadUtils;
 public class Text extends Scrollable {
 	int tabs, oldStart, oldEnd;
 	boolean doubleClick, ignoreModify, ignoreCharacter;
+	String message;
 	
   /**
   * The maximum number of characters that can be entered
@@ -145,6 +148,48 @@ public void addModifyListener (ModifyListener listener) {
 }
 
 /**
+ * Adds a segment listener.
+ * <p>
+ * A <code>SegmentEvent</code> is sent whenever text content is being modified or
+ * a segment listener is added or removed. You can
+ * customize the appearance of text by indicating certain characters to be inserted
+ * at certain text offsets. This may be used for bidi purposes, e.g. when
+ * adjacent segments of right-to-left text should not be reordered relative to
+ * each other.
+ * E.g., multiple Java string literals in a right-to-left language
+ * should generally remain in logical order to each other, that is, the
+ * way they are stored.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and GTK.
+ * <code>SegmentEvent</code>s won't be sent on Cocoa.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #removeSegmentListener
+ *
+ * @since 3.8
+ */
+public void addSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	addListener (SWT.Segments, new TypedListener (listener));
+	clearSegments (true);
+	applySegments ();
+}
+
+/**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
@@ -232,6 +277,10 @@ public void append (String string) {
   cText.setText(text + string);
 }
 
+void applySegments () {
+	// TODO: implement
+}
+
 static int checkStyle (int style) {
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
@@ -246,6 +295,10 @@ static int checkStyle (int style) {
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) return style | SWT.MULTI;
 	return style | SWT.SINGLE;
+}
+
+void clearSegments (boolean applyText) {
+	// TODO: implement
 }
 
 /**
@@ -348,6 +401,7 @@ Container createHandle () {
 
 void createWidget () {
 	super.createWidget ();
+	message = "";
 	doubleClick = true;
 	setTabStops (tabs = 8);
 //	fixAlignment ();
@@ -562,6 +616,27 @@ public int getLineHeight () {
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+/**
+ * Returns the widget message.  The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
+ *
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+public String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 /**
@@ -810,6 +885,12 @@ public void paste () {
   ((CText)handle).paste();
 }
 
+@Override
+void releaseWidget () {
+	super.releaseWidget ();
+	message = null;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.
@@ -832,6 +913,34 @@ public void removeModifyListener (ModifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's text is modified.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SegmentEvent
+ * @see SegmentListener
+ * @see #addSegmentListener
+ *
+ * @since 3.8
+ */
+public void removeSegmentListener (SegmentListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	eventTable.unhook (SWT.Segments, listener);
+	clearSegments (true);
+	applySegments ();
 }
 
 /**
@@ -1073,6 +1182,31 @@ public void setEditable (boolean editable) {
 	style &= ~SWT.READ_ONLY;
 	if (!editable) style |= SWT.READ_ONLY;
   ((CText)handle).setEditable(editable);
+}
+
+/**
+ * Sets the widget message. The message text is displayed
+ * as a hint for the user, indicating the purpose of the field.
+ * <p>
+ * Typically this is used in conjunction with <code>SWT.SEARCH</code>.
+ * </p>
+ *
+ * @param message the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the message is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
 }
 
 /**

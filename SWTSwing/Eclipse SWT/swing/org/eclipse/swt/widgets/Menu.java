@@ -1069,11 +1069,7 @@ public void setVisible (boolean visible) {
     if(hasLocation) {
       location = new java.awt.Point(x, y);
     } else {
-      if(Compatibility.IS_JAVA_5_OR_GREATER) {
-        location = MouseInfo.getPointerInfo().getLocation();
-      } else {
-        location = new java.awt.Point(0, 0);
-      }
+    	location = MouseInfo.getPointerInfo().getLocation();
     }
     Shell shell = getShell();
     if(shell != null) {

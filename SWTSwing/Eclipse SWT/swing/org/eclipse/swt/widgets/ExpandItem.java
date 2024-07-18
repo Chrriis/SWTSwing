@@ -278,11 +278,7 @@ public void setExpanded (boolean expanded) {
 public void setHeight (int height) {
   checkWidget ();
   if (height < 0) return;
-  if(Compatibility.IS_JAVA_5_OR_GREATER) {
-    handle.setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
-  } else if(handle instanceof JComponent) {
-    ((JComponent)handle).setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
-  }
+  handle.setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
   ((JComponent)handle).revalidate();
   handle.repaint();
 }

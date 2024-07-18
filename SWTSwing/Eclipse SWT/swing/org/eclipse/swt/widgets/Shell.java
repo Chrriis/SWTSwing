@@ -133,6 +133,7 @@ public class Shell extends Decorations {
 //	int hIMC, hwndMDIClient, toolTipHandle, lpstrTip;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
 //	int [] brushes;
+	boolean modified;
 //	boolean showWithParent;
 	Control lastActive;
 //	SHACTIVATEINFO psai;
@@ -723,6 +724,23 @@ public Point getMinimumSize () {
 //	return new Point (width,  height);
 }
 
+/**
+ * Gets the receiver's modified state.
+ *
+ * @return <code>true</code> if the receiver is marked as modified, or <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.5
+ */
+public boolean getModified () {
+	checkWidget ();
+	return modified;
+}
+
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -1176,9 +1194,7 @@ public void setImeInputMode (int mode) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-  if(Compatibility.IS_JAVA_5_OR_GREATER) {
-    handle.setMinimumSize(new java.awt.Dimension(width, height));
-  }
+	handle.setMinimumSize(new java.awt.Dimension(width, height));
 //	int widthLimit = 0, heightLimit = 0;
 //	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 //	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
@@ -1224,6 +1240,23 @@ public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setMinimumSize (size.x, size.y);
+}
+
+/**
+ * Sets the receiver's modified state as specified by the argument.
+ *
+ * @param modified the new modified state for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.5
+ */
+public void setModified (boolean modified) {
+	checkWidget ();
+	this.modified = modified;
 }
 
 //void setItemEnabled (int cmd, boolean enabled) {

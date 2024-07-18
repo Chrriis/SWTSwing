@@ -69,11 +69,9 @@ public class Utils {
   }
 
   public static void initializeProperties() {
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      // Specific Sun property to prevent heavyweight components from erasing their background.
-      // Used to enhance visual appearance of the tracker. On Java 1.4, tracker is not always on top so this helps to see it.
-      System.setProperty("sun.awt.noerasebackground", "true");
-    }
+    // Specific Sun property to prevent heavyweight components from erasing their background.
+    // Used to enhance visual appearance of the tracker.
+    System.setProperty("sun.awt.noerasebackground", "true");
     if(System.getProperty(APPLEMENUBAR_PROPERTY) == null) {
       System.setProperty(APPLEMENUBAR_PROPERTY, "true");
     }
@@ -365,12 +363,7 @@ public class Utils {
    * @return The line number of the caller, or a negative number if it could not be obtained.
    */
   public static int getLineNumber() {
-    StackTraceElement[] stackTraceElements;
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      stackTraceElements = Thread.currentThread().getStackTrace();
-    } else {
-      stackTraceElements = new Exception().getStackTrace();
-    }
+    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
     int i = 0;
     for(; i<stackTraceElements.length; i++) {
       StackTraceElement stackElement = stackTraceElements[i];
@@ -389,12 +382,7 @@ public class Utils {
     if(System.getProperty("swt.swing.debug") == null) {
       return;
     }
-    StackTraceElement[] stackTraceElements;
-    if(Compatibility.IS_JAVA_5_OR_GREATER) {
-      stackTraceElements = Thread.currentThread().getStackTrace();
-    } else {
-      stackTraceElements = new Exception().getStackTrace();
-    }
+    StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
     int i = 0;
     for(; i<stackTraceElements.length; i++) {
       StackTraceElement stackElement = stackTraceElements[i];
@@ -505,40 +493,6 @@ public class Utils {
   }
   
   public static boolean isLocalDragAndDropInProgress;
-  
-  protected static Point mouseLocation;
-  protected static Component mouseComponent;
-  
-  public static void trackMouseProperties(MouseEvent me) {
-    Component c = me.getComponent();
-    if(c.isShowing()) {
-      mouseLocation = me.getPoint();
-      SwingUtilities.convertPointToScreen(mouseLocation, c);
-      if(me.getID() == MouseEvent.MOUSE_EXITED) {
-        if(mouseComponent == c) {
-          mouseComponent = null;
-        }
-      } else {
-        mouseComponent = c;
-      }
-    }
-  }
-  
-  public static Point getTrakedMouseLocation() {
-    return mouseLocation == null? new Point(0, 0): mouseLocation;
-  }
-  
-  public static Control getTrakedMouseControl() {
-    if(mouseComponent == null) {
-      return null;
-    }
-    for(Component c=mouseComponent; c != null; c = c.getParent()) {
-      if(c instanceof CControl) {
-        return ((CControl)c).getSWTHandle();
-      }
-    }
-    return null;
-  }
   
   public static Control capturedControl;
   

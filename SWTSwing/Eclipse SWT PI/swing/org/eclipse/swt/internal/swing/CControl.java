@@ -89,6 +89,8 @@ public interface CControl {
     
     public void setCursor(Cursor cursor) {
       this.cursor = cursor;
+      // Force cursor update.
+      component.setCursor(cursor);
     }
     
     public Cursor getCursor() {

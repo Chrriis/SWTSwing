@@ -211,9 +211,6 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
       forwardActionList.clear();
       backActionList.add(getCurrentCommand());
       editorPane.setText(html);
-      if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-        adjustStyles();
-      }
       SwingUtilities.invokeLater(new Runnable() {
         public void run() {
           editorPane.scrollRectToVisible(new Rectangle(0, 0, 1, 1));

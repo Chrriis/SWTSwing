@@ -300,27 +300,16 @@ public Object getContents(Transfer transfer, int clipboards) {
     TransferData[] supportedTypes = transfer.getSupportedTypes();
     for(int j=0; j<supportedTypes.length; j++) {
       TransferData transferData = supportedTypes[j];
-      if(Compatibility.IS_JAVA_5_OR_GREATER) {
-        DataFlavor flavor = transferData.dataFlavor;
-        if(clipboard.isDataFlavorAvailable(flavor)) {
-          try {
-            Transferable contents = clipboard.getContents(null);
-            if(contents != null) {
-              transferData.transferable = contents;
-              return transfer.nativeToJava(transferData);
-            }
-          } catch(Exception e) {
-          }
-        }
-      } else {
-        try {
-          Transferable contents = clipboard.getContents(null);
-          if(contents != null) {
-            transferData.transferable = contents;
-            return transfer.nativeToJava(transferData);
-          }
-        } catch(Exception e) {
-        }
+      DataFlavor flavor = transferData.dataFlavor;
+      if(clipboard.isDataFlavorAvailable(flavor)) {
+    	  try {
+    		  Transferable contents = clipboard.getContents(null);
+    		  if(contents != null) {
+    			  transferData.transferable = contents;
+    			  return transfer.nativeToJava(transferData);
+    		  }
+    	  } catch(Exception e) {
+    	  }
       }
     }
   }

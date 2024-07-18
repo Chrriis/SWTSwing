@@ -769,6 +769,27 @@ public String getText (int index) {
 }
 
 /**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+public Rectangle getTextBounds (int index) {
+	checkWidget();
+	// TODO: implement
+	return getBounds(index);
+}
+
+/**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
  * argument, and returns the index of that item. If no item

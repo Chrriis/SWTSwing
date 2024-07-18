@@ -18,6 +18,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.internal.swing.CScrollable;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -412,6 +413,47 @@ public Point getSize () {
 public int getThumb () {
 	checkWidget();
   return handle.getVisibleAmount();
+}
+
+/**
+ * Returns a rectangle describing the size and location of the
+ * receiver's thumb relative to its parent.
+ *
+ * @return the thumb bounds, relative to the {@link #getParent() parent}
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public Rectangle getThumbBounds () {
+	checkWidget();
+	// TODO: implement
+	java.awt.Dimension size = handle.getSize();
+	return new Rectangle(0, 0, size.width, size.height);
+}
+
+/**
+ * Returns a rectangle describing the size and location of the
+ * receiver's thumb track relative to its parent. This rectangle
+ * comprises the areas 2, 3, and 4 as described in {@link ScrollBar}.
+ *
+ * @return the thumb track bounds, relative to the {@link #getParent() parent}
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public Rectangle getThumbTrackBounds () {
+	checkWidget();
+	// TODO: implement
+	java.awt.Dimension size = handle.getSize();
+	return new Rectangle(0, 0, size.width, size.height);
 }
 
 /**

@@ -32,15 +32,16 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TreeListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CTree;
+import org.eclipse.swt.internal.swing.CTree.CellPaintEvent;
 import org.eclipse.swt.internal.swing.CTreeItem;
 import org.eclipse.swt.internal.swing.DefaultMutableTreeTableNode;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.Utils;
-import org.eclipse.swt.internal.swing.CTree.CellPaintEvent;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -595,6 +596,40 @@ void destroyItem (TreeItem item) {
 public int getGridLineWidth () {
 	checkWidget ();
 	return GRID_WIDTH;
+}
+
+/**
+ * Returns the header background color.
+ *
+ * @return the receiver's header background color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderBackground () {
+	checkWidget ();
+	JTableHeader tableHeader = ((CTree)handle).getTableHeader();
+	return Color.swing_new(display, tableHeader.getBackground());
+}
+
+/**
+ * Returns the header foreground color.
+ *
+ * @return the receiver's header foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public Color getHeaderForeground () {
+	checkWidget ();
+	JTableHeader tableHeader = ((CTree)handle).getTableHeader();
+	return Color.swing_new(display, tableHeader.getForeground());
 }
 
 /**
@@ -1700,6 +1735,56 @@ public void setColumnOrder (int [] order) {
 //      }
 //    }
 //  }
+}
+
+/**
+ * Sets the header background color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the tree style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderBackground (Color color) {
+	checkWidget ();
+	JTableHeader tableHeader = ((CTree)handle).getTableHeader();
+	tableHeader.setBackground(color.handle);
+}
+
+/**
+ * Sets the header foreground color to the color specified
+ * by the argument, or to the default system color if the argument is null.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not supported on all platforms. If
+ * the native header has a 3D look and feel (e.g. Windows 7), this method
+ * will cause the header to look FLAT irrespective of the state of the tree style.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.106
+ */
+public void setHeaderForeground (Color color) {
+	checkWidget ();
+	JTableHeader tableHeader = ((CTree)handle).getTableHeader();
+	tableHeader.setForeground(color.handle);
 }
 
 /**

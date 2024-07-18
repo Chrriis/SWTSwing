@@ -5,8 +5,8 @@
     <delete file="../SWTSwing/SWTSwingSnippetLauncher.jar"/>
     <jar duplicate="preserve" destfile="../SWTSwing/SWTSwingSnippetLauncher.jar">
       <fileset dir="bin"/>
-      <fileset dir="../org.eclipse.swt.snippets/bin"/>
-      <fileset dir="../org.eclipse.swt.snippets/src"/>
+      <fileset dir="../../eclipse.platform.swt/examples/org.eclipse.swt.snippets/bin"/>
+      <fileset dir="../../eclipse.platform.swt/examples/org.eclipse.swt.snippets/src"/>
       <manifest>
         <attribute name="Main-Class" value="chrriis.swtswing.SnippetLauncherUI"/>
         <attribute name="Class-Path" value="SWTSwing.jar"/>

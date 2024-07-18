@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.TextLayout.StyleItem;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents
@@ -31,21 +32,25 @@ import org.eclipse.swt.*;
 public final class TextLayout extends Resource {
 	Device device;
 	Font font;
-	String text;
-	int lineSpacing;
+	String text, segmentsText;
+	int lineSpacingInPoints;
 	int ascent, descent;
 	int alignment;
 	int wrapWidth;
 	int orientation;
+	int textDirection;
 	int indent;
+	int wrapIndent;
 	boolean justify;
 	int[] tabs;
 	int[] segments;
+	char[] segmentsChars;
 	StyleItem[] styles;
 	
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
-	
+	int verticalIndentInPoints;
+
 	static class StyleItem {
 		TextStyle style;
 		int start, length, width, ascent, descent;
@@ -74,8 +79,10 @@ public TextLayout (Device device) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	wrapWidth = ascent = descent = -1;
-	lineSpacing = 0;
+	lineSpacingInPoints = 0;
+	verticalIndentInPoints = 0;
 	orientation = SWT.LEFT_TO_RIGHT;
+	textDirection = SWT.LEFT_TO_RIGHT;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
@@ -158,7 +165,7 @@ void computeRuns (GC gc) {
 				chars = new char[run.length];
 				text.getChars(run.start, run.start + run.length, chars, 0);
 				while(start >= 0) {
-					if (Compatibility.isSpaceChar(chars[start]) || Compatibility.isWhitespace(chars[start])) break;
+					if (Character.isSpaceChar(chars[start]) || Character.isWhitespace(chars[start])) break;
 					start--;
 				}
 				if (start >= 0 || i == lineStart) break;
@@ -175,7 +182,7 @@ void computeRuns (GC gc) {
 			chars = new char[run.length];
 			text.getChars(run.start, run.start + run.length, chars, 0);
 			while (start < run.length) {
-				if (!Compatibility.isWhitespace(chars[start])) break;
+				if (!Character.isWhitespace(chars[start])) break;
 				start++;
 			}
 			if (0 < start && start < run.length) {
@@ -200,7 +207,7 @@ void computeRuns (GC gc) {
 		lineWidth += run.width;
 		if (run.lineBreak) {
 			lineStart = i + 1;
-			lineWidth = 0;
+			lineWidth = run.softBreak ?  wrapIndent : indent;
 			lineCount++;
 		}
 	}
@@ -219,6 +226,7 @@ void computeRuns (GC gc) {
 		lineWidth += run.width;
 		ascent = Math.max(ascent, run.ascent);
 		descent = Math.max(descent, run.descent);
+		// TODO: implement and use wrapIndent.
 		if (run.lineBreak || i == allRuns.length - 1) {
 			/* Update the run metrics if the last run is a hard break */
 			if (lineRunCount == 1 && i == allRuns.length - 1) {
@@ -234,7 +242,7 @@ void computeRuns (GC gc) {
 			StyleItem lastRun = runs[line][lineRunCount - 1];
 			this.lineWidth[line] = lineWidth;
 			line++;
-			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
+			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacingInPoints;
 			lineOffset[line] = lastRun.start + lastRun.length;
 			lineRunCount = lineWidth = 0;
 			ascent = Math.max(0, this.ascent);
@@ -248,16 +256,18 @@ void computeRuns (GC gc) {
  * Disposes of the operating system resources associated with
  * the text layout. Applications must dispose of all allocated text layouts.
  */
-public void dispose () {
-	if (device == null) return;
+public void destroy () {
 	freeRuns();
 	font = null;
 	text = null;
+	segmentsText = null;
 	tabs = null;
 	styles = null;
 	lineOffset = null;
 	lineY = null;
 	lineWidth = null;
+	segments = null;
+	segmentsChars = null;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
@@ -278,7 +288,7 @@ public void dispose () {
  * </ul>
  */
 public void draw (GC gc, int x, int y) {
-	draw(gc, x, y, -1, -1, null, null);
+	draw(gc, x, y, -1, -1, null, null, 0);
 }
 
 /**
@@ -302,12 +312,44 @@ public void draw (GC gc, int x, int y) {
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	checkLayout();
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ * <p>
+ * The parameter <code>flags</code> can include one of <code>SWT.DELIMITER_SELECTION</code>
+ * or <code>SWT.FULL_SELECTION</code> to specify the selection behavior on all lines except
+ * for the last line, and can also include <code>SWT.LAST_LINE_SELECTION</code> to extend
+ * the specified selection behavior to the last line.
+ * </p>
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ * @param flags drawing options
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+	checkLayout();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length(); 
-	if (length == 0) return;
+	if (length == 0 && flags == 0) return;
 	computeRuns(gc);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	if (hasSelection) {
@@ -421,7 +463,13 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 }
 
 void freeRuns() {
+//	if (allRuns == null) return;
+//	for (StyleItem run : allRuns) {
+//		run.free();
+//	}
+//	allRuns = null;
 	runs = null;
+	segmentsText = null;
 }
 
 /** 
@@ -510,7 +558,7 @@ public Rectangle getBounds (int start, int end) {
 
 	Rectangle rect = new Rectangle(0, 0, 0, 0);
 	rect.y = lineY[startLine];
-	rect.height = lineY[endLine + 1] - rect.y - lineSpacing;
+	rect.height = lineY[endLine + 1] - rect.y - lineSpacingInPoints;
 	if (startLine == endLine) {
 		rect.x = getLocation(start, false).x;
 		rect.width = getLocation(end, true).x - rect.x;
@@ -649,7 +697,7 @@ public Rectangle getLineBounds(int lineIndex) {
 	int x = getLineIndent(lineIndex);
 	int y = lineY[lineIndex];
 	int width = lineWidth[lineIndex];
-	int height = lineY[lineIndex + 1] - y - lineSpacing;
+	int height = lineY[lineIndex + 1] - y - lineSpacingInPoints;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -670,7 +718,7 @@ public int getLineCount () {
 }
 
 int getLineIndent (int lineIndex) {
-	int lineIndent = 0;
+	int lineIndent = wrapIndent;
 	if (lineIndex == 0) {
 		lineIndent = indent;
 	} else {
@@ -882,10 +930,10 @@ public int getNextOffset (int offset, int movement) {
 			break;
 		}
 	}
-	boolean previousSpaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
+	boolean previousSpaceChar = !Character.isLetterOrDigit(text.charAt(offset));
 	offset++;
 	while (offset < lineEnd) {
-		boolean spaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
+		boolean spaceChar = !Character.isLetterOrDigit(text.charAt(offset));
 		if (!spaceChar && previousSpaceChar) break;
 		previousSpaceChar = spaceChar;
 		offset++;
@@ -1053,9 +1101,9 @@ public int getPreviousOffset (int offset, int movement) {
 		}
 	}	
 	offset--;
-	boolean previousSpaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
+	boolean previousSpaceChar = !Character.isLetterOrDigit(text.charAt(offset));
 	while (lineStart < offset) {
-		boolean spaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset - 1));
+		boolean spaceChar = !Character.isLetterOrDigit(text.charAt(offset - 1));
 		if (spaceChar && !previousSpaceChar) break;
 		offset--;
 		previousSpaceChar = spaceChar;
@@ -1096,6 +1144,56 @@ public int[] getRanges () {
 }
 
 /**
+ * Returns the segments characters of the receiver.
+ *
+ * @return the segments characters
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public char[] getSegmentsChars () {
+	checkLayout();
+	return segmentsChars;
+}
+
+String getSegmentsText() {
+	int length = text.length();
+	if (length == 0) return text;
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments == 0) return text;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return text;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return text;
+		}
+	}
+	char[] oldChars = new char[length];
+	text.getChars(0, length, oldChars, 0);
+	char[] newChars = new char[length + nSegments];
+	int charCount = 0, segmentCount = 0;
+	// TODO: implement
+	char defaultSeparator = '\u200E';//(resolveTextDirection() & SWT.RIGHT_TO_LEFT) != 0 ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
+			char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
+			newChars[charCount + segmentCount++] = separator;
+		} else {
+			newChars[charCount + segmentCount] = oldChars[charCount++];
+		}
+	}
+	while (segmentCount < nSegments) {
+		segments[segmentCount] = charCount;
+		char separator = segmentsChars != null && segmentsChars.length > segmentCount ? segmentsChars[segmentCount] : defaultSeparator;
+		newChars[charCount + segmentCount++] = separator;
+	}
+	return new String(newChars, 0, newChars.length);
+}
+
+/**
  * Returns the line spacing of the receiver.
  *
  * @return the line spacing
@@ -1106,7 +1204,22 @@ public int[] getRanges () {
  */
 public int getSpacing () {
 	checkLayout();	
-	return lineSpacing;
+	return lineSpacingInPoints;
+}
+
+/**
+ * Returns the vertical indent of the receiver.
+ *
+ * @return the vertical indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.109
+ */
+public int getVerticalIndent () {
+	checkLayout();
+	return verticalIndentInPoints;
 }
 
 /**
@@ -1209,6 +1322,21 @@ public String getText () {
 }
 
 /**
+ * Returns the text direction of the receiver.
+ *
+ * @return the text direction value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.103
+ */
+public int getTextDirection () {
+	checkLayout();
+	return resolveTextDirection();
+}
+
+/**
  * Returns the width of the receiver.
  *
  * @return the width
@@ -1220,6 +1348,21 @@ public String getText () {
 public int getWidth () {
 	checkLayout();
 	return wrapWidth;
+}
+
+/**
+* Returns the receiver's wrap indent.
+*
+* @return the receiver's wrap indent
+*
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+*
+* @since 3.6
+*/
+public int getWrapIndent () {
+	return wrapIndent;
 }
 
 /**
@@ -1310,6 +1453,15 @@ StyleItem[] merge (StyleItem[] items, int itemCount) {
 		return result;
 	}
 	return runs;
+}
+
+/*
+ *  Resolves text direction. If the nominal direction is LTR or RTL, no
+ *  resolution is needed; if the nominal direction is "auto", have BidiUtil
+ *  resolve it according to the first strong bidi character.
+ */
+int resolveTextDirection () {
+	return textDirection == SWT.AUTO_TEXT_DIRECTION ? BidiUtil.resolveTextDirection (text) : textDirection;
 }
 
 void place (GC gc, StyleItem run) {
@@ -1494,6 +1646,41 @@ public void setOrientation (int orientation) {
 	if (orientation == 0) return;
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0) orientation = SWT.LEFT_TO_RIGHT;
 	this.orientation = orientation;
+	textDirection = this.orientation = orientation;
+	freeRuns();
+}
+
+/**
+ * Sets the characters to be used in the segments boundaries. The segments
+ * are set by calling <code>setSegments(int[])</code>. The application can
+ * use this API to insert Unicode Control Characters in the text to control
+ * the display of the text and bidi reordering. The characters are not
+ * accessible by any other API in <code>TextLayout</code>.
+ *
+ * @param segmentsChars the segments characters
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setSegments(int[])
+ *
+ * @since 3.6
+ */
+public void setSegmentsChars(char[] segmentsChars) {
+	checkLayout();
+	if (this.segmentsChars == null && segmentsChars == null) return;
+	if (this.segmentsChars != null && segmentsChars != null) {
+		if (this.segmentsChars.length == segmentsChars.length) {
+			int i;
+			for (i = 0; i <segmentsChars.length; i++) {
+				if (this.segmentsChars[i] != segmentsChars[i]) break;
+			}
+			if (i == segmentsChars.length) return;
+		}
+	}
+	freeRuns();
+	this.segmentsChars = segmentsChars;
 }
 
 /**
@@ -1512,9 +1699,9 @@ public void setOrientation (int orientation) {
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (this.lineSpacing == spacing) return;
+	if (this.lineSpacingInPoints == spacing) return;
 	freeRuns();
-	this.lineSpacing = spacing;
+	this.lineSpacingInPoints = spacing;
 }
 
 /**
@@ -1549,6 +1736,27 @@ public void setSegments(int[] segments) {
 	}
 	freeRuns();
 	this.segments = segments;
+}
+
+/**
+ * Sets the vertical indent of the receiver.  The vertical indent
+ * is the space left before the first line.
+ *
+ * @param verticalIndent the new vertical indent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the vertical indent is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.109
+ */
+public void setVerticalIndent (int verticalIndent) {
+	checkLayout();
+	if (verticalIndent < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.verticalIndentInPoints == verticalIndent) return;
+	this.verticalIndentInPoints = verticalIndent;
 }
 
 /**
@@ -1687,6 +1895,36 @@ public void setText (String text) {
 }
 
 /**
+ * Sets the text direction of the receiver, which must be one
+ * of <code>SWT.LEFT_TO_RIGHT</code>, <code>SWT.RIGHT_TO_LEFT</code>
+ * or <code>SWT.AUTO_TEXT_DIRECTION</code>.
+ *
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the new text direction
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.103
+ */
+public void setTextDirection (int textDirection) {
+	checkLayout();
+	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	textDirection &= mask;
+	if (textDirection == 0) return;
+	if (textDirection != SWT.AUTO_TEXT_DIRECTION) {
+		if ((textDirection & SWT.LEFT_TO_RIGHT) != 0) textDirection = SWT.LEFT_TO_RIGHT;
+		if (this.textDirection == textDirection) return;
+	}
+	this.textDirection = textDirection;
+	freeRuns();
+}
+
+/**
  * Sets the line width of the receiver, which determines how
  * text should be wrapped and aligned. The default value is
  * <code>-1</code> which means wrapping is disabled.
@@ -1711,6 +1949,25 @@ public void setWidth (int width) {
 }
 
 /**
+ * Sets the wrap indent of the receiver. This indent is applied to all lines
+ * in the paragraph except the first line.
+ *
+ * @param wrapIndent new wrap indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #setIndent(int)
+ *
+ * @since 3.6
+ */
+public void setWrapIndent (int wrapIndent) {
+	checkLayout();
+	this.wrapIndent = wrapIndent;
+}
+
+/**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
@@ -1720,4 +1977,62 @@ public String toString () {
 	if (isDisposed()) return "TextLayout {*DISPOSED*}";
 	return "TextLayout {}";
 }
+
+int translateOffset(int offset) {
+	int length = text.length();
+	if (length == 0) return offset;
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments == 0) return offset;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return offset;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return offset;
+		}
+	}
+	for (int i = 0; i < nSegments && offset - i >= segments[i]; i++) {
+		offset++;
+	}
+	return offset;
+}
+
+int untranslateOffset(int offset) {
+	int length = text.length();
+	if (length == 0) return offset;
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments == 0) return offset;
+	if (segmentsChars == null) {
+		if (nSegments == 1) return offset;
+		if (nSegments == 2) {
+			if (segments[0] == 0 && segments[1] == length) return offset;
+		}
+	}
+	for (int i = 0; i < nSegments && offset > segments[i]; i++) {
+		offset--;
+	}
+	return offset;
+}
+
+/**
+ * Sets Default Tab Width in terms if number of space characters.
+ *
+ * @param tabLength in number of characters
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tabLength is less than <code>0</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ *
+ * DO NOT USE This might be removed in 4.8
+ * @since 3.107
+ */
+public void setDefaultTabWidth(int tabLength) {
+	// TODO: implement? (win32 leaves empty)
+}
+
 }

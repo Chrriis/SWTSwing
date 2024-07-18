@@ -80,9 +80,6 @@ public class Tracker extends Widget {
     }
 
     protected void processMouseEvent(MouseEvent me) {
-      if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-        Utils.trackMouseProperties(me);
-      }
       super.processMouseEvent(me);
       if(Utils.capturedControl != null) {
         Component target = ((CControl)Utils.capturedControl.handle).getClientArea();
@@ -111,12 +108,7 @@ public class Tracker extends Widget {
         }
       };
       w.setFocusableWindowState(false);
-      Point mouseLocation;
-      if(Compatibility.IS_JAVA_5_OR_GREATER) {
-        mouseLocation = MouseInfo.getPointerInfo().getLocation();
-      } else {
-        mouseLocation = getLastMouseLocation();
-      }
+      Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
       if(mouseLocation != null) {
         w.setBounds(mouseLocation.x, mouseLocation.y, 1, 1);
         w.setVisible(true);
@@ -471,13 +463,7 @@ public void close () {
 //}
 
 void createWidget () {
-  Control cursorControl = display.getCursorControl();
-  final Window window;
-  if(cursorControl != null && !Compatibility.IS_JAVA_5_OR_GREATER) {
-    window = SwingUtilities.getWindowAncestor(cursorControl.handle);
-  } else {
-    window = null;
-  }
+  final Window window = null;
   Component component = parent == null? null: ((CControl)parent.handle).getClientArea();
   handle = new JTrackerExtension(component, (style & SWT.RESIZE) != 0, window);
   handle.addTrackerListener(new JTracker.TrackerListener() {

@@ -241,6 +241,15 @@ class CLinkImplementation extends JEditorPane implements CLink {
 //    }
   }
 
+  public Color getLinkForeground() {
+	  // TODO: implement
+	  return getBackground();
+  }
+  
+  public void setLinkForeground(Color color) {
+	  // TODO: implement
+  }
+
 }
 
 /**
@@ -262,5 +271,9 @@ public interface CLink extends CControl {
   public int getPreferredWidth();
   
   public void setLinkText(String text);
+  
+  public Color getLinkForeground();
+  
+  public void setLinkForeground(Color color);
 
 }

@@ -9,9 +9,6 @@ package org.eclipse.swt.internal.swing;
 
 public class Compatibility {
 
-  protected static final String JAVA_VERSION = System.getProperty("java.version");
-  public static final boolean IS_JAVA_6_OR_GREATER = JAVA_VERSION.compareTo("1.6") >= 0;
-  public static final boolean IS_JAVA_5_OR_GREATER = IS_JAVA_6_OR_GREATER || JAVA_VERSION.compareTo("1.5") >= 0;
 
   /**
    * When a class does not exist on a certain version of Java, it would generate a

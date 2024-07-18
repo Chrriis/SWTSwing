@@ -30,9 +30,11 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
@@ -314,11 +316,19 @@ public class SnippetLauncherUI extends JFrame {
     cons.weightx = 1.0;
     cons.gridy = 0;
     cons.gridx++;
-    classPathField = new JTextField("./swt.jar" + System.getProperty("path.separator") + "./swt-pi.jar");
+    String defaultClassPath = System.getProperty("swt.defaultClassPath");
+    if(defaultClassPath == null) {
+    	defaultClassPath = "./swt.jar" + System.getProperty("path.separator") + "./swt-pi.jar";
+    }
+	classPathField = new JTextField(defaultClassPath);
     gridBag.setConstraints(classPathField, cons);
     contentPane.add(classPathField);
     cons.gridy++;
-    libraryPathField = new JTextField(".");
+    String defaultLibraryDir = System.getProperty("swt.defaultLibraryDir");
+    if(defaultLibraryDir == null) {
+    	defaultLibraryDir = ".";
+    }
+    libraryPathField = new JTextField(defaultLibraryDir);
     gridBag.setConstraints(libraryPathField, cons);
     contentPane.add(libraryPathField);
     return contentPane;
@@ -680,7 +690,14 @@ public class SnippetLauncherUI extends JFrame {
       JFrame sourceFrame = new JFrame("Snippet" + number + ".java");
       sourceFrame.setIconImage(SOURCE_ICON.getImage());
       sourceFrame.setLocationByPlatform(true);
-      SourcePane sourcePane = new SourcePane(new InputStreamReader(getClass().getResourceAsStream("/org/eclipse/swt/snippets/Snippet" + number + ".java")));
+      String defaultSourcePath = System.getProperty("swt.defaultSourcePath");
+      Reader reader;
+      if(defaultSourcePath != null) {
+    	  reader = new InputStreamReader(new FileInputStream(defaultSourcePath + "/org/eclipse/swt/snippets/Snippet" + number + ".java"));
+      } else {
+    	  reader = new InputStreamReader(getClass().getResourceAsStream("/org/eclipse/swt/snippets/Snippet" + number + ".java"));
+      }
+      SourcePane sourcePane = new SourcePane(reader);
       sourceFrame.getContentPane().add(new JScrollPane(sourcePane), BorderLayout.CENTER);
       sourceFrame.setSize(800, 600);
       sourceFrame.setVisible(true);

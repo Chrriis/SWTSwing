@@ -366,11 +366,7 @@ public Point getPreferredSize () {
  */
 public void setPreferredSize (int width, int height) {
 	checkWidget ();
-	if(Compatibility.IS_JAVA_5_OR_GREATER) {
-	  handle.setPreferredSize(new Dimension(width, height));
-	} else if(handle instanceof JComponent) {
-    ((JComponent)handle).setPreferredSize(new Dimension(width, height));
-	}
+	handle.setPreferredSize(new Dimension(width, height));
   handle.invalidate();
   handle.validate();
   handle.repaint();
@@ -493,11 +489,7 @@ public Point getMinimumSize () {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-  if(Compatibility.IS_JAVA_5_OR_GREATER) {
-    handle.setMinimumSize(new Dimension(width, height));
-  } else if(handle instanceof JComponent) {
-    ((JComponent)handle).setMinimumSize(new Dimension(width, height));
-  }
+	handle.setMinimumSize(new Dimension(width, height));
 }
 
 /**

@@ -309,6 +309,18 @@ class CTableImplementation extends JScrollPane implements CTable {
           }
 //          graphics = g;
           super.paintComponent(g);
+          // TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
+//          if (handle.isListening (SWT.MeasureItem)) {
+//              CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.MEASURE_TYPE);
+//              event.row = row;
+//              event.column = column;
+//              event.tableItem = tableItemObject.getTableItem();
+//              event.ignoreDrawForeground = this.ignoreDrawForeground;
+//              event.ignoreDrawBackground = this.ignoreDrawBackground;
+//              event.ignoreDrawSelection = this.ignoreDrawSelection;
+//              event.ignoreDrawFocused = this.ignoreDrawFocused;
+//              handle.processEvent(event);
+//          }
           if(tableItemObject != null) {
             CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.PAINT_TYPE);
             event.row = row;

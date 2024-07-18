@@ -36,13 +36,18 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DragDetectListener;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.GestureListener;
 import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.TouchListener;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
@@ -172,6 +177,34 @@ public void addControlListener(ControlListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when a drag gesture occurs, by sending it
+ * one of the messages defined in the <code>DragDetectListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #removeDragDetectListener
+ *
+ * @since 3.3
+ */
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when the control gains or loses focus, by sending
  * it one of the messages defined in the <code>FocusListener</code>
  * interface.
@@ -195,6 +228,45 @@ public void addFocusListener (FocusListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.FocusIn,typedListener);
 	addListener (SWT.FocusOut,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when gesture events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>GestureListener</code> interface.
+ * <p>
+ * NOTE: If <code>setTouchEnabled(true)</code> has previously been
+ * invoked on the receiver then <code>setTouchEnabled(false)</code>
+ * must be invoked on it to specify that gesture events should be
+ * sent instead of touch events.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and Cocoa.
+ * SWT doesn't send Gesture or Touch events on GTK.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see GestureListener
+ * @see #removeGestureListener
+ * @see #setTouchEnabled
+ *
+ * @since 3.7
+ */
+public void addGestureListener (GestureListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Gesture, typedListener);
 }
 
 /**
@@ -228,7 +300,18 @@ public void addHelpListener (HelpListener listener) {
  * be notified when keys are pressed and released on the system keyboard, by sending
  * it one of the messages defined in the <code>KeyListener</code>
  * interface.
- *
+ * <p>
+ * When a key listener is added to a control, the control
+ * will take part in widget traversal.  By default, all
+ * traversal keys (such as the tab key and so on) are
+ * delivered to the control.  In order for a control to take
+ * part in traversal, it should listen for traversal events.
+ * Otherwise, the user can traverse into a control but not
+ * out.  Note that native controls such as table and tree
+ * implement key traversal in the operating system.  It is
+ * not necessary to add traversal listeners for these controls,
+ * unless you want to override the default traversal.
+ * </p>
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -248,6 +331,34 @@ public void addKeyListener (KeyListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.KeyUp,typedListener);
 	addListener (SWT.KeyDown,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the platform-specific context menu trigger
+ * has occurred, by sending it one of the messages defined in
+ * the <code>MenuDetectListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #removeMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void addMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MenuDetect, typedListener);
 }
 
 /**
@@ -334,6 +445,34 @@ public void addMouseMoveListener (MouseMoveListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when the mouse wheel is scrolled, by sending
+ * it one of the messages defined in the
+ * <code>MouseWheelListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #removeMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void addMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MouseWheel, typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when the receiver needs to be painted, by sending it
  * one of the messages defined in the <code>PaintListener</code>
  * interface.
@@ -356,6 +495,44 @@ public void addPaintListener (PaintListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Paint,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when touch events occur, by sending it
+ * one of the messages defined in the <code>TouchListener</code>
+ * interface.
+ * <p>
+ * NOTE: You must also call <code>setTouchEnabled(true)</code> to
+ * specify that touch events should be sent, which will cause gesture
+ * events to not be sent.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows and Cocoa.
+ * SWT doesn't send Gesture or Touch events on GTK.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TouchListener
+ * @see #removeTouchListener
+ * @see #setTouchEnabled
+ *
+ * @since 3.7
+ */
+public void addTouchListener (TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Touch,typedListener);
 }
 
 /**
@@ -538,6 +715,7 @@ boolean autoAddChildren() {
 }
 
 void createWidget () {
+	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	createHandleInit ();
 	handle = createHandle ();
@@ -895,6 +1073,46 @@ public Rectangle getBounds () {
 //	return new Rectangle (rect.left, rect.top, width, height);
 }
 
+/**
+ * Returns the receiver's cursor, or null if it has not been set.
+ * <p>
+ * When the mouse pointer passes over a control its appearance
+ * is changed to match the control's cursor.
+ * </p>
+ *
+ * @return the receiver's cursor or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+public Cursor getCursor () {
+	checkWidget ();
+	return Cursor.swing_new (display, ((CControl)handle).getUserAttributeHandler().getCursor());
+}
+
+/**
+ * Returns <code>true</code> if the receiver is detecting
+ * drag gestures, and  <code>false</code> otherwise.
+ *
+ * @return the receiver's drag detect state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+public boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
+}
+
+
 //int getCodePage () {
 //	if (OS.IsUnicode) return OS.CP_ACP;
 //	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -1062,6 +1280,24 @@ public Monitor getMonitor () {
   monitor.clientWidth = bounds.width - insets.left - insets.right;
   monitor.clientHeight = bounds.height - insets.top - insets.bottom;
 	return monitor;
+}
+
+/**
+ * Returns the orientation of the receiver, which will be one of the
+ * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * @return the orientation style
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.7
+ */
+public int getOrientation () {
+	checkWidget ();
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 /**
@@ -1565,26 +1801,16 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget ();
+	if(handle instanceof Window) {
+		// TODO: Not sure hot exactly place the window above a specific parent control (null or a window).
+    	((Window)handle).toFront();
+    	return;
+    }
   Container cParent = handle.getParent();
   if (control != null) {
     if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
     if (handle == control.handle) return;
     if (parent != control.parent) return;
-    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-      boolean isFound = false;
-      for(int i=cParent.getComponentCount()-1; i>=0; i--) {
-        isFound = control.handle == handle;
-        if(cParent.getComponent(i) == control.handle) {
-          cParent.remove(handle);
-          cParent.add(handle, isFound? i: i-1);
-          handle.invalidate();
-          cParent.validate();
-          cParent.repaint();
-          break;
-        }
-      }
-      return;
-    }
     int cOrder = cParent.getComponentZOrder(control.handle);
     int order = cParent.getComponentZOrder(handle);
     if(order < cOrder) {
@@ -1592,14 +1818,6 @@ public void moveAbove (Control control) {
     }
     cParent.setComponentZOrder(handle, cOrder);
   } else {
-    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-      cParent.remove(handle);
-      cParent.add(handle, 0);
-      handle.invalidate();
-      cParent.validate();
-      cParent.repaint();
-      return;
-    }
     cParent.setComponentZOrder(handle, 0);
   }
 //	int topHandle = topHandle (), hwndAbove = OS.HWND_TOP;
@@ -1646,26 +1864,16 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget ();
+	if(handle instanceof Window) {
+		// TODO: Not sure hot exactly place the window below a specific parent control (null or a window).
+    	((Window)handle).toBack();
+    	return;
+    }
   Container cParent = handle.getParent();
   if (control != null) {
     if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
     if (handle == control.handle) return;
     if (parent != control.parent) return;
-    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-      boolean isFound = false;
-      for(int i=cParent.getComponentCount()-1; i>=0; i--) {
-        isFound = control.handle == handle;
-        if(cParent.getComponent(i) == control.handle) {
-          cParent.remove(handle);
-          cParent.add(handle, isFound? i: i+1);
-          handle.invalidate();
-          cParent.validate();
-          cParent.repaint();
-          break;
-        }
-      }
-      return;
-    }
     int cOrder = cParent.getComponentZOrder(control.handle);
     int order = cParent.getComponentZOrder(handle);
     if(order < cOrder) {
@@ -1673,14 +1881,6 @@ public void moveBelow (Control control) {
     }
     cParent.setComponentZOrder(handle, cOrder + 1);
   } else {
-    if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-      cParent.remove(handle);
-      cParent.add(handle);
-      handle.invalidate();
-      cParent.validate();
-      cParent.repaint();
-      return;
-    }
     cParent.setComponentZOrder(handle, cParent.getComponentCount() - 1);
   }
 //	int topHandle = topHandle (), hwndAbove = OS.HWND_BOTTOM;
@@ -1743,6 +1943,25 @@ public void pack () {
 public void pack (boolean changed) {
 	checkWidget ();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
+}
+
+/**
+ * Requests that this control and all of its ancestors be repositioned by
+ * their layouts at the earliest opportunity. This should be invoked after
+ * modifying the control in order to inform any dependent layouts of
+ * the change.
+ * <p>
+ * The control will not be repositioned synchronously. This method is
+ * fast-running and only marks the control for future participation in
+ * a deferred layout.
+ * <p>
+ * Invoking this method multiple times before the layout occurs is an
+ * inexpensive no-op.
+ *
+ * @since 3.105
+ */
+public void requestLayout () {
+	handle.revalidate();
 }
 
 /**
@@ -1901,6 +2120,32 @@ public void removeControlListener (ControlListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when a drag gesture occurs.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ *
+ * @since 3.3
+ */
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when the control gains or loses focus.
  *
  * @param listener the listener which should no longer be notified
@@ -1922,6 +2167,32 @@ public void removeFocusListener(FocusListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.FocusIn, listener);
 	eventTable.unhook (SWT.FocusOut, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when gesture events are generated for the control.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see GestureListener
+ * @see #addGestureListener
+ *
+ * @since 3.7
+ */
+public void removeGestureListener (GestureListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Gesture, listener);
 }
 
 /**
@@ -1971,6 +2242,33 @@ public void removeKeyListener(KeyListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.KeyUp, listener);
 	eventTable.unhook (SWT.KeyDown, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the platform-specific context menu trigger has
+ * occurred.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #addMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void removeMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MenuDetect, listener);
 }
 
 /**
@@ -2051,6 +2349,32 @@ public void removeMouseMoveListener(MouseMoveListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when the mouse wheel is scrolled.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #addMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void removeMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MouseWheel, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when the receiver needs to be painted.
  *
  * @param listener the listener which should no longer be notified
@@ -2071,6 +2395,32 @@ public void removePaintListener(PaintListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Paint, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when touch events occur.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TouchListener
+ * @see #addTouchListener
+ *
+ * @since 3.7
+ */
+public void removeTouchListener(TouchListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Touch, listener);
 }
 
 /**
@@ -2433,6 +2783,30 @@ public void setCursor (Cursor cursor) {
 //	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 //}
 
+/**
+ * Sets the receiver's drag detect state. If the argument is
+ * <code>true</code>, the receiver will detect drag gestures,
+ * otherwise these gestures will be ignored.
+ *
+ * @param dragDetect the new drag detect state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.3
+ */
+public void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;
+	} else {
+		state &= ~DRAG_DETECT;
+	}
+	// TODO: use the DRAG_DETECT flag to activate/deactivate gesture.
+}
+
 private DisabledStatePanel disabledStatePanel;
 
 /**
@@ -2674,6 +3048,33 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
+/**
+ * Sets the orientation of the receiver, which must be one
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ *
+ * @param orientation new orientation style
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.7
+ */
+public void setOrientation (int orientation) {
+	checkWidget ();
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
+	style &= ~SWT.MIRRORED;
+	style &= ~flags;
+	style |= orientation & flags;
+	style &= ~SWT.FLIP_TEXT_DIRECTION;
+	// TODO: implement
+//	updateOrientation ();
+//	checkMirrored ();
+}
+
 boolean setRadioFocus () {
 	return false;
 }
@@ -2776,6 +3177,45 @@ boolean setTabGroupFocus () {
 boolean setTabItemFocus () {
 	if (!handle.isShowing ()) return false;
 	return forceFocus ();
+}
+
+/**
+ * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
+ * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code>,
+ * <code>SWT.RIGHT_TO_LEFT</code>, or <code>SWT.AUTO_TEXT_DIRECTION</code>.
+ * <p>
+ * <code>setOrientation</code> would override this value with the text direction
+ * that is consistent with the new orientation.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the base text direction style
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#LEFT_TO_RIGHT
+ * @see SWT#RIGHT_TO_LEFT
+ * @see SWT#AUTO_TEXT_DIRECTION
+ * @see SWT#FLIP_TEXT_DIRECTION
+ *
+ * @since 3.102
+ */
+public void setTextDirection(int textDirection) {
+	checkWidget ();
+	textDirection &= (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT);
+	// TODO: implement
+	//updateTextDirection (textDirection);
+	if (textDirection == AUTO_TEXT_DIRECTION) {
+		state |= HAS_AUTO_DIRECTION;
+	} else {
+		state &= ~HAS_AUTO_DIRECTION;
+	}
 }
 
 String toolTipText;
@@ -4695,6 +5135,7 @@ Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputStat
   } else if (SwingUtilities.isMiddleMouseButton (me)) {
     event.button = 3;
   }
+  event.count = me.getClickCount();
   event.stateMask = isPreviousInputState? Display.getPreviousInputState(): Display.getInputState();
   return event;
 }

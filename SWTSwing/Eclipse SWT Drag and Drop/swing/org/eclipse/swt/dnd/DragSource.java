@@ -125,7 +125,7 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DragSourceEffect effect;
 //	Composite topControl;
 	
 	//workaround - track the operation performed by the drop target for DragEnd event
@@ -224,7 +224,7 @@ public DragSource(Control control, int style) {
 //	} else if (control instanceof Table) {
 //		effect = new TableDragAndDropEffect((Table)control);
 //	} else {
-		effect = new NoDragAndDropEffect(control);
+		effect = new DragSourceEffect(control);
 //	}
 }
 
@@ -491,11 +491,12 @@ class SWTDragGestureListener implements DragGestureListener {
     // END - copy from clipboard
 //    int operations = Utils.convertDnDActionsToSwing(getStyle());
     Display display = DragSource.this.control.getDisplay();
-    ImageData imageData = effect.getDragSourceImage(dragOrigin.x, dragOrigin.y);
+    // TODO: implement
+    //ImageData imageData = effect.getDragSourceImage(dragOrigin.x, dragOrigin.y);
     dragCursor = null;
-    if (imageData != null) {
+    /*if (imageData != null) {
       dragCursor = new Image(display, imageData);
-    }
+    }*/
     Utils.isLocalDragAndDropInProgress = true;
     e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
       int action;

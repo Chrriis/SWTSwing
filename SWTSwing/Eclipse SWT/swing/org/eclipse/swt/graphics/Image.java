@@ -415,6 +415,80 @@ public Image (Device device, String filename) {
 	if (device.tracking) device.new_Object(this);	
 }
 
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file retrieved from the ImageFileNameProvider. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageFileNameProvider the ImageFileNameProvider object that is
+ * to be used to get the file name
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageFileNameProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the fileName provided by ImageFileNameProvider is null at 100% zoom</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.104
+ */
+public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	String filename = imageFileNameProvider.getImagePath (100);
+	init(device, new ImageData(filename));
+	if (device.tracking) device.new_Object(this);	
+}
+
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the ImageData retrieved from the ImageDataProvider. Throws an
+ * error if an error occurs while loading the image, or if the result
+ * is an image of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience for loading image as
+ * per DPI level.
+ *
+ * @param device the device on which to create the image
+ * @param imageDataProvider the ImageDataProvider object that is
+ * to be used to get the ImageData
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the ImageDataProvider is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the ImageData provided by ImageDataProvider is null at 100% zoom</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @since 3.104
+ */
+public Image(Device device, ImageDataProvider imageDataProvider) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	ImageData data = imageDataProvider.getImageData (100);
+	init(device, data);
+	if (device.tracking) device.new_Object(this);	
+}
+
 ///** 
 // * Create a DIB from a DDB without using GetDIBits. Note that 
 // * the DDB should not be selected into a HDC.
@@ -673,6 +747,42 @@ public Rectangle getBounds() {
  * @see ImageData
  */
 public ImageData getImageData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return getImageData(100);
+}
+
+/**
+ * Returns an {@link ImageData} for the given zoom level based on the
+ * receiver.
+ * <p>
+ * Note that this method is mainly intended to be used by custom
+ * implementations of {@link ImageDataProvider} that draw a composite image
+ * at the requested zoom level based on other images. For custom zoom
+ * levels, the image data may be an auto-scaled version of the native image
+ * and may look more blurred or mangled than expected.
+ * </p>
+ * <p>
+ * Modifications made to the returned {@code ImageData} will not affect this
+ * {@code Image}.
+ * </p>
+ *
+ * @param zoom
+ *            The zoom level in % of the standard resolution (which is 1
+ *            physical monitor pixel == 1 SWT logical point). Typically 100,
+ *            150, or 200.
+ * @return an <code>ImageData</code> containing the image's data and
+ *         attributes at the given zoom level
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
+ * </ul>
+ *
+ * @since 3.106
+ */
+public ImageData getImageData (int zoom) {
+	// TODO: use zoom.
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   ColorModel colorModel = handle.getColorModel();
   PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
   int width = handle.getWidth();

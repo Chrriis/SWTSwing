@@ -120,15 +120,9 @@ public class JFontChooser extends JDialog {
     isFontItalicCheckBox.addActionListener(updateActionListener);
     isFontItalicCheckBox.setSelected(fontNameComboBoxFont.isItalic());
     isFontStrikeThroughCheckBox = new JCheckBox("Strike Through");
-    if(!Compatibility.IS_JAVA_6_OR_GREATER) {
-      isFontStrikeThroughCheckBox.setVisible(false);
-    }
     isFontStrikeThroughCheckBox.setSelected(fontNameComboBoxAttributes.get(TextAttribute.STRIKETHROUGH) == TextAttribute.STRIKETHROUGH_ON);
     isFontStrikeThroughCheckBox.addActionListener(updateActionListener);
     isFontUnderlineCheckBox = new JCheckBox("Underline");
-    if(!Compatibility.IS_JAVA_6_OR_GREATER) {
-      isFontUnderlineCheckBox.setVisible(false);
-    }
     isFontUnderlineCheckBox.setSelected(fontNameComboBoxAttributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON);
     isFontUnderlineCheckBox.addActionListener(updateActionListener);
     optionsPanel.add(isFontBoldCheckBox);

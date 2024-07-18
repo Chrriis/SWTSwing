@@ -37,8 +37,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
+import java.util.function.Consumer;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -53,10 +55,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.DeviceData;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.DefaultExceptionHandler;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.CShell;
@@ -156,10 +160,12 @@ public class Display extends Device {
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
+	Consumer<RuntimeException> runtimeExceptionHandler = DefaultExceptionHandler.RUNTIME_EXCEPTION_HANDLER;
+	Consumer<Error> errorHandler = DefaultExceptionHandler.RUNTIME_ERROR_HANDLER;
 	Thread thread;
 
 	/* Display Shutdown */
-  ArrayList disposeList;
+	Runnable [] disposeList;
 //	Runnable [] disposeList;
 	
 	/* System Tray */
@@ -281,9 +287,6 @@ public class Display extends Device {
         java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
         Utils.storeModifiersEx(ie.getModifiersEx());
         if(ie instanceof MouseEvent) {
-          if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-            Utils.trackMouseProperties((MouseEvent)ie);
-          }
           // It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
           Component component = ie.getComponent();
           if(component == null) {
@@ -331,13 +334,9 @@ public class Display extends Device {
             Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
             if(window instanceof CShell) {
               Component targetComponent;
-              if(Compatibility.IS_JAVA_5_OR_GREATER) {
-                java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
-                SwingUtilities.convertPointFromScreen(mouseLocation, window);
-                targetComponent = window.findComponentAt(mouseLocation);
-              } else {
-                targetComponent = null;
-              }
+              java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+              SwingUtilities.convertPointFromScreen(mouseLocation, window);
+              targetComponent = window.findComponentAt(mouseLocation);
               for(; targetComponent != null && !(targetComponent instanceof CControl); targetComponent = targetComponent.getParent());
               Control control;
               if(targetComponent != null) {
@@ -707,8 +706,17 @@ void destroyDisplay () {
  */
 public void disposeExec (Runnable runnable) {
 	checkDevice ();
-  if (disposeList == null) disposeList = new ArrayList();
-  disposeList.add(runnable);
+	if (disposeList == null) disposeList = new Runnable [4];
+	for (int i=0; i<disposeList.length; i++) {
+		if (disposeList [i] == null) {
+			disposeList [i] = runnable;
+			return;
+		}
+	}
+	Runnable [] newDisposeList = new Runnable [disposeList.length + 4];
+	System.arraycopy (disposeList, 0, newDisposeList, 0, disposeList.length);
+	newDisposeList [disposeList.length] = runnable;
+	disposeList = newDisposeList;
 }
 
 /**
@@ -856,9 +864,6 @@ Control getControl (Component handle) {
  */
 public Control getCursorControl () {
   checkDevice ();
-  if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-    return Utils.getTrakedMouseControl();
-  }
   java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
   // TODO: what about windows?
   Frame[] frames = Frame.getFrames();
@@ -888,10 +893,6 @@ public Control getCursorControl () {
  */
 public Point getCursorLocation () {
 	checkDevice ();
-  if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-    java.awt.Point point = Utils.getTrakedMouseLocation();
-    return new Point(point.x, point.y);
-  }
   java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
   return new Point(point.x, point.y);
 }
@@ -1146,9 +1147,9 @@ MenuItem getMenuItem (JComponent component) {
   return null;
 }
 
-int getMessageCount () {
+/*int getMessageCount () {
 	return synchronizer.getMessageCount ();
-}
+}*/
 
 /**
  * Returns an array of monitors attached to the device.
@@ -1340,6 +1341,33 @@ public Cursor getSystemCursor (int id) {
 }
 
 /**
+ * Returns a reasonable font for applications to use.
+ * On some platforms, this will match the "default font"
+ * or "system font" if such can be found.  This font
+ * should not be free'd because it was allocated by the
+ * system, not the application.
+ * <p>
+ * Typically, applications which want the default look
+ * should simply not set the font on the widgets they
+ * create. Widgets are always created with the correct
+ * default font for the class of user-interface component
+ * they represent.
+ * </p>
+ *
+ * @return a font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+@Override
+public Font getSystemFont () {
+	checkDevice ();
+	return Font.swing_new(this, LookAndFeelUtils.getSystemFont());
+}
+
+/**
  * Returns the matching standard platform image for the given
  * constant, which should be one of the icon constants
  * specified in class <code>SWT</code>. This image should
@@ -1413,6 +1441,41 @@ static java.awt.Image getImage(Icon icon) {
 }
 
 /**
+ * Returns the single instance of the system-provided menu for the application, or
+ * <code>null</code> on platforms where no menu is provided for the application.
+ *
+ * @return the system menu, or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.7
+ */
+public Menu getSystemMenu () {
+	checkDevice();
+	return null;
+}
+
+/**
+ * Returns the single instance of the system taskBar or null
+ * when there is no system taskBar available for the platform.
+ *
+ * @return the system taskBar or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public TaskBar getSystemTaskBar () {
+	checkDevice ();
+	return null;
+}
+
+/**
  * Returns the single instance of the system tray or null
  * when there is no system tray available for the platform.
  *
@@ -1427,7 +1490,7 @@ static java.awt.Image getImage(Icon icon) {
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
-  if (!Compatibility.IS_JAVA_6_OR_GREATER || !SystemTray.isSupported()) {
+  if (!SystemTray.isSupported()) {
     return null;
   }
 	return tray = new Tray (this, SWT.NONE);
@@ -2019,9 +2082,17 @@ protected void release () {
 	tray = null;
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
-    for(Iterator it = disposeList.iterator(); it.hasNext(); ) {
-      ((Runnable)it.next()).run();
-    }
+		for (Runnable next : disposeList) {
+			if (next != null) {
+				try {
+					next.run ();
+				} catch (RuntimeException exception) {
+					runtimeExceptionHandler.accept (exception);
+				} catch (Error error) {
+					errorHandler.accept (error);
+				}
+			}
+		}
 	}
 	disposeList = null;
 	synchronizer.releaseSynchronizer ();
@@ -2176,7 +2247,63 @@ void sendEvent (int eventType, Event event) {
 	event.type = eventType;
 	if (event.time == 0) event.time = Utils.getCurrentTime ();
 	if (!filterEvent (event)) {
-		if (eventTable != null) eventTable.sendEvent (event);
+		if (eventTable != null) sendEvent (eventTable, event);
+	}
+}
+
+void sendEvent (EventTable eventTable, Event event) {
+	int type = event.type;
+	sendPreEvent (type);
+	try {
+		eventTable.sendEvent (event);
+	} finally {
+		sendPostEvent (type);
+	}
+}
+
+void sendPreEvent (int eventType) {
+	if (eventType != SWT.PreEvent && eventType != SWT.PostEvent
+			&& eventType != SWT.PreExternalEventDispatch
+			&& eventType != SWT.PostExternalEventDispatch) {
+		if (eventTable != null && eventTable.hooks (SWT.PreEvent)) {
+			Event event = new Event ();
+			event.detail = eventType;
+			sendEvent (SWT.PreEvent, event);
+		}
+	}
+}
+
+void sendPostEvent (int eventType) {
+	if (eventType != SWT.PreEvent && eventType != SWT.PostEvent
+			&& eventType != SWT.PreExternalEventDispatch
+			&& eventType != SWT.PostExternalEventDispatch) {
+		if (eventTable != null && eventTable.hooks (SWT.PostEvent)) {
+			Event event = new Event ();
+			event.detail = eventType;
+			sendEvent (SWT.PostEvent, event);
+		}
+	}
+}
+
+/**
+ * Sends a SWT.PreExternalEventDispatch event.
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public void sendPreExternalEventDispatchEvent () {
+	if (eventTable != null && eventTable.hooks (SWT.PreExternalEventDispatch)) {
+		sendEvent (SWT.PreExternalEventDispatch, null);
+	}
+}
+
+/**
+ * Sends a SWT.PostExternalEventDispatch event.
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public void sendPostExternalEventDispatchEvent () {
+	if (eventTable != null && eventTable.hooks (SWT.PostExternalEventDispatch)) {
+		sendEvent (SWT.PostExternalEventDispatch, null);
 	}
 }
 
@@ -2363,6 +2490,64 @@ public void setSynchronizer (Synchronizer synchronizer) {
 		this.synchronizer.runAsyncMessages(true);
 	}
 	this.synchronizer = synchronizer;
+}
+
+/**
+ * Sets a callback that will be invoked whenever an exception is thrown by a listener or external
+ * callback function. The application may use this to set a global exception handling policy:
+ * the most common policies are either to log and discard the exception or to re-throw the
+ * exception.
+ * <p>
+ * The default SWT error handling policy is to rethrow exceptions.
+ *
+ * @param runtimeExceptionHandler new exception handler to be registered.
+ * @since 3.106
+ */
+public final void setRuntimeExceptionHandler (Consumer<RuntimeException> runtimeExceptionHandler) {
+	checkDevice();
+	this.runtimeExceptionHandler = Objects.requireNonNull (runtimeExceptionHandler);
+}
+
+/**
+ * Returns the current exception handler. It will receive all exceptions thrown by listeners
+ * and external callbacks in this display. If code wishes to temporarily replace the exception
+ * handler (for example, during a unit test), it is common practice to invoke this method prior
+ * to replacing the exception handler so that the old handler may be restored afterward.
+ *
+ * @return the current exception handler. Never <code>null</code>.
+ * @since 3.106
+ */
+public final Consumer<RuntimeException> getRuntimeExceptionHandler () {
+	return runtimeExceptionHandler;
+}
+
+/**
+ * Sets a callback that will be invoked whenever an error is thrown by a listener or external
+ * callback function. The application may use this to set a global exception handling policy:
+ * the most common policies are either to log and discard the exception or to re-throw the
+ * exception.
+ * <p>
+ * The default SWT error handling policy is to rethrow exceptions.
+ *
+ * @param errorHandler new error handler to be registered.
+ * @since 3.106
+ */
+public final void setErrorHandler (Consumer<Error> errorHandler) {
+	checkDevice();
+	this.errorHandler = Objects.requireNonNull (errorHandler);
+}
+
+/**
+ * Returns the current exception handler. It will receive all errors thrown by listeners
+ * and external callbacks in this display. If code wishes to temporarily replace the error
+ * handler (for example, during a unit test), it is common practice to invoke this method prior
+ * to replacing the error handler so that the old handler may be restored afterward.
+ *
+ * @return the current error handler. Never <code>null</code>.
+ * @since 3.106
+ */
+public final Consumer<Error> getErrorHandler () {
+	return errorHandler;
 }
 
 /**

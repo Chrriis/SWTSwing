@@ -77,9 +77,18 @@ public abstract class Widget {
   static final int RELEASED   = 1<<11;
   static final int DISPOSE_SENT = 1<<12;
   
+	static final int DRAG_DETECT	= 1<<15;
+
+	/* Bidi "auto" text direction */
+	static final int HAS_AUTO_DIRECTION = 1<<22;
+
   /* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
+
+	/* Bidi flag and for auto text direction */
+	static final int AUTO_TEXT_DIRECTION = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+
 
 //	/* Check and initialize the Common Controls DLL */
 //	static final int MAJOR = 5, MINOR = 80;
@@ -563,6 +572,33 @@ public Display getDisplay () {
 	return display;
 }
 
+/**
+ * Returns an array of listeners who will be notified when an event
+ * of the given type occurs. The event type is one of the event constants
+ * defined in class <code>SWT</code>.
+ *
+ * @param eventType the type of event to listen for
+ * @return an array of listeners that will be notified when the event occurs
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see SWT
+ * @see #addListener(int, Listener)
+ * @see #removeListener(int, Listener)
+ * @see #notifyListeners
+ *
+ * @since 3.4
+ */
+public Listener[] getListeners (int eventType) {
+	checkWidget();
+	if (eventTable == null) return new Listener[0];
+	return eventTable.getListeners(eventType);
+}
+
 Menu getMenu () {
 	return null;
 }
@@ -635,6 +671,20 @@ public int getStyle () {
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
+}
+
+/**
+ * Returns <code>true</code> if the widget has auto text direction,
+ * and <code>false</code> otherwise.
+ *
+ * @return <code>true</code> when the widget has auto direction and <code>false</code> otherwise
+ *
+ * @see SWT#AUTO_TEXT_DIRECTION
+ *
+ * @since 3.105
+ */
+public boolean isAutoDirection () {
+	return (state & HAS_AUTO_DIRECTION) != 0;
 }
 
 /**
@@ -932,6 +982,51 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
+}
+
+/**
+ * Marks the widget to be skinned.
+ * <p>
+ * The skin event is sent to the receiver's display when appropriate (usually before the next event
+ * is handled). Widgets are automatically marked for skinning upon creation as well as when its skin
+ * id or class changes. The skin id and/or class can be changed by calling {@link Display#setData(String, Object)}
+ * with the keys {@link SWT#SKIN_ID} and/or {@link SWT#SKIN_CLASS}. Once the skin event is sent to a widget, it
+ * will not be sent again unless <code>reskin(int)</code> is called on the widget or on an ancestor
+ * while specifying the <code>SWT.ALL</code> flag.
+ * </p>
+ * <p>
+ * The parameter <code>flags</code> may be either:
+ * </p>
+ * <dl>
+ * <dt><b>{@link SWT#ALL}</b></dt>
+ * <dd>all children in the receiver's widget tree should be skinned</dd>
+ * <dt><b>{@link SWT#NONE}</b></dt>
+ * <dd>only the receiver should be skinned</dd>
+ * </dl>
+ * @param flags the flags specifying how to reskin
+ *
+ * @exception SWTException
+ * <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.6
+ */
+public void reskin (int flags) {
+	checkWidget ();
+	reskinWidget ();
+	if ((flags & SWT.ALL) != 0) reskinChildren (flags);
+}
+
+void reskinChildren (int flags) {
+}
+
+void reskinWidget() {
+	// TODO: implement
+//	if ((state & SKIN_NEEDED) != SKIN_NEEDED) {
+//		this.state |= SKIN_NEEDED;
+//		display.addSkinnableWidget(this);
+//	}
 }
 
 void sendEvent (Event event) {

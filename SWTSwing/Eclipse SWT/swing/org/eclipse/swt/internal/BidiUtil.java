@@ -11,7 +11,9 @@
 package org.eclipse.swt.internal;
 
 import java.awt.Container;
+import java.text.Bidi;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 
 /*
@@ -93,6 +95,23 @@ public static int getKeyboardLanguage() {
  * Not implemented.
  */
 public static void removeLanguageListener(Container handle) {
+}
+/**
+ * Determine the base direction for the given text. The direction is derived
+ * from that of the first strong bidirectional character. In case the text
+ * doesn't contain any strong characters, the base direction is to be
+ * derived from a higher-level protocol (e.g. the widget orientation).
+ * <p>
+ *
+ * @param text
+ *            Text base direction should be resolved for.
+ * @return SWT#LEFT_RIGHT or SWT#RIGHT_TO_LEFT if the text contains strong
+ *         characters and thus the direction can be resolved, SWT#NONE
+ *         otherwise.
+ * @since 3.105
+ */
+public static int resolveTextDirection (String text) {
+	return new Bidi(text, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT).getBaseLevel() == 0? SWT.LEFT_TO_RIGHT: SWT.RIGHT_TO_LEFT;
 }
 /*
  * Not implemented.

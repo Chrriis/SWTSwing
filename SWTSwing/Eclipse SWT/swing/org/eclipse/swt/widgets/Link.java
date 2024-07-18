@@ -21,9 +21,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CLink;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
+import org.eclipse.swt.internal.win32.OS;
 
 /**
  * Instances of this class represent a selectable
@@ -141,6 +144,22 @@ Container createHandle () {
   return (Container)CLink.Factory.newInstance(this, style);
 }
 
+/**
+ * Returns the link foreground color.
+ *
+ * @return the receiver's link foreground color.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public Color getLinkForeground () {
+	checkWidget ();
+	return Color.swing_new (display, ((CLink)handle).getLinkForeground());
+}
+
 String getNameText () {
   return getText ();
 }
@@ -208,6 +227,29 @@ public void removeSelectionListener (SelectionListener listener) {
   if (eventTable == null) return;
   eventTable.unhook (SWT.Selection, listener);
   eventTable.unhook (SWT.DefaultSelection, listener); 
+}
+
+/**
+ * Sets the link foreground color to the color specified
+ * by the argument, or to the default system color for the link
+ * if the argument is null.
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.105
+ */
+public void setLinkForeground (Color color) {
+	checkWidget ();
+	((CLink)handle).setLinkForeground(color.handle);
 }
 
 /**

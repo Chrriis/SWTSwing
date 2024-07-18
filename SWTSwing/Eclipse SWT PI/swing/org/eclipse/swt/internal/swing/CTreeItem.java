@@ -17,8 +17,6 @@ import org.eclipse.swt.widgets.TreeItem;
 
 class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTreeItem {
 
-  protected DefaultMutableTreeTableNode mutableTreeTableNode;
-
   protected TreeItem handle;
 
   public CTreeItemImplementation(TreeItem treeItem, int style) {

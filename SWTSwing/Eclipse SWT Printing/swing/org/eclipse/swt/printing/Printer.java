@@ -188,12 +188,7 @@ protected void initPrinterData() {
   dpiX = 72;
   dpiY = 72;
   HashPrintRequestAttributeSet hashPrintRequestAttributeSet = getHashPrintRequestAttributeSet();
-  PageFormat pageFormat;
-  if(Compatibility.IS_JAVA_6_OR_GREATER) {
-    pageFormat = handle.getPageFormat(hashPrintRequestAttributeSet);
-  } else {
-    pageFormat = handle.defaultPage();
-  }
+  PageFormat pageFormat = handle.getPageFormat(hashPrintRequestAttributeSet);
   Paper paper = pageFormat.getPaper();
   paper.setImageableArea(0, 0, paper.getWidth(), paper.getHeight());
   pageFormat.setPaper(paper);

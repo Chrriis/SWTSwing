@@ -45,6 +45,7 @@ import org.eclipse.swt.internal.swing.Utils;
 
 public class Canvas extends Composite {
 	Caret caret;
+	IME ime;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -117,6 +118,23 @@ public Canvas (Composite parent, int style) {
 public Caret getCaret () {
 	checkWidget ();
 	return caret;
+}
+
+/**
+ * Returns the IME.
+ *
+ * @return the IME
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public IME getIME () {
+	checkWidget ();
+	return ime;
 }
 
 void releaseChildren (boolean destroy) {
@@ -293,6 +311,27 @@ public void setFont (Font font) {
 	checkWidget ();
 	if (caret != null) caret.setFont (font);
 	super.setFont (font);
+}
+
+/**
+ * Sets the receiver's IME.
+ *
+ * @param ime the new IME for the receiver, may be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the IME has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setIME (IME ime) {
+	checkWidget ();
+	if (ime != null && ime.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.ime = ime;
 }
 
 //LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {

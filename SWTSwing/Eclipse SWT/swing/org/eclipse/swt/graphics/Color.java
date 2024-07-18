@@ -48,17 +48,10 @@ public final class Color extends Resource {
 Color() {	
 }
 
-/**	 
+/**
  * Constructs a new instance of this class given a device and the
  * desired red, green and blue values expressed as ints in the range
- * 0 to 255 (where 0 is black and 255 is full brightness). On limited
- * color devices, the color instance created by this call may not have
- * the same RGB values as the ones specified by the arguments. The
- * RGB values on the returned instance will be the color values of 
- * the operating system color.
- * <p>
- * You must dispose the color when it is no longer required. 
- * </p>
+ * 0 to 255 (where 0 is black and 255 is full brightness).
  *
  * @param device the device on which to allocate the color
  * @param red the amount of red in the color
@@ -70,25 +63,83 @@ Color() {
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue argument is not between 0 and 255</li>
  * </ul>
  *
- * @see #dispose
+ * @see #Color(int, int, int) The equivalent constructor not requiring a Device
  */
 public Color (Device device, int red, int green, int blue) {
-  if (device == null) device = Device.getDevice ();
-  if (device == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  init (device, red, green, blue);
-  if (device.tracking) device.new_Object (this);
+	super(device);
+	init(device, red, green, blue, 255);
+	init();
 }
 
-/**	 
+/**
+ * Constructs a new instance of this class given the
+ * desired red, green and blue values expressed as ints in the range
+ * 0 to 255 (where 0 is black and 255 is full brightness).
+ *
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue argument is not between 0 and 255</li>
+ * </ul>
+ * @since 3.115
+ */
+public Color(int red, int green, int blue) {
+	super();
+	init(null, red, green, blue, 255);
+}
+
+/**
+ * Constructs a new instance of this class given a device and the
+ * desired red, green, blue &amp; alpha values expressed as ints in the range
+ * 0 to 255 (where 0 is black and 255 is full brightness).
+ *
+ * @param device the device on which to allocate the color
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ * @param alpha the amount of alpha in the color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #Color(int, int, int, int) The equivalent constructor not requiring a Device
+ *
+ * @since 3.104
+ */
+public Color (Device device, int red, int green, int blue, int alpha) {
+	super(device);
+	init(device, red, green, blue, alpha);
+	init();
+}
+
+/**
+ * Constructs a new instance of this class given the
+ * desired red, green, blue &amp; alpha values expressed as ints in the range
+ * 0 to 255 (where 0 is black and 255 is full brightness).
+ *
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ * @param alpha the amount of alpha in the color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
+ * </ul>
+ *
+ * @since 3.115
+ */
+public Color(int red, int green, int blue, int alpha) {
+	super();
+	init(null, red, green, blue, alpha);
+}
+
+/**
  * Constructs a new instance of this class given a device and an
  * <code>RGB</code> describing the desired red, green and blue values.
- * On limited color devices, the color instance created by this call
- * may not have the same RGB values as the ones specified by the
- * argument. The RGB values on the returned instance will be the color
- * values of the operating system color.
- * <p>
- * You must dispose the color when it is no longer required. 
- * </p>
  *
  * @param device the device on which to allocate the color
  * @param rgb the RGB values of the desired color
@@ -99,22 +150,137 @@ public Color (Device device, int red, int green, int blue) {
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue components of the argument are not between 0 and 255</li>
  * </ul>
  *
- * @see #dispose
+ * @see #Color(RGB) The equivalent constructor not requiring a Device
  */
 public Color (Device device, RGB rgb) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	super(device);
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  init (device, rgb.red, rgb.green, rgb.blue);
-	if (device.tracking) device.new_Object(this);
+	init(device, rgb.red, rgb.green, rgb.blue, 255);
+	init();
 }
 
-private void init (Device device, int red, int green, int blue) {
+/**
+ * Constructs a new instance of this class given an
+ * <code>RGB</code> describing the desired red, green and blue values.
+ *
+ * @param rgb the RGB values of the desired color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue components of the argument are not between 0 and 255</li>
+ * </ul>
+ * @since 3.115
+ */
+public Color(RGB rgb) {
+	super();
+	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(null, rgb.red, rgb.green, rgb.blue, 255);
+}
+
+/**
+ * Constructs a new instance of this class given a device and an
+ * <code>RGBA</code> describing the desired red, green, blue &amp; alpha values.
+ *
+ * @param device the device on which to allocate the color
+ * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgba argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #Color(RGBA) The equivalent constructor not requiring a Device
+ *
+ * @since 3.104
+ */
+public Color(Device device, RGBA rgba) {
+	super(device);
+	if (rgba == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
+	init();
+}
+
+/**
+ * Constructs a new instance of this class given an
+ * <code>RGBA</code> describing the desired red, green, blue &amp; alpha values.
+ *
+ * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgba argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @since 3.115
+ */
+public Color(RGBA rgba) {
+	super();
+	if (rgba == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(null, rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
+}
+
+/**
+ * Constructs a new instance of this class given a device, an
+ * <code>RGB</code> describing the desired red, green and blue values,
+ * alpha specifying the level of transparency.
+ *
+ * @param device the device on which to allocate the color
+ * @param rgb the RGB values of the desired color
+ * @param alpha the alpha value of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @see #Color(RGB, int) The equivalent constructor not requiring a Device
+ *
+ * @since 3.104
+ */
+public Color(Device device, RGB rgb, int alpha) {
+	super(device);
+	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, rgb.red, rgb.green, rgb.blue, alpha);
+	init();
+}
+
+/**
+ * Constructs a new instance of this class given an
+ * <code>RGB</code> describing the desired red, green and blue values,
+ * alpha specifying the level of transparency.
+ *
+ * @param rgb the RGB values of the desired color
+ * @param alpha the alpha value of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @since 3.115
+ */
+public Color(RGB rgb, int alpha) {
+	super();
+	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(null, rgb.red, rgb.green, rgb.blue, alpha);
+}
+
+private void init (Device device, int red, int green, int blue, int alpha) {
   if (!(0 <= red && red <= 255) || !(0 <= green && green <= 255)
       || !(0 <= blue && blue <= 255))
     SWT.error (SWT.ERROR_INVALID_ARGUMENT);
   this.device = device;
   this.handle = new java.awt.Color (red, green, blue);
+}
+
+@Override
+void init() {
+	// Resource init simply tracks this resource in the Device
+	// if DEBUG is on. Since Colors don't require disposal,
+	// the tracking would be a memory leak and a misreport
+	// on what resources are in use.
 }
 
 /**
@@ -145,6 +311,21 @@ public boolean equals (Object object) {
 	if (!(object instanceof Color)) return false;
 	Color color = (Color) object;
 	return device == color.device && handle.equals(color.handle);
+}
+
+/**
+ * Returns the amount of alpha in the color, from 0 (transparent) to 255 (opaque).
+ *
+ * @return the alpha component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.104
+ */
+public int getAlpha () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return handle.getAlpha();
 }
 
 /**
@@ -201,6 +382,21 @@ public int getRed () {
 public RGB getRGB () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return new RGB(handle.getRed(), handle.getGreen(), handle.getBlue());
+}
+
+/**
+ * Returns an <code>RGBA</code> representing the receiver.
+ *
+ * @return the RGBA for the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.104
+ */
+public RGBA getRGBA () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return new RGBA(handle.getRed(), handle.getGreen(), handle.getBlue(), handle.getAlpha());
 }
 
 /**

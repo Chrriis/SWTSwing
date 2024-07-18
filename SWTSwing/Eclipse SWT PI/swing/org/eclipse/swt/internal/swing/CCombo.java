@@ -16,6 +16,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -351,6 +352,14 @@ class CComboSimple extends JPanel implements CCombo {
     return false;
   }
 
+  public Point getEditorCaretLocation() {
+	  return textField.getCaret().getMagicCaretPosition();
+  }
+  
+  public int getEditorCaretPosition() {
+	  return textField.getCaretPosition();
+  }
+
 }
 
 class CComboImplementation extends JComboBox implements CCombo {
@@ -558,6 +567,14 @@ class CComboImplementation extends JComboBox implements CCombo {
     }
   }
 
+  public Point getEditorCaretLocation() {
+	  return ((JTextComponent)getEditor().getEditorComponent()).getCaret().getMagicCaretPosition();
+  }
+  
+  public int getEditorCaretPosition() {
+	  return ((JTextComponent)getEditor().getEditorComponent()).getCaretPosition();
+  }
+
 }
 
 public interface CCombo extends CComposite {
@@ -625,5 +642,9 @@ public interface CCombo extends CComposite {
   public Dimension getEditorSize();
   
   public boolean isPopupVisible();
+  
+  public Point getEditorCaretLocation();
+  
+  public int getEditorCaretPosition();
 
 }

@@ -15,6 +15,7 @@ import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -211,6 +212,16 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
     return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
   }
   
+  @Override
+	public String getText() {
+		// TODO Auto-generated method stub
+		JComponent editor = getEditor();
+		if(editor instanceof DefaultEditor) {
+			return ((DefaultEditor)editor).getTextField().getText();
+		}
+		return null;
+	}
+  
   public void setBackgroundImage(Image backgroundImage) {
     // TODO: implement
   }
@@ -266,5 +277,7 @@ public interface CSpinner extends CControl {
   public void setDigitCount(int digitCount);
 
   public int getDigitCount();
+
+  public String getText();
 
 }

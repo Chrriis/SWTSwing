@@ -85,7 +85,7 @@ public class DropTarget extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DropTargetEffect effect;
 	
 //	// Track application selections
 //	TransferData selectedDataType;
@@ -175,7 +175,8 @@ public DropTarget(Control control, int style) {
         } else {
           e.acceptDrag(action);
         }
-        effect.showDropTargetEffect(event.feedback, event.x, event.y);
+        // TODO: implement
+        //effect.showDropTargetEffect(event.feedback, event.x, event.y);
       } else {
         e.rejectDrag();
       }
@@ -229,7 +230,8 @@ public DropTarget(Control control, int style) {
       if(event.detail == DND.DROP_MOVE) {
         e.dropComplete(true);
       }
-      effect.showDropTargetEffect(event.feedback, event.x, event.y);
+      // TODO: implement
+      //effect.showDropTargetEffect(event.feedback, event.x, event.y);
     }
 	}, true); 
   // Drag under effect
@@ -240,7 +242,7 @@ public DropTarget(Control control, int style) {
 //	} else if (control instanceof StyledText) {
 //		effect = new StyledTextDragAndDropEffect((StyledText)control);
 //	} else {
-		effect = new NoDragAndDropEffect(control);
+		effect = new DropTargetEffect(control);
 //	}
 }
 

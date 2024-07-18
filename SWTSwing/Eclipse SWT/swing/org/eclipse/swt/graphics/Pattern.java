@@ -62,6 +62,7 @@ public Pattern(Device device, Image image) {
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
   Utils.notImplemented();
+  handle = 1;
 //	device.checkGDIP();
 //	int[] gdipImage = image.createGdipImage();
 //	int img = gdipImage[0];
@@ -142,6 +143,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
   Utils.notImplemented();
+  handle = 1;
 //	device.checkGDIP();
 //	int colorRef1 = color1.handle;
 //	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);

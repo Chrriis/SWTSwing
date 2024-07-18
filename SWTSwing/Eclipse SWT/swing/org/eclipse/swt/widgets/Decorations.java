@@ -974,7 +974,7 @@ public void setMenuBar (Menu menu) {
 	}
 	if (menu != null) display.removeBar (menu);
 	menuBar = menu;
-  ((CShell)handle).setJMenuBar((JMenuBar)menuBar.handle);
+  ((CShell)handle).setJMenuBar(menuBar == null? null: (JMenuBar)menuBar.handle);
 //	destroyAccelerators ();
 }
 

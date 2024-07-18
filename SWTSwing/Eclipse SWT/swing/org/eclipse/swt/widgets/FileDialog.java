@@ -188,16 +188,7 @@ public String open () {
           }
           for(int i=0; i<filters.length; i++) {
             String filterExtension = filters[i].trim();
-            String regExp;
-            if(!Compatibility.IS_JAVA_5_OR_GREATER) {
-              filterExtension = Pattern.compile("\\E").matcher(filterExtension).replaceAll("\\\\E");
-              filterExtension = Pattern.compile("\\Q").matcher(filterExtension).replaceAll("\\\\Q");
-              filterExtension = Pattern.compile("?").matcher(filterExtension).replaceAll("\\E.\\Q");
-              filterExtension = Pattern.compile("*").matcher(filterExtension).replaceAll("\\E.*\\Q");
-              regExp = "\\Q" + filterExtension;
-            } else {
-              regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
-            }
+            String regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
             final Pattern pattern = Pattern.compile(regExp.toString());
             Matcher m = pattern.matcher(f.getName());
             if(m.matches()) {

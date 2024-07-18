@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CSpinner;
 import org.eclipse.swt.internal.swing.TextFilterEvent;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
+import org.eclipse.swt.internal.win32.OS;
 
 /**
  * Instances of this class are selectable user interface
@@ -49,6 +50,23 @@ public class Spinner extends Composite {
 //	boolean ignoreModify;
 	int pageIncrement;
 	
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 *
+	 * @since 3.4
+	 */
+	public static final int LIMIT;
+
+	/*
+	 * These values can be different on different platforms.
+	 * Therefore they are not initialized in the declaration
+	 * to stop the compiler from inlining.
+	 */
+	static {
+		LIMIT = 0x7FFFFFFF;
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -385,6 +403,48 @@ public int getSelection () {
 }
 
 /**
+ * Returns a string containing a copy of the contents of the
+ * receiver's text field, or an empty string if there are no
+ * contents.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public String getText () {
+	checkWidget ();
+  return ((CSpinner)handle).getText();
+}
+
+/**
+ * Returns the maximum number of characters that the receiver's
+ * text field is capable of holding. If this has not been changed
+ * by <code>setTextLimit()</code>, it will be the constant
+ * <code>Spinner.LIMIT</code>.
+ *
+ * @return the text limit
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #LIMIT
+ *
+ * @since 3.4
+ */
+public int getTextLimit () {
+	checkWidget ();
+	// TODO: implement
+	return LIMIT;
+}
+
+/**
  * Pastes text from clipboard.
  * <p>
  * The selected text is deleted from the widget
@@ -680,6 +740,33 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget ();
   ((CSpinner)handle).setSelectedValue(value);
+}
+
+/**
+ * Sets the maximum number of characters that the receiver's
+ * text field is capable of holding to be the argument.
+ * <p>
+ * To reset this value to the default, use <code>setTextLimit(Spinner.LIMIT)</code>.
+ * Specifying a limit value larger than <code>Spinner.LIMIT</code> sets the
+ * receiver's limit to <code>Spinner.LIMIT</code>.
+ * </p>
+ * @param limit new text limit
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_CANNOT_BE_ZERO - if the limit is zero</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #LIMIT
+ *
+ * @since 3.4
+ */
+public void setTextLimit (int limit) {
+	checkWidget ();
+	// TODO: implement
 }
 
 /**

@@ -21,6 +21,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
@@ -904,6 +905,10 @@ class CShellPanel extends JPanel implements CShell {
   public boolean isEnabled() {
     return isEnabled;
   }
+  @Override
+	public void setShape(Shape shape) {
+	  Utils.notImplemented();
+	}
 }
 
 /**
@@ -1142,5 +1147,7 @@ public interface CShell extends CScrollable {
   public boolean isModallyBlocked();
   
   public void setActivationEventsBlocked(boolean areActivationEventsBlocked);
+  
+  public void setShape(Shape shape);
   
 }

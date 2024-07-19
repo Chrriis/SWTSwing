@@ -1295,13 +1295,7 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-  // TODO: how to implement that?
-//	int hRegion = 0;
-//	if (region != null) {
-//		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
-//		OS.CombineRgn (hRegion, region.handle, hRegion, OS.RGN_OR);
-//	}
-//	OS.SetWindowRgn (handle, hRegion, true);
+	((CShell)handle).setShape(region == null? null: region.handle);
 	this.region = region;
 }
 

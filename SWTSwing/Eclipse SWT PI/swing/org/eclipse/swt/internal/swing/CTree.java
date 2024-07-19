@@ -453,39 +453,48 @@ class CTreeImplementation extends JScrollPane implements CTree {
       protected boolean ignoreDrawSelection;
       protected boolean ignoreDrawFocused;
       protected void paintComponent(CellPainter c, Graphics g) {
-        if(ignoreDrawForeground) {
-          if(c instanceof JLabel) {
-            ((JLabel)c).setText(null);
-          }
-        }
+    	  /* TODO: I could not make the owner draw algorithm to work...
+    	   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/StyledCellLabelProvider.java
+    	   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/OwnerDrawLabelProvider.java
+    	   * If we succeed one day, remove this variable (should be allowed always)!!*/
+    	  boolean IS_OWNER_DRAW_ALLOWED = false;
+    	  if(IS_OWNER_DRAW_ALLOWED) {
+    		  if(ignoreDrawForeground) {
+    			  if(c instanceof JLabel) {
+    				  ((JLabel)c).setText("");
+    			  }
+    		  }
+    	  }
         if(ignoreDrawBackground) {
           setOpaque(false);
         }
 //        graphics = g;
         super.paintComponent(c, g);
-        // TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
-//        if(handle.isListening (SWT.MeasureItem) && treeItemObject != null) {
-//            CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.MEASURE_TYPE);
-//            event.row = row;
-//            event.column = column;
-//            event.treeItem = treeItemObject.getTreeItem();
-//            event.ignoreDrawForeground = this.ignoreDrawForeground;
-//            event.ignoreDrawBackground = this.ignoreDrawBackground;
-//            event.ignoreDrawSelection = this.ignoreDrawSelection;
-//            event.ignoreDrawFocused = this.ignoreDrawFocused;
-//            handle.processEvent(event);
-//          }
-        if(treeItemObject != null) {
-          CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.PAINT_TYPE);
-          event.row = row;
-          event.column = column;
-          event.treeItem = treeItemObject.getTreeItem();
-          event.ignoreDrawForeground = this.ignoreDrawForeground;
-          event.ignoreDrawBackground = this.ignoreDrawBackground;
-          event.ignoreDrawSelection = this.ignoreDrawSelection;
-          event.ignoreDrawFocused = this.ignoreDrawFocused;
-          handle.processEvent(event);
-        }
+  	  if(IS_OWNER_DRAW_ALLOWED) {
+  		  // TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
+  		  if(handle.isListening (SWT.MeasureItem) && treeItemObject != null) {
+  			  CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.MEASURE_TYPE);
+  			  event.row = row;
+  			  event.column = column;
+  			  event.treeItem = treeItemObject.getTreeItem();
+  			  event.ignoreDrawForeground = this.ignoreDrawForeground;
+  			  event.ignoreDrawBackground = this.ignoreDrawBackground;
+  			  event.ignoreDrawSelection = this.ignoreDrawSelection;
+  			  event.ignoreDrawFocused = this.ignoreDrawFocused;
+  			  handle.processEvent(event);
+  		  }
+  		  if(treeItemObject != null) {
+  			  CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.PAINT_TYPE);
+  			  event.row = row;
+  			  event.column = column;
+  			  event.treeItem = treeItemObject.getTreeItem();
+  			  event.ignoreDrawForeground = this.ignoreDrawForeground;
+  			  event.ignoreDrawBackground = this.ignoreDrawBackground;
+  			  event.ignoreDrawSelection = this.ignoreDrawSelection;
+  			  event.ignoreDrawFocused = this.ignoreDrawFocused;
+  			  handle.processEvent(event);
+  		  }
+  	  }
 //        graphics = null;
       }
       protected InnerTreeCellRenderer createInnerTreeCellRenderer() {
@@ -697,7 +706,7 @@ class CTreeImplementation extends JScrollPane implements CTree {
 		  isPaintEventBlocked = true;
 		    Rectangle cellRect = treeTable.getCellRect(row, column, includeSpacing);
 		    if(column == 0) {
-		    	Rectangle rowBounds = treeTable.getInnerTree().getRowBounds(0);
+		    	Rectangle rowBounds = treeTable.getInnerTree().getRowBounds(row);
 		    	if(rowBounds != null) {
 				      int dx = rowBounds.x;
 				      cellRect.x += dx;
@@ -880,8 +889,10 @@ class CTreeImplementation extends JScrollPane implements CTree {
     if(c instanceof JLabel) {
       Rectangle iconR = new Rectangle();
       JLabel label = (JLabel)c;
-      SwingUtilities.layoutCompoundLabel(label.getFontMetrics(label.getFont()), label.getText(), label.getIcon(), label.getVerticalAlignment(), label.getHorizontalAlignment(), label.getVerticalTextPosition(), label.getHorizontalTextPosition(), new Rectangle(), iconR, new Rectangle(), label.getIconTextGap());
-      bounds.x += iconR.x;
+//      label.getIconTextGap()
+      Rectangle viewRect = new Rectangle(label.getPreferredSize());
+      SwingUtilities.layoutCompoundLabel(label.getFontMetrics(label.getFont()), label.getText(), label.getIcon(), label.getVerticalAlignment(), label.getHorizontalAlignment(), label.getVerticalTextPosition(), label.getHorizontalTextPosition(), viewRect, iconR, new Rectangle(), label.getIconTextGap());
+      bounds.x += label.getIconTextGap();
       bounds.y += iconR.y;
       bounds.width = iconR.width;
       bounds.height = iconR.height;

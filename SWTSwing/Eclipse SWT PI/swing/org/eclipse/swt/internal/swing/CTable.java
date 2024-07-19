@@ -301,37 +301,46 @@ class CTableImplementation extends JScrollPane implements CTable {
         protected boolean ignoreDrawSelection;
         protected boolean ignoreDrawFocused;
         protected void paintComponent (Graphics g) {
-          if(ignoreDrawForeground) {
-            setText(null);
-          }
+      	  /* TODO: I could not make the owner draw algorithm to work...
+      	   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/StyledCellLabelProvider.java
+      	   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/OwnerDrawLabelProvider.java
+      	   * If we succeed one day, remove this variable (should be allowed always)!!*/
+      	  boolean IS_OWNER_DRAW_ALLOWED = false;
+      	  if(IS_OWNER_DRAW_ALLOWED) {
+      		  if(ignoreDrawForeground) {
+      			  setText(null);
+      		  }
+      	  }
           if(ignoreDrawBackground) {
             setOpaque(false);
           }
 //          graphics = g;
           super.paintComponent(g);
-          // TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
-//          if (handle.isListening (SWT.MeasureItem)) {
-//              CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.MEASURE_TYPE);
-//              event.row = row;
-//              event.column = column;
-//              event.tableItem = tableItemObject.getTableItem();
-//              event.ignoreDrawForeground = this.ignoreDrawForeground;
-//              event.ignoreDrawBackground = this.ignoreDrawBackground;
-//              event.ignoreDrawSelection = this.ignoreDrawSelection;
-//              event.ignoreDrawFocused = this.ignoreDrawFocused;
-//              handle.processEvent(event);
-//          }
-          if(tableItemObject != null) {
-            CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.PAINT_TYPE);
-            event.row = row;
-            event.column = column;
-            event.tableItem = tableItemObject.getTableItem();
-            event.ignoreDrawForeground = this.ignoreDrawForeground;
-            event.ignoreDrawBackground = this.ignoreDrawBackground;
-            event.ignoreDrawSelection = this.ignoreDrawSelection;
-            event.ignoreDrawFocused = this.ignoreDrawFocused;
-            handle.processEvent(event);
-          }
+      	  if(IS_OWNER_DRAW_ALLOWED) {
+      		  // TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
+      		  if (handle.isListening (SWT.MeasureItem)) {
+      			  CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.MEASURE_TYPE);
+      			  event.row = row;
+      			  event.column = column;
+      			  event.tableItem = tableItemObject.getTableItem();
+      			  event.ignoreDrawForeground = this.ignoreDrawForeground;
+      			  event.ignoreDrawBackground = this.ignoreDrawBackground;
+      			  event.ignoreDrawSelection = this.ignoreDrawSelection;
+      			  event.ignoreDrawFocused = this.ignoreDrawFocused;
+      			  handle.processEvent(event);
+      		  }
+      		  if(tableItemObject != null) {
+      			  CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.PAINT_TYPE);
+      			  event.row = row;
+      			  event.column = column;
+      			  event.tableItem = tableItemObject.getTableItem();
+      			  event.ignoreDrawForeground = this.ignoreDrawForeground;
+      			  event.ignoreDrawBackground = this.ignoreDrawBackground;
+      			  event.ignoreDrawSelection = this.ignoreDrawSelection;
+      			  event.ignoreDrawFocused = this.ignoreDrawFocused;
+      			  handle.processEvent(event);
+      		  }
+      	  }
 //          graphics = null;
         }
       };

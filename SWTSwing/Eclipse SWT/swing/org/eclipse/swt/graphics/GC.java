@@ -1985,10 +1985,17 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
-  handle.fillRect(x, y, width, height);
-  handle.setColor(oldColor);
+  if(data.backgroundPattern != null) {
+	  Paint oldPaint = handle.getPaint();
+	  handle.setPaint(data.backgroundPattern.handle);
+	  handle.fill(new java.awt.Rectangle(x, y, width, height));
+	  handle.setPaint(oldPaint);
+  } else {
+	  java.awt.Color oldColor = handle.getColor();
+	  handle.setColor(data.background);
+	  handle.fillRect(x, y, width, height);
+	  handle.setColor(oldColor);
+  }
 //  ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
@@ -3042,7 +3049,7 @@ public void setBackground (Color color) {
 public void setBackgroundPattern (Pattern pattern) {
   if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
   if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
+//  Utils.notImplemented();
 //  if (data.gdipGraphics == 0 && pattern == null) return;
 //  initGdip(false, false);
 //  if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);

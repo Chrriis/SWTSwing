@@ -10,6 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.awt.Component;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.TexturePaint;
+import java.awt.geom.Rectangle2D;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.swing.Utils;
 
@@ -36,7 +47,7 @@ public class Pattern extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int handle;
+	public Paint handle;
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
@@ -61,8 +72,7 @@ public Pattern(Device device, Image image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
-  Utils.notImplemented();
-  handle = 1;
+  handle = new TexturePaint(image.handle, new Rectangle2D.Float(0, 0, 0, 0));
 //	device.checkGDIP();
 //	int[] gdipImage = image.createGdipImage();
 //	int img = gdipImage[0];
@@ -75,7 +85,7 @@ public Pattern(Device device, Image image) {
 //		OS.HeapFree(hHeap, 0, gdipImage[1]);
 //	}
 //	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//	if (device.tracking) device.new_Object(this);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -142,8 +152,17 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
-  Utils.notImplemented();
-  handle = 1;
+	java.awt.Color c1 = color1.handle;
+	if(alpha1 != 0xFF) {
+		c1 = new java.awt.Color(c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha() * (alpha1 / 0xFF));
+	}
+	java.awt.Color c2 = color2.handle;
+	if(alpha2 != 0xFF) {
+		c2 = new java.awt.Color(c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha() * (alpha2 / 0xFF));
+	}
+	// TODO: implement a containing paint, that performs tiling when the paint does not cover the whole area.
+	GradientPaint gradientPaint = new GradientPaint(x1, y1, c1, x2, y2, c2);
+	handle = gradientPaint;
 //	device.checkGDIP();
 //	int colorRef1 = color1.handle;
 //	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
@@ -170,7 +189,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 //	}
 //	Gdip.Color_delete(foreColor);
 //	Gdip.Color_delete(backColor);
-//	if (device.tracking) device.new_Object(this);
+	if (device.tracking) device.new_Object(this);
 }
 	
 /**
@@ -179,7 +198,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * they allocate.
  */
 public void dispose() {
-	if (handle == 0) return;
+	if (handle == null) return;
 	if (device.isDisposed()) return;
 //	int type = Gdip.Brush_GetType(handle);
 //	switch (type) {
@@ -196,7 +215,7 @@ public void dispose() {
 //			Gdip.TextureBrush_delete(handle);
 //			break;
 //	}
-	handle = 0;
+	handle = null;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
@@ -212,7 +231,7 @@ public void dispose() {
  * @return <code>true</code> when the Pattern is disposed, and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return handle == 0;
+	return handle == null;
 }
 
 /**

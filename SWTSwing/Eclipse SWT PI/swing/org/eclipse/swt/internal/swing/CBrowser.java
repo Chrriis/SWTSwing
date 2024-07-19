@@ -160,12 +160,17 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
     return true;
   }
   
+  public String getText() {
+    URL url = editorPane.getPage();
+    return url == null? "": url.toString();
+  }
+	  
   public String getURL() {
     URL url = editorPane.getPage();
     return url == null? "": url.toString();
   }
   
-  public boolean setURL(String url) {
+  public boolean setURL(String url, String postData, String[] headers) {
     if(url != null && url.startsWith("file://")) {
       url = "file:/" + url.substring("file://".length());
     }
@@ -206,7 +211,7 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
     return !forwardActionList.isEmpty();
   }
   
-  public boolean setText(String html) {
+  public boolean setText(String html, boolean trusted) {
     try {
       forwardActionList.clear();
       backActionList.add(getCurrentCommand());
@@ -271,9 +276,11 @@ public interface CBrowser extends CComposite {
 
   public boolean forward();
 
+  public String getText();
+  
   public String getURL();
   
-  public boolean setURL(String url);
+  public boolean setURL(String url, String postData, String[] headers);
   
   public void refresh();
 
@@ -281,6 +288,6 @@ public interface CBrowser extends CComposite {
 
   public boolean isForwardEnabled();
 
-  public boolean setText(String html);
+  public boolean setText(String html, boolean trusted);
 
 }

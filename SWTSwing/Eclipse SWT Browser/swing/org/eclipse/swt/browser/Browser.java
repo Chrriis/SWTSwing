@@ -84,7 +84,7 @@ public class Browser extends Composite {
  * @since 3.0
  */
 public Browser(Composite parent, int style) {
-	super(parent, style &~ SWT.BORDER);
+	super(parent, style);
 }
 
 /**
@@ -427,6 +427,29 @@ public boolean isForwardEnabled() {
 }
 
 /**
+ * Returns a string with HTML that represents the content of the current page.
+ *
+ * @return HTML representing the current page or an empty <code>String</code>
+ * if this is empty.<br>
+ * <p> Note, the exact return value is platform dependent.
+ * For example on Windows, the returned string is the proccessed webpage
+ * with javascript executed and missing html tags added.
+ * On Linux and OS X, this returns the original HTML before the browser has
+ * processed it.</p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public String getText () {
+	checkWidget();
+	  return ((CBrowser)handle).getText();
+}
+
+/**
  * Returns the current URL.
  *
  * @return the current URL or an empty <code>String</code> if there is no current URL
@@ -756,13 +779,14 @@ public void setJavascriptEnabled (boolean enabled) {
 }
 
 /**
- * Renders HTML.
- * 
+ * Renders a string containing HTML.  The rendering of the content occurs asynchronously.
+ * The rendered page will be given trusted permissions; to render the page with untrusted
+ * permissions use <code>setText(String html, boolean trusted)</code> instead.
  * <p>
- * The html parameter is Unicode encoded since it is a java <code>String</code>.
+ * The html parameter is Unicode-encoded since it is a java <code>String</code>.
  * As a result, the HTML meta tag charset should not be set. The charset is implied
  * by the <code>String</code> itself.
- * 
+ *
  * @param html the HTML content to be rendered
  *
  * @return true if the operation was successful and false otherwise.
@@ -770,25 +794,67 @@ public void setJavascriptEnabled (boolean enabled) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
- *  
+ *
+ * @see #setText(String,boolean)
  * @see #setUrl
- * 
+ *
  * @since 3.0
  */
-public boolean setText(String html) {
+public boolean setText (String html) {
 	checkWidget();
-	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  return ((CBrowser)handle).setText(html);
+	return setText (html, true);
 }
 
 /**
- * Loads a URL.
- * 
+ * Renders a string containing HTML.  The rendering of the content occurs asynchronously.
+ * The rendered page can be given either trusted or untrusted permissions.
+ * <p>
+ * The <code>html</code> parameter is Unicode-encoded since it is a java <code>String</code>.
+ * As a result, the HTML meta tag charset should not be set. The charset is implied
+ * by the <code>String</code> itself.
+ * <p>
+ * The <code>trusted</code> parameter affects the permissions that will be granted to the rendered
+ * page.  Specifying <code>true</code> for trusted gives the page permissions equivalent
+ * to a page on the local file system, while specifying <code>false</code> for trusted
+ * gives the page permissions equivalent to a page from the internet.  Page content should
+ * be specified as trusted if the invoker created it or trusts its source, since this would
+ * allow (for instance) style sheets on the local file system to be referenced.  Page
+ * content should be specified as untrusted if its source is not trusted or is not known.
+ *
+ * @param html the HTML content to be rendered
+ * @param trusted <code>false</code> if the rendered page should be granted restricted
+ * permissions and <code>true</code> otherwise
+ *
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
+ * </ul>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @see #setText(String)
+ * @see #setUrl
+ *
+ * @since 3.6
+ */
+public boolean setText(String html, boolean trusted) {
+	checkWidget();
+	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+  return ((CBrowser)handle).setText(html, trusted);
+}
+
+/**
+ * Begins loading a URL.  The loading of its content occurs asynchronously.
+ *
  * @param url the URL to be loaded
  *
  * @return true if the operation was successful and false otherwise.
@@ -796,20 +862,52 @@ public boolean setText(String html) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
  * </ul>
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
- *  
+ *
  * @see #getUrl
- * 
+ * @see #setUrl(String,String,String[])
+ *
  * @since 3.0
  */
-public boolean setUrl(String url) {
+public boolean setUrl (String url) {
+	checkWidget();
+	return setUrl (url, null, null);
+}
+
+/**
+ * Begins loading a URL.  The loading of its content occurs asynchronously.
+ * <p>
+ * If the URL causes an HTTP request to be initiated then the provided
+ * <code>postData</code> and <code>header</code> arguments, if any, are
+ * sent with the request.  A value in the <code>headers</code> argument
+ * must be a name-value pair with a colon separator in order to be sent
+ * (for example: "<code>user-agent: custom</code>").
+ *
+ * @param url the URL to be loaded
+ * @param postData post data to be sent with the request, or <code>null</code>
+ * @param headers header lines to be sent with the request, or <code>null</code>
+ *
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
+ * </ul>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.6
+ */
+public boolean setUrl (String url, String postData, String[] headers) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  return ((CBrowser)handle).setURL(url);
+  return ((CBrowser)handle).setURL(url, postData, headers);
 }
 
 /**

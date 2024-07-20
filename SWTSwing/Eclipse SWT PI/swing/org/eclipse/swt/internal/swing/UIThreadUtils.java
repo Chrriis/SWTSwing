@@ -45,6 +45,13 @@ public class UIThreadUtils {
       }
       return false;
     }
+    @Override
+    public void push(EventQueue newEventQueue) {
+    	// TODO: see if we can support pushing new queues somehow.
+    	System.err.println("Illegal: it is not allowed to push a new queue!");
+    	Thread.dumpStack();
+//    	super.push(newEventQueue);
+    }
     public void pop() {
       super.pop();
     }

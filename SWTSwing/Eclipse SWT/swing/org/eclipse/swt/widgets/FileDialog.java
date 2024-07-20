@@ -46,6 +46,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";
+	int filterIndex = 0;
 	static final String FILTER = "*.*";
 
 /**
@@ -126,6 +127,26 @@ public String [] getFilterExtensions () {
 }
 
 /**
+ * Get the 0-based index of the file extension filter
+ * which was selected by the user, or -1 if no filter
+ * was selected.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @return index the file extension filter index
+ *
+ * @see #getFilterExtensions
+ * @see #getFilterNames
+ *
+ * @since 3.4
+ */
+public int getFilterIndex () {
+	return filterIndex;
+}
+
+/**
  * Returns the names that describe the filter extensions
  * which the dialog will use to filter the files it shows.
  *
@@ -175,8 +196,9 @@ public String open () {
 		fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory().getAbsolutePath() + "/" + fileName));
 	}
 	fileName = "";
-	fileNames = null;
+	fileNames = new String[0];
 	String fullPath = null;
+	// TODO: use filterIndex
 	fileChooser.setMultiSelectionEnabled((style & SWT.MULTI) != 0);
 	if(filterExtensions != null && filterExtensions.length > 0) {
 		fileChooser.setAcceptAllFileFilterUsed(false);
@@ -228,6 +250,7 @@ public String open () {
 		} else {
 			File selectedFile = fileChooser.getSelectedFile();
 			fileName = selectedFile.getName();
+			fileNames = new String[] { fileName };
 			fullPath = selectedFile.getAbsolutePath();
 		}
 		filterPath = new String(fullPath);
@@ -264,6 +287,26 @@ public void setFileName (String string) {
  */
 public void setFilterExtensions (String [] extensions) {
 	filterExtensions = extensions;
+}
+
+/**
+ * Set the 0-based index of the file extension filter
+ * which the dialog will use initially to filter the files
+ * it shows to the argument.
+ * <p>
+ * This is an index into the FilterExtensions array and
+ * the FilterNames array.
+ * </p>
+ *
+ * @param index the file extension filter index
+ *
+ * @see #setFilterExtensions
+ * @see #setFilterNames
+ *
+ * @since 3.4
+ */
+public void setFilterIndex (int index) {
+	filterIndex = index;
 }
 
 /**

@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.RGB;
 
 public class ColorDialog extends Dialog {
 	RGB rgb;
+	RGB [] rgbs;
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -105,6 +106,19 @@ public RGB getRGB () {
 }
 
 /**
+ * Returns an array of <code>RGB</code>s which are the list of
+ * custom colors selected by the user in the receiver, or null
+ * if no custom colors were selected.
+ *
+ * @return the array of RGBs, which may be null
+ *
+ * @since 3.8
+ */
+public RGB[] getRGBs() {
+	return rgbs;
+}
+
+/**
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
@@ -133,6 +147,7 @@ public RGB open () {
 	if(rgb != null) {
 		color = new java.awt.Color(rgb.red, rgb.green, rgb.blue);
 	}
+	// TODO: use rgbs?
 	color = JColorChooser.showDialog(getParent().handle, null, color);
 	if(color == null) return null;
 	rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
@@ -149,6 +164,28 @@ public RGB open () {
  */
 public void setRGB (RGB rgb) {
 	this.rgb = rgb;
+}
+
+/**
+ * Sets the receiver's list of custom colors to be the given array
+ * of <code>RGB</code>s, which may be null to let the platform select
+ * a default when open() is called.
+ *
+ * @param rgbs the array of RGBs, which may be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if an RGB in the rgbs array is null</li>
+ * </ul>
+ *
+ * @since 3.8
+ */
+public void setRGBs(RGB[] rgbs) {
+	if (rgbs != null) {
+		for (RGB rgb : rgbs) {
+			if (rgb == null) error (SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	this.rgbs = rgbs;
 }
 
 }

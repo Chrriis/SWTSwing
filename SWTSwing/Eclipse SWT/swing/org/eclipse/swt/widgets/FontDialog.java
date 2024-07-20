@@ -46,6 +46,7 @@ import org.eclipse.swt.internal.swing.JFontChooser;
 public class FontDialog extends Dialog {
 	FontData fontData;
 	RGB rgb;
+	boolean effectsVisible = true;
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -91,6 +92,23 @@ public FontDialog (Shell parent) {
 public FontDialog (Shell parent, int style) {
 	super (parent, style);
 	checkSubclass ();
+}
+
+/**
+ * Returns <code>true</code> if the dialog's effects selection controls
+ * are visible, and <code>false</code> otherwise.
+ * <p>
+ * If the platform's font dialog does not have any effects selection controls,
+ * then this method always returns false.
+ * </p>
+ *
+ * @return <code>true</code> if the dialog's effects selection controls
+ * are visible and <code>false</code> otherwise
+ *
+ * @since 3.8
+ */
+public boolean getEffectsVisible () {
+	return effectsVisible;
 }
 
 /**
@@ -173,6 +191,7 @@ public FontData open () {
 		}
 		fontChooser.setDefaultFont(defaultFont);
 	}
+	// TODO: use effectsVisible
 	fontChooser.setModal(true);
 	fontChooser.setVisible(true);
 	java.awt.Font font = fontChooser.getNewFont();
@@ -186,6 +205,22 @@ public FontData open () {
 	fontData.data = font.getAttributes();
 	rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
 	return fontData;
+}
+
+/**
+ * Sets the effects selection controls in the dialog visible if the
+ * argument is <code>true</code>, and invisible otherwise.
+ * <p>
+ * By default the effects selection controls are displayed if the
+ * platform font dialog supports effects selection.
+ * </p>
+ *
+ * @param visible whether or not the dialog will show the effects selection controls
+ *
+ * @since 3.8
+ */
+public void setEffectsVisible(boolean visible) {
+	effectsVisible = visible;
 }
 
 /**

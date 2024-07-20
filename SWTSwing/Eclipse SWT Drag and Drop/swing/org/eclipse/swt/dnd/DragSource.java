@@ -128,7 +128,7 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragSourceEffect effect;
+	DragSourceEffect dragEffect;
 //	Composite topControl;
 	
 	//workaround - track the operation performed by the drop target for DragEnd event
@@ -227,7 +227,7 @@ public DragSource(Control control, int style) {
 //	} else if (control instanceof Table) {
 //		effect = new TableDragAndDropEffect((Table)control);
 //	} else {
-		effect = new DragSourceEffect(control);
+		dragEffect = new DragSourceEffect(control);
 //	}
 }
 
@@ -295,6 +295,18 @@ public Control getControl() {
 }
 
 /**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop operation.
+ *
+ * @return the drag effect that is registered for this DragSource
+ *
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
+}
+
+/**
  * Returns the list of data types that can be transferred by this DragSource.
  *
  * @return the list of data types that can be transferred by this DragSource
@@ -338,6 +350,18 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener(DND.DragStart, listener);
 	removeListener(DND.DragSetData, listener);
 	removeListener(DND.DragEnd, listener);
+}
+
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be
+ * used during a drag and drop operation.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ *
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
 }
 
 /**

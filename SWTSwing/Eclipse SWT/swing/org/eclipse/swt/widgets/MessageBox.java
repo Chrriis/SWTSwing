@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -127,88 +130,88 @@ public int open () {
 	if ((style & SWT.ICON_QUESTION) != 0) messageType = JOptionPane.QUESTION_MESSAGE;
 	if ((style & SWT.ICON_WARNING) != 0) messageType = JOptionPane.WARNING_MESSAGE;
 	if ((style & SWT.ICON_WORKING) != 0) messageType = JOptionPane.INFORMATION_MESSAGE;
-  String[] messageTokens = this.message.split("\n");
-  StringBuffer sb = new StringBuffer(this.message.length());
-  for(int i=0; i<messageTokens.length; i++) {
-    if(i > 0) {
-      sb.append('\n');
-    }
-    String token = messageTokens[i];
-    if(token.length() > MAX_WIDTH) {
-      String[] subTokens = token.split(" ");
-      int count = 0;
-      for(int j=0; j<subTokens.length; j++) {
-        String subToken = subTokens[j];
-        if(count > 0 && count + subToken.length() > MAX_WIDTH) {
-          sb.append('\n');
-          count = 0;
-        }
-        int splitCount = Math.max(0, (subToken.length() - 1)) / MAX_WIDTH + 1;
-        for(int k=0; k<splitCount; k++) {
-          if(k<splitCount - 1) {
-            sb.append(subToken.substring(k * MAX_WIDTH, (k + 1) * MAX_WIDTH));
-            sb.append('\n');
-          } else {
-            sb.append(subToken.substring(k * MAX_WIDTH));
-          }
-        }
-        if(j < subTokens.length - 1) {
-          sb.append(' ');
-        }
-        count += subToken.length();
-      }
-    } else {
-      sb.append(token);
-    }
-  }
-  String message = sb.toString();
-  if((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) {
-    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK", "Cancel"}, null);
-    if(result == JOptionPane.CLOSED_OPTION) {
-      return SWT.CANCEL; 
-    }
-    return result == 0? SWT.OK: SWT.CANCEL;
-  }
-  if((style & SWT.OK) == SWT.OK) {
-    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
-    if(result == JOptionPane.CLOSED_OPTION) {
-      return SWT.CANCEL; 
-    }
-    return SWT.OK;
-  }
-  if((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
-    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No", "Cancel"}, null);
-    if(result == JOptionPane.CLOSED_OPTION) {
-      return SWT.CANCEL; 
-    }
-    return result == 0? SWT.YES: result == 1? SWT.NO: SWT.CANCEL;
-  }
-  if((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
-    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No"}, null);
-    if(result == JOptionPane.CLOSED_OPTION) {
-      return SWT.CANCEL; 
-    }
-    return result == 0? SWT.YES: SWT.NO;
-  }
-  if((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) {
-    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Retry", "Cancel"}, null);
-    if(result == JOptionPane.CLOSED_OPTION) {
-      return SWT.CANCEL; 
-    }
-    return result == 0? SWT.RETRY: SWT.CANCEL;
-  }
-  if((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) {
-    int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Abort", "Retry", "Ignore"}, null);
-    if(result == JOptionPane.CLOSED_OPTION) {
-      return SWT.CANCEL; 
-    }
-    return result == 0? SWT.ABORT: result == 1? SWT.RETRY: SWT.IGNORE;
-  }
-  int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
-  if(result == JOptionPane.CLOSED_OPTION) {
-    return SWT.CANCEL; 
-  }
-  return SWT.OK;
+	String[] messageTokens = this.message.split("\n");
+	StringBuffer sb = new StringBuffer(this.message.length());
+	for(int i=0; i<messageTokens.length; i++) {
+		if(i > 0) {
+			sb.append('\n');
+		}
+		String token = messageTokens[i];
+		if(token.length() > MAX_WIDTH) {
+			String[] subTokens = token.split(" ");
+			int count = 0;
+			for(int j=0; j<subTokens.length; j++) {
+				String subToken = subTokens[j];
+				if(count > 0 && count + subToken.length() > MAX_WIDTH) {
+					sb.append('\n');
+					count = 0;
+				}
+				int splitCount = Math.max(0, (subToken.length() - 1)) / MAX_WIDTH + 1;
+				for(int k=0; k<splitCount; k++) {
+					if(k<splitCount - 1) {
+						sb.append(subToken.substring(k * MAX_WIDTH, (k + 1) * MAX_WIDTH));
+						sb.append('\n');
+					} else {
+						sb.append(subToken.substring(k * MAX_WIDTH));
+					}
+				}
+				if(j < subTokens.length - 1) {
+					sb.append(' ');
+				}
+				count += subToken.length();
+			}
+		} else {
+			sb.append(token);
+		}
+	}
+	String message = sb.toString();
+	if((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) {
+		int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK", "Cancel"}, null);
+		if(result == JOptionPane.CLOSED_OPTION) {
+			return SWT.CANCEL; 
+		}
+		return result == 0? SWT.OK: SWT.CANCEL;
+	}
+	if((style & SWT.OK) == SWT.OK) {
+		int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
+		if(result == JOptionPane.CLOSED_OPTION) {
+			return SWT.CANCEL; 
+		}
+		return SWT.OK;
+	}
+	if((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
+		int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No", "Cancel"}, null);
+		if(result == JOptionPane.CLOSED_OPTION) {
+			return SWT.CANCEL; 
+		}
+		return result == 0? SWT.YES: result == 1? SWT.NO: SWT.CANCEL;
+	}
+	if((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
+		int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Yes", "No"}, null);
+		if(result == JOptionPane.CLOSED_OPTION) {
+			return SWT.CANCEL; 
+		}
+		return result == 0? SWT.YES: SWT.NO;
+	}
+	if((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) {
+		int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Retry", "Cancel"}, null);
+		if(result == JOptionPane.CLOSED_OPTION) {
+			return SWT.CANCEL; 
+		}
+		return result == 0? SWT.RETRY: SWT.CANCEL;
+	}
+	if((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) {
+		int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"Abort", "Retry", "Ignore"}, null);
+		if(result == JOptionPane.CLOSED_OPTION) {
+			return SWT.CANCEL; 
+		}
+		return result == 0? SWT.ABORT: result == 1? SWT.RETRY: SWT.IGNORE;
+	}
+	int result = JOptionPane.showOptionDialog(getParent().handle, message, title, JOptionPane.DEFAULT_OPTION, messageType, null, new Object[] {"OK"}, null);
+	if(result == JOptionPane.CLOSED_OPTION) {
+		return SWT.CANCEL; 
+	}
+	return SWT.OK;
 }
 
 /**

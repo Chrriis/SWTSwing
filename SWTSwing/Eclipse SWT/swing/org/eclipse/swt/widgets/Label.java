@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -49,7 +52,7 @@ import org.eclipse.swt.internal.swing.CLabel;
 public class Label extends Control {
 //	String text = "";
 	Image image;
-  String text;
+	String text;
 //	int font;
 //	static final int LabelProc;
 //	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
@@ -206,38 +209,38 @@ public int getAlignment () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-  checkWidget ();
-  if((style & SWT.WRAP) != 0) {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        isAdjustingSize = true;
-      }
-    });
-    Dimension size = handle.getSize();
-    if(wHint == SWT.DEFAULT) {
-      handle.setSize(((CLabel)handle).getPreferredWidth(), 0);
-    } else {
-      handle.setSize(wHint, 0);
-    }
-    Point point = super.computeSize (wHint, hHint, changed);
-    handle.setSize(size);
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        isAdjustingSize = false;
-      }
-    });
-    return point;
-  }
-  return super.computeSize (wHint, hHint, changed);
+	checkWidget ();
+	if((style & SWT.WRAP) != 0) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				isAdjustingSize = true;
+			}
+		});
+		Dimension size = handle.getSize();
+		if(wHint == SWT.DEFAULT) {
+			handle.setSize(((CLabel)handle).getPreferredWidth(), 0);
+		} else {
+			handle.setSize(wHint, 0);
+		}
+		Point point = super.computeSize (wHint, hHint, changed);
+		handle.setSize(size);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				isAdjustingSize = false;
+			}
+		});
+		return point;
+	}
+	return super.computeSize (wHint, hHint, changed);
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state |= THEME_BACKGROUND;
+	super.createHandleInit();
+	state |= THEME_BACKGROUND;
 }
 
 Container createHandle () {
-  return (Container)CLabel.Factory.newInstance(this, style);
+	return (Container)CLabel.Factory.newInstance(this, style);
 }
 
 /**
@@ -326,13 +329,13 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-  if((alignment & SWT.LEFT) != 0) {
-    ((CLabel)handle).setAlignment(SwingConstants.LEFT);
-  } else if((alignment & SWT.RIGHT) != 0) {
-    ((CLabel)handle).setAlignment(SwingConstants.RIGHT);
-  } else if((alignment & SWT.CENTER) != 0) {
-    ((CLabel)handle).setAlignment(SwingConstants.CENTER);
-  }
+	if((alignment & SWT.LEFT) != 0) {
+		((CLabel)handle).setAlignment(SwingConstants.LEFT);
+	} else if((alignment & SWT.RIGHT) != 0) {
+		((CLabel)handle).setAlignment(SwingConstants.RIGHT);
+	} else if((alignment & SWT.CENTER) != 0) {
+		((CLabel)handle).setAlignment(SwingConstants.CENTER);
+	}
 }
 
 /**
@@ -350,15 +353,15 @@ public void setAlignment (int alignment) {
  * </ul>
  */
 public void setImage (Image image) {
-  checkWidget ();
-  if ((style & SWT.SEPARATOR) != 0) return;
-  if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-  this.image = image;
-  ImageIcon icon = null;
-  if (image != null && image.handle != null) {
-    icon = new ImageIcon (image.handle);
-  }
-  ((CLabel) handle).setIcon (icon);
+	checkWidget ();
+	if ((style & SWT.SEPARATOR) != 0) return;
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	this.image = image;
+	ImageIcon icon = null;
+	if (image != null && image.handle != null) {
+		icon = new ImageIcon (image.handle);
+	}
+	((CLabel) handle).setIcon (icon);
 }
 
 /**
@@ -392,17 +395,17 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-  this.text = string;
-  int mnemonicIndex = findMnemonicIndex(string);
-  if(mnemonicIndex > 0) {
-    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
-    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
-    mnemonicIndex -= mnemonicIndex - 1 - s.length();
-    mnemonicIndex--;
-  } else {
-    string = string.replaceAll("&&", "&");
-  }
-  ((CLabel)handle).setText(string, mnemonicIndex);
+	this.text = string;
+	int mnemonicIndex = findMnemonicIndex(string);
+	if(mnemonicIndex > 0) {
+		String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+		string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+		mnemonicIndex -= mnemonicIndex - 1 - s.length();
+		mnemonicIndex--;
+	} else {
+		string = string.replaceAll("&&", "&");
+	}
+	((CLabel)handle).setText(string, mnemonicIndex);
 }
 
 //int widgetExtStyle () {

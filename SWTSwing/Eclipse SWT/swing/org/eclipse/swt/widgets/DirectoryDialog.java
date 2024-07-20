@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -119,27 +122,27 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-  final JFileChooser fileChooser = new JFileChooser(filterPath);
-  String title = getText();
-  if(title != null && title.length() > 0) {
-    fileChooser.setDialogTitle(title);
-  }
-  String fullPath = null;
-  // TODO: file filters
-  // TODO: custom message
-  fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-  int returnValue = 0;
-  if((style & SWT.SAVE) != 0) {
-    returnValue = fileChooser.showSaveDialog(getParent().handle);
-  } else {
-    returnValue = fileChooser.showOpenDialog(getParent().handle);
-  }
-  if(returnValue == JFileChooser.APPROVE_OPTION) {
-    File directory = fileChooser.getSelectedFile();
-    fullPath = directory.getAbsolutePath();
-    filterPath = new String(fullPath);
-  }
-  return fullPath;
+	final JFileChooser fileChooser = new JFileChooser(filterPath);
+	String title = getText();
+	if(title != null && title.length() > 0) {
+		fileChooser.setDialogTitle(title);
+	}
+	String fullPath = null;
+	// TODO: file filters
+	// TODO: custom message
+	fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	int returnValue = 0;
+	if((style & SWT.SAVE) != 0) {
+		returnValue = fileChooser.showSaveDialog(getParent().handle);
+	} else {
+		returnValue = fileChooser.showOpenDialog(getParent().handle);
+	}
+	if(returnValue == JFileChooser.APPROVE_OPTION) {
+		File directory = fileChooser.getSelectedFile();
+		fullPath = directory.getAbsolutePath();
+		filterPath = new String(fullPath);
+	}
+	return fullPath;
 }
 
 /**

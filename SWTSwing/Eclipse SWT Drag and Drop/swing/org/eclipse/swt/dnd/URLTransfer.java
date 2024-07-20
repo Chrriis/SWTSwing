@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -66,7 +69,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	    s += "\n";
 	  }
 	}
-  transferData.transferable = new StringSelection(s);
+	transferData.transferable = new StringSelection(s);
 }
 
 /**
@@ -80,26 +83,26 @@ public void javaToNative (Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-  String s = (String)super.nativeToJava(transferData);
-  if(s.endsWith("\n")) {
-    s = s.substring(0, s.length() - 1);
-  }
-  if(s.endsWith("\r")) {
-    s = s.substring(0, s.length() - 1);
-  }
-  return new String[] {s, null};
+	String s = (String)super.nativeToJava(transferData);
+	if(s.endsWith("\n")) {
+		s = s.substring(0, s.length() - 1);
+	}
+	if(s.endsWith("\r")) {
+		s = s.substring(0, s.length() - 1);
+	}
+	return new String[] {s, null};
 }
 
 boolean checkURL(Object object) {
-  if (object == null  || !(object instanceof String[]) || ((String[])object).length == 0) return false;
-  String[] strings = (String[])object;
-  if (strings[0] == null || strings[0].length() == 0) return false;
-  try {
-    new URL(strings[0]);
-  } catch (java.net.MalformedURLException e) {
-    return false;
-  }
-  return true;
+	if (object == null  || !(object instanceof String[]) || ((String[])object).length == 0) return false;
+	String[] strings = (String[])object;
+	if (strings[0] == null || strings[0].length() == 0) return false;
+	try {
+		new URL(strings[0]);
+	} catch (java.net.MalformedURLException e) {
+		return false;
+	}
+	return true;
 }
 
 static DataFlavor URL_FLAVOR = new DataFlavor("text/uri-list; class=java.lang.String", "URI list");
@@ -109,13 +112,13 @@ protected boolean validate(Object object) {
 }
 
 public TransferData[] getSupportedTypes() {
-  TransferData data = new TransferData();
-  data.dataFlavor = URL_FLAVOR;
-  return new TransferData[] {data};
+	TransferData data = new TransferData();
+	data.dataFlavor = URL_FLAVOR;
+	return new TransferData[] {data};
 }
 
 protected DataFlavor getDataFlavor() {
-  return URL_FLAVOR;
+	return URL_FLAVOR;
 }
 
 }

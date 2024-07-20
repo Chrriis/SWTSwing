@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -43,10 +46,10 @@ import org.eclipse.swt.internal.swing.Compatibility;
  * @since 3.2
  */
 public class ExpandItem extends Item {
-  ExpandBar parent;
-  Control control;
-  Container handle;
-  
+	ExpandBar parent;
+	Control control;
+	Container handle;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -75,7 +78,7 @@ public class ExpandItem extends Item {
  * @see Widget#getStyle
  */
 public ExpandItem (ExpandBar parent, int style) {
-  this (parent, style, parent.getItemCount ());
+	this (parent, style, parent.getItemCount ());
 }
 
 /**
@@ -109,23 +112,23 @@ public ExpandItem (ExpandBar parent, int style) {
  * @see Widget#getStyle
  */
 public ExpandItem (ExpandBar parent, int style, int index) {
-  super (parent, style);
-  this.parent = parent;
-  handle = createHandle();
-  parent.createItem (this, style, index);
+	super (parent, style);
+	this.parent = parent;
+	handle = createHandle();
+	parent.createItem (this, style, index);
 }
 
 Container createHandle () {
-  return (Container)CExpandItem.Factory.newInstance(this, style);
+	return (Container)CExpandItem.Factory.newInstance(this, style);
 }
 
 protected void checkSubclass () {
-  if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -140,8 +143,8 @@ void destroyWidget () {
  * </ul>
  */
 public Control getControl () {
-  checkWidget ();
-  return control;
+	checkWidget ();
+	return control;
 }
 
 /**
@@ -156,8 +159,8 @@ public Control getControl () {
  * </ul>
  */
 public boolean getExpanded () {
-  checkWidget ();
-  return ((CExpandBar)parent.handle).isExpanded(handle);
+	checkWidget ();
+	return ((CExpandBar)parent.handle).isExpanded(handle);
 }
 
 /**
@@ -171,8 +174,8 @@ public boolean getExpanded () {
  * </ul>
  */
 public int getHeaderHeight () {
-  checkWidget ();
-  return ((CExpandBar)parent.handle).getTitleBarSize(handle).height;
+	checkWidget ();
+	return ((CExpandBar)parent.handle).getTitleBarSize(handle).height;
 }
 
 /**
@@ -186,8 +189,8 @@ public int getHeaderHeight () {
  * </ul>
  */
 public int getHeight () {
-  checkWidget ();
-  return ((CExpandBar)parent.handle).getSize().height;
+	checkWidget ();
+	return ((CExpandBar)parent.handle).getSize().height;
 }
 
 /**
@@ -201,18 +204,18 @@ public int getHeight () {
  * </ul>
  */
 public ExpandBar getParent () {
-  checkWidget ();
-  return parent;
+	checkWidget ();
+	return parent;
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
-  super.releaseWidget ();
-  control = null;
+	super.releaseWidget ();
+	control = null;
 }
 
 
@@ -231,22 +234,22 @@ void releaseWidget () {
  * </ul>
  */
 public void setControl (Control control) {
-  checkWidget();
-  if (control != null) {
-    if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-    if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
-  }
-  if (this.control != null && this.control.isDisposed ()) {
-    this.control = null;
-  }
-  handle.remove(control.handle);
-  this.control = control;
-  if(control != null) {
-    handle.add(control.handle, BorderLayout.CENTER);
-  }
-  handle.invalidate();
-  handle.validate();
-  handle.repaint();
+	checkWidget();
+	if (control != null) {
+		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	}
+	if (this.control != null && this.control.isDisposed ()) {
+		this.control = null;
+	}
+	handle.remove(control.handle);
+	this.control = control;
+	if(control != null) {
+		handle.add(control.handle, BorderLayout.CENTER);
+	}
+	handle.invalidate();
+	handle.validate();
+	handle.repaint();
 }
 
 /**
@@ -260,8 +263,8 @@ public void setControl (Control control) {
  * </ul>
  */
 public void setExpanded (boolean expanded) {
-  checkWidget ();
-  ((CExpandBar)parent.handle).setExpanded(handle, expanded);
+	checkWidget ();
+	((CExpandBar)parent.handle).setExpanded(handle, expanded);
 }
 
 /**
@@ -276,20 +279,20 @@ public void setExpanded (boolean expanded) {
  * </ul>
  */
 public void setHeight (int height) {
-  checkWidget ();
-  if (height < 0) return;
-  handle.setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
-  ((JComponent)handle).revalidate();
-  handle.repaint();
+	checkWidget ();
+	if (height < 0) return;
+	handle.setPreferredSize(new Dimension(handle.getPreferredSize().width, height));
+	((JComponent)handle).revalidate();
+	handle.repaint();
 }
 
 public void setImage (Image image) {
-  super.setImage (image);
-  ((CExpandBar)parent.handle).setIcon(handle, new ImageIcon(image.handle));  
+	super.setImage (image);
+	((CExpandBar)parent.handle).setIcon(handle, new ImageIcon(image.handle));  
 }
 
 public void setText (String string) {
-  super.setText (string);
-  ((CExpandBar)parent.handle).setText(handle, text);
+	super.setText (string);
+	((CExpandBar)parent.handle).setText(handle, text);
 }
 }

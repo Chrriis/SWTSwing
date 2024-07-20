@@ -16,82 +16,82 @@ import org.eclipse.swt.widgets.TreeColumn;
 
 class CTreeColumnImplementation extends TableColumn implements CTreeColumn {
 
-  protected DefaultMutableTreeTableNode mutableTreeTableNode;
+	protected DefaultMutableTreeTableNode mutableTreeTableNode;
 
-  protected TreeColumn handle;
+	protected TreeColumn handle;
 
-  public CTreeColumnImplementation(TreeColumn treeColumn, int style) {
-    handle = treeColumn;
-    setPreferredWidth(0);
-    setMinWidth(0);
-    init(style);
-  }
+	public CTreeColumnImplementation(TreeColumn treeColumn, int style) {
+		handle = treeColumn;
+		setPreferredWidth(0);
+		setMinWidth(0);
+		init(style);
+	}
 
-  protected void init(int style) {
-    if ((style & SWT.LEFT) == SWT.LEFT) setAlignment(SwingConstants.LEFT);
-    if ((style & SWT.CENTER) == SWT.CENTER) setAlignment(SwingConstants.CENTER);
-    if ((style & SWT.RIGHT) == SWT.RIGHT) setAlignment(SwingConstants.RIGHT);
-  }
+	protected void init(int style) {
+		if ((style & SWT.LEFT) == SWT.LEFT) setAlignment(SwingConstants.LEFT);
+		if ((style & SWT.CENTER) == SWT.CENTER) setAlignment(SwingConstants.CENTER);
+		if ((style & SWT.RIGHT) == SWT.RIGHT) setAlignment(SwingConstants.RIGHT);
+	}
 
-  protected Icon icon;
+	protected Icon icon;
 
-  public void setIcon(Icon icon) {
-    this.icon = icon;
-  }
+	public void setIcon(Icon icon) {
+		this.icon = icon;
+	}
 
-  public Icon getIcon() {
-    return icon;
-  }
+	public Icon getIcon() {
+		return icon;
+	}
 
-  protected int alignment;
+	protected int alignment;
 
-  public void setAlignment(int alignment) {
-    this.alignment = alignment;
-  }
+	public void setAlignment(int alignment) {
+		this.alignment = alignment;
+	}
 
-  public int getAlignment() {
-    return alignment;
-  }
-  
-  protected String toolTipText;
+	public int getAlignment() {
+		return alignment;
+	}
+	
+	protected String toolTipText;
 
-  public void setToolTipText(String toolTipText) {
-    this.toolTipText = toolTipText;
-  }
-  
-  public String getToolTipText() {
-    return toolTipText;
-  }
-  
-  public TreeColumn getTreeColumn() {
-    return handle;
-  }
+	public void setToolTipText(String toolTipText) {
+		this.toolTipText = toolTipText;
+	}
+	
+	public String getToolTipText() {
+		return toolTipText;
+	}
+	
+	public TreeColumn getTreeColumn() {
+		return handle;
+	}
 
 }
 
 public interface CTreeColumn {
 
-  public static class Factory {
-    private Factory() {}
+	public static class Factory {
+		private Factory() {}
 
-    public static CTreeColumn newInstance(TreeColumn treeColumn, int style) {
-      return new CTreeColumnImplementation(treeColumn, style);
-    }
+		public static CTreeColumn newInstance(TreeColumn treeColumn, int style) {
+			return new CTreeColumnImplementation(treeColumn, style);
+		}
 
-  }
+	}
 
-  public void setIcon(Icon icon);
+	public void setIcon(Icon icon);
 
-  public Icon getIcon();
+	public Icon getIcon();
 
-  public void setAlignment(int alignment);
+	public void setAlignment(int alignment);
 
-  public int getAlignment();
-  
-  public void setToolTipText(String toolTipText);
-  
-  public String getToolTipText();
-  
-  public TreeColumn getTreeColumn();
+	public int getAlignment();
+	
+	public void setToolTipText(String toolTipText);
+	
+	public String getToolTipText();
+	
+	public TreeColumn getTreeColumn();
 
 }

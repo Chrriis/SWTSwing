@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -40,22 +43,22 @@ import org.eclipse.swt.internal.swing.CTableItem.TableItemObject;
  */
 
 public class TableItem extends Item {
-  /**
-   * the handle to the OS resource 
-   * (Warning: This field is platform dependent)
-   * <p>
-   * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-   * public API. It is marked public only so that it can be shared
-   * within the packages provided by SWT. It is not available on all
-   * platforms and should never be accessed from application code.
-   * </p>
-   */ 
-  public CTableItem handle;
+	/**
+	 * the handle to the OS resource 
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 */ 
+	public CTableItem handle;
 	Table parent;
 //	String [] strings;
 	Image [] images;
 //	boolean checked, grayed
-  boolean cached;
+	boolean cached;
 //	int imageIndent, background = -1, foreground = -1, font = -1;
 //	int [] cellBackground, cellForeground, cellFont;
 
@@ -132,7 +135,7 @@ public TableItem (Table parent, int style, int index) {
 TableItem (Table parent, int style, int index, boolean create) {
 	super (parent, style);
 	this.parent = parent;
-  handle = createHandle();
+	handle = createHandle();
 	if (create) parent.createItem (this, index);
 }
 
@@ -146,13 +149,13 @@ protected void checkSubclass () {
 }
 
 CTableItem createHandle () {
-  return CTableItem.Factory.newInstance(this, style);
+	return CTableItem.Factory.newInstance(this, style);
 }
 
 void clear () {
 	text = "";
 	image = null;
-  images = null;
+	images = null;
 	handle.setBackground(null);
 	handle.setForeground(null);
 	handle.setFont(null);
@@ -179,8 +182,8 @@ void clear () {
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -196,10 +199,10 @@ void destroyWidget () {
  * @since 2.0
  */
 public Color getBackground () {
-  checkWidget ();
-  java.awt.Color color = handle.getBackground();
-  if(color == null) return parent.getBackground();
-  return Color.swing_new(display, color);
+	checkWidget ();
+	java.awt.Color color = handle.getBackground();
+	if(color == null) return parent.getBackground();
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -216,17 +219,17 @@ public Color getBackground () {
  * @since 3.0
  */
 public Color getBackground (int index) {
-  checkWidget ();
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return getBackground ();
-  java.awt.Color color = handle.getTableItemObject(index).getBackground();
-  if(color == null) {
-    if(index != 0) {
-      return getBackground();
-    }
-    return Color.swing_new(display, parent.handle.getBackground());
-  }
-  return Color.swing_new(display, color);
+	checkWidget ();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return getBackground ();
+	java.awt.Color color = handle.getTableItemObject(index).getBackground();
+	if(color == null) {
+		if(index != 0) {
+			return getBackground();
+		}
+		return Color.swing_new(display, parent.handle.getBackground());
+	}
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -243,14 +246,14 @@ public Color getBackground (int index) {
  * @since 3.2
  */
 public Rectangle getBounds () {
-  checkWidget();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  int itemIndex = parent.indexOf (this);
-  if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-  return getBounds(0);
-//  RECT rect = getBounds (itemIndex, 0, true, false, false);
-//  int width = rect.right - rect.left, height = rect.bottom - rect.top;
-//  return new Rectangle (rect.left, rect.top, width, height);
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	return getBounds(0);
+//	RECT rect = getBounds (itemIndex, 0, true, false, false);
+//	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+//	return new Rectangle (rect.left, rect.top, width, height);
 }
 
 /**
@@ -268,9 +271,9 @@ public Rectangle getBounds () {
 public Rectangle getBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  java.awt.Rectangle rect = ((CTable)parent.handle).getCellRect(parent.indexOf(this), index, false);
-  Point offset = parent.getInternalOffset();
-  return new Rectangle(rect.x + offset.x, rect.y + offset.y, rect.width, rect.height);
+	java.awt.Rectangle rect = ((CTable)parent.handle).getCellRect(parent.indexOf(this), index, false);
+	Point offset = parent.getInternalOffset();
+	return new Rectangle(rect.x + offset.x, rect.y + offset.y, rect.width, rect.height);
 }
 
 /**
@@ -287,8 +290,8 @@ public Rectangle getBounds (int index) {
  */
 public boolean getChecked () {
 	checkWidget();
-  if ((parent.style & SWT.CHECK) == 0) return false;
-  return handle.isChecked();
+	if ((parent.style & SWT.CHECK) == 0) return false;
+	return handle.isChecked();
 }
 
 /**
@@ -304,7 +307,7 @@ public boolean getChecked () {
  * @since 3.0
  */
 public Font getFont () {
-  return getFont(0);
+	return getFont(0);
 }
 
 /**
@@ -322,17 +325,17 @@ public Font getFont () {
  * @since 3.0
  */
 public Font getFont (int index) {
-  checkWidget ();
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count -1) return getFont ();
-  java.awt.Font font = handle.getTableItemObject(index).getFont();
-  if(font == null) {
-    if(index != 0) {
-      return getFont();
-    }
-    return Font.swing_new(display, parent.handle.getFont());
-  }
-  return Font.swing_new(display, font);
+	checkWidget ();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count -1) return getFont ();
+	java.awt.Font font = handle.getTableItemObject(index).getFont();
+	if(font == null) {
+		if(index != 0) {
+			return getFont();
+		}
+		return Font.swing_new(display, parent.handle.getFont());
+	}
+	return Font.swing_new(display, font);
 }
 
 /**
@@ -348,10 +351,10 @@ public Font getFont (int index) {
  * @since 2.0
  */
 public Color getForeground () {
-  checkWidget ();
-  java.awt.Color color = handle.getForeground();
-  if(color == null) return parent.getForeground();
-  return Color.swing_new(display, color);
+	checkWidget ();
+	java.awt.Color color = handle.getForeground();
+	if(color == null) return parent.getForeground();
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -369,17 +372,17 @@ public Color getForeground () {
  * @since 3.0
  */
 public Color getForeground (int index) {
-  checkWidget ();
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count -1) return getForeground ();
-  java.awt.Color color = handle.getTableItemObject(index).getForeground();
-  if(color == null) {
-    if(index != 0) {
-      return getBackground();
-    }
-    return Color.swing_new(display, parent.handle.getForeground());
-  }
-  return Color.swing_new(display, color);
+	checkWidget ();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count -1) return getForeground ();
+	java.awt.Color color = handle.getTableItemObject(index).getForeground();
+	if(color == null) {
+		if(index != 0) {
+			return getBackground();
+		}
+		return Color.swing_new(display, parent.handle.getForeground());
+	}
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -395,9 +398,9 @@ public Color getForeground (int index) {
  * </ul>
  */
 public boolean getGrayed () {
-  checkWidget ();
-  if ((parent.style & SWT.CHECK) == 0) return false;
-  return handle.isGrayed();
+	checkWidget ();
+	if ((parent.style & SWT.CHECK) == 0) return false;
+	return handle.isGrayed();
 }
 
 public Image getImage () {
@@ -422,9 +425,9 @@ public Image getImage (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
-  if (images != null) {
-    if (0 <= index && index < images.length) return images [index];
-  }
+	if (images != null) {
+		if (0 <= index && index < images.length) return images [index];
+	}
 	return null;
 }
 
@@ -447,10 +450,10 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
-  java.awt.Rectangle imageBounds = ((CTable)parent.handle).getImageBounds(itemIndex, index);
-  return new Rectangle(imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height);
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
+	java.awt.Rectangle imageBounds = ((CTable)parent.handle).getImageBounds(itemIndex, index);
+	return new Rectangle(imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height);
 //	RECT rect = getBounds (itemIndex, index, false, true);
 //	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 //	return new Rectangle (rect.left, rect.top, width, height);
@@ -469,15 +472,15 @@ public Rectangle getImageBounds (int index) {
 public int getImageIndent () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  Utils.notImplemented(); return 0;
+	Utils.notImplemented(); return 0;
 //	return imageIndent;
 }
 
 String getNameText () {
-  if ((parent.style & SWT.VIRTUAL) != 0) {
-    if (!cached) return "*virtual*"; //$NON-NLS-1$
-  }
-  return super.getNameText ();
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (!cached) return "*virtual*"; //$NON-NLS-1$
+	}
+	return super.getNameText ();
 }
 
 /**
@@ -538,9 +541,9 @@ public Rectangle getTextBounds (int index) {
 public String getText (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return "";
-  return handle.getTableItemObject(index).getText();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return "";
+	return handle.getTableItemObject(index).getText();
 }
 
 //void redraw () {
@@ -565,8 +568,8 @@ public String getText (int index) {
 //}
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
@@ -595,14 +598,14 @@ void releaseWidget () {
  * 
  */
 public void setBackground (Color color) {
-  checkWidget ();
-  if (color != null && color.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setBackground(color == null? null: color.handle);
-  int index = parent.indexOf(this);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTable)parent.handle).getModel().fireTableRowsUpdated(index, index);
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setBackground(color == null? null: color.handle);
+	int index = parent.indexOf(this);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTable)parent.handle).getModel().fireTableRowsUpdated(index, index);
 }
 
 /**
@@ -626,14 +629,14 @@ public void setBackground (Color color) {
  */
 public void setBackground (int index, Color color) {
 	checkWidget ();
-  if (color != null && color.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return;
-  handle.getTableItemObject(index).setBackground(color == null? null: color.handle);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	handle.getTableItemObject(index).setBackground(color == null? null: color.handle);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
 }
 
 /**
@@ -649,11 +652,11 @@ public void setBackground (int index, Color color) {
  */
 public void setChecked (boolean checked) {
 	checkWidget();
-  if ((parent.style & SWT.CHECK) == 0) return;
-  handle.setChecked(checked);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  // TODO: is it always 0 if columns are reordered?
-  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), 0);
+	if ((parent.style & SWT.CHECK) == 0) return;
+	handle.setChecked(checked);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	// TODO: is it always 0 if columns are reordered?
+	((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), 0);
 }
 
 //void setChecked (boolean checked, boolean notify) {
@@ -685,14 +688,14 @@ public void setChecked (boolean checked) {
  * @since 3.0
  */
 public void setFont (Font font){
-  checkWidget ();
-  if (font != null && font.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setFont(font == null? null: font.handle);
-  int index = parent.indexOf(this);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTable)parent.handle).getModel().fireTableRowsUpdated(index, index);
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setFont(font == null? null: font.handle);
+	int index = parent.indexOf(this);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTable)parent.handle).getModel().fireTableRowsUpdated(index, index);
 }
 
 /**
@@ -716,15 +719,15 @@ public void setFont (Font font){
  */
 public void setFont (int index, Font font) {
 	checkWidget ();
-  if (font != null && font.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return;
-  handle.getTableItemObject(index).setFont(font == null? null: font.handle);
-  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  parent.adjustColumnWidth();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	handle.getTableItemObject(index).setFont(font == null? null: font.handle);
+	((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	parent.adjustColumnWidth();
 }
 
 /**
@@ -745,14 +748,14 @@ public void setFont (int index, Font font) {
  * @since 2.0
  */
 public void setForeground (Color color){
-  checkWidget ();
-  if (color != null && color.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setForeground(color == null? null: color.handle);
-  int index = parent.indexOf(this);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTable)parent.handle).getModel().fireTableRowsUpdated(index, index);
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setForeground(color == null? null: color.handle);
+	int index = parent.indexOf(this);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTable)parent.handle).getModel().fireTableRowsUpdated(index, index);
 }
 
 /**
@@ -775,14 +778,14 @@ public void setForeground (Color color){
  */
 public void setForeground (int index, Color color){
 	checkWidget ();
-  if (color != null && color.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return;
-  handle.getTableItemObject(index).setForeground(color == null? null: color.handle);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	handle.getTableItemObject(index).setForeground(color == null? null: color.handle);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
 }
 
 /**
@@ -797,12 +800,12 @@ public void setForeground (int index, Color color){
  * </ul>
  */
 public void setGrayed (boolean grayed) {
-  checkWidget ();
-  if ((parent.style & SWT.CHECK) == 0) return;
-  handle.setGrayed(grayed);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  // TODO: is it always 0 if columns are reordered?
-  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), 0);
+	checkWidget ();
+	if ((parent.style & SWT.CHECK) == 0) return;
+	handle.setGrayed(grayed);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	// TODO: is it always 0 if columns are reordered?
+	((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), 0);
 }
 
 /**
@@ -854,22 +857,22 @@ public void setImage (int index, Image image) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-  if (images == null && index != 0) {
-    images = new Image [count];
-    images [0] = image;
-  }
-  if (images != null) {
-    if (image != null && image.type == SWT.ICON) {
-      if (image.equals (images [index])) return;
-    }
-    images [index] = image;
-  }
-  handle.getTableItemObject(index).setIcon(image != null? new ImageIcon(image.handle): null);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTable)parent.handle).getModel().fireTableCellUpdated(index, index);
-  parent.adjustColumnWidth();
+	if (images == null && index != 0) {
+		images = new Image [count];
+		images [0] = image;
+	}
+	if (images != null) {
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (images [index])) return;
+		}
+		images [index] = image;
+	}
+	handle.getTableItemObject(index).setIcon(image != null? new ImageIcon(image.handle): null);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTable)parent.handle).getModel().fireTableCellUpdated(index, index);
+	parent.adjustColumnWidth();
 //
-//  
+//	
 //	if (images == null && index != 0) images = new Image [count];
 //	if (images != null) {
 //		if (image != null && image.type == SWT.ICON) {
@@ -906,12 +909,12 @@ public void setImage (Image image) {
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
-  Utils.notImplemented();
+	Utils.notImplemented();
 //	if (imageIndent == indent) return;
 //	imageIndent = indent;
-//  if ((parent.style & SWT.VIRTUAL) != 0) {
-//    cached = true;
-//  } else {
+//	if ((parent.style & SWT.VIRTUAL) != 0) {
+//		cached = true;
+//	} else {
 //		int index = parent.indexOf (this);
 //		if (index != -1) {
 //			int hwnd = parent.handle;
@@ -963,22 +966,22 @@ public void setText (String [] strings) {
  * </ul>
  */
 public void setText (int index, String string) {
-  checkWidget();
-  if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return;
-  if(index == 0) {
-    super.setText(string);
-  }
-  handle.getTableItemObject(index).setText(string);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
-  parent.adjustColumnWidth();
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	if(index == 0) {
+		super.setText(string);
+	}
+	handle.getTableItemObject(index).setText(string);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTable)parent.handle).getModel().fireTableCellUpdated(parent.indexOf(this), index);
+	parent.adjustColumnWidth();
 }
 
 public void setText (String string) {
-  checkWidget();
-  setText (0, string);
+	checkWidget();
+	setText (0, string);
 }
 
 }

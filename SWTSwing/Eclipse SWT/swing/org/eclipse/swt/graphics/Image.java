@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -85,12 +88,12 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
-   * <p>
-   * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-   * public API. It is marked public only so that it can be shared
-   * within the packages provided by SWT. It is not available on all
-   * platforms and should never be accessed from application code.
-   * </p>
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int type;
 	
@@ -201,28 +204,28 @@ public Image(Device device, Image srcImage, int flag) {
 			return;
 		}
 		case SWT.IMAGE_DISABLE:
-    case SWT.IMAGE_GRAY: {
-      // TODO: test the method below and see if results are different. If so, associate each method to a different case.
-//      ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-//      ColorConvertOp op = new ColorConvertOp(cs, null);
-//      bufferedImage = op.filter(bufferedImage, null);
-      // ImageIcon is used to ensure that the image is loaded
-      java.awt.Image image = new ImageIcon(GrayFilter.createDisabledImage(srcImage.handle)).getImage();
-      GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-      GraphicsDevice gs = ge.getDefaultScreenDevice();
-      GraphicsConfiguration gc = gs.getDefaultConfiguration();
-      handle = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), srcImage.handle.getColorModel().getTransparency());
-      Graphics g = handle.createGraphics();
-      g.drawImage(image, 0, 0, null);
-      g.dispose();
-//      init (device, newData);
+		case SWT.IMAGE_GRAY: {
+			// TODO: test the method below and see if results are different. If so, associate each method to a different case.
+//			ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+//			ColorConvertOp op = new ColorConvertOp(cs, null);
+//			bufferedImage = op.filter(bufferedImage, null);
+			// ImageIcon is used to ensure that the image is loaded
+			java.awt.Image image = new ImageIcon(GrayFilter.createDisabledImage(srcImage.handle)).getImage();
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsDevice gs = ge.getDefaultScreenDevice();
+			GraphicsConfiguration gc = gs.getDefaultConfiguration();
+			handle = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), srcImage.handle.getColorModel().getTransparency());
+			Graphics g = handle.createGraphics();
+			g.drawImage(image, 0, 0, null);
+			g.dispose();
+//			init (device, newData);
 			if (device.tracking) device.new_Object(this);	
 			return;
 		}
 		default:
-      SWT.error(SWT.ERROR_INVALID_IMAGE);
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
-  // TODO: Set image data?
+	// TODO: Set image data?
 }
 
 /**
@@ -652,8 +655,8 @@ public boolean equals (Object object) {
  */
 public Color getBackground() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  // TODO: see setBackground...
-  return null;
+	// TODO: see setBackground...
+	return null;
 //	if (transparentPixel == -1) return null;
 //
 //	/* Get the HDC for the device */
@@ -674,8 +677,8 @@ public Color getBackground() {
 //			pBits[0] = (byte)((transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
 //			OS.MoveMemory(bm.bmBits, pBits, 1);
 //			int color = OS.GetPixel(hdcMem, 0, 0);
-//       		pBits[0] = oldValue;
-//       		OS.MoveMemory(bm.bmBits, pBits, 1);				
+//			 		pBits[0] = oldValue;
+//			 		OS.MoveMemory(bm.bmBits, pBits, 1);				
 //			blue = (color & 0xFF0000) >> 16;
 //			green = (color & 0xFF00) >> 8;
 //			red = color & 0xFF;
@@ -729,7 +732,7 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return new Rectangle(0, 0, handle.getWidth(), handle.getHeight());
+	return new Rectangle(0, 0, handle.getWidth(), handle.getHeight());
 }
 
 /**
@@ -783,37 +786,37 @@ public ImageData getImageData() {
 public ImageData getImageData (int zoom) {
 	// TODO: use zoom.
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  ColorModel colorModel = handle.getColorModel();
-  PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-  int width = handle.getWidth();
-  ImageData imageData = new ImageData(width, handle.getHeight(), colorModel.getPixelSize(), paletteData);
-  int height = handle.getHeight();
-  byte[] maskData = new byte[(width + 7) / 8 * height];
-  for(int x=width-1; x >= 0; x--) {
-    for(int y=height-1; y >= 0; y--) {
-      int rgb = handle.getRGB(x, y);
-      int pixel = paletteData.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
-      imageData.setPixel(x, y, pixel);
-      int alpha = (rgb >> 24) & 0xFF;
-      imageData.setAlpha(x, y, alpha);
-      if(alpha != 0) {
-        int index = x + y * ((width + 7) / 8) * 8;
-        maskData[index / 8] |= (byte)(1 << (7 - (index % 8)));
-      }
-    }
-  }
-  imageData.maskPad = 1;
-  imageData.maskData = maskData;
-//  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//  ImageWriter writer = (ImageWriter)ImageIO.getImageWritersBySuffix("jpg").next();
-//  try {
-//    writer.setOutput(ImageIO.createImageOutputStream(baos));
-//    writer.write(handle);
-//    return new ImageData(new ByteArrayInputStream(baos.toByteArray()));
-//  } catch(Exception e) {
-//    e.printStackTrace();
-//  }
-  return imageData;
+	ColorModel colorModel = handle.getColorModel();
+	PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+	int width = handle.getWidth();
+	ImageData imageData = new ImageData(width, handle.getHeight(), colorModel.getPixelSize(), paletteData);
+	int height = handle.getHeight();
+	byte[] maskData = new byte[(width + 7) / 8 * height];
+	for(int x=width-1; x >= 0; x--) {
+		for(int y=height-1; y >= 0; y--) {
+			int rgb = handle.getRGB(x, y);
+			int pixel = paletteData.getPixel(new RGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF));
+			imageData.setPixel(x, y, pixel);
+			int alpha = (rgb >> 24) & 0xFF;
+			imageData.setAlpha(x, y, alpha);
+			if(alpha != 0) {
+				int index = x + y * ((width + 7) / 8) * 8;
+				maskData[index / 8] |= (byte)(1 << (7 - (index % 8)));
+			}
+		}
+	}
+	imageData.maskPad = 1;
+	imageData.maskData = maskData;
+//	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//	ImageWriter writer = (ImageWriter)ImageIO.getImageWritersBySuffix("jpg").next();
+//	try {
+//		writer.setOutput(ImageIO.createImageOutputStream(baos));
+//		writer.write(handle);
+//		return new ImageData(new ByteArrayInputStream(baos.toByteArray()));
+//	} catch(Exception e) {
+//		e.printStackTrace();
+//	}
+	return imageData;
 //	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 //	BITMAP bm;
 //	int depth, width, height;
@@ -1152,7 +1155,7 @@ public ImageData getImageData (int zoom) {
 //			return imageData;
 //		}
 //		default:
-//      SWT.error(SWT.ERROR_INVALID_IMAGE);
+//			SWT.error(SWT.ERROR_INVALID_IMAGE);
 //			return null;
 //	}
 }
@@ -1177,54 +1180,54 @@ void init(Device device, int width, int height) {
 	}
 	this.device = device;
 	type = SWT.BITMAP;
-  handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-  if(!(device instanceof Display)) {
-    Graphics g = handle.getGraphics();
-    g.setColor(java.awt.Color.WHITE);
-    ((Graphics2D)g).setBackground(java.awt.Color.WHITE);
-    g.fillRect(0, 0, width, height);
-  }
+	handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+	if(!(device instanceof Display)) {
+		Graphics g = handle.getGraphics();
+		g.setColor(java.awt.Color.WHITE);
+		((Graphics2D)g).setBackground(java.awt.Color.WHITE);
+		g.fillRect(0, 0, width, height);
+	}
 }
 
 static void init(Device device, Image image, ImageData data) {
-//  BufferedImage bufferedImage;
-//  if (data.palette.isDirect) {
-//    bufferedImage = createBufferedImageDirectPalette(data, data.palette);
-//  } else {
-//    bufferedImage = createBufferedImageIndexPalette (data, data.palette);
-//  }
+//	BufferedImage bufferedImage;
+//	if (data.palette.isDirect) {
+//		bufferedImage = createBufferedImageDirectPalette(data, data.palette);
+//	} else {
+//		bufferedImage = createBufferedImageIndexPalette (data, data.palette);
+//	}
 //	image.handle = bufferedImage;
 //	image.device = null;
 ////  SImageData.serialize(image, data);
 //	if(true) return;
-  image.device = device;
-  if(image.handle == null) {
-    BufferedImage bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
-    image.handle = bufferedImage;
-    if(!(device instanceof Display)) {
-      Graphics g = bufferedImage.getGraphics();
-      g.setColor(java.awt.Color.WHITE);
-      ((Graphics2D)g).setBackground(java.awt.Color.WHITE);
-      g.fillRect(0, 0, data.width, data.height);
-    }
-  }
-  ImageData transparencyMask = data.getTransparencyMask();
-  for(int x=image.handle.getWidth()-1; x >= 0; x--) {
-    for(int y=image.handle.getHeight()-1; y >= 0; y--) {
-      RGB rgb = data.palette.getRGB(data.getPixel(x, y));
-      int pixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
-      rgb = transparencyMask.palette.getRGB(transparencyMask.getPixel(x, y));
-      int mask = rgb.red << 16 | rgb.green << 8 | rgb.blue;
-      if(mask != 0) {
-        int alpha = data.getAlpha(x, y);
-        if(alpha > 0) {
-          pixel = pixel & 0x00FFFFFF | alpha << 24;
-          image.handle.setRGB(x, y, pixel);
-        }
-      }
-    }
-  }
-//  SImageData.serialize(image, data);
+	image.device = device;
+	if(image.handle == null) {
+		BufferedImage bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
+		image.handle = bufferedImage;
+		if(!(device instanceof Display)) {
+			Graphics g = bufferedImage.getGraphics();
+			g.setColor(java.awt.Color.WHITE);
+			((Graphics2D)g).setBackground(java.awt.Color.WHITE);
+			g.fillRect(0, 0, data.width, data.height);
+		}
+	}
+	ImageData transparencyMask = data.getTransparencyMask();
+	for(int x=image.handle.getWidth()-1; x >= 0; x--) {
+		for(int y=image.handle.getHeight()-1; y >= 0; y--) {
+			RGB rgb = data.palette.getRGB(data.getPixel(x, y));
+			int pixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+			rgb = transparencyMask.palette.getRGB(transparencyMask.getPixel(x, y));
+			int mask = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+			if(mask != 0) {
+				int alpha = data.getAlpha(x, y);
+				if(alpha > 0) {
+					pixel = pixel & 0x00FFFFFF | alpha << 24;
+					image.handle.setRGB(x, y, pixel);
+				}
+			}
+		}
+	}
+//	SImageData.serialize(image, data);
 //	/*
 //	 * BUG in Windows 98:
 //	 * A monochrome DIBSection will display as solid black
@@ -1454,76 +1457,76 @@ static void init(Device device, Image image, ImageData data) {
 }
 
 static void init(Device device, Image image, ImageData source, ImageData mask) {
-  /* Create a temporary image and locate the black pixel */
-  ImageData imageData;
-  int blackIndex = 0;
-  if (source.palette.isDirect) {
-    imageData = new ImageData(source.width, source.height, source.depth, source.palette);
-  } else {
-    RGB black = new RGB(0, 0, 0);
-    RGB[] rgbs = source.getRGBs();
-    if (source.transparentPixel != -1) {
-      /*
-       * The source had transparency, so we can use the transparent pixel
-       * for black.
-       */
-      RGB[] newRGBs = new RGB[rgbs.length];
-      System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
-      if (source.transparentPixel >= newRGBs.length) {
-        /* Grow the palette with black */
-        rgbs = new RGB[source.transparentPixel + 1];
-        System.arraycopy(newRGBs, 0, rgbs, 0, newRGBs.length);
-        for (int i = newRGBs.length; i <= source.transparentPixel; i++) {
-          rgbs[i] = new RGB(0, 0, 0);
-        }
-      } else {
-        newRGBs[source.transparentPixel] = black;
-        rgbs = newRGBs;
-      }
-      blackIndex = source.transparentPixel;
-      imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
-    } else {
-      while (blackIndex < rgbs.length) {
-        if (rgbs[blackIndex].equals(black)) break;
-        blackIndex++;
-      }
-      if (blackIndex == rgbs.length) {
-        /*
-         * We didn't find black in the palette, and there is no transparent
-         * pixel we can use.
-         */
-        if ((1 << source.depth) > rgbs.length) {
-          /* We can grow the palette and add black */
-          RGB[] newRGBs = new RGB[rgbs.length + 1];
-          System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
-          newRGBs[rgbs.length] = black;
-          rgbs = newRGBs;
-        } else {
-          /* No room to grow the palette */
-          blackIndex = -1;
-        }
-      }
-      imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
-    }
-  }
-  if (blackIndex == -1) {
-    /* There was no black in the palette, so just copy the data over */
-    System.arraycopy(source.data, 0, imageData.data, 0, imageData.data.length);
-  } else {
-    /* Modify the source image to contain black wherever the mask is 0 */
-    int[] imagePixels = new int[imageData.width];
-    int[] maskPixels = new int[mask.width];
-    for (int y = 0; y < imageData.height; y++) {
-      source.getPixels(0, y, imageData.width, imagePixels, 0);
-      mask.getPixels(0, y, mask.width, maskPixels, 0);
-      for (int i = 0; i < imagePixels.length; i++) {
-        if (maskPixels[i] == 0) imagePixels[i] = blackIndex;
-      }
-      imageData.setPixels(0, y, source.width, imagePixels, 0);
-    }
-  }
-  imageData.maskPad = mask.scanlinePad;
-  imageData.maskData = mask.data; 
+	/* Create a temporary image and locate the black pixel */
+	ImageData imageData;
+	int blackIndex = 0;
+	if (source.palette.isDirect) {
+		imageData = new ImageData(source.width, source.height, source.depth, source.palette);
+	} else {
+		RGB black = new RGB(0, 0, 0);
+		RGB[] rgbs = source.getRGBs();
+		if (source.transparentPixel != -1) {
+			/*
+			 * The source had transparency, so we can use the transparent pixel
+			 * for black.
+			 */
+			RGB[] newRGBs = new RGB[rgbs.length];
+			System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
+			if (source.transparentPixel >= newRGBs.length) {
+				/* Grow the palette with black */
+				rgbs = new RGB[source.transparentPixel + 1];
+				System.arraycopy(newRGBs, 0, rgbs, 0, newRGBs.length);
+				for (int i = newRGBs.length; i <= source.transparentPixel; i++) {
+					rgbs[i] = new RGB(0, 0, 0);
+				}
+			} else {
+				newRGBs[source.transparentPixel] = black;
+				rgbs = newRGBs;
+			}
+			blackIndex = source.transparentPixel;
+			imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
+		} else {
+			while (blackIndex < rgbs.length) {
+				if (rgbs[blackIndex].equals(black)) break;
+				blackIndex++;
+			}
+			if (blackIndex == rgbs.length) {
+				/*
+				 * We didn't find black in the palette, and there is no transparent
+				 * pixel we can use.
+				 */
+				if ((1 << source.depth) > rgbs.length) {
+					/* We can grow the palette and add black */
+					RGB[] newRGBs = new RGB[rgbs.length + 1];
+					System.arraycopy(rgbs, 0, newRGBs, 0, rgbs.length);
+					newRGBs[rgbs.length] = black;
+					rgbs = newRGBs;
+				} else {
+					/* No room to grow the palette */
+					blackIndex = -1;
+				}
+			}
+			imageData = new ImageData(source.width, source.height, source.depth, new PaletteData(rgbs));
+		}
+	}
+	if (blackIndex == -1) {
+		/* There was no black in the palette, so just copy the data over */
+		System.arraycopy(source.data, 0, imageData.data, 0, imageData.data.length);
+	} else {
+		/* Modify the source image to contain black wherever the mask is 0 */
+		int[] imagePixels = new int[imageData.width];
+		int[] maskPixels = new int[mask.width];
+		for (int y = 0; y < imageData.height; y++) {
+			source.getPixels(0, y, imageData.width, imagePixels, 0);
+			mask.getPixels(0, y, mask.width, maskPixels, 0);
+			for (int i = 0; i < imagePixels.length; i++) {
+				if (maskPixels[i] == 0) imagePixels[i] = blackIndex;
+			}
+			imageData.setPixels(0, y, source.width, imagePixels, 0);
+		}
+	}
+	imageData.maskPad = mask.scanlinePad;
+	imageData.maskData = mask.data; 
 	init(device, image, imageData);
 }
 
@@ -1547,29 +1550,29 @@ void init(Device device, ImageData i) {
  */
 public CGC internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(data != null) {
-    int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-    if ((data.style & mask) != 0) {
-      data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? false : true;
-    } else {
-      data.style |= SWT.LEFT_TO_RIGHT;
-    }
-    data.device = device;
-    data.image = this;
-    data.hFont = LookAndFeelUtils.getSystemFont();
-  }
-  final Graphics2D g = (Graphics2D)handle.getGraphics();
-  if(g == null) {
-    return null;
-  }
-  return new CGC.CGCGraphics2D() {
-    public Graphics2D getGraphics() {
-      return g;
-    }
-    public Dimension getDeviceSize() {
-      return new Dimension(handle.getWidth(), handle.getHeight());
-    }
-  };
+	if(data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) != 0) {
+			data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? false : true;
+		} else {
+			data.style |= SWT.LEFT_TO_RIGHT;
+		}
+		data.device = device;
+		data.image = this;
+		data.hFont = LookAndFeelUtils.getSystemFont();
+	}
+	final Graphics2D g = (Graphics2D)handle.getGraphics();
+	if(g == null) {
+		return null;
+	}
+	return new CGC.CGCGraphics2D() {
+		public Graphics2D getGraphics() {
+			return g;
+		}
+		public Dimension getDeviceSize() {
+			return new Dimension(handle.getWidth(), handle.getHeight());
+		}
+	};
 }
 
 /**	 
@@ -1638,9 +1641,9 @@ public boolean isDisposed() {
  * </ul>
  */
 public void setBackground(Color color) {
-  // TODO: change all pixels with alpha channel == 1.0 to the defined value?
-  // if(colorModel instanceof IndexColorModel) {return colorModel.getTransparentPixel();}
-  return;
+	// TODO: change all pixels with alpha channel == 1.0 to the defined value?
+	// if(colorModel instanceof IndexColorModel) {return colorModel.getTransparentPixel();}
+	return;
 //	/*
 //	* Note.  Not implemented on WinCE.
 //	*/
@@ -1710,258 +1713,258 @@ public static Image swing_new(Device device, int type, java.awt.Image handle) {
 }
 
 static BufferedImage duplicateImage(java.awt.Image handle) {
-  GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-  GraphicsDevice gs = ge.getDefaultScreenDevice();
-  GraphicsConfiguration gc = gs.getDefaultConfiguration();
-  int transparency;
-  if(handle instanceof BufferedImage) {
-    transparency = ((BufferedImage)handle).getColorModel().getTransparency();
-  } else {
-    PixelGrabber pg = new PixelGrabber(handle, 0, 0, 1, 1, false);
-    try {
-      pg.grabPixels();
-    } catch (InterruptedException e) {}
-    transparency = pg.getColorModel().getTransparency();
-  }
-  BufferedImage bHandle = gc.createCompatibleImage(handle.getWidth(null), handle.getHeight(null), transparency);
-  Graphics g = bHandle.createGraphics();
-  g.drawImage(handle, 0, 0, null);
-  g.dispose();
-  return bHandle;
+	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	GraphicsDevice gs = ge.getDefaultScreenDevice();
+	GraphicsConfiguration gc = gs.getDefaultConfiguration();
+	int transparency;
+	if(handle instanceof BufferedImage) {
+		transparency = ((BufferedImage)handle).getColorModel().getTransparency();
+	} else {
+		PixelGrabber pg = new PixelGrabber(handle, 0, 0, 1, 1, false);
+		try {
+			pg.grabPixels();
+		} catch (InterruptedException e) {}
+		transparency = pg.getColorModel().getTransparency();
+	}
+	BufferedImage bHandle = gc.createCompatibleImage(handle.getWidth(null), handle.getHeight(null), transparency);
+	Graphics g = bHandle.createGraphics();
+	g.drawImage(handle, 0, 0, null);
+	g.dispose();
+	return bHandle;
 }
 
 //private static BufferedImage createBufferedImageIndexPalette(ImageData data, PaletteData p) {
-//  RGB[] rgbs = p.getRGBs();
-//  byte[] red = new byte[rgbs.length];
-//  byte[] green = new byte[rgbs.length];
-//  byte[] blue = new byte[rgbs.length];
-//  for(int i = 0; i < rgbs.length; i++) {
-//    RGB rgb = rgbs[i];
-//    red[i] = (byte) rgb.red;
-//    green[i] = (byte) rgb.green;
-//    blue[i] = (byte) rgb.blue;
-//  }
-//  ColorModel cM;
-//  if(data.transparentPixel != -1) {
-//    cM = new IndexColorModel(data.depth, rgbs.length, red, green, blue, data.transparentPixel);
-//  } else {
-//    cM = new IndexColorModel(data.depth, rgbs.length, red, green, blue);
-//  }
-//  BufferedImage bi = new BufferedImage(cM, cM.createCompatibleWritableRaster(data.width, data.height), false, null);
-//  WritableRaster r = bi.getRaster();
-//  int[] pA = new int[1];
-//  for (int y = 0; y < data.height; y++) {
-//    for (int x = 0; x < data.width; x++) {
-//      int pixel = data.getPixel(x, y);
-//      pA[0] = pixel;
-//      r.setPixel(x, y, pA);
-//    }
-//  }
-//  // System.out.println("data.transparentPixel: "
-//  // + data.transparentPixel);
-//  // System.out.println(colorModel);
-//  // System.out.println(bufferedImage);
-//  // System.out.println();
-//  return bi;
+//	RGB[] rgbs = p.getRGBs();
+//	byte[] red = new byte[rgbs.length];
+//	byte[] green = new byte[rgbs.length];
+//	byte[] blue = new byte[rgbs.length];
+//	for(int i = 0; i < rgbs.length; i++) {
+//		RGB rgb = rgbs[i];
+//		red[i] = (byte) rgb.red;
+//		green[i] = (byte) rgb.green;
+//		blue[i] = (byte) rgb.blue;
+//	}
+//	ColorModel cM;
+//	if(data.transparentPixel != -1) {
+//		cM = new IndexColorModel(data.depth, rgbs.length, red, green, blue, data.transparentPixel);
+//	} else {
+//		cM = new IndexColorModel(data.depth, rgbs.length, red, green, blue);
+//	}
+//	BufferedImage bi = new BufferedImage(cM, cM.createCompatibleWritableRaster(data.width, data.height), false, null);
+//	WritableRaster r = bi.getRaster();
+//	int[] pA = new int[1];
+//	for (int y = 0; y < data.height; y++) {
+//		for (int x = 0; x < data.width; x++) {
+//			int pixel = data.getPixel(x, y);
+//			pA[0] = pixel;
+//			r.setPixel(x, y, pA);
+//		}
+//	}
+//	// System.out.println("data.transparentPixel: "
+//	// + data.transparentPixel);
+//	// System.out.println(colorModel);
+//	// System.out.println(bufferedImage);
+//	// System.out.println();
+//	return bi;
 //}
 //
 //private static BufferedImage createBufferedImageDirectPalette(ImageData data, PaletteData p) {
-//  // Added ColorModel.TRANSLUCENT to create a ColorModel with
-//  // transparency and resulting in a ARGB BufferedImage
-//  // TODO: Check if true: Still Transparency-Gradients may be
-//  // impossible with standard JavaIO & BufferedImages since
-//  // ColorModel.TRANSLUCENT is either opaque or transparent.
-//  ColorModel cM = new DirectColorModel(data.depth, p.redMask, p.greenMask, p.blueMask, 0);
-//  BufferedImage bi = new BufferedImage(cM, cM.createCompatibleWritableRaster(data.width, data.height), false, null);
-//  WritableRaster r = bi.getRaster();
-//  int[] pA = new int[4];
-//  for (int y = 0; y < data.height; y++) {
-//    for (int x = 0; x < data.width; x++) {
-//      int pixel = data.getPixel(x, y);
-//      RGB rgb = p.getRGB(pixel);
-//      pA[0] = rgb.red;
-//      pA[1] = rgb.green;
-//      pA[2] = rgb.blue;
-//      pA[3] = data.getAlpha(x, y);
-//      // Line is a bugfix which is actually for Problems with
-//      // detecting Transparency in BufferedImages. Also using the
-//      // normal ImageIO.read(...) method results in this bug and
-//      // can be tested using comment.png from Azureus
-//      if (data.transparentPixel != -1 && pixel == data.transparentPixel) {
-//        pA[3] = 0;
-//      }
-//      // System.out.println(pixelArray[3]);
-//      r.setPixels(x, y, 1, 1, pA);
-//    }
-//  }
-//  // System.out.println("data.transparentPixel: "
-//  // + data.transparentPixel);
-//  // System.out.println(colorModel);
-//  // System.out.println(bufferedImage);
-//  // System.out.println();
-//  return bi;
+//	// Added ColorModel.TRANSLUCENT to create a ColorModel with
+//	// transparency and resulting in a ARGB BufferedImage
+//	// TODO: Check if true: Still Transparency-Gradients may be
+//	// impossible with standard JavaIO & BufferedImages since
+//	// ColorModel.TRANSLUCENT is either opaque or transparent.
+//	ColorModel cM = new DirectColorModel(data.depth, p.redMask, p.greenMask, p.blueMask, 0);
+//	BufferedImage bi = new BufferedImage(cM, cM.createCompatibleWritableRaster(data.width, data.height), false, null);
+//	WritableRaster r = bi.getRaster();
+//	int[] pA = new int[4];
+//	for (int y = 0; y < data.height; y++) {
+//		for (int x = 0; x < data.width; x++) {
+//			int pixel = data.getPixel(x, y);
+//			RGB rgb = p.getRGB(pixel);
+//			pA[0] = rgb.red;
+//			pA[1] = rgb.green;
+//			pA[2] = rgb.blue;
+//			pA[3] = data.getAlpha(x, y);
+//			// Line is a bugfix which is actually for Problems with
+//			// detecting Transparency in BufferedImages. Also using the
+//			// normal ImageIO.read(...) method results in this bug and
+//			// can be tested using comment.png from Azureus
+//			if (data.transparentPixel != -1 && pixel == data.transparentPixel) {
+//				pA[3] = 0;
+//			}
+//			// System.out.println(pixelArray[3]);
+//			r.setPixels(x, y, 1, 1, pA);
+//		}
+//	}
+//	// System.out.println("data.transparentPixel: "
+//	// + data.transparentPixel);
+//	// System.out.println(colorModel);
+//	// System.out.println(bufferedImage);
+//	// System.out.println();
+//	return bi;
 //}
 
 //public static class SImageData implements java.io.Serializable {
-//  public static class SPaletteData implements java.io.Serializable {
-//    public boolean isDirect;
-//    public RGB[] colors;
-//    public int redMask;
-//    public int greenMask;
-//    public int blueMask;
-//    public int redShift;
-//    public int greenShift;
-//    public int blueShift;
-//    SPaletteData(PaletteData data) {
-//      this.colors = data.colors;
-//      this.isDirect = data.isDirect;
-//      this.redMask = data.redMask;
-//      this.greenMask = data.greenMask;
-//      this.blueMask = data.blueMask;
-//      this.redShift = data.redShift;
-//      this.greenShift = data.greenShift;
-//      this.blueShift = data.blueShift;
-//    }
-//    public PaletteData createPaletteData() {
-//      PaletteData paletteData = new PaletteData(new RGB[0]);
-//      paletteData.colors = colors;
-//      paletteData.isDirect = isDirect;
-//      paletteData.redMask = redMask;
-//      paletteData.greenMask = greenMask;
-//      paletteData.blueMask = blueMask;
-//      paletteData.redShift = redShift;
-//      paletteData.greenShift = greenShift;
-//      paletteData.blueShift = blueShift;
-//      return paletteData;
-//    }
-//    public String toString() {
-//      StringBuilder sb = new StringBuilder("PaletteData:");
-//      try {
-//        java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
-//        for(int i=0; i<fields.length; i++) {
-//          java.lang.reflect.Field field = fields[i];
-//          Object value = field.get(this);
-//          if(value instanceof Object[]) {
-//            value = java.util.Arrays.toString((Object[])value);
-//          } else if(value instanceof byte[]) {
-//            value = java.util.Arrays.toString((byte[])value);
-//          }
-//          sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(value);
-//        }
-//      } catch(Exception e) {
-//        e.printStackTrace();
-//      }
-//      return sb.toString();
-//    }
-//  }
-//  public int width;
-//  public int height;
-//  public int depth;
-//  public int scanlinePad;
-//  public int bytesPerLine;
-//  public byte[] data;
-//  public SPaletteData palette;
-//  public int transparentPixel;
-//  public byte[] maskData;
-//  public int maskPad;
-//  public byte[] alphaData;
-//  public int alpha;
-//  public int type;
-//  public int x;
-//  public int y;
-//  public int disposalMethod;
-//  public int delayTime;
-//  SImageData(ImageData data) {
-//    this.width = data.width;
-//    this.height = data.height;
-//    this.depth = data.depth;
-//    this.scanlinePad = data.scanlinePad;
-//    this.bytesPerLine = data.bytesPerLine;
-//    this.data = data.data;
-//    if(data.palette != null) {
-//      this.palette = new SPaletteData(data.palette);
-//    }
-//    this.transparentPixel = data.transparentPixel;
-//    this.maskData = data.maskData;
-//    this.maskPad = data.maskPad;
-//    this.alphaData = data.alphaData;
-//    this.alpha = data.alpha;
-//    this.type = data.type;
-//    this.x = data.x;
-//    this.y = data.y;
-//    this.disposalMethod = data.disposalMethod;
-//    this.delayTime = data.delayTime;
-//  }
-//  public ImageData createImageData() {
-//    ImageData imageData = new ImageData();
-//    imageData.width = width;
-//    imageData.height = height;
-//    imageData.depth = depth;
-//    imageData.scanlinePad = scanlinePad;
-//    imageData.bytesPerLine = bytesPerLine;
-//    imageData.data = data;
-//    if(palette != null) {
-//      imageData.palette = palette.createPaletteData();
-//    }
-//    imageData.transparentPixel = transparentPixel;
-//    imageData.maskData = maskData;
-//    imageData.maskPad = maskPad;
-//    imageData.alphaData = alphaData;
-//    imageData.alpha = alpha;
-//    imageData.type = type;
-//    imageData.x = x;
-//    imageData.y = y;
-//    imageData.disposalMethod = disposalMethod;
-//    imageData.delayTime = delayTime;
-//    return imageData;
-//  }
-//  public String toString() {
-//    StringBuilder sb = new StringBuilder("ImageData: ");
-//    try {
-//      java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
-//      for(int i=0; i<fields.length; i++) {
-//        java.lang.reflect.Field field = fields[i];
-//        Object value = field.get(this);
-//        if(value instanceof Object[]) {
-//          value = java.util.Arrays.toString((Object[])value);
-//        } else if(value instanceof byte[]) {
-//          value = java.util.Arrays.toString((byte[])value);
-//        }
-//        sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(value);
-//      }
-//    } catch(Exception e) {
-//      e.printStackTrace();
-//    }
-//    return sb.toString();
-//  }
-//  public static void serialize(Image image, ImageData data) {
-//    try {
-//      java.io.File tmpDir = new java.io.File(System.getProperty("java.io.tmpdir"), ".swtswing_img");
-//      tmpDir.mkdirs();
-//      long now = System.currentTimeMillis();
-//      javax.imageio.ImageIO.write(image.handle, "png", new java.io.File(tmpDir, now + ".png"));
-//      java.io.ObjectOutputStream out = new java.io.ObjectOutputStream(new java.io.BufferedOutputStream(new java.io.FileOutputStream(new java.io.File(tmpDir, now + ".bin"))));
-//      SImageData sImageData = new SImageData(data);
-//      out.writeObject(sImageData);
-//      out.close();
-//      java.io.OutputStream out2 = new java.io.BufferedOutputStream(new java.io.FileOutputStream(new java.io.File(tmpDir, now + ".txt")));
-//      out2.write(sImageData.toString().getBytes("UTF-8"));
-//      out2.close();
-//    } catch(Exception e) {
-//      e.printStackTrace();
-//    }
-//  }
-//  public static ImageData deserialize(java.io.File file) {
-//    try {
-//      java.io.ObjectInputStream in = new java.io.ObjectInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(file)));
-//      SImageData sImageData = (SImageData)in.readObject();
-//      in.close();
-//      return sImageData.createImageData();
-//    } catch(Exception e) {
-//      e.printStackTrace();
-//    }
-//    return null;
-//  }
+//	public static class SPaletteData implements java.io.Serializable {
+//		public boolean isDirect;
+//		public RGB[] colors;
+//		public int redMask;
+//		public int greenMask;
+//		public int blueMask;
+//		public int redShift;
+//		public int greenShift;
+//		public int blueShift;
+//		SPaletteData(PaletteData data) {
+//			this.colors = data.colors;
+//			this.isDirect = data.isDirect;
+//			this.redMask = data.redMask;
+//			this.greenMask = data.greenMask;
+//			this.blueMask = data.blueMask;
+//			this.redShift = data.redShift;
+//			this.greenShift = data.greenShift;
+//			this.blueShift = data.blueShift;
+//		}
+//		public PaletteData createPaletteData() {
+//			PaletteData paletteData = new PaletteData(new RGB[0]);
+//			paletteData.colors = colors;
+//			paletteData.isDirect = isDirect;
+//			paletteData.redMask = redMask;
+//			paletteData.greenMask = greenMask;
+//			paletteData.blueMask = blueMask;
+//			paletteData.redShift = redShift;
+//			paletteData.greenShift = greenShift;
+//			paletteData.blueShift = blueShift;
+//			return paletteData;
+//		}
+//		public String toString() {
+//			StringBuilder sb = new StringBuilder("PaletteData:");
+//			try {
+//				java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
+//				for(int i=0; i<fields.length; i++) {
+//					java.lang.reflect.Field field = fields[i];
+//					Object value = field.get(this);
+//					if(value instanceof Object[]) {
+//						value = java.util.Arrays.toString((Object[])value);
+//					} else if(value instanceof byte[]) {
+//						value = java.util.Arrays.toString((byte[])value);
+//					}
+//					sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(value);
+//				}
+//			} catch(Exception e) {
+//				e.printStackTrace();
+//			}
+//			return sb.toString();
+//		}
+//	}
+//	public int width;
+//	public int height;
+//	public int depth;
+//	public int scanlinePad;
+//	public int bytesPerLine;
+//	public byte[] data;
+//	public SPaletteData palette;
+//	public int transparentPixel;
+//	public byte[] maskData;
+//	public int maskPad;
+//	public byte[] alphaData;
+//	public int alpha;
+//	public int type;
+//	public int x;
+//	public int y;
+//	public int disposalMethod;
+//	public int delayTime;
+//	SImageData(ImageData data) {
+//		this.width = data.width;
+//		this.height = data.height;
+//		this.depth = data.depth;
+//		this.scanlinePad = data.scanlinePad;
+//		this.bytesPerLine = data.bytesPerLine;
+//		this.data = data.data;
+//		if(data.palette != null) {
+//			this.palette = new SPaletteData(data.palette);
+//		}
+//		this.transparentPixel = data.transparentPixel;
+//		this.maskData = data.maskData;
+//		this.maskPad = data.maskPad;
+//		this.alphaData = data.alphaData;
+//		this.alpha = data.alpha;
+//		this.type = data.type;
+//		this.x = data.x;
+//		this.y = data.y;
+//		this.disposalMethod = data.disposalMethod;
+//		this.delayTime = data.delayTime;
+//	}
+//	public ImageData createImageData() {
+//		ImageData imageData = new ImageData();
+//		imageData.width = width;
+//		imageData.height = height;
+//		imageData.depth = depth;
+//		imageData.scanlinePad = scanlinePad;
+//		imageData.bytesPerLine = bytesPerLine;
+//		imageData.data = data;
+//		if(palette != null) {
+//			imageData.palette = palette.createPaletteData();
+//		}
+//		imageData.transparentPixel = transparentPixel;
+//		imageData.maskData = maskData;
+//		imageData.maskPad = maskPad;
+//		imageData.alphaData = alphaData;
+//		imageData.alpha = alpha;
+//		imageData.type = type;
+//		imageData.x = x;
+//		imageData.y = y;
+//		imageData.disposalMethod = disposalMethod;
+//		imageData.delayTime = delayTime;
+//		return imageData;
+//	}
+//	public String toString() {
+//		StringBuilder sb = new StringBuilder("ImageData: ");
+//		try {
+//			java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
+//			for(int i=0; i<fields.length; i++) {
+//				java.lang.reflect.Field field = fields[i];
+//				Object value = field.get(this);
+//				if(value instanceof Object[]) {
+//					value = java.util.Arrays.toString((Object[])value);
+//				} else if(value instanceof byte[]) {
+//					value = java.util.Arrays.toString((byte[])value);
+//				}
+//				sb.append("\r\n").append("  ").append(field.getName()).append(": ").append(value);
+//			}
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//		return sb.toString();
+//	}
+//	public static void serialize(Image image, ImageData data) {
+//		try {
+//			java.io.File tmpDir = new java.io.File(System.getProperty("java.io.tmpdir"), ".swtswing_img");
+//			tmpDir.mkdirs();
+//			long now = System.currentTimeMillis();
+//			javax.imageio.ImageIO.write(image.handle, "png", new java.io.File(tmpDir, now + ".png"));
+//			java.io.ObjectOutputStream out = new java.io.ObjectOutputStream(new java.io.BufferedOutputStream(new java.io.FileOutputStream(new java.io.File(tmpDir, now + ".bin"))));
+//			SImageData sImageData = new SImageData(data);
+//			out.writeObject(sImageData);
+//			out.close();
+//			java.io.OutputStream out2 = new java.io.BufferedOutputStream(new java.io.FileOutputStream(new java.io.File(tmpDir, now + ".txt")));
+//			out2.write(sImageData.toString().getBytes("UTF-8"));
+//			out2.close();
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+//	public static ImageData deserialize(java.io.File file) {
+//		try {
+//			java.io.ObjectInputStream in = new java.io.ObjectInputStream(new java.io.BufferedInputStream(new java.io.FileInputStream(file)));
+//			SImageData sImageData = (SImageData)in.readObject();
+//			in.close();
+//			return sImageData.createImageData();
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 //}
 
 }

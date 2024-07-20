@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -276,9 +279,9 @@ Shell (Display display, Shell parent, int style, Container handle) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
-  if (parent != null && parent.isDisposed ()) {
-    error (SWT.ERROR_INVALID_ARGUMENT); 
-  }
+	if (parent != null && parent.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT); 
+	}
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
@@ -463,8 +466,8 @@ public void close () {
 }
 
 protected Container createHandle () {
-  CShell parentShell = parent != null? (CShell)parent.handle: null;
-  return (Container)CShell.Factory.newInstance(this, parentShell, style);
+	CShell parentShell = parent != null? (CShell)parent.handle: null;
+	return (Container)CShell.Factory.newInstance(this, parentShell, style);
 //	boolean embedded = handle != 0;
 //	
 //	/*
@@ -531,7 +534,7 @@ public void dispose () {
 //	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	Display oldDisplay = display;
 	super.dispose ();
-  if (oldDisplay != null) oldDisplay.wake();
+	if (oldDisplay != null) oldDisplay.wake();
 	// widget is disposed at this point
 //	if (oldDisplay != null) oldDisplay.update ();
 }
@@ -613,7 +616,7 @@ void fixShell (Shell newShell, Control control) {
 public void forceActive () {
 	checkWidget ();
 	if(!isVisible()) return;
-  ((CShell)handle).toFront();
+	((CShell)handle).toFront();
 }
 
 //void forceResize () {
@@ -656,8 +659,8 @@ public void forceActive () {
  */
 public int getImeInputMode () {
 	checkWidget ();
-  // TODO: have a look at setImeInputMethod...
-  return SWT.NONE;
+	// TODO: have a look at setImeInputMethod...
+	return SWT.NONE;
 //	if (!OS.IsDBLocale) return 0;
 //	int hIMC = OS.ImmGetContext (handle);
 //	int [] lpfdwConversion = new int [1], lpfdwSentence = new int [1];
@@ -702,8 +705,8 @@ public int getImeInputMode () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-  java.awt.Dimension size = handle.getMinimumSize();
-  return new Point(size.width, size.height);
+	java.awt.Dimension size = handle.getMinimumSize();
+	return new Point(size.width, size.height);
 //	int width = Math.max (0, minWidth);
 //	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 //	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
@@ -814,11 +817,11 @@ public Shell [] getShells () {
 }
 
 Composite findDeferredControl () {
-  return layoutCount > 0 ? this : null;
+	return layoutCount > 0 ? this : null;
 }
 
 protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
-  return false;
+	return false;
 }
 
 public boolean isEnabled () {
@@ -827,10 +830,10 @@ public boolean isEnabled () {
 }
 
 public boolean isFocusControl () {
-  checkWidget ();
-  if(super.isFocusControl()) return true;
-  KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-  return keyboardFocusManager.getFocusOwner() == null && keyboardFocusManager.getFocusedWindow() == handle;
+	checkWidget ();
+	if(super.isFocusControl()) return true;
+	KeyboardFocusManager keyboardFocusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+	return keyboardFocusManager.getFocusOwner() == null && keyboardFocusManager.getFocusedWindow() == handle;
 }
 
 //public boolean isVisible () {
@@ -880,8 +883,8 @@ public boolean isFocusControl () {
 public void open () {
 	checkWidget ();
 	bringToTop ();
-  if (isDisposed ()) return;
-  layout(); // Added because the default size is not taken into account be layout managers. cf snippet 109
+	if (isDisposed ()) return;
+	layout(); // Added because the default size is not taken into account be layout managers. cf snippet 109
 //	/*
 //	* Feature on WinCE PPC.  A new application becomes
 //	* the foreground application only if it has at least
@@ -892,8 +895,8 @@ public void open () {
 //	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
 //	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 	setVisible (true);
-  // This is to ensure that splashscreens that do not dispatch the events from the queue have some display.
-//  handle.paint(handle.getGraphics());
+	// This is to ensure that splashscreens that do not dispatch the events from the queue have some display.
+//	handle.paint(handle.getGraphics());
 	if (isDisposed ()) return;
 //	/*
 //	* Bug in Windows XP.  Despite the fact that an icon has been
@@ -924,27 +927,27 @@ void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-    if (shell != null && !shell.isDisposed ()) {
-      shell.release (false);
-    }
+		if (shell != null && !shell.isDisposed ()) {
+			shell.release (false);
+		}
 	}
-  super.releaseChildren (destroy);
+	super.releaseChildren (destroy);
 }
 
 void releaseParent () {
-  /* Do nothing */
+	/* Do nothing */
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
 	activeMenu = null;
-  final Window window = (Window)handle;
-  window.setVisible(false);
-  SwingUtilities.invokeLater(new Runnable() {
-    public void run() {
-      window.dispose();
-    }
-  });
+	final Window window = (Window)handle;
+	window.setVisible(false);
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+			window.dispose();
+		}
+	});
 //	display.clearModal (this);
 //	if (lpstrTip != 0) {
 //		int hHeap = OS.GetProcessHeap ();
@@ -1038,12 +1041,12 @@ public void setActive () {
 	checkWidget ();
 	if(!isVisible()) return;
 //	bringToTop ();
-  ((CShell)handle).forceActive();
-  // widget could be disposed at this point
+	((CShell)handle).forceActive();
+	// widget could be disposed at this point
 }
 
 Control getActiveControl() {
-  return lastActive;
+	return lastActive;
 }
 
 void setActiveControl (Control control) {
@@ -1114,34 +1117,34 @@ void setActiveControl (Control control) {
  */
 public void setImeInputMode (int mode) {
 	checkWidget ();
-  // TODO: implement probably with something like the following...
-  InputContext ic = handle.getInputContext();
-  boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;
+	// TODO: implement probably with something like the following...
+	InputContext ic = handle.getInputContext();
+	boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;
 //handle.enableInputMethods(imeOn);
-  ic.setCompositionEnabled (imeOn);
-  if(imeOn) {
-    boolean phonetic = (mode & SWT.PHONETIC) != 0;
-    boolean nativecs = (mode & SWT.NATIVE) != 0;
-    // PHONETIC > NATIVE > ROMAN = ALPHA ; The former is stronger.
-    Character.Subset subset;
-    if ((mode & SWT.DBCS) != 0) {
-      // double byte characters
-      subset = InputSubset.FULLWIDTH_LATIN;
-      if (nativecs) {
-        subset = UnicodeBlock.HIRAGANA;
-      }
-      if (phonetic) {
-        subset = UnicodeBlock.KATAKANA;
-      }
-    } else {
-      // not double byte characters
-      subset = InputSubset.LATIN;
-      if (phonetic || nativecs) {
-        subset = InputSubset.HALFWIDTH_KATAKANA;
-      }
-    }
-    ic.setCharacterSubsets (new Character.Subset[] { subset });
-  }
+	ic.setCompositionEnabled (imeOn);
+	if(imeOn) {
+		boolean phonetic = (mode & SWT.PHONETIC) != 0;
+		boolean nativecs = (mode & SWT.NATIVE) != 0;
+		// PHONETIC > NATIVE > ROMAN = ALPHA ; The former is stronger.
+		Character.Subset subset;
+		if ((mode & SWT.DBCS) != 0) {
+			// double byte characters
+			subset = InputSubset.FULLWIDTH_LATIN;
+			if (nativecs) {
+				subset = UnicodeBlock.HIRAGANA;
+			}
+			if (phonetic) {
+				subset = UnicodeBlock.KATAKANA;
+			}
+		} else {
+			// not double byte characters
+			subset = InputSubset.LATIN;
+			if (phonetic || nativecs) {
+				subset = InputSubset.HALFWIDTH_KATAKANA;
+			}
+		}
+		ic.setCharacterSubsets (new Character.Subset[] { subset });
+	}
 //	if (!OS.IsDBLocale) return;
 //	boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;
 //	int hIMC = OS.ImmGetContext (handle);
@@ -1374,7 +1377,7 @@ public void setRegion (Region region) {
 Control initialFocusedControl;
 
 void setInitialFocusedControl(Control initialFocusedControl) {
-  this.initialFocusedControl = initialFocusedControl;
+	this.initialFocusedControl = initialFocusedControl;
 }
 
 public void setVisible (boolean visible) {
@@ -1383,18 +1386,18 @@ public void setVisible (boolean visible) {
 	  return;
 	}
 	boolean isFocusable = handle instanceof Window? ((Window)handle).getFocusableWindowState(): true;
-  handle.setVisible(visible);
-  if(visible) {
-    if(initialFocusedControl != null) {
-      initialFocusedControl.setFocus();
-      initialFocusedControl = null;
-    } else {
-      if(isFocusable) {
-        if (!traverseGroup (true)) setFocus ();
-      }
-    }
-    layout();
-  }
+	handle.setVisible(visible);
+	if(visible) {
+		if(initialFocusedControl != null) {
+			initialFocusedControl.setFocus();
+			initialFocusedControl = null;
+		} else {
+			if(isFocusable) {
+				if (!traverseGroup (true)) setFocus ();
+			}
+		}
+		layout();
+	}
 //	if (drawCount != 0) {
 //		if (((state & HIDDEN) == 0) == visible) return;
 //	} else {
@@ -2008,53 +2011,53 @@ boolean traverseEscape () {
 //}
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse)) { super.processEvent(e); return; } break;
-  case WindowEvent.WINDOW_ACTIVATED: if(!hooks(SWT.Activate)) { super.processEvent(e); return; } break;
-  case WindowEvent.WINDOW_DEACTIVATED: if(!hooks(SWT.Deactivate)) { super.processEvent(e); return; } break;
-  case WindowEvent.WINDOW_CLOSED: if(!hooks(SWT.Close)) { super.processEvent(e); return; } break;
-  case WindowEvent.WINDOW_ICONIFIED: if(!hooks(SWT.Iconify)) { super.processEvent(e); return; } break;
-  case WindowEvent.WINDOW_DEICONIFIED: if(!hooks(SWT.Deiconify)) { super.processEvent(e); return; } break;
-  case WindowEvent.WINDOW_CLOSING: if(!isEnabled()) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case WindowEvent.WINDOW_ACTIVATED: sendEvent(SWT.Activate); break;
-    case WindowEvent.WINDOW_DEACTIVATED: sendEvent(SWT.Deactivate); break;
-    case WindowEvent.WINDOW_CLOSED: sendEvent(SWT.Close); break;
-    case WindowEvent.WINDOW_ICONIFIED: sendEvent(SWT.Iconify); break;
-    case WindowEvent.WINDOW_DEICONIFIED: sendEvent(SWT.Deiconify); break;
-    case WindowEvent.WINDOW_CLOSING:
-      if(isEnabled()) {
-        closeWidget();
-      }
-      break;
-    case ActionEvent.ACTION_PERFORMED:
-      Event event = new Event();
-      event.detail = SWT.TRAVERSE_ESCAPE;
-      sendEvent(SWT.Traverse, event);
-      if(event.doit) {
-        close();
-      }
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse)) { super.processEvent(e); return; } break;
+	case WindowEvent.WINDOW_ACTIVATED: if(!hooks(SWT.Activate)) { super.processEvent(e); return; } break;
+	case WindowEvent.WINDOW_DEACTIVATED: if(!hooks(SWT.Deactivate)) { super.processEvent(e); return; } break;
+	case WindowEvent.WINDOW_CLOSED: if(!hooks(SWT.Close)) { super.processEvent(e); return; } break;
+	case WindowEvent.WINDOW_ICONIFIED: if(!hooks(SWT.Iconify)) { super.processEvent(e); return; } break;
+	case WindowEvent.WINDOW_DEICONIFIED: if(!hooks(SWT.Deiconify)) { super.processEvent(e); return; } break;
+	case WindowEvent.WINDOW_CLOSING: if(!isEnabled()) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case WindowEvent.WINDOW_ACTIVATED: sendEvent(SWT.Activate); break;
+		case WindowEvent.WINDOW_DEACTIVATED: sendEvent(SWT.Deactivate); break;
+		case WindowEvent.WINDOW_CLOSED: sendEvent(SWT.Close); break;
+		case WindowEvent.WINDOW_ICONIFIED: sendEvent(SWT.Iconify); break;
+		case WindowEvent.WINDOW_DEICONIFIED: sendEvent(SWT.Deiconify); break;
+		case WindowEvent.WINDOW_CLOSING:
+			if(isEnabled()) {
+				closeWidget();
+			}
+			break;
+		case ActionEvent.ACTION_PERFORMED:
+			Event event = new Event();
+			event.detail = SWT.TRAVERSE_ESCAPE;
+			sendEvent(SWT.Traverse, event);
+			if(event.doit) {
+				close();
+			}
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

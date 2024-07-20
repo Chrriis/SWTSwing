@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -61,7 +64,7 @@ public class Button extends Control {
 	Image image;
 	ImageList imageList;
 	boolean ignoreMouse;
-  String text;
+	String text;
 //	static final int ButtonProc;
 //	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
 //	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
@@ -176,7 +179,7 @@ static int checkStyle (int style) {
 }
 
 void click () {
-  ((CButton)handle).doClick();
+	((CButton)handle).doClick();
 //	/*
 //	* Feature in Windows.  BM_CLICK sends a fake WM_LBUTTONDOWN and
 //	* WM_LBUTTONUP in order to click the button.  This causes the
@@ -259,21 +262,21 @@ void click () {
 //}
 
 public Point computeSize(int wHint, int hHint, boolean changed) {
-  Point size = super.computeSize(wHint, hHint, changed);
-  if ((style & SWT.ARROW) != 0) {
-    if(wHint == SWT.DEFAULT) {
-      size.x = size.y;
-    } else if(hHint == SWT.DEFAULT) {
-      size.y = size.x;
-    } else {
-      size.x = size.y;
-    }
-  }
-  return size;
+	Point size = super.computeSize(wHint, hHint, changed);
+	if ((style & SWT.ARROW) != 0) {
+		if(wHint == SWT.DEFAULT) {
+			size.x = size.y;
+		} else if(hHint == SWT.DEFAULT) {
+			size.y = size.x;
+		} else {
+			size.x = size.y;
+		}
+	}
+	return size;
 }
 
 Container createHandle () {
-  return (Container)CButton.Factory.newInstance(this, style);
+	return (Container)CButton.Factory.newInstance(this, style);
 }
 
 //int defaultBackground () {
@@ -363,7 +366,7 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-    return ((CButton)handle).isSelected();
+		return ((CButton)handle).isSelected();
 }
 
 /**
@@ -391,7 +394,7 @@ boolean isTabItem () {
 }
 
 boolean isTabGroup() {
-  return (style & SWT.RADIO) == 0;
+	return (style & SWT.RADIO) == 0;
 }
 
 boolean mnemonicHit (char ch) {
@@ -491,27 +494,27 @@ public void setAlignment (int alignment) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-    if((alignment & SWT.UP) != 0) {
-      ((CButton)handle).setAlignment(SwingConstants.NORTH);
-    } else if((alignment & SWT.DOWN) != 0) {
-      ((CButton)handle).setAlignment(SwingConstants.SOUTH);
-    } else if((alignment & SWT.LEFT) != 0) {
-      ((CButton)handle).setAlignment(SwingConstants.WEST);
-    } else if((alignment & SWT.RIGHT) != 0) {
-      ((CButton)handle).setAlignment(SwingConstants.EAST);
-    }
+		if((alignment & SWT.UP) != 0) {
+			((CButton)handle).setAlignment(SwingConstants.NORTH);
+		} else if((alignment & SWT.DOWN) != 0) {
+			((CButton)handle).setAlignment(SwingConstants.SOUTH);
+		} else if((alignment & SWT.LEFT) != 0) {
+			((CButton)handle).setAlignment(SwingConstants.WEST);
+		} else if((alignment & SWT.RIGHT) != 0) {
+			((CButton)handle).setAlignment(SwingConstants.EAST);
+		}
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-  if((alignment & SWT.LEFT) != 0) {
-    ((CButton)handle).setAlignment(SwingConstants.LEFT);
-  } else if((alignment & SWT.RIGHT) != 0) {
-    ((CButton)handle).setAlignment(SwingConstants.RIGHT);
-  } else if((alignment & SWT.CENTER) != 0) {
-    ((CButton)handle).setAlignment(SwingConstants.CENTER);
-  }
+	if((alignment & SWT.LEFT) != 0) {
+		((CButton)handle).setAlignment(SwingConstants.LEFT);
+	} else if((alignment & SWT.RIGHT) != 0) {
+		((CButton)handle).setAlignment(SwingConstants.RIGHT);
+	} else if((alignment & SWT.CENTER) != 0) {
+		((CButton)handle).setAlignment(SwingConstants.CENTER);
+	}
 }
 
 //void setDefault (boolean value) {
@@ -543,14 +546,14 @@ public void setAlignment (int alignment) {
  * </ul>
  */
 public void setImage (Image image) {
-  checkWidget ();
-  if (image != null && image.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  this.image = image;
-  ImageIcon icon = null;
-  if (image != null && image.handle != null) {
-    icon = new ImageIcon (image.handle);
-  }
-  ((CButton) handle).setIcon (icon);
+	checkWidget ();
+	if (image != null && image.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	this.image = image;
+	ImageIcon icon = null;
+	if (image != null && image.handle != null) {
+		icon = new ImageIcon (image.handle);
+	}
+	((CButton) handle).setIcon (icon);
 }
 
 boolean setRadioFocus () {
@@ -603,8 +606,8 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	isAdjustingSelection = true;
-  ((CButton)handle).setSelected(selected);
-  isAdjustingSelection = false;
+	((CButton)handle).setSelected(selected);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -638,22 +641,22 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-  this.text = string;
-  int mnemonicIndex = findMnemonicIndex(string);
-  if(mnemonicIndex > 0) {
-    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
-    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
-    mnemonicIndex -= mnemonicIndex - 1 - s.length();
-    mnemonicIndex--;
-  } else {
-    string = string.replaceAll("&&", "&");
-  }
-  CButton cButton = (CButton)handle;
-  cButton.setText(string);
-  if(mnemonicIndex >= 0) {
-    cButton.setMnemonic(string.charAt(mnemonicIndex));
-  }
-  cButton.setDisplayedMnemonicIndex(mnemonicIndex);
+	this.text = string;
+	int mnemonicIndex = findMnemonicIndex(string);
+	if(mnemonicIndex > 0) {
+		String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+		string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+		mnemonicIndex -= mnemonicIndex - 1 - s.length();
+		mnemonicIndex--;
+	} else {
+		string = string.replaceAll("&&", "&");
+	}
+	CButton cButton = (CButton)handle;
+	cButton.setText(string);
+	if(mnemonicIndex >= 0) {
+		cButton.setMnemonic(string.charAt(mnemonicIndex));
+	}
+	cButton.setDisplayedMnemonicIndex(mnemonicIndex);
 }
 
 //int widgetStyle () {
@@ -804,110 +807,110 @@ public void setText (String string) {
 //}
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && (isAdjustingSelection || !hooks(SWT.Selection))) { super.processEvent(e); return; } break;
-  case ItemEvent.ITEM_STATE_CHANGED: if(isAdjustingSelection || !hooks(SWT.Selection)) { super.processEvent(e); return; } break;
-  case KeyEvent.KEY_PRESSED:
-    if((style & SWT.RADIO) != 0) {
-      switch(((KeyEvent)e).getKeyCode()) {
-      case KeyEvent.VK_UP:
-      case KeyEvent.VK_LEFT:
-      case KeyEvent.VK_DOWN:
-      case KeyEvent.VK_RIGHT:
-        break;
-      default:
-        super.processEvent(e);
-        return;
-      }
-    }
-    break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case ActionEvent.ACTION_PERFORMED:
-      if((style & SWT.RADIO) != 0) {
-        if(!getSelection()) {
-          ((CButton)handle).setSelected(true);
-        }
-        if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-          Component[] components = handle.getParent().getComponents();
-          for(int i=0; i<components.length; i++) {
-            Component component = components[i];
-            if(component instanceof JRadioButton && component != handle) {
-              JRadioButton radioButton = (JRadioButton)component;
-              if(radioButton.isSelected()) {
-                radioButton.setSelected(false);
-                if(!isAdjustingSelection && hooks(SWT.Selection)) {
-                  ((CControl)radioButton).getSWTHandle().sendEvent (SWT.Selection);
-                }
-              }
-            }
-          }
-        }
-      }
-      if(!isAdjustingSelection && hooks(SWT.Selection)) {
-        sendEvent (SWT.Selection);
-      }
-      break;
-    case ItemEvent.ITEM_STATE_CHANGED:
-      if(hooks(SWT.Selection)) {
-        sendEvent (SWT.Selection);
-      }
-      break;
-    case KeyEvent.KEY_PRESSED:
-      if((style & SWT.RADIO) != 0) {
-        boolean isBackward = false;
-        switch(((KeyEvent)e).getKeyCode()) {
-        case KeyEvent.VK_UP:
-        case KeyEvent.VK_LEFT:
-          isBackward = true;
-        case KeyEvent.VK_DOWN:
-        case KeyEvent.VK_RIGHT:
-          Component[] components = handle.getParent().getComponents();
-          int index = 0;
-          for(index=0; index<components.length; index++) {
-            Component component = components[index];
-            if(component == handle) {
-              break;
-            }
-          }
-          for(int i=0; i<components.length; i++) {
-            Component component;
-            if(isBackward) {
-              component = components[(components.length - i + index - 1) % components.length];
-            } else {
-              component = components[(i + index + 1) % components.length];
-            }
-            if(component instanceof JRadioButton) {
-              if(component != handle) {
-                ((JRadioButton)component).requestFocus();
-              }
-              break;
-            }
-          }
-          break;
-        }
-      }
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && (isAdjustingSelection || !hooks(SWT.Selection))) { super.processEvent(e); return; } break;
+	case ItemEvent.ITEM_STATE_CHANGED: if(isAdjustingSelection || !hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+	case KeyEvent.KEY_PRESSED:
+		if((style & SWT.RADIO) != 0) {
+			switch(((KeyEvent)e).getKeyCode()) {
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_LEFT:
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_RIGHT:
+				break;
+			default:
+				super.processEvent(e);
+				return;
+			}
+		}
+		break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case ActionEvent.ACTION_PERFORMED:
+			if((style & SWT.RADIO) != 0) {
+				if(!getSelection()) {
+					((CButton)handle).setSelected(true);
+				}
+				if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+					Component[] components = handle.getParent().getComponents();
+					for(int i=0; i<components.length; i++) {
+						Component component = components[i];
+						if(component instanceof JRadioButton && component != handle) {
+							JRadioButton radioButton = (JRadioButton)component;
+							if(radioButton.isSelected()) {
+								radioButton.setSelected(false);
+								if(!isAdjustingSelection && hooks(SWT.Selection)) {
+									((CControl)radioButton).getSWTHandle().sendEvent (SWT.Selection);
+								}
+							}
+						}
+					}
+				}
+			}
+			if(!isAdjustingSelection && hooks(SWT.Selection)) {
+				sendEvent (SWT.Selection);
+			}
+			break;
+		case ItemEvent.ITEM_STATE_CHANGED:
+			if(hooks(SWT.Selection)) {
+				sendEvent (SWT.Selection);
+			}
+			break;
+		case KeyEvent.KEY_PRESSED:
+			if((style & SWT.RADIO) != 0) {
+				boolean isBackward = false;
+				switch(((KeyEvent)e).getKeyCode()) {
+				case KeyEvent.VK_UP:
+				case KeyEvent.VK_LEFT:
+					isBackward = true;
+				case KeyEvent.VK_DOWN:
+				case KeyEvent.VK_RIGHT:
+					Component[] components = handle.getParent().getComponents();
+					int index = 0;
+					for(index=0; index<components.length; index++) {
+						Component component = components[index];
+						if(component == handle) {
+							break;
+						}
+					}
+					for(int i=0; i<components.length; i++) {
+						Component component;
+						if(isBackward) {
+							component = components[(components.length - i + index - 1) % components.length];
+						} else {
+							component = components[(i + index + 1) % components.length];
+						}
+						if(component instanceof JRadioButton) {
+							if(component != handle) {
+								((JRadioButton)component).requestFocus();
+							}
+							break;
+						}
+					}
+					break;
+				}
+			}
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

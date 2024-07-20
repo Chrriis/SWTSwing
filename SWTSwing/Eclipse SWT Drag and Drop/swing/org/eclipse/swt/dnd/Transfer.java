@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -30,7 +33,7 @@ import java.io.IOException;
 public abstract class Transfer {
 	
 abstract protected DataFlavor getDataFlavor();
-  
+	
 /**
  * Returns a list of the platform specific data types that can be converted using 
  * this transfer agent.
@@ -54,13 +57,13 @@ abstract public TransferData[] getSupportedTypes();
  * agent
  */
 public boolean isSupportedType(TransferData transferData) {
-  TransferData[] types = getSupportedTypes();
-  for(int i=0; i<types.length; i++) {
-    if(types[i].dataFlavor.equals(transferData.dataFlavor)) {
-      return true;
-    }
-  }
-  return false;
+	TransferData[] types = getSupportedTypes();
+	for(int i=0; i<types.length; i++) {
+		if(types[i].dataFlavor.equals(transferData.dataFlavor)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -71,12 +74,12 @@ public boolean isSupportedType(TransferData transferData) {
  * this transfer agent
  */
 protected int[] getTypeIds() {
-  TransferData[] supportedTyes = getSupportedTypes();
-  int[] ids = new int[supportedTyes.length];
-  for(int i=0; i<supportedTyes.length; i++) {
-    ids[i] = getTypeID(supportedTyes[i].dataFlavor.getHumanPresentableName());
-  }
-  return ids;
+	TransferData[] supportedTyes = getSupportedTypes();
+	int[] ids = new int[supportedTyes.length];
+	for(int i=0; i<supportedTyes.length; i++) {
+		ids[i] = getTypeID(supportedTyes[i].dataFlavor.getHumanPresentableName());
+	}
+	return ids;
 }
 
 /**
@@ -87,12 +90,12 @@ protected int[] getTypeIds() {
  * using this transfer agent.
  */
 protected String[] getTypeNames() {
-  TransferData[] supportedTyes = getSupportedTypes();
-  String[] names = new String[supportedTyes.length];
-  for(int i=0; i<supportedTyes.length; i++) {
-    names[i] = supportedTyes[i].dataFlavor.getHumanPresentableName();
-  }
-  return names;
+	TransferData[] supportedTyes = getSupportedTypes();
+	String[] names = new String[supportedTyes.length];
+	for(int i=0; i<supportedTyes.length; i++) {
+		names[i] = supportedTyes[i].dataFlavor.getHumanPresentableName();
+	}
+	return names;
 }
 
 /**
@@ -140,12 +143,12 @@ abstract protected void javaToNative (Object object, TransferData transferData);
  * dependant on the <code>Transfer</code> subclass.
  */
 protected Object nativeToJava(TransferData transferData){
-  if (!isSupportedType(transferData) || transferData.transferable == null) return null;
-  try {
-    return transferData.transferable.getTransferData(getDataFlavor());
-  } catch(UnsupportedFlavorException e) {
-  } catch(IOException e) {}
-  return null;
+	if (!isSupportedType(transferData) || transferData.transferable == null) return null;
+	try {
+		return transferData.transferable.getTransferData(getDataFlavor());
+	} catch(UnsupportedFlavorException e) {
+	} catch(IOException e) {}
+	return null;
 }
 
 /**
@@ -163,20 +166,20 @@ protected Object nativeToJava(TransferData transferData){
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName) {
-  return getTypeID(formatName);
+	return getTypeID(formatName);
 }
 
 static int getTypeID(String formatName) {
-  // copied from the Carbon's port Transfer class
-  int length = formatName.length();
-  // TODO - hashcode may not be unique - need another way
-  if (length > 4) return formatName.hashCode();
-  int type = 0;
-  if (length > 0) type |= (formatName.charAt(0) & 0xff) << 24;
-  if (length > 1) type |= (formatName.charAt(1) & 0xff) << 16;
-  if (length > 2) type |= (formatName.charAt(2) & 0xff) << 8;
-  if (length > 3) type |= formatName.charAt(3) & 0xff;
-  return type;
+	// copied from the Carbon's port Transfer class
+	int length = formatName.length();
+	// TODO - hashcode may not be unique - need another way
+	if (length > 4) return formatName.hashCode();
+	int type = 0;
+	if (length > 0) type |= (formatName.charAt(0) & 0xff) << 24;
+	if (length > 1) type |= (formatName.charAt(1) & 0xff) << 16;
+	if (length > 2) type |= (formatName.charAt(2) & 0xff) << 8;
+	if (length > 3) type |= formatName.charAt(3) & 0xff;
+	return type;
 }
 
 /**

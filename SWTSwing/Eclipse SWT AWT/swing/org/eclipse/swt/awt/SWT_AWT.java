@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -49,11 +52,11 @@ import java.awt.event.FocusEvent;
  */
 public class SWT_AWT {
 
-  /**
-   * Key for looking up the embedded frame for a Composite using
-   * getData(). 
-   */
-  static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
+	/**
+	 * Key for looking up the embedded frame for a Composite using
+	 * getData(). 
+	 */
+	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
 
 /**
  * Returns a <code>java.awt.Frame</code> which is the embedded frame
@@ -69,9 +72,9 @@ public class SWT_AWT {
  * @since 3.2
  */
 public static Frame getFrame (Composite parent) {
-  if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;
-  return (Frame)parent.getData(EMBEDDED_FRAME_KEY);
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;
+	return (Frame)parent.getData(EMBEDDED_FRAME_KEY);
 }
 
 /**
@@ -104,17 +107,17 @@ public static Frame new_Frame (final Composite parent) {
 	}
 	final Container container = ((CComposite)parent.handle).getClientArea();
 	final Frame frame = new Frame() {
-    public void setLayout(LayoutManager mgr) {
-      if(container != null) {
-        container.setLayout(mgr);
-      }
-    }
-    protected void addImpl(Component comp, Object constraints, int index) {
-      container.add(comp, constraints, index);
-    }
-  };
-  container.setLayout(new BorderLayout(0, 0));
-  parent.setData(EMBEDDED_FRAME_KEY, frame);  
+		public void setLayout(LayoutManager mgr) {
+			if(container != null) {
+				container.setLayout(mgr);
+			}
+		}
+		protected void addImpl(Component comp, Object constraints, int index) {
+			container.add(comp, constraints, index);
+		}
+	};
+	container.setLayout(new BorderLayout(0, 0));
+	parent.setData(EMBEDDED_FRAME_KEY, frame);  
 //	frame.addNotify();
 	
 	/*
@@ -200,15 +203,15 @@ public static Frame new_Frame (final Composite parent) {
 public static Shell new_Shell (final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  Utils.notImplemented(); return null;
-//  int handle = 0;
+	Utils.notImplemented(); return null;
+//	int handle = 0;
 //	try {
 //		loadLibrary ();
 //		handle = getAWTHandle (parent);
 //	} catch (Throwable e) {
 //		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 //	}
-//  if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
+//	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 //
 //	final Shell shell = Shell.win32_new (display, handle);
 //	parent.addComponentListener(new ComponentAdapter () {

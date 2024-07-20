@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -116,12 +119,12 @@ static int checkStyle (int style) {
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state |= THEME_BACKGROUND;
+	super.createHandleInit();
+	state |= THEME_BACKGROUND;
 }
 
 Container createHandle () {
-  return (Container)CSash.Factory.newInstance(this, style);
+	return (Container)CSash.Factory.newInstance(this, style);
 }
 
 /**
@@ -153,96 +156,96 @@ Point origin;
 Point targetPoint;
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case MouseEvent.MOUSE_PRESSED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
-  case MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
-  case MouseEvent.MOUSE_RELEASED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case MouseEvent.MOUSE_PRESSED: {
-      origin = ((MouseEvent)e).getPoint();
-      Event event = new Event();
-      Rectangle bounds = getBounds();
-      event.x = bounds.x;
-      event.y = bounds.y;
-      event.width = bounds.width;
-      event.height = bounds.height;
-      targetPoint = new Point(bounds.x, bounds.y);
-      sendEvent(SWT.Selection, event);
-      break;
-    }
-    case MouseEvent.MOUSE_RELEASED: {
-      Event event = new Event();
-      Rectangle bounds = getBounds();
-      event.x = targetPoint.x;
-      event.y = targetPoint.y;
-      event.width = bounds.width;
-      event.height = bounds.height;
-//        if ((style & SWT.SMOOTH) != 0) {
-//          event.detail = SWT.DRAG;
-//        }
-      sendEvent(SWT.Selection, event);
-      origin = null;
-      targetPoint = null;
-      break;
-    }
-    case MouseEvent.MOUSE_DRAGGED:
-      Event event = new Event();
-      MouseEvent me = (MouseEvent)e;
-      java.awt.Dimension size = handle.getParent().getSize();
-      Rectangle bounds = getBounds();
-      event.x = bounds.x;
-      event.y = bounds.y;
-      if((style & SWT.VERTICAL) != 0) {
-        event.x += me.getX() - origin.x;
-        if(event.x < 0) {
-          event.x = 0;
-        } else if(event.x >= size.width - bounds.width) {
-          event.x = size.width - bounds.width;
-        }
-      } else {
-        event.y += me.getY() - origin.y;
-        if(event.y < 0) {
-          event.y = 0;
-        } else if(event.y >= size.height - bounds.height) {
-          event.y = size.height - bounds.height;
-        }
-      }
-      event.width = bounds.width;
-      event.height = bounds.height;
-      if ((style & SWT.SMOOTH) == 0) {
-        event.detail = SWT.DRAG;
-      }
-      sendEvent(SWT.Selection, event);
-      if (event.doit) {
-        targetPoint.x = event.x;
-        targetPoint.y = event.y;
-        ((CSash)handle).setDragLocation((style & SWT.VERTICAL) != 0? targetPoint.x: targetPoint.y);
-//          if ((style & SWT.SMOOTH) != 0) {
-//            setLocation(targetPoint.x, targetPoint.y);
-//          }
-      }
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case MouseEvent.MOUSE_PRESSED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+	case MouseEvent.MOUSE_DRAGGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+	case MouseEvent.MOUSE_RELEASED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case MouseEvent.MOUSE_PRESSED: {
+			origin = ((MouseEvent)e).getPoint();
+			Event event = new Event();
+			Rectangle bounds = getBounds();
+			event.x = bounds.x;
+			event.y = bounds.y;
+			event.width = bounds.width;
+			event.height = bounds.height;
+			targetPoint = new Point(bounds.x, bounds.y);
+			sendEvent(SWT.Selection, event);
+			break;
+		}
+		case MouseEvent.MOUSE_RELEASED: {
+			Event event = new Event();
+			Rectangle bounds = getBounds();
+			event.x = targetPoint.x;
+			event.y = targetPoint.y;
+			event.width = bounds.width;
+			event.height = bounds.height;
+//				if ((style & SWT.SMOOTH) != 0) {
+//					event.detail = SWT.DRAG;
+//				}
+			sendEvent(SWT.Selection, event);
+			origin = null;
+			targetPoint = null;
+			break;
+		}
+		case MouseEvent.MOUSE_DRAGGED:
+			Event event = new Event();
+			MouseEvent me = (MouseEvent)e;
+			java.awt.Dimension size = handle.getParent().getSize();
+			Rectangle bounds = getBounds();
+			event.x = bounds.x;
+			event.y = bounds.y;
+			if((style & SWT.VERTICAL) != 0) {
+				event.x += me.getX() - origin.x;
+				if(event.x < 0) {
+					event.x = 0;
+				} else if(event.x >= size.width - bounds.width) {
+					event.x = size.width - bounds.width;
+				}
+			} else {
+				event.y += me.getY() - origin.y;
+				if(event.y < 0) {
+					event.y = 0;
+				} else if(event.y >= size.height - bounds.height) {
+					event.y = size.height - bounds.height;
+				}
+			}
+			event.width = bounds.width;
+			event.height = bounds.height;
+			if ((style & SWT.SMOOTH) == 0) {
+				event.detail = SWT.DRAG;
+			}
+			sendEvent(SWT.Selection, event);
+			if (event.doit) {
+				targetPoint.x = event.x;
+				targetPoint.y = event.y;
+				((CSash)handle).setDragLocation((style & SWT.VERTICAL) != 0? targetPoint.x: targetPoint.y);
+//					if ((style & SWT.SMOOTH) != 0) {
+//						setLocation(targetPoint.x, targetPoint.y);
+//					}
+			}
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

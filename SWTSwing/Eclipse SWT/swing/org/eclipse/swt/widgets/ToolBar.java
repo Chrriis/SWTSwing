@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -52,7 +55,7 @@ import org.eclipse.swt.internal.swing.Utils;
  */
 public class ToolBar extends Composite {
 //	int lastFocusId;
-  ArrayList itemList = new ArrayList();
+	ArrayList itemList = new ArrayList();
 //	ToolItem [] items;
 //	boolean ignoreResize, ignoreMouse;
 //	ImageList imageList, disabledImageList, hotImageList;
@@ -98,7 +101,7 @@ public ToolBar (Composite parent, int style) {
 }
 
 ScrollBar createScrollBar (int type) {
-  return null;
+	return null;
 }
 
 static int checkStyle (int style) {
@@ -114,69 +117,69 @@ protected void checkSubclass () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-  checkWidget ();
-  Point cSize = super.computeSize (wHint, hHint, changed);
-  if((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        isAdjustingSize = true;
-      }
-    });
-    java.awt.Dimension size = handle.getSize();
-    handle.setSize(wHint, Integer.MAX_VALUE);
-    handle.validate();
-    Component[] components = handle.getComponents();
-    int maxHeight = 0;
-    for(int i=0; i<components.length; i++) {
-      java.awt.Rectangle bounds = components[i].getBounds();
-      maxHeight = Math.max(bounds.y + bounds.height, maxHeight);
-    }
-    handle.setSize(size);
-    handle.validate();
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        isAdjustingSize = false;
-      }
-    });
-    return new Point(cSize.x, hHint != SWT.DEFAULT? hHint: maxHeight);
-    // TODO: walk through all the components and compute the size for a fixed width.
-  }
-  Dimension preferredSize = handle.getPreferredSize();
-  if(wHint == SWT.DEFAULT) {
-    return new Point(preferredSize.width, preferredSize.height);
-  }
-  return new Point(cSize.x, preferredSize.height);
-//  return cSize;
+	checkWidget ();
+	Point cSize = super.computeSize (wHint, hHint, changed);
+	if((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				isAdjustingSize = true;
+			}
+		});
+		java.awt.Dimension size = handle.getSize();
+		handle.setSize(wHint, Integer.MAX_VALUE);
+		handle.validate();
+		Component[] components = handle.getComponents();
+		int maxHeight = 0;
+		for(int i=0; i<components.length; i++) {
+			java.awt.Rectangle bounds = components[i].getBounds();
+			maxHeight = Math.max(bounds.y + bounds.height, maxHeight);
+		}
+		handle.setSize(size);
+		handle.validate();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				isAdjustingSize = false;
+			}
+		});
+		return new Point(cSize.x, hHint != SWT.DEFAULT? hHint: maxHeight);
+		// TODO: walk through all the components and compute the size for a fixed width.
+	}
+	Dimension preferredSize = handle.getPreferredSize();
+	if(wHint == SWT.DEFAULT) {
+		return new Point(preferredSize.width, preferredSize.height);
+	}
+	return new Point(cSize.x, preferredSize.height);
+//	return cSize;
 }
 
 Control [] _getChildren () {
-  Component[] children = ((CControl)handle).getClientArea().getComponents();
-  if(children.length == 0) {
-    return new Control[0];
-  }
-  ArrayList controlsList = new ArrayList(children.length);
-  if(itemList != null) {
-    for(int i=0; i<itemList.size(); i++) {
-      Control control = ((ToolItem)itemList.get(i)).getControl();
-      if(control != null) {
-        controlsList.add(control);
-      }
-    }
-  }
-  return (Control[])controlsList.toArray(new Control[0]);
+	Component[] children = ((CControl)handle).getClientArea().getComponents();
+	if(children.length == 0) {
+		return new Control[0];
+	}
+	ArrayList controlsList = new ArrayList(children.length);
+	if(itemList != null) {
+		for(int i=0; i<itemList.size(); i++) {
+			Control control = ((ToolItem)itemList.get(i)).getControl();
+			if(control != null) {
+				controlsList.add(control);
+			}
+		}
+	}
+	return (Control[])controlsList.toArray(new Control[0]);
 }
 
 boolean autoAddChildren() {
-  return false;
+	return false;
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~CANVAS;
+	super.createHandleInit();
+	state &= ~CANVAS;
 }
 
 protected Container createHandle () {
-  return (Container)CToolBar.Factory.newInstance(this, style);
+	return (Container)CToolBar.Factory.newInstance(this, style);
 }
 
 void createItem (ToolItem item, int index) {
@@ -190,26 +193,26 @@ void createItem (ToolItem item, int index) {
 //		items = newItems;
 //	}
 //	items [item.id = id] = item;
-  itemList.add(index, item);
-  handle.add(item.handle, index);
-  ((JComponent)handle).revalidate();
-  handle.repaint();
+	itemList.add(index, item);
+	handle.add(item.handle, index);
+	((JComponent)handle).revalidate();
+	handle.repaint();
 //	if ((style & SWT.VERTICAL) != 0) setRows (count + 1);
 //	layoutItems ();
 }
 
 void createWidget () {
 	super.createWidget ();
-  itemList = new ArrayList();
+	itemList = new ArrayList();
 //	items = new ToolItem [4];
 //	lastFocusId = -1;
 }
 
 void destroyItem (ToolItem item) {
-  itemList.remove(item);
-  handle.remove(item.handle);
-  ((JComponent)handle).revalidate();
-  handle.repaint();
+	itemList.remove(item);
+	handle.remove(item.handle);
+	((JComponent)handle).revalidate();
+	handle.repaint();
 //	TBBUTTONINFO info = new TBBUTTONINFO ();
 //	info.cbSize = TBBUTTONINFO.sizeof;
 //	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
@@ -251,9 +254,9 @@ void destroyItem (ToolItem item) {
 //		items = new ToolItem [4];
 //	}
 //	if ((style & SWT.VERTICAL) != 0) setRows (count - 1);
-  if(itemList.isEmpty()) {
-    itemList = new ArrayList();
-  }
+	if(itemList.isEmpty()) {
+		itemList = new ArrayList();
+	}
 //	layoutItems ();
 }
 
@@ -288,7 +291,7 @@ public ToolItem getItem (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-  return (ToolItem)itemList.get(index);
+	return (ToolItem)itemList.get(index);
 //	return items [handle.getclpButton.idCommand];
 }
 
@@ -352,7 +355,7 @@ public int getItemCount () {
  */
 public ToolItem [] getItems () {
 	checkWidget ();
-  return (ToolItem [])itemList.toArray(new ToolItem [0]);
+	return (ToolItem [])itemList.toArray(new ToolItem [0]);
 //	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 //	TBBUTTON lpButton = new TBBUTTON ();
 //	ToolItem [] result = new ToolItem [count];
@@ -378,7 +381,7 @@ public ToolItem [] getItems () {
  */
 public int getRowCount () {
 	checkWidget ();
-  Utils.notImplemented(); return 1;
+	Utils.notImplemented(); return 1;
 //	if ((style & SWT.VERTICAL) != 0) {
 //		return OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 //	}
@@ -407,7 +410,7 @@ public int indexOf (ToolItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-  return itemList.indexOf(item);
+	return itemList.indexOf(item);
 //	return OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, item.id, 0);
 }
 
@@ -415,7 +418,7 @@ public int indexOf (ToolItem item) {
 ////	if ((style & SWT.WRAP) != 0) {
 ////		OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
 ////	}
-//  int count = itemList.size();
+//	int count = itemList.size();
 //	for (int i=0; i<count; i++) {
 //		((ToolItem)itemList.get(i)).resizeControl ();
 ////		if (item != null) item.resizeControl ();
@@ -423,8 +426,8 @@ public int indexOf (ToolItem item) {
 //}
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-  java.awt.Dimension size = handle.getPreferredSize();
-  return new Point(size.width, size.height);
+	java.awt.Dimension size = handle.getPreferredSize();
+	return new Point(size.width, size.height);
 }
 
 //boolean mnemonicHit (char ch) {
@@ -459,17 +462,17 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 //}
 
 void releaseChildren (boolean destroy) {
-  if (itemList != null) {
-    int count = itemList.size();
-  	for (int i=0; i<count; i++) {
-  		ToolItem item = (ToolItem)itemList.get(i);
-  		if (item != null && !item.isDisposed ()) {
-//  			item.releaseImages ();
-  			item.release (false);
-  		}
-  	}
-    itemList = null;
-  }
+	if (itemList != null) {
+		int count = itemList.size();
+		for (int i=0; i<count; i++) {
+			ToolItem item = (ToolItem)itemList.get(i);
+			if (item != null && !item.isDisposed ()) {
+//				item.releaseImages ();
+				item.release (false);
+			}
+		}
+		itemList = null;
+	}
 //	if (imageList != null) {
 //		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
 //		display.releaseToolImageList (imageList);
@@ -483,12 +486,12 @@ void releaseChildren (boolean destroy) {
 //		display.releaseToolDisabledImageList (disabledImageList);
 //	}
 //	imageList = hotImageList = disabledImageList = null;
-  super.releaseChildren (destroy);
+	super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {
 	super.removeControl (control);
-  int count = itemList.size();
+	int count = itemList.size();
 	for (int i=0; i<count; i++) {
 		ToolItem item = (ToolItem)itemList.get(i);
 		if (item != null && item.control == control) {
@@ -553,14 +556,14 @@ void removeControl (Control control) {
 //	checkWidget ();
 //	if (!super.setParent (parent)) return false;
 //	// TODO: how to add, if the new parent is a coolbar?
-//  Utils.notImplemented(); return false;
+//	Utils.notImplemented(); return false;
 ////	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
 ////	return true;
 //}
 
 boolean setTabItemFocus () {
 	int index = 0;
-  int count = itemList.size();
+	int count = itemList.size();
 	while (index < count) {
 		ToolItem item = (ToolItem)itemList.get(index);
 		if (item != null && (item.style & SWT.SEPARATOR) == 0) {

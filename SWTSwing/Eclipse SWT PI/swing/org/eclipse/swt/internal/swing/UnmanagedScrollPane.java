@@ -15,25 +15,25 @@ import javax.swing.event.ChangeListener;
 
 class UnmanagedScrollPane extends JScrollPane {
 
-  public UnmanagedScrollPane(int vsbPolicy, int hsbPolicy) {
-    super(vsbPolicy, hsbPolicy);
-  }
+	public UnmanagedScrollPane(int vsbPolicy, int hsbPolicy) {
+		super(vsbPolicy, hsbPolicy);
+	}
 
-  protected static class DisconnectedViewport extends JViewport {
-    public void setViewPosition(Point p) {
-      // Do nothing to prevent auto scrolling
-    }
-    public void addChangeListener(ChangeListener l) {
-      // Do nothing to prevent auto scrolling
-    }
-  }
-  
-  protected final JViewport createViewport() {
-    return createDisconnectedViewport();
-  }
-  
-  protected DisconnectedViewport createDisconnectedViewport() {
-    return new DisconnectedViewport();
-  }
+	protected static class DisconnectedViewport extends JViewport {
+		public void setViewPosition(Point p) {
+			// Do nothing to prevent auto scrolling
+		}
+		public void addChangeListener(ChangeListener l) {
+			// Do nothing to prevent auto scrolling
+		}
+	}
+	
+	protected final JViewport createViewport() {
+		return createDisconnectedViewport();
+	}
+	
+	protected DisconnectedViewport createDisconnectedViewport() {
+		return new DisconnectedViewport();
+	}
 
 }

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -131,18 +134,18 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_SIZESW: 	   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.SW_RESIZE_CURSOR); break;
 		case SWT.CURSOR_SIZENW: 	   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NW_RESIZE_CURSOR); break;
 		case SWT.CURSOR_IBEAM: 		   handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.TEXT_CURSOR); break;
-    // Cursor that do not fit exactly with the description:
+		// Cursor that do not fit exactly with the description:
 		case SWT.CURSOR_APPSTARTING: handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR); break;
 		case SWT.CURSOR_SIZEWE:      handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.E_RESIZE_CURSOR); break;
 		case SWT.CURSOR_SIZENS:      handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.N_RESIZE_CURSOR); break;
 		case SWT.CURSOR_SIZENESW:    handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NE_RESIZE_CURSOR); break;
 		case SWT.CURSOR_SIZENWSE:    handle = java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.NW_RESIZE_CURSOR); break;
-    // Custom cursors
-    case SWT.CURSOR_UPARROW:
+		// Custom cursors
+		case SWT.CURSOR_UPARROW:
 		case SWT.CURSOR_NO:
-    case SWT.CURSOR_HELP:
-      handle = createCursor(style);
-      break;
+		case SWT.CURSOR_HELP:
+			handle = createCursor(style);
+			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -150,62 +153,62 @@ public Cursor(Device device, int style) {
 }
 
 java.awt.Cursor createCursor(int type) {
-  String name = "";
-  switch(type) {
-    case SWT.CURSOR_UPARROW: name = "UpCursor"; break;
-    case SWT.CURSOR_NO: name = "NoCursor"; break;
-    case SWT.CURSOR_HELP: name = "HelpCursor"; break;
-    default: return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR);
-  }
-  // Get the Property file
-  InputStream is = getClass().getResourceAsStream("resources/" + name + ".properties");
-  if (is == null) {
-    return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
-  }
-  String gifFile = null;
-  String hotspot = null;
-  try {
-    ResourceBundle resource = new PropertyResourceBundle(is);
-    gifFile = "resources/" + resource.getString("Cursor.File");
-    hotspot = resource.getString("Cursor.HotSpot");
-  } catch (MissingResourceException e) {
-    return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
-  } catch (IOException e2) {
-    return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
-  }
-  // Create the icon
-  byte[] buffer = null;
-  try {
-    InputStream resource = getClass().getResourceAsStream(gifFile);
-    if (resource == null) {
-      return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
-    }
-    BufferedInputStream in = new BufferedInputStream(resource);
-    ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-    buffer = new byte[1024];
-    int n;
-    while ((n = in.read(buffer)) > 0) {
-      out.write(buffer, 0, n);
-    }
-    in.close();
-    out.flush();
-    buffer = out.toByteArray();
-    if (buffer.length == 0) {
-      return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
-    }
-  } catch (IOException ioe) {
-    return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
-  }
-  ImageIcon icon = new ImageIcon(buffer);
-  // create the point
-  int k = hotspot.indexOf(',');
-  java.awt.Point point = new java.awt.Point(Integer.parseInt(hotspot.substring(0, k)), Integer.parseInt(hotspot.substring(k + 1)));
-  try {
-    return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), point, name);
-  } catch (NoSuchMethodError err) {
-    // return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-    return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
-  }
+	String name = "";
+	switch(type) {
+		case SWT.CURSOR_UPARROW: name = "UpCursor"; break;
+		case SWT.CURSOR_NO: name = "NoCursor"; break;
+		case SWT.CURSOR_HELP: name = "HelpCursor"; break;
+		default: return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR);
+	}
+	// Get the Property file
+	InputStream is = getClass().getResourceAsStream("resources/" + name + ".properties");
+	if (is == null) {
+		return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
+	}
+	String gifFile = null;
+	String hotspot = null;
+	try {
+		ResourceBundle resource = new PropertyResourceBundle(is);
+		gifFile = "resources/" + resource.getString("Cursor.File");
+		hotspot = resource.getString("Cursor.HotSpot");
+	} catch (MissingResourceException e) {
+		return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
+	} catch (IOException e2) {
+		return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
+	}
+	// Create the icon
+	byte[] buffer = null;
+	try {
+		InputStream resource = getClass().getResourceAsStream(gifFile);
+		if (resource == null) {
+			return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
+		}
+		BufferedInputStream in = new BufferedInputStream(resource);
+		ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+		buffer = new byte[1024];
+		int n;
+		while ((n = in.read(buffer)) > 0) {
+			out.write(buffer, 0, n);
+		}
+		in.close();
+		out.flush();
+		buffer = out.toByteArray();
+		if (buffer.length == 0) {
+			return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
+		}
+	} catch (IOException ioe) {
+		return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
+	}
+	ImageIcon icon = new ImageIcon(buffer);
+	// create the point
+	int k = hotspot.indexOf(',');
+	java.awt.Point point = new java.awt.Point(Integer.parseInt(hotspot.substring(0, k)), Integer.parseInt(hotspot.substring(k + 1)));
+	try {
+		return Toolkit.getDefaultToolkit().createCustomCursor(icon.getImage(), point, name);
+	} catch (NoSuchMethodError err) {
+		// return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+		return java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.DEFAULT_CURSOR);
+	}
 }
 
 /**	 
@@ -264,8 +267,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	source = ImageData.convertMask(source);
 	
 	BufferedImage image = new BufferedImage(source.width, source.height, BufferedImage.TYPE_INT_ARGB);
-  PaletteData palette = source.palette;
-  if (palette.isDirect) {
+	PaletteData palette = source.palette;
+	if (palette.isDirect) {
 	  for(int x=0; x<source.width; x++) {
 	    for(int y=0; y<source.height; y++) {
 	      RGB rgb = source.palette.getRGB(source.getPixel(x, y));
@@ -282,33 +285,33 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	    }
 	  }
 	} else {
-    for(int x=0; x<source.width; x++) {
-      for(int y=0; y<source.height; y++) {
-        int pixel = source.getPixel(x, y);
-        RGB rgb = source.palette.getRGB(pixel);
-        int pixelRGB = rgb.red << 16 | rgb.green << 8 | rgb.blue;
-        if(pixelRGB == 0) {
-          rgb = mask.palette.getRGB(mask.getPixel(x, y));
-          int pixelMaskRGB = rgb.red << 16 | rgb.green << 8 | rgb.blue;
-          if(pixelMaskRGB > 0) {
-            image.setRGB(x, y, 0xFFFFFFFF);
-          } else {
-            image.setRGB(x, y, 0xFF000000);
-          }
-        }
-      }
-    }
+		for(int x=0; x<source.width; x++) {
+			for(int y=0; y<source.height; y++) {
+				int pixel = source.getPixel(x, y);
+				RGB rgb = source.palette.getRGB(pixel);
+				int pixelRGB = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+				if(pixelRGB == 0) {
+					rgb = mask.palette.getRGB(mask.getPixel(x, y));
+					int pixelMaskRGB = rgb.red << 16 | rgb.green << 8 | rgb.blue;
+					if(pixelMaskRGB > 0) {
+						image.setRGB(x, y, 0xFFFFFFFF);
+					} else {
+						image.setRGB(x, y, 0xFF000000);
+					}
+				}
+			}
+		}
 	}
 	
 //	/* Make sure source and mask scanline pad is 2 */
 //	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
 //	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
-  createCursor(image, hotspotX, hotspotY);
+	createCursor(image, hotspotX, hotspotY);
 	if (device.tracking) device.new_Object(this);
 }
 
 protected void createCursor(BufferedImage image, int hotspotX, int hotspotY) {
-  handle = Toolkit.getDefaultToolkit().createCustomCursor(image, new java.awt.Point(hotspotX, hotspotY), "Custom Cursor");
+	handle = Toolkit.getDefaultToolkit().createCustomCursor(image, new java.awt.Point(hotspotX, hotspotY), "Custom Cursor");
 }
 
 /**	 
@@ -348,7 +351,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-  createCursor(new Image(device, source).handle, hotspotX, hotspotY);
+	createCursor(new Image(device, source).handle, hotspotX, hotspotY);
 	if (device.tracking) device.new_Object(this);
 }
 

@@ -11,12 +11,12 @@ import javax.swing.tree.MutableTreeNode;
 
 public interface TreeTableNode extends MutableTreeNode {
 
-  public void setUserObjects(Object[] objects);
+	public void setUserObjects(Object[] objects);
 
-  public Object[] getUserObjects();
+	public Object[] getUserObjects();
 
-  public void setUserObject(int index, Object object);
+	public void setUserObject(int index, Object object);
 
-  public Object getUserObject(int index);
+	public Object getUserObject(int index);
 
 }

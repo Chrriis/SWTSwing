@@ -11,15 +11,15 @@ import java.util.EventObject;
 
 public class BrowserLocationChangedEvent extends EventObject {
 
-  protected String url;
+	protected String url;
 
-  public BrowserLocationChangedEvent(Object source, String url) {
-    super(source);
-    this.url = url;
-  }
+	public BrowserLocationChangedEvent(Object source, String url) {
+		super(source);
+		this.url = url;
+	}
 
-  public String getURL() {
-    return url;
-  }
+	public String getURL() {
+		return url;
+	}
 
 }

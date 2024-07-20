@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -64,7 +67,7 @@ public class Menu extends Widget {
 	public JComponent handle;
 	
 //	int x, y, hwndCB, id0, id1;
-  int x, y;
+	int x, y;
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
@@ -308,63 +311,63 @@ static int checkStyle (int style) {
 void createHandle () {
 	if (handle != null) return;
 	if ((style & SWT.BAR) != 0) {
-    JMenuBar menuBar = new JMenuBar();
-    handle = menuBar;
+		JMenuBar menuBar = new JMenuBar();
+		handle = menuBar;
 	} else if((style & SWT.POP_UP) != 0) {
-    JPopupMenu popup = new JPopupMenu();
-    // TODO: check if a component listener for visibility is needed
-    popup.addPopupMenuListener(new PopupMenuListener() {
-      public void popupMenuCanceled(PopupMenuEvent e) {
-      }
-      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        if(!hooks(SWT.Hide)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-          Event event = new Event();
-          event.widget = Menu.this;
-          sendEvent(SWT.Hide, event);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        if(!hooks(SWT.Show)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-          Event event = new Event();
-          event.widget = Menu.this;
-          sendEvent(SWT.Show, event);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    });
-    handle = popup;
-  } else if((style & SWT.DROP_DOWN) != 0) {
-    handle = new JMenu();
+		JPopupMenu popup = new JPopupMenu();
+		// TODO: check if a component listener for visibility is needed
+		popup.addPopupMenuListener(new PopupMenuListener() {
+			public void popupMenuCanceled(PopupMenuEvent e) {
+			}
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				if(!hooks(SWT.Hide)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+					Event event = new Event();
+					event.widget = Menu.this;
+					sendEvent(SWT.Hide, event);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				if(!hooks(SWT.Show)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+					Event event = new Event();
+					event.widget = Menu.this;
+					sendEvent(SWT.Show, event);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+		});
+		handle = popup;
+	} else if((style & SWT.DROP_DOWN) != 0) {
+		handle = new JMenu();
 	}
 }
 
 void createItem (MenuItem item, int index) {
-  int count = handle.getComponentCount();
+	int count = handle.getComponentCount();
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	display.addMenuItem (item);
-  handle.add(item.handle, index);
-//  handle.invalidate();
-//  handle.validate();
-//  handle.repaint();
+	handle.add(item.handle, index);
+//	handle.invalidate();
+//	handle.validate();
+//	handle.repaint();
 
 //	if (!success) {
 //		display.removeMenuItem (item);
@@ -398,11 +401,11 @@ void createWidget () {
 //}
 
 void destroyItem (MenuItem item) {
-  java.awt.Component comp = item.handle.getParent();
-  handle.remove(item.handle);
-  if(comp instanceof JPopupMenu) {
-    ((JPopupMenu)comp).pack();
-  }
+	java.awt.Component comp = item.handle.getParent();
+	handle.remove(item.handle);
+	if(comp instanceof JPopupMenu) {
+		((JPopupMenu)comp).pack();
+	}
 //	redraw ();
 }
 
@@ -448,8 +451,8 @@ void fixMenus (Decorations newParent) {
  */
 /*public*/ Rectangle getBounds () {
 	checkWidget ();
-  java.awt.Rectangle bounds = handle.getBounds();
-  return new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
+	java.awt.Rectangle bounds = handle.getBounds();
+	return new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
 //	if (OS.IsWinCE) return new Rectangle (0, 0, 0, 0);
 //	if ((style & SWT.BAR) != 0) {
 //		if (parent.menuBar != this) {
@@ -495,7 +498,7 @@ void fixMenus (Decorations newParent) {
  */
 public MenuItem getDefaultItem () {
 	checkWidget ();
-  // TODO: implement that?
+	// TODO: implement that?
 //	if (OS.IsWinCE) return null;
 //	int id = OS.GetMenuDefaultItem (handle, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
 //	if (id == -1) return null;
@@ -525,7 +528,7 @@ public MenuItem getDefaultItem () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-  return handle.isEnabled();
+	return handle.isEnabled();
 //	return (state & DISABLED) == 0;
 }
 
@@ -546,19 +549,19 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-  if(index < 0) error (SWT.ERROR_INVALID_RANGE);
-  int result = 0;
-  int count = handle.getComponentCount();
-  if(index > count) error (SWT.ERROR_INVALID_RANGE);
-  for(int i=0; i<count; i++) {
-    MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
-    if(item != null) {
-      if(result == index) return item;
-      result++;
-    }
-  }
-  error (SWT.ERROR_INVALID_RANGE);
-  return null;
+	if(index < 0) error (SWT.ERROR_INVALID_RANGE);
+	int result = 0;
+	int count = handle.getComponentCount();
+	if(index > count) error (SWT.ERROR_INVALID_RANGE);
+	for(int i=0; i<count; i++) {
+		MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
+		if(item != null) {
+			if(result == index) return item;
+			result++;
+		}
+	}
+	error (SWT.ERROR_INVALID_RANGE);
+	return null;
 }
 
 /**
@@ -573,14 +576,14 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-  int count = handle.getComponentCount();
-  int result = 0;
-  for(int i=0; i<count; i++) {
-    MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
-    if(item != null) {
-      result++;
-    }
-  }
+	int count = handle.getComponentCount();
+	int result = 0;
+	for(int i=0; i<count; i++) {
+		MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
+		if(item != null) {
+			result++;
+		}
+	}
 	return result;
 }
 
@@ -602,15 +605,15 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-  int count = handle.getComponentCount();
-  java.util.List arrayList = new ArrayList(count);
-  for(int i=0; i<count; i++) {
-    MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
-    if(item != null) {
-      arrayList.add(item);
-    }
-  }
-  return (MenuItem[])arrayList.toArray(new MenuItem[0]);
+	int count = handle.getComponentCount();
+	java.util.List arrayList = new ArrayList(count);
+	for(int i=0; i<count; i++) {
+		MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
+		if(item != null) {
+			arrayList.add(item);
+		}
+	}
+	return (MenuItem[])arrayList.toArray(new MenuItem[0]);
 }
 
 //int GetMenuItemCount (int handle) {
@@ -730,9 +733,9 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget ();
-  if(!handle.isVisible()) {
-    return false;
-  }
+	if(!handle.isVisible()) {
+		return false;
+	}
 	if ((style & SWT.BAR) != 0) {
 		return this == parent.menuShell ().menuBar;
 	}
@@ -743,12 +746,12 @@ public boolean getVisible () {
 			if (popups [i] == this) return true;
 		}
 	}
-  Shell shell = getShell ();
-  Menu menu = shell.activeMenu;
-  while (menu != null && menu != this) {
-    menu = menu.getParentMenu ();
-  }
-  return this == menu;
+	Shell shell = getShell ();
+	Menu menu = shell.activeMenu;
+	while (menu != null && menu != this) {
+		menu = menu.getParentMenu ();
+	}
+	return this == menu;
 }
 
 //int imageIndex (Image image) {
@@ -791,12 +794,12 @@ public int indexOf (MenuItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return -1;
-  int componentCount = handle.getComponentCount();
-  for(int i=0; i<componentCount; i++) {
-    if(handle.getComponent(i) == item.handle) {
-      return i;
-    }
-  }
+	int componentCount = handle.getComponentCount();
+	for(int i=0; i<componentCount; i++) {
+		if(handle.getComponent(i) == item.handle) {
+			return i;
+		}
+	}
 	return -1;
 }
 
@@ -842,7 +845,7 @@ public boolean isVisible () {
 }
 
 //void redraw () {
-//  if (!isVisible ()) return;
+//	if (!isVisible ()) return;
 //	if ((style & SWT.BAR) != 0) {
 //		display.addBar (this);
 //	} else {
@@ -851,23 +854,23 @@ public boolean isVisible () {
 //}
 
 void releaseHandle () {
-  super.releaseHandle ();
-  handle = null;
+	super.releaseHandle ();
+	handle = null;
 }
 
 void releaseChildren (boolean destroy) {
-  MenuItem [] items = getItems ();
-  for (int i=0; i<items.length; i++) {
-    MenuItem item = items [i];
-    if (item != null && !item.isDisposed ()) {
-      item.release (false);
-    }
-  }
-  super.releaseChildren (destroy);
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.release (false);
+		}
+	}
+	super.releaseChildren (destroy);
 }
 
 void releaseParent () {
-  super.releaseParent ();
+	super.releaseParent ();
 	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
 		display.removeBar (this);
@@ -952,7 +955,7 @@ public void removeMenuListener (MenuListener listener) {
  * </ul>
  */
 public void setDefaultItem (MenuItem item) {
-  // TODO: implement that?
+	// TODO: implement that?
 //	checkWidget ();
 //	int newID = -1;
 //	if (item != null) {
@@ -982,7 +985,7 @@ public void setDefaultItem (MenuItem item) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-  handle.setEnabled(enabled);
+	handle.setEnabled(enabled);
 }
 
 /**
@@ -1062,28 +1065,28 @@ public void setLocation (Point location) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-  JPopupMenu popup = (JPopupMenu)handle;
+	JPopupMenu popup = (JPopupMenu)handle;
 	if (visible) {
-    display.addPopup (this);
-    java.awt.Point location;
-    if(hasLocation) {
-      location = new java.awt.Point(x, y);
-    } else {
-    	location = MouseInfo.getPointerInfo().getLocation();
-    }
-    Shell shell = getShell();
-    if(shell != null) {
-      Component shellHandle = shell.handle;
-      if(shellHandle.isShowing()) {
-        SwingUtilities.convertPointFromScreen(location, shellHandle);
-        popup.show(shellHandle, location.x, location.y);
-        return;
-      }
-    }
-    popup.show(null, location.x, location.y);
+		display.addPopup (this);
+		java.awt.Point location;
+		if(hasLocation) {
+			location = new java.awt.Point(x, y);
+		} else {
+			location = MouseInfo.getPointerInfo().getLocation();
+		}
+		Shell shell = getShell();
+		if(shell != null) {
+			Component shellHandle = shell.handle;
+			if(shellHandle.isShowing()) {
+				SwingUtilities.convertPointFromScreen(location, shellHandle);
+				popup.show(shellHandle, location.x, location.y);
+				return;
+			}
+		}
+		popup.show(null, location.x, location.y);
 	} else {
-    display.removePopup (this);
-    popup.setVisible(false);
+		display.removePopup (this);
+		popup.setVisible(false);
 //		_setVisible (false);
 	}
 }

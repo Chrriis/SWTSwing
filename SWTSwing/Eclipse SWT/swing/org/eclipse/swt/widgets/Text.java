@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -54,14 +57,14 @@ public class Text extends Scrollable {
 	boolean doubleClick, ignoreModify, ignoreCharacter;
 	String message;
 	
-  /**
-  * The maximum number of characters that can be entered
-  * into a text widget.
-  * <p>
-  * Note that this value is platform dependent, based upon
-  * the native widget implementation.
-  * </p>
-  */
+	/**
+	* The maximum number of characters that can be entered
+	* into a text widget.
+	* <p>
+	* Note that this value is platform dependent, based upon
+	* the native widget implementation.
+	* </p>
+	*/
 	public static final int LIMIT;
 	
 	/**
@@ -267,14 +270,14 @@ public void addVerifyListener (VerifyListener listener) {
 public void append (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  CText cText = (CText)handle;
-  String text = cText.getText();
+	CText cText = (CText)handle;
+	String text = cText.getText();
 //	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-//    int length = text.length();
+//		int length = text.length();
 //		string = verifyText (string, length, length, null);
 //		if (string == null) return;
 //	}
-  cText.setText(text + string);
+	cText.setText(text + string);
 }
 
 void applySegments () {
@@ -311,9 +314,9 @@ void clearSegments (boolean applyText) {
  */
 public void clearSelection () {
 	checkWidget ();
-  CText cText = (CText)handle;
-  cText.setSelectionStart(0);
-  cText.setSelectionStart(0);
+	CText cText = (CText)handle;
+	cText.setSelectionStart(0);
+	cText.setSelectionStart(0);
 }
 
 //public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -392,11 +395,11 @@ public void clearSelection () {
  */
 public void copy () {
 	checkWidget ();
-  ((CText)handle).copy();
+	((CText)handle).copy();
 }
 
 Container createHandle () {
-  return (Container)CText.Factory.newInstance(this, style);
+	return (Container)CText.Factory.newInstance(this, style);
 }
 
 void createWidget () {
@@ -422,7 +425,7 @@ void createWidget () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-  ((CText)handle).cut();
+	((CText)handle).cut();
 }
 
 /**
@@ -440,7 +443,7 @@ public void cut () {
  */
 public int getCaretLineNumber () {
 	checkWidget ();
-  return ((CText)handle).getCaretLineNumber();
+	return ((CText)handle).getCaretLineNumber();
 }
 
 /**
@@ -459,8 +462,8 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-  java.awt.Point point = ((CText)handle).getCaretLocation();
-  return new Point(point.x, point.y);
+	java.awt.Point point = ((CText)handle).getCaretLocation();
+	return new Point(point.x, point.y);
 }
 
 /**
@@ -478,7 +481,7 @@ public Point getCaretLocation () {
  */
 public int getCaretPosition () {
 	checkWidget ();
-  return ((CText)handle).getCaretPosition();
+	return ((CText)handle).getCaretPosition();
 }
 
 /**
@@ -493,7 +496,7 @@ public int getCaretPosition () {
  */
 public int getCharCount () {
 	checkWidget ();
-  return ((CText)handle).getText().length();
+	return ((CText)handle).getText().length();
 }
 
 /**
@@ -535,7 +538,7 @@ public boolean getDoubleClickEnabled () {
  */
 public char getEchoChar () {
 	checkWidget ();
-  return ((CText)handle).getEchoChar();
+	return ((CText)handle).getEchoChar();
 }
 
 /**
@@ -550,7 +553,7 @@ public char getEchoChar () {
  */
 public boolean getEditable () {
 	checkWidget ();
-  return ((CText)handle).isEditable();
+	return ((CText)handle).isEditable();
 }
 
 /**
@@ -565,7 +568,7 @@ public boolean getEditable () {
  */
 public int getLineCount () {
 	checkWidget ();
-  return ((CText)handle).getLineCount();
+	return ((CText)handle).getLineCount();
 }
 
 /**
@@ -597,7 +600,7 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-  return ((CText)handle).getRowHeight();
+	return ((CText)handle).getRowHeight();
 }
 
 /**
@@ -659,8 +662,8 @@ public String getMessage () {
  */
 public Point getSelection () {
 	checkWidget ();
-  CText cText = (CText)handle;
-  return new Point(cText.getSelectionStart(), cText.getSelectionEnd());
+	CText cText = (CText)handle;
+	return new Point(cText.getSelectionStart(), cText.getSelectionEnd());
 }
 
 /**
@@ -736,7 +739,7 @@ public int getTabs () {
  */
 public String getText () {
 	checkWidget ();
-  return ((CText)handle).getText();
+	return ((CText)handle).getText();
 }
 
 /**
@@ -760,17 +763,17 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return "";
-  CText cText = (CText)handle;
+	CText cText = (CText)handle;
 	int length = cText.getText().length();
-  end = Math.min (end, length - 1);
+	end = Math.min (end, length - 1);
 	start = Math.max (0, start);
-  if(start > end) {
-    return "";
-  }
-  try {
-    return cText.getText(start, end - start);
-  } catch(BadLocationException e) {
-  }
+	if(start > end) {
+		return "";
+	}
+	try {
+		return cText.getText(start, end - start);
+	} catch(BadLocationException e) {
+	}
 	return "";
 }
 
@@ -792,7 +795,7 @@ public String getText (int start, int end) {
  */
 public int getTextLimit () {
 	checkWidget ();
-  return ((CText)handle).getTextLimit();
+	return ((CText)handle).getTextLimit();
 }
 
 /**
@@ -812,7 +815,7 @@ public int getTextLimit () {
 public int getTopIndex () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
-  return ((CText)handle).getViewPosition().y / getLineHeight();
+	return ((CText)handle).getViewPosition().y / getLineHeight();
 }
 
 /**
@@ -837,7 +840,7 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-  return ((CText)handle).getViewPosition().y;
+	return ((CText)handle).getViewPosition().y;
 }
 
 /**
@@ -859,12 +862,12 @@ public int getTopPixel () {
 public void insert (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  CText cText = (CText)handle;
+	CText cText = (CText)handle;
 //	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 //		string = verifyText (string, cText.getSelectionStart(), cText.getSelectionEnd(), null);
 //		if (string == null) return;
 //	}
-  cText.replaceSelection(string);
+	cText.replaceSelection(string);
 }
 
 /**
@@ -882,7 +885,7 @@ public void insert (String string) {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-  ((CText)handle).paste();
+	((CText)handle).paste();
 }
 
 @Override
@@ -1002,7 +1005,7 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget ();
-  ((CText)handle).selectAll();
+	((CText)handle).selectAll();
 }
 
 //boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
@@ -1164,7 +1167,7 @@ public void setDoubleClickEnabled (boolean doubleClick) {
 public void setEchoChar (char echo) {
 	checkWidget ();
 	if ((style & SWT.MULTI) != 0) return;
-  ((CText)handle).setEchoChar(echo);
+	((CText)handle).setEchoChar(echo);
 }
 
 /**
@@ -1181,7 +1184,7 @@ public void setEditable (boolean editable) {
 	checkWidget ();
 	style &= ~SWT.READ_ONLY;
 	if (!editable) style |= SWT.READ_ONLY;
-  ((CText)handle).setEditable(editable);
+	((CText)handle).setEditable(editable);
 }
 
 /**
@@ -1232,13 +1235,13 @@ public void setOrientation (int orientation) {
 	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
 	style &= ~flags;
 	style |= orientation & flags;
-  ComponentOrientation o;
+	ComponentOrientation o;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-    o = ComponentOrientation.RIGHT_TO_LEFT;
+		o = ComponentOrientation.RIGHT_TO_LEFT;
 	} else {
-    o = ComponentOrientation.LEFT_TO_RIGHT;
+		o = ComponentOrientation.LEFT_TO_RIGHT;
 	}
-  ((CText)handle).setComponentOrientation(o);
+	((CText)handle).setComponentOrientation(o);
 }
 
 /**
@@ -1266,8 +1269,8 @@ public void setOrientation (int orientation) {
  */
 public void setSelection (int start) {
 	checkWidget ();
-  ((CText)handle).setSelectionStart(start);
-  ((CText)handle).setSelectionEnd(start);
+	((CText)handle).setSelectionStart(start);
+	((CText)handle).setSelectionEnd(start);
 }
 
 /**
@@ -1297,8 +1300,8 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-  ((CText)handle).setSelectionStart(start);
-  ((CText)handle).setSelectionEnd(end);
+	((CText)handle).setSelectionStart(start);
+	((CText)handle).setSelectionEnd(end);
 }
 
 //public void setRedraw (boolean redraw) {
@@ -1380,7 +1383,7 @@ public void setTabs (int tabs) {
 }
 
 void setTabStops (int tabs) {
-  ((CText)handle).setTabSize(tabs);
+	((CText)handle).setTabSize(tabs);
 }
 
 /**
@@ -1401,13 +1404,13 @@ void setTabStops (int tabs) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  CText cText = (CText)handle;
+	CText cText = (CText)handle;
 //	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 //		int length = cText.getText().length();
 //		string = verifyText (string, 0, length, null);
 //		if (string == null) return;
 //	}
-  cText.setText(string);
+	cText.setText(string);
 	if ((style & SWT.MULTI) != 0) {
 		sendEvent (SWT.Modify);
 		// widget could be disposed at this point
@@ -1441,7 +1444,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-  ((CText)handle).setTextLimit(limit);
+	((CText)handle).setTextLimit(limit);
 }
 
 /**
@@ -1459,8 +1462,8 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-  CText cText = (CText)handle;
-  cText.setViewPosition(new java.awt.Point(cText.getViewPosition().x, index / getLineHeight()));
+	CText cText = (CText)handle;
+	cText.setViewPosition(new java.awt.Point(cText.getViewPosition().x, index / getLineHeight()));
 }
 
 /**
@@ -1478,7 +1481,7 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget ();
-  ((CText)handle).showSelection();
+	((CText)handle).showSelection();
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
@@ -1835,96 +1838,96 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 //}
 
 public void processEvent(EventObject e) {
-  if(e instanceof TextFilterEvent) {
-    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
-  } else { super.processEvent(e); return; }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof TextFilterEvent) {
-      TextFilterEvent filterEvent = (TextFilterEvent)e;
-      filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof TextFilterEvent) {
+		if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+	} else { super.processEvent(e); return; }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof TextFilterEvent) {
+			TextFilterEvent filterEvent = (TextFilterEvent)e;
+			filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 protected boolean isTraversalKey(java.awt.event.KeyEvent ke) {
-  switch(ke.getKeyCode()) {
-  case java.awt.event.KeyEvent.VK_ENTER:
-    return (style & SWT.MULTI) == 0 || ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton() != null;
-  }
-  return super.isTraversalKey(ke);
+	switch(ke.getKeyCode()) {
+	case java.awt.event.KeyEvent.VK_ENTER:
+		return (style & SWT.MULTI) == 0 || ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton() != null;
+	}
+	return super.isTraversalKey(ke);
 }
 
 protected int getTraversalKeyDetail(java.awt.event.KeyEvent ke) {
-  switch(ke.getKeyCode()) {
-  case java.awt.event.KeyEvent.VK_ENTER:
-    return SWT.TRAVERSE_RETURN;
-  }
-  return super.getTraversalKeyDetail(ke);
+	switch(ke.getKeyCode()) {
+	case java.awt.event.KeyEvent.VK_ENTER:
+		return SWT.TRAVERSE_RETURN;
+	}
+	return super.getTraversalKeyDetail(ke);
 }
 
 protected boolean getTraversalKeyDefault(java.awt.event.KeyEvent ke) {
-  switch(ke.getKeyCode()) {
-  case java.awt.event.KeyEvent.VK_TAB:
-  case java.awt.event.KeyEvent.VK_ENTER:
-    int modifiers = ke.getModifiers();
-    if((modifiers & java.awt.event.KeyEvent.CTRL_MASK) == 0 && (modifiers & java.awt.event.KeyEvent.SHIFT_MASK) == 0) {
-      return (style & SWT.MULTI) == 0;
-    }
-  default:
-    return super.getTraversalKeyDefault(ke);
-  }
+	switch(ke.getKeyCode()) {
+	case java.awt.event.KeyEvent.VK_TAB:
+	case java.awt.event.KeyEvent.VK_ENTER:
+		int modifiers = ke.getModifiers();
+		if((modifiers & java.awt.event.KeyEvent.CTRL_MASK) == 0 && (modifiers & java.awt.event.KeyEvent.SHIFT_MASK) == 0) {
+			return (style & SWT.MULTI) == 0;
+		}
+	default:
+		return super.getTraversalKeyDefault(ke);
+	}
 }
 
 protected void validateTraversalKey(java.awt.event.KeyEvent ke, Event event) {
-  switch(ke.getKeyCode()) {
-  case java.awt.event.KeyEvent.VK_ENTER:
-    if(event.doit) {
-      if(!hooks(SWT.DefaultSelection)) {
-        if(event.detail == SWT.TRAVERSE_RETURN) {
-          JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
-          if(defaultButton != null) {
-            defaultButton.requestFocus();
-            defaultButton.doClick();
-          }
-        }
-      } else {
-        sendEvent(SWT.DefaultSelection);
-      }
-      ke.consume();
-    } else if((style & SWT.MULTI) == 0) {
-      ke.consume();
-    }
-    break;
-  default:
-    super.validateTraversalKey(ke, event);
-    break;
-  }
+	switch(ke.getKeyCode()) {
+	case java.awt.event.KeyEvent.VK_ENTER:
+		if(event.doit) {
+			if(!hooks(SWT.DefaultSelection)) {
+				if(event.detail == SWT.TRAVERSE_RETURN) {
+					JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+					if(defaultButton != null) {
+						defaultButton.requestFocus();
+						defaultButton.doClick();
+					}
+				}
+			} else {
+				sendEvent(SWT.DefaultSelection);
+			}
+			ke.consume();
+		} else if((style & SWT.MULTI) == 0) {
+			ke.consume();
+		}
+		break;
+	default:
+		super.validateTraversalKey(ke, event);
+		break;
+	}
 }
 
 public void processEvent(DocumentEvent e) {
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    return;
-  }
-  try {
-    postEvent(SWT.Modify, new Event());
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		return;
+	}
+	try {
+		postEvent(SWT.Modify, new Event());
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

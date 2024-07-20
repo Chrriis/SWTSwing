@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -55,7 +58,7 @@ import org.eclipse.swt.internal.swing.UIThreadUtils;
  */
 public class TabFolder extends Composite {
 
-  ArrayList itemList;
+	ArrayList itemList;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -90,25 +93,25 @@ public TabFolder (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-  Component[] children = ((CControl)handle).getClientArea().getComponents();
-  if(children.length == 0) {
-    return new Control[0];
-  }
-  ArrayList controlsList = new ArrayList(children.length);
-  for(int i=0; i<children.length; i++) {
-    Component childComponent = children[i];
-    if(childComponent instanceof CTabItem) {
-      CTabItem cTabItem = ((CTabItem)childComponent);
-      childComponent = cTabItem.getContent();
-      if(childComponent != null) {
-        Control control = display.getControl(childComponent);
-        if (control != null && control != this) {
-          controlsList.add(control);
-        }
-      }
-    }
-  }
-  return (Control[])controlsList.toArray(new Control[0]);
+	Component[] children = ((CControl)handle).getClientArea().getComponents();
+	if(children.length == 0) {
+		return new Control[0];
+	}
+	ArrayList controlsList = new ArrayList(children.length);
+	for(int i=0; i<children.length; i++) {
+		Component childComponent = children[i];
+		if(childComponent instanceof CTabItem) {
+			CTabItem cTabItem = ((CTabItem)childComponent);
+			childComponent = cTabItem.getContent();
+			if(childComponent != null) {
+				Control control = display.getControl(childComponent);
+				if (control != null && control != this) {
+					controlsList.add(control);
+				}
+			}
+		}
+	}
+	return (Control[])controlsList.toArray(new Control[0]);
 }
 
 /**
@@ -153,25 +156,25 @@ protected void checkSubclass () {
 }
 
 boolean autoAddChildren() {
-  return false;
+	return false;
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~(CANVAS | THEME_BACKGROUND);
+	super.createHandleInit();
+	state &= ~(CANVAS | THEME_BACKGROUND);
 }
 
 protected Container createHandle () {
-  return (Container)CTabFolder.Factory.newInstance(this, style);
+	return (Container)CTabFolder.Factory.newInstance(this, style);
 }
 
 void createItem (TabItem item, int index) {
-  int count = getItemCount();
-  if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-  itemList.add(index, item);
-  handle.add(item.handle, index);
-  handle.invalidate();
-  handle.validate();
+	int count = getItemCount();
+	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
+	itemList.add(index, item);
+	handle.add(item.handle, index);
+	handle.invalidate();
+	handle.validate();
 	/*
 	* Send a selection event when the item that is added becomes
 	* the new selection.  This only happens when the first item
@@ -191,14 +194,14 @@ void createWidget () {
 }
 
 void destroyItem (TabItem item) {
-  int index = indexOf(item);
-  if(index != -1) {
-    handle.remove(item.handle);
-    handle.invalidate();
-    handle.validate();
-    handle.repaint();
-  }
-  itemList = null;
+	int index = indexOf(item);
+	if(index != -1) {
+		handle.remove(item.handle);
+		handle.invalidate();
+		handle.validate();
+		handle.repaint();
+	}
+	itemList = null;
 }
 
 /**
@@ -256,7 +259,7 @@ public int getItemCount () {
  */
 public TabItem [] getItems () {
 	checkWidget ();
-  return (TabItem[])itemList.toArray(new TabItem [0]);
+	return (TabItem[])itemList.toArray(new TabItem [0]);
 }
 
 /**
@@ -350,20 +353,20 @@ public int indexOf (TabItem item) {
 //}
 
 void releaseChildren (boolean destroy) {
-  if(itemList != null) {
-    int count = getItemCount();
-    for (int i=0; i<count; i++) {
-      TabItem item = (TabItem)itemList.get(i);
-      if (!item.isDisposed ()) item.release (false);
-    }
-    itemList = null;
-  }
+	if(itemList != null) {
+		int count = getItemCount();
+		for (int i=0; i<count; i++) {
+			TabItem item = (TabItem)itemList.get(i);
+			if (!item.isDisposed ()) item.release (false);
+		}
+		itemList = null;
+	}
 //	if (imageList != null) {
 //		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
 //		display.releaseImageList (imageList);
 //	}
 //	imageList = null;
-  super.releaseChildren (destroy);
+	super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {
@@ -418,9 +421,9 @@ public void removeSelectionListener (SelectionListener listener) {
  * @since 3.2
  */
 public void setSelection (TabItem item) {
-  checkWidget ();
-  if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-  setSelection (new TabItem [] {item});
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (new TabItem [] {item});
 }
 
 /**
@@ -442,9 +445,9 @@ public void setSelection (TabItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (items.length == 0) {
-    ((CTabFolder)handle).setSelectedIndex(-1);
+		((CTabFolder)handle).setSelectedIndex(-1);
 	} else {
-    ((CTabFolder)handle).setSelectedIndex(indexOf (items [items.length-1]));
+		((CTabFolder)handle).setSelectedIndex(indexOf (items [items.length-1]));
 	}
 }
 
@@ -465,40 +468,40 @@ public void setSelection (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) return;
-  ((CTabFolder)handle).setSelectedIndex(index);
+	((CTabFolder)handle).setSelectedIndex(index);
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-  java.awt.Dimension size = handle.getPreferredSize();
-  return new Point(size.width, size.height);
+	java.awt.Dimension size = handle.getPreferredSize();
+	return new Point(size.width, size.height);
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof ChangeEvent) {
-    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
-  } else { super.processEvent(e); return; }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof ChangeEvent) {
-//      ChangeEvent ce = (ChangeEvent)e;
-      int index = ((CTabFolder)handle).getSelectedIndex();
-      Event event = new Event();
-      if(index >= 0) {
-        event.item = (Widget)itemList.get(index);
-      }
-      sendEvent(SWT.Selection, event);
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof ChangeEvent) {
+		if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+	} else { super.processEvent(e); return; }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof ChangeEvent) {
+//			ChangeEvent ce = (ChangeEvent)e;
+			int index = ((CTabFolder)handle).getSelectedIndex();
+			Event event = new Event();
+			if(index >= 0) {
+				event.item = (Widget)itemList.get(index);
+			}
+			sendEvent(SWT.Selection, event);
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

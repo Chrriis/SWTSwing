@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -41,7 +44,7 @@ public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;
-  Container handle;
+	Container handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -76,8 +79,8 @@ public class TabItem extends Item {
 public TabItem (TabFolder parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-  handle = createHandle();
-  parent.createItem (this, parent.getItemCount ());
+	handle = createHandle();
+	parent.createItem (this, parent.getItemCount ());
 }
 
 /**
@@ -115,12 +118,12 @@ public TabItem (TabFolder parent, int style) {
 public TabItem (TabFolder parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
-  handle = createHandle();
+	handle = createHandle();
 	parent.createItem (this, index);
 }
 
 Container createHandle () {
-  return (Container)CTabItem.Factory.newInstance(this, style);
+	return (Container)CTabItem.Factory.newInstance(this, style);
 }
 
 protected void checkSubclass () {
@@ -128,8 +131,8 @@ protected void checkSubclass () {
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -181,8 +184,8 @@ public String getToolTipText () {
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseParent () {
@@ -223,13 +226,13 @@ public void setControl (Control control) {
 		this.control = null;
 		handle.remove(this.control.handle);
 	}
-  this.control = control;
-  if(control != null) {
-    handle.add(control.handle, BorderLayout.CENTER);
-  }
-  handle.invalidate();
-  handle.validate();
-  handle.repaint();
+	this.control = control;
+	if(control != null) {
+		handle.add(control.handle, BorderLayout.CENTER);
+	}
+	handle.invalidate();
+	handle.validate();
+	handle.repaint();
 }
 
 public void setImage (Image image) {
@@ -237,7 +240,7 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-  ((CTabFolder)parent.handle).setIconAt(index, new ImageIcon(image.handle));  
+	((CTabFolder)parent.handle).setIconAt(index, new ImageIcon(image.handle));  
 }
 
 /**
@@ -269,21 +272,21 @@ public void setImage (Image image) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (string.equals (text)) return;
+	if (string.equals (text)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-  int mnemonicIndex = findMnemonicIndex(string);
-  char mnemonic;
-  CTabFolder cTabFolder = (CTabFolder)parent.handle;
-  if(mnemonicIndex < 0) {
-    mnemonic = '\0';
-    cTabFolder.setTitleAt(index, string);
-  } else {
-    mnemonic = string.charAt(mnemonicIndex);
-    cTabFolder.setTitleAt(index, string.substring(0, mnemonicIndex - 1) + string.substring(mnemonicIndex));
-  }
-  cTabFolder.setMnemonicAt(index, mnemonic);
+	int mnemonicIndex = findMnemonicIndex(string);
+	char mnemonic;
+	CTabFolder cTabFolder = (CTabFolder)parent.handle;
+	if(mnemonicIndex < 0) {
+		mnemonic = '\0';
+		cTabFolder.setTitleAt(index, string);
+	} else {
+		mnemonic = string.charAt(mnemonicIndex);
+		cTabFolder.setTitleAt(index, string.substring(0, mnemonicIndex - 1) + string.substring(mnemonicIndex));
+	}
+	cTabFolder.setMnemonicAt(index, mnemonic);
 }
 
 /**
@@ -300,7 +303,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-  ((CTabFolder)parent.handle).setToolTipTextAt(parent.indexOf(this), Utils.convertStringToHTML(toolTipText));
+	((CTabFolder)parent.handle).setToolTipTextAt(parent.indexOf(this), Utils.convertStringToHTML(toolTipText));
 }
 
 }

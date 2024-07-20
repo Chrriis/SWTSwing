@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -147,94 +150,94 @@ public DropTarget(Control control, int style) {
 	new java.awt.dnd.DropTarget(((CControl)control.handle).getSwingComponent(), Utils.convertDnDActionsToSwing(style), new java.awt.dnd.DropTargetListener() {
 	  public void dragEnter(java.awt.dnd.DropTargetDragEvent e) {
 	    lastAction = DND.DROP_DEFAULT;
-      processDropTargetDragEvent(e, DND.DragEnter);
-    }
-    public void dragOver(DropTargetDragEvent e) {
-      processDropTargetDragEvent(e, DND.DragOver);
-    }
-    public void dropActionChanged(DropTargetDragEvent e) {
-      processDropTargetDragEvent(e, DND.DragOperationChanged);
-    }
-    public void processDropTargetDragEvent(java.awt.dnd.DropTargetDragEvent e, int notificationType) {
-      DNDEvent event = new DNDEvent();
-      if(setDragEventData(event, e)) {
-        int allowedOperations = event.operations;
-        notifyListeners(notificationType, event);
-        if(Utils.isLocalDragAndDropInProgress && !hasMetas()) {
-          lastAction = event.detail;
-        }
-        if (event.detail == DND.DROP_DEFAULT) {
-          event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
-        }
-        int action = 0;
-        if ((allowedOperations & event.detail) != 0) {
-          action = Utils.convertDnDActionsToSwing(event.detail);
-        }
-        if(action == 0) {
-          e.rejectDrag();
-        } else {
-          e.acceptDrag(action);
-        }
-        // TODO: implement
-        //effect.showDropTargetEffect(event.feedback, event.x, event.y);
-      } else {
-        e.rejectDrag();
-      }
-    }
-    public void dragExit(java.awt.dnd.DropTargetEvent e) {
-      DNDEvent event = new DNDEvent();
-      event.widget = DropTarget.this;
-      event.time = Utils.getCurrentTime();
-      event.detail = DND.DROP_NONE;
-      notifyListeners(DND.DragLeave, event);
-    }
-    public void drop(DropTargetDropEvent e) {
-      DNDEvent event = new DNDEvent();
-      if(!setDropEventData(event, e)) {
-        e.rejectDrop();
-        e.dropComplete(false);
-      }
-      int allowedOperations = event.operations;
-      int action = 0;
-      if (event.detail == DND.DROP_DEFAULT) {
-        event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
-      }
-      if ((allowedOperations & event.detail) != 0) {
-        action = Utils.convertDnDActionsToSwing(event.detail);
-      }
-      if(action == 0) {
-        e.rejectDrop();
-        e.dropComplete(true);
-        return;
-      }
-      // We accept the drop as a move, to be able to move the data if the user changes the detail of the event to a move.
-      boolean isLocalTransfer = e.isLocalTransfer();
-      e.acceptDrop(isLocalTransfer? action: DnDConstants.ACTION_MOVE);
-      Object object = null;
-      for (int i = 0; i < transferAgents.length; i++){
-        if (transferAgents[i].isSupportedType(event.dataType)) {
-          object = transferAgents[i].nativeToJava(event.dataType);
-          break;
-        }
-      }
-      if (object == null){
-        event.detail = DND.DROP_NONE;
-      }
-      try {
-        event.data = object;
-      } catch(Exception ex) {
-        ex.printStackTrace();
-      }
-      notifyListeners(DND.Drop, event);
-      // We validated the drop only if it is a move, so that the initiator deletes the data on its side.
-      if(event.detail == DND.DROP_MOVE) {
-        e.dropComplete(true);
-      }
-      // TODO: implement
-      //effect.showDropTargetEffect(event.feedback, event.x, event.y);
-    }
+			processDropTargetDragEvent(e, DND.DragEnter);
+		}
+		public void dragOver(DropTargetDragEvent e) {
+			processDropTargetDragEvent(e, DND.DragOver);
+		}
+		public void dropActionChanged(DropTargetDragEvent e) {
+			processDropTargetDragEvent(e, DND.DragOperationChanged);
+		}
+		public void processDropTargetDragEvent(java.awt.dnd.DropTargetDragEvent e, int notificationType) {
+			DNDEvent event = new DNDEvent();
+			if(setDragEventData(event, e)) {
+				int allowedOperations = event.operations;
+				notifyListeners(notificationType, event);
+				if(Utils.isLocalDragAndDropInProgress && !hasMetas()) {
+					lastAction = event.detail;
+				}
+				if (event.detail == DND.DROP_DEFAULT) {
+					event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+				}
+				int action = 0;
+				if ((allowedOperations & event.detail) != 0) {
+					action = Utils.convertDnDActionsToSwing(event.detail);
+				}
+				if(action == 0) {
+					e.rejectDrag();
+				} else {
+					e.acceptDrag(action);
+				}
+				// TODO: implement
+				//effect.showDropTargetEffect(event.feedback, event.x, event.y);
+			} else {
+				e.rejectDrag();
+			}
+		}
+		public void dragExit(java.awt.dnd.DropTargetEvent e) {
+			DNDEvent event = new DNDEvent();
+			event.widget = DropTarget.this;
+			event.time = Utils.getCurrentTime();
+			event.detail = DND.DROP_NONE;
+			notifyListeners(DND.DragLeave, event);
+		}
+		public void drop(DropTargetDropEvent e) {
+			DNDEvent event = new DNDEvent();
+			if(!setDropEventData(event, e)) {
+				e.rejectDrop();
+				e.dropComplete(false);
+			}
+			int allowedOperations = event.operations;
+			int action = 0;
+			if (event.detail == DND.DROP_DEFAULT) {
+				event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+			}
+			if ((allowedOperations & event.detail) != 0) {
+				action = Utils.convertDnDActionsToSwing(event.detail);
+			}
+			if(action == 0) {
+				e.rejectDrop();
+				e.dropComplete(true);
+				return;
+			}
+			// We accept the drop as a move, to be able to move the data if the user changes the detail of the event to a move.
+			boolean isLocalTransfer = e.isLocalTransfer();
+			e.acceptDrop(isLocalTransfer? action: DnDConstants.ACTION_MOVE);
+			Object object = null;
+			for (int i = 0; i < transferAgents.length; i++){
+				if (transferAgents[i].isSupportedType(event.dataType)) {
+					object = transferAgents[i].nativeToJava(event.dataType);
+					break;
+				}
+			}
+			if (object == null){
+				event.detail = DND.DROP_NONE;
+			}
+			try {
+				event.data = object;
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
+			notifyListeners(DND.Drop, event);
+			// We validated the drop only if it is a move, so that the initiator deletes the data on its side.
+			if(event.detail == DND.DROP_MOVE) {
+				e.dropComplete(true);
+			}
+			// TODO: implement
+			//effect.showDropTargetEffect(event.feedback, event.x, event.y);
+		}
 	}, true); 
-  // Drag under effect
+	// Drag under effect
 //	if (control instanceof Tree) {
 //		effect = new TreeDragAndDropEffect((Tree)control);
 //	} else if (control instanceof Table) {
@@ -249,83 +252,83 @@ public DropTarget(Control control, int style) {
 protected int lastAction;
 
 protected boolean hasMetas() {
-  return (Utils.modifiersEx & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) != 0;
+	return (Utils.modifiersEx & (KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) != 0;
 }
 
 boolean setDragEventData(DNDEvent event, java.awt.dnd.DropTargetDragEvent e) {
-  ArrayList transferDataList = new ArrayList();
-  Transferable transferable = e.getTransferable();
-  DataFlavor[] flavors = transferable.getTransferDataFlavors();
-  for(int i=0; i<transferAgents.length; i++) {
-    TransferData[] types = transferAgents[i].getSupportedTypes();
-    for(int j=0; j<flavors.length; j++) {
-      for(int k=0; k<types.length; k++) {
-        TransferData transferData = new TransferData();
-        transferData.dataFlavor = flavors[j];
-        if(types[k].dataFlavor.equals(transferData.dataFlavor)) {
-          transferData.transferable = transferable;
-          transferDataList.add(transferData);
-        }
-      }
-    }
-  }
-  if(transferDataList.isEmpty()) {
-    return false;
-  }
-  event.widget = this;
-  Point location = e.getLocation();
-  event.x = location.x;
-  event.y = location.y;
-  event.time = Utils.getCurrentTime();
-  event.feedback = DND.FEEDBACK_SELECT;
-  event.dataTypes = (TransferData[])transferDataList.toArray(new TransferData[0]);
-  event.dataType = event.dataTypes[0];
-  event.item = effect.getItem(location.x, location.y);
-  event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
-  if(!Utils.isLocalDragAndDropInProgress || hasMetas()) {
-    event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
-  } else {
-    event.detail = lastAction;
-  }
-  return true;
+	ArrayList transferDataList = new ArrayList();
+	Transferable transferable = e.getTransferable();
+	DataFlavor[] flavors = transferable.getTransferDataFlavors();
+	for(int i=0; i<transferAgents.length; i++) {
+		TransferData[] types = transferAgents[i].getSupportedTypes();
+		for(int j=0; j<flavors.length; j++) {
+			for(int k=0; k<types.length; k++) {
+				TransferData transferData = new TransferData();
+				transferData.dataFlavor = flavors[j];
+				if(types[k].dataFlavor.equals(transferData.dataFlavor)) {
+					transferData.transferable = transferable;
+					transferDataList.add(transferData);
+				}
+			}
+		}
+	}
+	if(transferDataList.isEmpty()) {
+		return false;
+	}
+	event.widget = this;
+	Point location = e.getLocation();
+	event.x = location.x;
+	event.y = location.y;
+	event.time = Utils.getCurrentTime();
+	event.feedback = DND.FEEDBACK_SELECT;
+	event.dataTypes = (TransferData[])transferDataList.toArray(new TransferData[0]);
+	event.dataType = event.dataTypes[0];
+	event.item = effect.getItem(location.x, location.y);
+	event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
+	if(!Utils.isLocalDragAndDropInProgress || hasMetas()) {
+		event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+	} else {
+		event.detail = lastAction;
+	}
+	return true;
 }
 
 boolean setDropEventData(DNDEvent event, java.awt.dnd.DropTargetDropEvent e) {
-  ArrayList transferDataList = new ArrayList();
-  Transferable transferable = e.getTransferable();
-  DataFlavor[] flavors = transferable.getTransferDataFlavors();
-  for(int i=0; i<transferAgents.length; i++) {
-    TransferData[] types = transferAgents[i].getSupportedTypes();
-    for(int j=0; j<flavors.length; j++) {
-      for(int k=0; k<types.length; k++) {
-        TransferData transferData = new TransferData();
-        transferData.dataFlavor = flavors[j];
-        if(types[k].dataFlavor.equals(transferData.dataFlavor)) {
-          transferData.transferable = transferable;
-          transferDataList.add(transferData);
-        }
-      }
-    }
-  }
-  if(transferDataList.isEmpty()) {
-    return false;
-  }
-  event.widget = this;
-  Point location = e.getLocation();
-  event.x = location.x;
-  event.y = location.y;
-  event.time = Utils.getCurrentTime();
-  event.feedback = DND.FEEDBACK_SELECT;
-  event.dataTypes = (TransferData[])transferDataList.toArray(new TransferData[0]);
-  event.dataType = event.dataTypes[0];
-  event.item = effect.getItem(location.x, location.y);
-  event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
-  if(!Utils.isLocalDragAndDropInProgress || hasMetas()) {
-    event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
-  } else {
-    event.detail = lastAction;
-  }
-  return true;
+	ArrayList transferDataList = new ArrayList();
+	Transferable transferable = e.getTransferable();
+	DataFlavor[] flavors = transferable.getTransferDataFlavors();
+	for(int i=0; i<transferAgents.length; i++) {
+		TransferData[] types = transferAgents[i].getSupportedTypes();
+		for(int j=0; j<flavors.length; j++) {
+			for(int k=0; k<types.length; k++) {
+				TransferData transferData = new TransferData();
+				transferData.dataFlavor = flavors[j];
+				if(types[k].dataFlavor.equals(transferData.dataFlavor)) {
+					transferData.transferable = transferable;
+					transferDataList.add(transferData);
+				}
+			}
+		}
+	}
+	if(transferDataList.isEmpty()) {
+		return false;
+	}
+	event.widget = this;
+	Point location = e.getLocation();
+	event.x = location.x;
+	event.y = location.y;
+	event.time = Utils.getCurrentTime();
+	event.feedback = DND.FEEDBACK_SELECT;
+	event.dataTypes = (TransferData[])transferDataList.toArray(new TransferData[0]);
+	event.dataType = event.dataTypes[0];
+	event.item = effect.getItem(location.x, location.y);
+	event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
+	if(!Utils.isLocalDragAndDropInProgress || hasMetas()) {
+		event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+	} else {
+		event.detail = lastAction;
+	}
+	return true;
 }
 
 static int checkStyle (int style) {
@@ -411,7 +414,7 @@ void onDispose () {
 	control.setData(DROPTARGETID, null);
 	transferAgents = null;
 	control = null;
-  // TODO: release resources?
+	// TODO: release resources?
 }
 
 /**

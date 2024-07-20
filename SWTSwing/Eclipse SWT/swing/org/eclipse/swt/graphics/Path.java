@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -40,16 +43,16 @@ import org.eclipse.swt.SWTException;
  */
 public class Path extends Resource {
 	
-  /**
-   * the OS resource for the Path
-   * (Warning: This field is platform dependent)
-   * <p>
-   * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-   * public API. It is marked public only so that it can be shared
-   * within the packages provided by SWT. It is not available on all
-   * platforms and should never be accessed from application code.
-   * </p>
-   */
+	/**
+	 * the OS resource for the Path
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 */
 	public GeneralPath handle;
 	
 /**
@@ -275,14 +278,14 @@ public void dispose() {
  * </ul>
  */
 public void getBounds(float[] bounds) {
-  if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  Rectangle2D boundingBox = handle.getBounds2D();
-  bounds[0] = (float)boundingBox.getX();
-  bounds[1] = (float)boundingBox.getY();
-  bounds[2] = (float)boundingBox.getWidth();
-  bounds[3] = (float)boundingBox.getHeight();
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle2D boundingBox = handle.getBounds2D();
+	bounds[0] = (float)boundingBox.getX();
+	bounds[1] = (float)boundingBox.getY();
+	bounds[2] = (float)boundingBox.getWidth();
+	bounds[3] = (float)boundingBox.getHeight();
 }
 
 /**
@@ -320,95 +323,95 @@ public void getCurrentPoint(float[] point) {
  * @see PathData
  */
 public PathData getPathData() {
-  if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  List typeList = new ArrayList();
-  List pointList = new ArrayList();
-  float[] values = new float[6];
-  for(PathIterator pathIterator = handle.getPathIterator(null); !pathIterator.isDone(); pathIterator.next()) {
-    switch(pathIterator.currentSegment(values)) {
-      case PathIterator.SEG_MOVETO:
-        typeList.add(new Byte((byte)SWT.PATH_MOVE_TO));
-        break;
-      case PathIterator.SEG_LINETO:
-        typeList.add(new Byte((byte)SWT.PATH_LINE_TO));
-        pointList.add(new Float(values[0]));
-        pointList.add(new Float(values[1]));
-        break;
-      case PathIterator.SEG_QUADTO:
-        typeList.add(new Byte((byte)SWT.PATH_QUAD_TO));
-        pointList.add(new Float(values[0]));
-        pointList.add(new Float(values[1]));
-        pointList.add(new Float(values[2]));
-        pointList.add(new Float(values[3]));
-        break;
-      case PathIterator.SEG_CUBICTO:
-        typeList.add(new Byte((byte)SWT.PATH_CUBIC_TO));
-        pointList.add(new Float(values[0]));
-        pointList.add(new Float(values[1]));
-        pointList.add(new Float(values[2]));
-        pointList.add(new Float(values[3]));
-        pointList.add(new Float(values[4]));
-        pointList.add(new Float(values[5]));
-        break;
-      case PathIterator.SEG_CLOSE:
-        typeList.add(new Byte((byte)SWT.PATH_CLOSE));
-        break;
-    }
-  }
-  byte[] types = new byte[typeList.size()];
-  for(int i=typeList.size()-1; i>=0; i--) {
-    types[i] = ((Byte)typeList.get(i)).byteValue();
-  }
-  float[] points = new float[pointList.size()];
-  for(int i=pointList.size()-1; i>=0; i--) {
-    points[i] = ((Float)typeList.get(i)).floatValue();
-  }
-  PathData result = new PathData();
-  result.types = types;
-  result.points = points;
-  return result;
-//  int count = Gdip.GraphicsPath_GetPointCount(handle);
-//  byte[] gdipTypes = new byte[count];
-//  float[] points = new float[count * 2];
-//  Gdip.GraphicsPath_GetPathTypes(handle, gdipTypes, count);
-//  Gdip.GraphicsPath_GetPathPoints(handle, points, count);
-//  byte[] types = new byte[count * 2];
-//  int index = 0, typesIndex = 0;
-//  while (index < count) {
-//    byte type = gdipTypes[index];
-//    boolean close = false;
-//    switch (type & Gdip.PathPointTypePathTypeMask) {
-//      case Gdip.PathPointTypeStart:
-//        types[typesIndex++] = SWT.PATH_MOVE_TO;
-//        close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
-//        index += 1;
-//        break;
-//      case Gdip.PathPointTypeLine:
-//        types[typesIndex++] = SWT.PATH_LINE_TO;
-//        close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
-//        index += 1;
-//        break;
-//      case Gdip.PathPointTypeBezier:
-//        types[typesIndex++] = SWT.PATH_CUBIC_TO;
-//        close = (gdipTypes[index + 2] & Gdip.PathPointTypeCloseSubpath) != 0;
-//        index += 3;
-//        break;
-//      default:
-//        index++;
-//    }
-//    if (close) {
-//      types[typesIndex++] = SWT.PATH_CLOSE;
-//    }
-//  }
-//  if (typesIndex != types.length) {
-//    byte[] newTypes = new byte[typesIndex];
-//    System.arraycopy(types, 0, newTypes, 0, typesIndex);
-//    types = newTypes;
-//  }
-//  PathData result = new PathData();
-//  result.types = types;
-//  result.points = points;
-//  return result;
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	List typeList = new ArrayList();
+	List pointList = new ArrayList();
+	float[] values = new float[6];
+	for(PathIterator pathIterator = handle.getPathIterator(null); !pathIterator.isDone(); pathIterator.next()) {
+		switch(pathIterator.currentSegment(values)) {
+			case PathIterator.SEG_MOVETO:
+				typeList.add(new Byte((byte)SWT.PATH_MOVE_TO));
+				break;
+			case PathIterator.SEG_LINETO:
+				typeList.add(new Byte((byte)SWT.PATH_LINE_TO));
+				pointList.add(new Float(values[0]));
+				pointList.add(new Float(values[1]));
+				break;
+			case PathIterator.SEG_QUADTO:
+				typeList.add(new Byte((byte)SWT.PATH_QUAD_TO));
+				pointList.add(new Float(values[0]));
+				pointList.add(new Float(values[1]));
+				pointList.add(new Float(values[2]));
+				pointList.add(new Float(values[3]));
+				break;
+			case PathIterator.SEG_CUBICTO:
+				typeList.add(new Byte((byte)SWT.PATH_CUBIC_TO));
+				pointList.add(new Float(values[0]));
+				pointList.add(new Float(values[1]));
+				pointList.add(new Float(values[2]));
+				pointList.add(new Float(values[3]));
+				pointList.add(new Float(values[4]));
+				pointList.add(new Float(values[5]));
+				break;
+			case PathIterator.SEG_CLOSE:
+				typeList.add(new Byte((byte)SWT.PATH_CLOSE));
+				break;
+		}
+	}
+	byte[] types = new byte[typeList.size()];
+	for(int i=typeList.size()-1; i>=0; i--) {
+		types[i] = ((Byte)typeList.get(i)).byteValue();
+	}
+	float[] points = new float[pointList.size()];
+	for(int i=pointList.size()-1; i>=0; i--) {
+		points[i] = ((Float)typeList.get(i)).floatValue();
+	}
+	PathData result = new PathData();
+	result.types = types;
+	result.points = points;
+	return result;
+//	int count = Gdip.GraphicsPath_GetPointCount(handle);
+//	byte[] gdipTypes = new byte[count];
+//	float[] points = new float[count * 2];
+//	Gdip.GraphicsPath_GetPathTypes(handle, gdipTypes, count);
+//	Gdip.GraphicsPath_GetPathPoints(handle, points, count);
+//	byte[] types = new byte[count * 2];
+//	int index = 0, typesIndex = 0;
+//	while (index < count) {
+//		byte type = gdipTypes[index];
+//		boolean close = false;
+//		switch (type & Gdip.PathPointTypePathTypeMask) {
+//			case Gdip.PathPointTypeStart:
+//				types[typesIndex++] = SWT.PATH_MOVE_TO;
+//				close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
+//				index += 1;
+//				break;
+//			case Gdip.PathPointTypeLine:
+//				types[typesIndex++] = SWT.PATH_LINE_TO;
+//				close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
+//				index += 1;
+//				break;
+//			case Gdip.PathPointTypeBezier:
+//				types[typesIndex++] = SWT.PATH_CUBIC_TO;
+//				close = (gdipTypes[index + 2] & Gdip.PathPointTypeCloseSubpath) != 0;
+//				index += 3;
+//				break;
+//			default:
+//				index++;
+//		}
+//		if (close) {
+//			types[typesIndex++] = SWT.PATH_CLOSE;
+//		}
+//	}
+//	if (typesIndex != types.length) {
+//		byte[] newTypes = new byte[typesIndex];
+//		System.arraycopy(types, 0, newTypes, 0, typesIndex);
+//		types = newTypes;
+//	}
+//	PathData result = new PathData();
+//	result.types = types;
+//	result.points = points;
+//	return result;
 }
 
 /**

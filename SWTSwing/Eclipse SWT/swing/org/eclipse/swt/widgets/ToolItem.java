@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -48,7 +51,7 @@ public class ToolItem extends Item {
 	Image disabledImage, hotImage;
 //	Image disabledImage2;
 //	int id;
-  Container handle;
+	Container handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -87,8 +90,8 @@ public class ToolItem extends Item {
 public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-  handle = createHandle();
-  parent.createItem (this, parent.getItemCount ());
+	handle = createHandle();
+	parent.createItem (this, parent.getItemCount ());
 }
 
 /**
@@ -130,8 +133,8 @@ public ToolItem (ToolBar parent, int style) {
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-  handle = createHandle();
-  parent.createItem (this, index);
+	handle = createHandle();
+	parent.createItem (this, index);
 }
 
 /**
@@ -203,11 +206,11 @@ protected void checkSubclass () {
 //}
 
 //Image createDisabledImage (Image image, Color color) {
-//  	/*
-//  	* In order to be consistent with the way that disabled
+//		/*
+//		* In order to be consistent with the way that disabled
 //	* images appear in other places in the user interface,
 //	* use the SWT Graphics to create a disabled image instead
-//    * of calling DrawState().
+//		* of calling DrawState().
 //	*/
 //	return new Image (display, image, SWT.IMAGE_DISABLE);
 //	/*
@@ -234,12 +237,12 @@ protected void checkSubclass () {
 //}
 
 Container createHandle () {
-  return (Container)CToolItem.Factory.newInstance(this, style);
+	return (Container)CToolItem.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -255,8 +258,8 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-  java.awt.Rectangle bounds = handle.getBounds();
-  return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+	java.awt.Rectangle bounds = handle.getBounds();
+	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /**
@@ -311,7 +314,7 @@ public Image getDisabledImage () {
  */
 public boolean getEnabled () {
 	checkWidget();
-  return handle.isEnabled();
+	return handle.isEnabled();
 }
 
 /**
@@ -368,7 +371,7 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-  return ((CToolItem)handle).isSelected();
+	return ((CToolItem)handle).isSelected();
 }
 
 /**
@@ -398,7 +401,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-  return handle.getWidth();
+	return handle.getWidth();
 //	int hwnd = parent.handle;
 //	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 //	RECT rect = new RECT ();
@@ -427,8 +430,8 @@ public boolean isEnabled () {
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
@@ -511,7 +514,7 @@ public void removeSelectionListener(SelectionListener listener) {
 ////    parent.handle.invalidate();
 ////    parent.handle.validate();
 ////    parent.handle.repaint();
-//  }
+//	}
 //}
 
 void selectRadio () {
@@ -547,15 +550,15 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
-  if(this.control != null) {
-    handle.remove(this.control.handle);
-  }
+	if(this.control != null) {
+		handle.remove(this.control.handle);
+	}
 	this.control = control;
-  handle.add(control.handle);
-  handle.invalidate();
-  handle.validate();
-  handle.repaint();
-//  handle.setPreferredSize(control.handle.getPreferredSize());
+	handle.add(control.handle);
+	handle.invalidate();
+	handle.validate();
+	handle.repaint();
+//	handle.setPreferredSize(control.handle.getPreferredSize());
 //	resizeControl ();
 }
 
@@ -577,8 +580,8 @@ public void setControl (Control control) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-  handle.setEnabled(enabled);
-  // TODO: save the disabled image that is used
+	handle.setEnabled(enabled);
+	// TODO: save the disabled image that is used
 }
 
 /**
@@ -603,7 +606,7 @@ public void setDisabledImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	disabledImage = image;
-  ((CToolItem)handle).setDisabledIcon(image == null? null: new ImageIcon(image.handle));
+	((CToolItem)handle).setDisabledIcon(image == null? null: new ImageIcon(image.handle));
 //	updateImages ();
 }
 
@@ -629,8 +632,8 @@ public void setHotImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	hotImage = image;
-//  hotImage = Image.swing_new(getDisplay(), SWT.BITMAP, );
-  ((CToolItem)handle).setRolloverIcon(image == null? null: new ImageIcon(image.handle));
+//	hotImage = Image.swing_new(getDisplay(), SWT.BITMAP, );
+	((CToolItem)handle).setRolloverIcon(image == null? null: new ImageIcon(image.handle));
 //	updateImages ();
 }
 
@@ -639,7 +642,7 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
-  ((CToolItem)handle).setIcon(image == null? null: new ImageIcon(image.handle));
+	((CToolItem)handle).setIcon(image == null? null: new ImageIcon(image.handle));
 //	updateImages ();
 }
 
@@ -675,8 +678,8 @@ public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	isAdjustingSelection = true;
-  ((CToolItem)handle).setSelected(selected);
-  isAdjustingSelection = false;
+	((CToolItem)handle).setSelected(selected);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -708,19 +711,19 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-  if (string.equals (text)) return;
+	if (string.equals (text)) return;
 	super.setText (string);
-  CToolItem cToolItem = (CToolItem)handle;
-  int index = findMnemonicIndex(string);
-  char mnemonic;
-  if(index < 0) {
-    mnemonic = '\0';
-    cToolItem.setText(string);
-  } else {
-    mnemonic = string.charAt(index);
-    cToolItem.setText(string.substring(0, index - 1) + string.substring(index));
-  }
-  cToolItem.setMnemonic(mnemonic);
+	CToolItem cToolItem = (CToolItem)handle;
+	int index = findMnemonicIndex(string);
+	char mnemonic;
+	if(index < 0) {
+		mnemonic = '\0';
+		cToolItem.setText(string);
+	} else {
+		mnemonic = string.charAt(index);
+		cToolItem.setText(string.substring(0, index - 1) + string.substring(index));
+	}
+	cToolItem.setMnemonic(mnemonic);
 //	parent.layoutItems ();
 }
 
@@ -739,8 +742,8 @@ String toolTipText;
  */
 public void setToolTipText (String string) {
 	checkWidget();
-  toolTipText = string;
-  ((CToolItem)handle).setToolTipText(Utils.convertStringToHTML(string));
+	toolTipText = string;
+	((CToolItem)handle).setToolTipText(Utils.convertStringToHTML(string));
 }
 
 /**
@@ -757,10 +760,10 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-  ((CToolItem)handle).setWidth(width);
-  parent.handle.invalidate();
-  parent.handle.validate();
-  parent.handle.repaint();
+	((CToolItem)handle).setWidth(width);
+	parent.handle.invalidate();
+	parent.handle.validate();
+	parent.handle.repaint();
 //	parent.layoutItems ();
 }
 
@@ -863,48 +866,48 @@ public void setWidth (int width) {
 //}
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case java.awt.event.ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && (isAdjustingSelection || !hooks(SWT.Selection))) return; break;
-  case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: if(isAdjustingSelection || !hooks(SWT.Selection)) return; break;
-  default: return;
-  }
-  if(isDisposed()) {
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    return;
-  }
-  try {
-    switch(id) {
-    case java.awt.event.ActionEvent.ACTION_PERFORMED: {
-      Event event = new Event();
-      if((style & SWT.RADIO) != 0) {
-        if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-          selectRadio();
-        }
-      } else if("Arrow".equals(((java.awt.event.ActionEvent)e).getActionCommand())) {
-        event.detail = SWT.ARROW;
-      }
-      if(!isAdjustingSelection) {
-        sendEvent(SWT.Selection, event);
-      }
-      break;
-    }
-    case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
-      if(!isAdjustingSelection) {
-        sendEvent(SWT.Selection);
-      }
-      break;
-    }
-    }
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case java.awt.event.ActionEvent.ACTION_PERFORMED: if((style & SWT.RADIO) == 0 && (isAdjustingSelection || !hooks(SWT.Selection))) return; break;
+	case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: if(isAdjustingSelection || !hooks(SWT.Selection)) return; break;
+	default: return;
+	}
+	if(isDisposed()) {
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		return;
+	}
+	try {
+		switch(id) {
+		case java.awt.event.ActionEvent.ACTION_PERFORMED: {
+			Event event = new Event();
+			if((style & SWT.RADIO) != 0) {
+				if((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+					selectRadio();
+				}
+			} else if("Arrow".equals(((java.awt.event.ActionEvent)e).getActionCommand())) {
+				event.detail = SWT.ARROW;
+			}
+			if(!isAdjustingSelection) {
+				sendEvent(SWT.Selection, event);
+			}
+			break;
+		}
+		case java.awt.event.ItemEvent.ITEM_STATE_CHANGED: {
+			if(!isAdjustingSelection) {
+				sendEvent(SWT.Selection);
+			}
+			break;
+		}
+		}
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

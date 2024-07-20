@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -56,7 +59,7 @@ public void javaToNative (Object object, TransferData transferData){
 	if (!checkText(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-  transferData.transferable = new StringSelection((String)object);
+	transferData.transferable = new StringSelection((String)object);
 }
 
 /**
@@ -69,7 +72,7 @@ public void javaToNative (Object object, TransferData transferData){
  * @see Transfer#nativeToJava
  */
 public Object nativeToJava(TransferData transferData){
-  return super.nativeToJava(transferData);
+	return super.nativeToJava(transferData);
 }
 
 boolean checkText(Object object) {
@@ -81,13 +84,13 @@ protected boolean validate(Object object) {
 }
 
 public TransferData[] getSupportedTypes() {
-  TransferData data = new TransferData();
-  data.dataFlavor = DataFlavor.stringFlavor;
-  return new TransferData[] {data};
+	TransferData data = new TransferData();
+	data.dataFlavor = DataFlavor.stringFlavor;
+	return new TransferData[] {data};
 }
 
 protected DataFlavor getDataFlavor() {
-  return DataFlavor.stringFlavor;
+	return DataFlavor.stringFlavor;
 }
 
 }

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -36,11 +39,11 @@ public final class FontMetrics {
 	 */
 	public java.awt.FontMetrics handle;
 
-  int ascent;
-  int descent;
-  int height;
-  int leading;
-  int averageCharWidth;
+	int ascent;
+	int descent;
+	int height;
+	int leading;
+	int averageCharWidth;
 
 /**
  * Prevents instances from being created outside the package.
@@ -61,7 +64,7 @@ FontMetrics() {
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontMetrics)) return false;
-  return ((FontMetrics)object).handle.equals(handle);
+	return ((FontMetrics)object).handle.equals(handle);
 //	TEXTMETRIC metric = ((FontMetrics)object).handle;
 //	return handle.tmHeight == metric.tmHeight &&
 //		handle.tmAscent == metric.tmAscent &&
@@ -94,7 +97,7 @@ public boolean equals (Object object) {
  * @return the ascent of the font
  */
 public int getAscent() {
-  return handle == null? ascent: handle.getAscent();
+	return handle == null? ascent: handle.getAscent();
 }
 
 /**
@@ -116,8 +119,8 @@ public double getAverageCharacterWidth() {
  */
 @Deprecated
 public int getAverageCharWidth() {
-  // Use a letter that looks average
-  return handle == null? averageCharWidth: handle.charWidth('c');
+	// Use a letter that looks average
+	return handle == null? averageCharWidth: handle.charWidth('c');
 }
 
 /**
@@ -169,7 +172,7 @@ public int getLeading() {
  * @see #equals
  */
 public int hashCode() {
-  return (handle == null? 0: handle.hashCode()) ^ getAscent() ^ getDescent() ^ getHeight() ^ getLeading() ^ getAverageCharWidth();
+	return (handle == null? 0: handle.hashCode()) ^ getAscent() ^ getDescent() ^ getHeight() ^ getLeading() ^ getAverageCharWidth();
 }
 
 /**	 
@@ -192,13 +195,13 @@ public static FontMetrics swing_new(java.awt.FontMetrics handle) {
 }
 
 static FontMetrics internal_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
-  FontMetrics fontMetrics = new FontMetrics();
-  fontMetrics.ascent = ascent;
-  fontMetrics.descent = descent;
-  fontMetrics.height = height;
-  fontMetrics.leading = leading;
-  fontMetrics.averageCharWidth = averageCharWidth;
-  return fontMetrics;
+	FontMetrics fontMetrics = new FontMetrics();
+	fontMetrics.ascent = ascent;
+	fontMetrics.descent = descent;
+	fontMetrics.height = height;
+	fontMetrics.leading = leading;
+	fontMetrics.averageCharWidth = averageCharWidth;
+	return fontMetrics;
 }
 
 }

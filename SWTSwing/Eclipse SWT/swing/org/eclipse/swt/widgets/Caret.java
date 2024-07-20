@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -83,64 +86,64 @@ public Caret (Canvas parent, int style) {
 }
 
 void createWidget () {
-  isVisible = true;
-  if (parent.getCaret () == null) {
-    parent.setCaret (this);
-  }
+	isVisible = true;
+	if (parent.getCaret () == null) {
+		parent.setCaret (this);
+	}
 }
 
 Timer timer = new Timer (LookAndFeelUtils.getCaretBlinkRate(), new ActionListener () {
-  public void actionPerformed (ActionEvent e) {
-    Caret.this.blink = !Caret.this.blink;
-    if (Caret.this.parent != null && Caret.this.parent.caret == Caret.this) {
-      // XXX redraw rect is not correct. for now, redraw all.
-      // Rectangle r = Caret.this.getBounds();
-      // Caret.this.parent.redraw(x, r.y, r.width, r.height, true);
-      // redraw causes GC to throw exceptions in some conditions. Let's directly call the Swing component
-      Caret.this.parent.handle.repaint();
-    } else {
-      timer.stop();
-    }
-  }
+	public void actionPerformed (ActionEvent e) {
+		Caret.this.blink = !Caret.this.blink;
+		if (Caret.this.parent != null && Caret.this.parent.caret == Caret.this) {
+			// XXX redraw rect is not correct. for now, redraw all.
+			// Rectangle r = Caret.this.getBounds();
+			// Caret.this.parent.redraw(x, r.y, r.width, r.height, true);
+			// redraw causes GC to throw exceptions in some conditions. Let's directly call the Swing component
+			Caret.this.parent.handle.repaint();
+		} else {
+			timer.stop();
+		}
+	}
 }) {
-  public void stop() {
-    super.stop();
-    blink = true;
-    if(Caret.this.parent != null) {
-//      Caret.this.parent.redraw ();
-      Caret.this.parent.handle.repaint();
-    }
-  }
+	public void stop() {
+		super.stop();
+		blink = true;
+		if(Caret.this.parent != null) {
+//			Caret.this.parent.redraw ();
+			Caret.this.parent.handle.repaint();
+		}
+	}
 };
 
 private boolean blink;
 
 void paintCaret (GC gc) {
-  if (blink && isVisible()) {
-    if(display == null) return;
-    gc.setXORMode (true);
-    gc.setBackground (display.getSystemColor (SWT.COLOR_BLACK));
-    if (image != null) {
-      gc.drawImage (image, x, y);
-    }
-    gc.fillRectangle (x, y, Math.max(1, width), height);
-    gc.setXORMode (false);
-  }
+	if (blink && isVisible()) {
+		if(display == null) return;
+		gc.setXORMode (true);
+		gc.setBackground (display.getSystemColor (SWT.COLOR_BLACK));
+		if (image != null) {
+			gc.drawImage (image, x, y);
+		}
+		gc.fillRectangle (x, y, Math.max(1, width), height);
+		gc.setXORMode (false);
+	}
 }
 
 java.awt.Font defaultFont () {
-  return parent.handle.getFont ();
-//  int hwnd = parent.handle;
-//  int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
-//  int hFont = 0;
-//  if (hwndIME != 0) {
-//    hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
-//  }
-//  if (hFont == 0) {
-//    hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
-//  }
-//  if (hFont == 0) return parent.defaultFont ();
-//  return hFont;
+	return parent.handle.getFont ();
+//	int hwnd = parent.handle;
+//	int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
+//	int hFont = 0;
+//	if (hwndIME != 0) {
+//		hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
+//	}
+//	if (hFont == 0) {
+//		hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+//	}
+//	if (hFont == 0) return parent.defaultFont ();
+//	return hFont;
 }
 
 /**
@@ -174,17 +177,17 @@ public Rectangle getBounds () {
  * </ul>
  */
 public Font getFont () {
-  checkWidget ();
-  if (font == null) {
-    return Font.swing_new (display, defaultFont ());
-  }
-  return font;
-//  checkWidget();
-//  if (font == null) {
-//    int hFont = defaultFont ();
-//    return Font.win32_new (display, hFont);
-//  }
-//  return font;
+	checkWidget ();
+	if (font == null) {
+		return Font.swing_new (display, defaultFont ());
+	}
+	return font;
+//	checkWidget();
+//	if (font == null) {
+//		int hFont = defaultFont ();
+//		return Font.win32_new (display, hFont);
+//	}
+//	return font;
 }
 
 /**
@@ -275,8 +278,8 @@ public boolean getVisible () {
 }
 
 boolean hasFocus () {
-  return parent.isFocusControl();
-//  return parent.handle == OS.GetFocus ();
+	return parent.isFocusControl();
+//	return parent.handle == OS.GetFocus ();
 }
 
 boolean isFocusCaret () {
@@ -303,7 +306,7 @@ public boolean isVisible () {
 }
 
 void killFocus () {
-  timer.stop ();
+	timer.stop ();
 //	OS.DestroyCaret ();
 //	if (font != null) restoreIMEFont ();
 }
@@ -312,7 +315,7 @@ void move () {
 //	moved = false;
 //	if (!OS.SetCaretPos (x, y)) return;
 //	resizeIME ();
-  blink = true;
+	blink = true;
 }
 
 void resizeIME () {
@@ -404,7 +407,7 @@ public void setBounds (int x, int y, int width, int height) {
 	boolean samePosition = this.x == x && this.y == y;
 	boolean sameExtent = this.width == width && this.height == height;
 	if (samePosition && sameExtent) return;
-  timer.stop();
+	timer.stop();
 	this.x = x;  this.y = y;
 	this.width = width;  this.height = height;
 	if (sameExtent) {
@@ -414,7 +417,7 @@ public void setBounds (int x, int y, int width, int height) {
 		resized = true;
 		if (isVisible && hasFocus ()) resize ();
 	}
-  timer.start();
+	timer.start();
 }
 
 /**
@@ -436,7 +439,7 @@ public void setBounds (Rectangle rect) {
 }
 
 void setFocus () {
-  timer.start ();
+	timer.start ();
 //TODO
 //	int hwnd = parent.handle;
 //	int hBitmap = 0;
@@ -536,11 +539,11 @@ void setIMEFont (int hFont) {
 public void setLocation (int x, int y) {
 	checkWidget();
 	if (this.x == x && this.y == y) return;
-  timer.stop();
+	timer.stop();
 	this.x = x;  this.y = y;
 	moved = true;
 	if (isVisible && hasFocus ()) move ();
-  timer.start();
+	timer.start();
 }
 
 /**
@@ -616,9 +619,9 @@ public void setSize (Point size) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-  checkWidget ();
-  if (visible == isVisible) return;
-  isVisible = visible;
+	checkWidget ();
+	if (visible == isVisible) return;
+	isVisible = visible;
 //TODO
 //	checkWidget();
 //	if (visible == isVisible) return;
@@ -635,7 +638,7 @@ public void setVisible (boolean visible) {
 //		}
 //		OS.ShowCaret (hwnd);
 //	}
-  // TODO activate or deactivate caret timer.
+	// TODO activate or deactivate caret timer.
 }
 
 }

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -60,7 +63,7 @@ public abstract class Device implements Drawable {
 
 	boolean disposed;
 	
-  final static Object CREATE_LOCK = new Object();
+	final static Object CREATE_LOCK = new Object();
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -78,7 +81,7 @@ public abstract class Device implements Drawable {
 	protected static Runnable DeviceFinder;
 	static {
 		try {
-      Class.forName ("org.eclipse.swt.widgets.Display"); //$NON-NLS-1$
+			Class.forName ("org.eclipse.swt.widgets.Display"); //$NON-NLS-1$
 		} catch (Throwable e) {}
 	}	
 
@@ -104,7 +107,7 @@ static synchronized Device getDevice () {
  * @since 3.1
  */
 public Device() {
-  this(null);
+	this(null);
 }
 
 /**
@@ -120,18 +123,18 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-  synchronized (CREATE_LOCK) {
-  	if (data != null) {
-  		debug = data.debug;
-  		tracking = data.tracking;
-  	}
-  	create (data);
-  	init ();
-  	if (tracking) {
-  		errors = new Error [128];
-  		objects = new Object [128];
-  	}
-  }
+	synchronized (CREATE_LOCK) {
+		if (data != null) {
+			debug = data.debug;
+			tracking = data.tracking;
+		}
+		create (data);
+		init ();
+		if (tracking) {
+			errors = new Error [128];
+			objects = new Object [128];
+		}
+	}
 }
 
 /**
@@ -159,7 +162,7 @@ protected void checkDevice () {
 
 //void checkGDIP() {
 //	if (gdipToken != null) return;
-//    int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
+//		int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 //	try {
 //		int [] token = new int [1];
 //		GdiplusStartupInput input = new GdiplusStartupInput ();
@@ -170,8 +173,8 @@ protected void checkDevice () {
 //	} catch (Throwable t) {
 //		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t);
 //	} finally {
-//        OS.SetErrorMode (oldErrorMode);
-//    }
+//				OS.SetErrorMode (oldErrorMode);
+//		}
 //}
 
 /**
@@ -305,8 +308,8 @@ void dispose_Object (Object object) {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-  //TODO: implement method
-  throw new IllegalStateException("Not implemented!");
+	//TODO: implement method
+	throw new IllegalStateException("Not implemented!");
 //	int hDC = internal_new_GC (null);
 //	int width = OS.GetDeviceCaps (hDC, OS.HORZRES);
 //	int height = OS.GetDeviceCaps (hDC, OS.VERTRES);
@@ -385,13 +388,13 @@ public int getDepth () {
 //	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
 //	internal_dispose_GC (hDC, null);
 //	return bits * planes;
-  // TODO: is this correct?
-  DisplayMode displayMode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
-  if(displayMode == null) {
-    return 32;
-  }
-  int bitDepth = displayMode.getBitDepth();
-  return bitDepth == DisplayMode.BIT_DEPTH_MULTI? 32: bitDepth;
+	// TODO: is this correct?
+	DisplayMode displayMode = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode();
+	if(displayMode == null) {
+		return 32;
+	}
+	int bitDepth = displayMode.getBitDepth();
+	return bitDepth == DisplayMode.BIT_DEPTH_MULTI? 32: bitDepth;
 }
 
 /**
@@ -416,8 +419,8 @@ public Point getDPI () {
 }
 
 protected Point getDPI_() {
-  int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
-  return new Point(resolution, resolution);
+	int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
+	return new Point(resolution, resolution);
 }
 
 /**
@@ -435,28 +438,28 @@ protected Point getDPI_() {
  */
 public FontData [] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-  if(!scalable) {
-    return new FontData[0];
-  }
-  // TODO: propose all styles?
-  java.awt.Font[] fonts;
-  if(faceName != null) {
-    java.awt.Font font = new java.awt.Font(faceName, java.awt.Font.PLAIN, 1);
-    if(!"Dialog".equals(faceName) && "Dialog".equals(font.getFamily())) {
-      fonts = new java.awt.Font[0];
-    } else {
-      fonts = new java.awt.Font[] {font};
-    }
-  } else {
-    fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-  }
-  FontData[] results = new FontData[fonts.length];
-  for(int i=0; i<fonts.length; i++) {
-    java.awt.Font font = fonts[i];
-    results[i] = new FontData(font.getFamily(), 12, SWT.NORMAL | (font.isBold()? SWT.BOLD: 0) | (font.isItalic()? SWT.ITALIC: 0));
-  }
-  return results;
-//  
+	if(!scalable) {
+		return new FontData[0];
+	}
+	// TODO: propose all styles?
+	java.awt.Font[] fonts;
+	if(faceName != null) {
+		java.awt.Font font = new java.awt.Font(faceName, java.awt.Font.PLAIN, 1);
+		if(!"Dialog".equals(faceName) && "Dialog".equals(font.getFamily())) {
+			fonts = new java.awt.Font[0];
+		} else {
+			fonts = new java.awt.Font[] {font};
+		}
+	} else {
+		fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+	}
+	FontData[] results = new FontData[fonts.length];
+	for(int i=0; i<fonts.length; i++) {
+		java.awt.Font font = fonts[i];
+		results[i] = new FontData(font.getFamily(), 12, SWT.NORMAL | (font.isBold()? SWT.BOLD: 0) | (font.isItalic()? SWT.ITALIC: 0));
+	}
+	return results;
+//	
 //	/* Create the callback */
 //	Callback callback = new Callback (this, "EnumFontFamProc", 4);
 //	int lpEnumFontFamProc = callback.getAddress ();

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -138,11 +141,11 @@ public IME getIME () {
 }
 
 void releaseChildren (boolean destroy) {
-  if (caret != null) {
-    caret.release (false);
-    caret = null;
-  }
-  super.releaseChildren (destroy);
+	if (caret != null) {
+		caret.release (false);
+		caret = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 /** 
@@ -167,22 +170,22 @@ void releaseChildren (boolean destroy) {
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
-  checkWidget ();
-  if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  Graphics2D g = gc.handle.getGraphics();
-  if(backgroundImage != null) {
-    Shape clip = g.getClip();
-    g.clipRect(x, y, width, height);
-    Dimension size = handle.getSize();
-    Utils.paintTiledImage(g, new ImageIcon(backgroundImage.handle), 0, 0, size.width, size.height);
-    g.setClip(clip);
-  } else {
-    java.awt.Color oldColor = g.getColor();
-    g.setColor(getBackground().handle);
-    g.fillRect(x, y, width, height);
-    g.setColor(oldColor);
-  }
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Graphics2D g = gc.handle.getGraphics();
+	if(backgroundImage != null) {
+		Shape clip = g.getClip();
+		g.clipRect(x, y, width, height);
+		Dimension size = handle.getSize();
+		Utils.paintTiledImage(g, new ImageIcon(backgroundImage.handle), 0, 0, size.width, size.height);
+		g.setClip(clip);
+	} else {
+		java.awt.Color oldColor = g.getColor();
+		g.setColor(getBackground().handle);
+		g.fillRect(x, y, width, height);
+		g.setColor(oldColor);
+	}
 }
 
 /**
@@ -212,23 +215,23 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //	forceResize ();
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-//  handle.repaint();
-  Container clientArea = ((CControl)handle).getClientArea();
-  java.awt.Graphics g = clientArea.getGraphics();
-  int dx = destX - x;
-  int dy = destY - y;
-  g.copyArea(x, y, width, height, dx, dy);
-  java.awt.Dimension size = clientArea.getSize();
-  if(dx < 0) {
-    clientArea.repaint(size.width + dx, 0, -dx, size.height);
-  } else if(dx > 0) {
-    clientArea.repaint(0, 0, dx, size.height);
-  }
-  if(dy < 0) {
-    clientArea.repaint(0, size.height + dy, size.width, -dy);
-  } else if(dy > 0) {
-    clientArea.repaint(0, 0, size.width, dy);
-  }
+//	handle.repaint();
+	Container clientArea = ((CControl)handle).getClientArea();
+	java.awt.Graphics g = clientArea.getGraphics();
+	int dx = destX - x;
+	int dy = destY - y;
+	g.copyArea(x, y, width, height, dx, dy);
+	java.awt.Dimension size = clientArea.getSize();
+	if(dx < 0) {
+		clientArea.repaint(size.width + dx, 0, -dx, size.height);
+	} else if(dx > 0) {
+		clientArea.repaint(0, 0, dx, size.height);
+	}
+	if(dy < 0) {
+		clientArea.repaint(0, size.height + dy, size.width, -dy);
+	} else if(dy > 0) {
+		clientArea.repaint(0, 0, size.width, dy);
+	}
 //	RECT sourceRect = new RECT ();
 //	OS.SetRect (sourceRect, x, y, x + width, y + height);
 //	RECT clientRect = new RECT ();

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -58,20 +61,20 @@ public void javaToNative (final Object object, TransferData transferData){
 	if (!checkRTF(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-  transferData.transferable = new Transferable() {
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-      if(!isDataFlavorSupported(flavor)) {
-        throw new UnsupportedFlavorException(flavor);
-      }
-      return new ByteArrayInputStream(((String)object).getBytes());
-    }
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
-      return getDataFlavor().equals(flavor);
-    }
-    public DataFlavor[] getTransferDataFlavors() {
-      return new DataFlavor[] {getDataFlavor()};
-    }
-  };
+	transferData.transferable = new Transferable() {
+		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+			if(!isDataFlavorSupported(flavor)) {
+				throw new UnsupportedFlavorException(flavor);
+			}
+			return new ByteArrayInputStream(((String)object).getBytes());
+		}
+		public boolean isDataFlavorSupported(DataFlavor flavor) {
+			return getDataFlavor().equals(flavor);
+		}
+		public DataFlavor[] getTransferDataFlavors() {
+			return new DataFlavor[] {getDataFlavor()};
+		}
+	};
 }
 
 /**
@@ -85,18 +88,18 @@ public void javaToNative (final Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-  if (!isSupportedType(transferData) || transferData.transferable == null) return null;
-  InputStreamReader reader = new InputStreamReader((ByteArrayInputStream)super.nativeToJava(transferData));
-  StringBuilder sb = new StringBuilder();
-  char[] chars = new char[128];
-  try {
-    for(int i; (i=reader.read(chars)) != -1; ) {
-      sb.append(chars, 0, i);
-    }
-  } catch(Exception e) {
-    e.printStackTrace();
-  }
-  return sb.toString();
+	if (!isSupportedType(transferData) || transferData.transferable == null) return null;
+	InputStreamReader reader = new InputStreamReader((ByteArrayInputStream)super.nativeToJava(transferData));
+	StringBuilder sb = new StringBuilder();
+	char[] chars = new char[128];
+	try {
+		for(int i; (i=reader.read(chars)) != -1; ) {
+			sb.append(chars, 0, i);
+		}
+	} catch(Exception e) {
+		e.printStackTrace();
+	}
+	return sb.toString();
 }
 
 boolean checkRTF(Object object) {
@@ -110,13 +113,13 @@ protected boolean validate(Object object) {
 static DataFlavor RTF_FLAVOR = new DataFlavor("text/rtf", "RTF Text");
 
 public TransferData[] getSupportedTypes() {
-  TransferData data = new TransferData();
-  data.dataFlavor = RTF_FLAVOR;
-  return new TransferData[] {data};
+	TransferData data = new TransferData();
+	data.dataFlavor = RTF_FLAVOR;
+	return new TransferData[] {data};
 }
 
 protected DataFlavor getDataFlavor() {
-  return RTF_FLAVOR;
+	return RTF_FLAVOR;
 }
 
 }

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -46,8 +49,8 @@ import org.eclipse.swt.internal.win32.OS;
  * @since 3.1
  */
 public class Link extends Control {
-  
-  String text;
+	
+	String text;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -77,7 +80,7 @@ public class Link extends Control {
  * @see Widget#getStyle
  */
 public Link (Composite parent, int style) {
-  super (parent, style);
+	super (parent, style);
 }
 
 /**
@@ -105,43 +108,43 @@ public Link (Composite parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-  checkWidget ();
-  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-  TypedListener typedListener = new TypedListener (listener);
-  addListener (SWT.Selection, typedListener);
-  addListener (SWT.DefaultSelection, typedListener);
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state |= THEME_BACKGROUND;
+	super.createHandleInit();
+	state |= THEME_BACKGROUND;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-  checkWidget ();
-  SwingUtilities.invokeLater(new Runnable() {
-    public void run() {
-      isAdjustingSize = true;
-    }
-  });
-  Dimension size = handle.getSize();
-  if(wHint == SWT.DEFAULT) {
-    handle.setSize(((CLink)handle).getPreferredWidth(), 0);
-  } else {
-    handle.setSize(wHint, 0);
-  }
-  Point point = super.computeSize (wHint, hHint, changed);
-  handle.setSize(size);
-  SwingUtilities.invokeLater(new Runnable() {
-    public void run() {
-      isAdjustingSize = false;
-    }
-  });
-  return point;
+	checkWidget ();
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+			isAdjustingSize = true;
+		}
+	});
+	Dimension size = handle.getSize();
+	if(wHint == SWT.DEFAULT) {
+		handle.setSize(((CLink)handle).getPreferredWidth(), 0);
+	} else {
+		handle.setSize(wHint, 0);
+	}
+	Point point = super.computeSize (wHint, hHint, changed);
+	handle.setSize(size);
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+			isAdjustingSize = false;
+		}
+	});
+	return point;
 }
 
 Container createHandle () {
-  return (Container)CLink.Factory.newInstance(this, style);
+	return (Container)CLink.Factory.newInstance(this, style);
 }
 
 /**
@@ -161,7 +164,7 @@ public Color getLinkForeground () {
 }
 
 String getNameText () {
-  return getText ();
+	return getText ();
 }
 
 /**
@@ -176,32 +179,32 @@ String getNameText () {
  * </ul>
  */
 public String getText () {
-  checkWidget ();
-  return text == null? "": text;
+	checkWidget ();
+	return text == null? "": text;
 }
 
 boolean mnemonicHit (char key) {
-  Composite control = this.parent;
-  while (control != null) {
-    Control [] children = control._getChildren ();
-    int index = 0;
-    while (index < children.length) {
-      if (children [index] == this) break;
-      index++;
-    }
-    index++;
-    if (index < children.length) {
-      if (children [index].setFocus ()) return true;
-    }
-    control = control.parent;
-  }
-  return false;
+	Composite control = this.parent;
+	while (control != null) {
+		Control [] children = control._getChildren ();
+		int index = 0;
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		index++;
+		if (index < children.length) {
+			if (children [index].setFocus ()) return true;
+		}
+		control = control.parent;
+	}
+	return false;
 }
 
 boolean mnemonicMatch (char key) {
-  char mnemonic = findMnemonic (getText ());
-  if (mnemonic == '\0') return false;
-  return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+	char mnemonic = findMnemonic (getText ());
+	if (mnemonic == '\0') return false;
+	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
 /**
@@ -222,11 +225,11 @@ boolean mnemonicMatch (char key) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
-  checkWidget ();
-  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (eventTable == null) return;
-  eventTable.unhook (SWT.Selection, listener);
-  eventTable.unhook (SWT.DefaultSelection, listener); 
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection, listener); 
 }
 
 /**
@@ -276,51 +279,51 @@ public void setLinkForeground (Color color) {
  * </ul>
  */
 public void setText (String string) {
-  checkWidget ();
-  if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  checkWidget ();
-  this.text = string;
-  int mnemonicIndex = findMnemonicIndex(string);
-  if(mnemonicIndex > 0) {
-    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
-    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
-//    mnemonicIndex -= mnemonicIndex - 1 - s.length();
-//    mnemonicIndex--;
-  } else {
-    string = string.replaceAll("&&", "&");
-  }
-  ((CLink)handle).setLinkText(string);
+	checkWidget ();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	checkWidget ();
+	this.text = string;
+	int mnemonicIndex = findMnemonicIndex(string);
+	if(mnemonicIndex > 0) {
+		String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+		string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+//		mnemonicIndex -= mnemonicIndex - 1 - s.length();
+//		mnemonicIndex--;
+	} else {
+		string = string.replaceAll("&&", "&");
+	}
+	((CLink)handle).setLinkText(string);
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof HyperlinkEvent) {
-    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
-  } else {
-    super.processEvent(e);
-    return;
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof HyperlinkEvent) {
-      Event event = new Event();
-      event.text = ((HyperlinkEvent)e).getDescription();
-      sendEvent(SWT.Selection, event);
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof HyperlinkEvent) {
+		if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+	} else {
+		super.processEvent(e);
+		return;
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof HyperlinkEvent) {
+			Event event = new Event();
+			event.text = ((HyperlinkEvent)e).getDescription();
+			sendEvent(SWT.Selection, event);
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

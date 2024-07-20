@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -93,7 +96,7 @@ public Browser(Composite parent, int style) {
  * @since 3.2
  */
 public static void clearSessions () {
-  Utils.notImplemented();
+	Utils.notImplemented();
 }
 
 /**	 
@@ -314,7 +317,7 @@ public void addVisibilityWindowListener(VisibilityWindowListener listener) {
  */
 public boolean back() {
 	checkWidget();
-  return ((CBrowser)handle).back();
+	return ((CBrowser)handle).back();
 }
 
 protected void checkSubclass() {
@@ -326,7 +329,7 @@ protected void checkSubclass() {
 }
 
 protected Container createHandle () {
-  return (Container)CBrowser.Factory.newInstance(this, getStyle());
+	return (Container)CBrowser.Factory.newInstance(this, getStyle());
 }
 
 /**
@@ -353,7 +356,7 @@ protected Container createHandle () {
 public boolean execute(String script) {
 	checkWidget();
 	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  // TODO: impossible to implement. Check in future versions of Java...
+	// TODO: impossible to implement. Check in future versions of Java...
 	return false;
 }
 
@@ -373,7 +376,7 @@ public boolean execute(String script) {
  */
 public boolean forward() {
 	checkWidget();
-  return ((CBrowser)handle).forward();
+	return ((CBrowser)handle).forward();
 }
 
 /**
@@ -405,7 +408,7 @@ public String getBrowserType () {
  */
 public boolean isBackEnabled() {
 	checkWidget();
-  return ((CBrowser)handle).isBackEnabled();
+	return ((CBrowser)handle).isBackEnabled();
 }
 
 /**
@@ -423,7 +426,7 @@ public boolean isBackEnabled() {
  */
 public boolean isForwardEnabled() {
 	checkWidget();
-  return ((CBrowser)handle).isForwardEnabled();
+	return ((CBrowser)handle).isForwardEnabled();
 }
 
 /**
@@ -465,7 +468,7 @@ public String getText () {
  */
 public String getUrl() {
 	checkWidget();
-  return ((CBrowser)handle).getURL();
+	return ((CBrowser)handle).getURL();
 }
 
 /**
@@ -480,7 +483,7 @@ public String getUrl() {
  */
 public void refresh() {
 	checkWidget();
-  ((CBrowser)handle).refresh();
+	((CBrowser)handle).refresh();
 }
 
 /**	 
@@ -849,7 +852,7 @@ public boolean setText (String html) {
 public boolean setText(String html, boolean trusted) {
 	checkWidget();
 	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  return ((CBrowser)handle).setText(html, trusted);
+	return ((CBrowser)handle).setText(html, trusted);
 }
 
 /**
@@ -907,7 +910,7 @@ public boolean setUrl (String url) {
 public boolean setUrl (String url, String postData, String[] headers) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  return ((CBrowser)handle).setURL(url, postData, headers);
+	return ((CBrowser)handle).setURL(url, postData, headers);
 }
 
 /**
@@ -922,51 +925,51 @@ public boolean setUrl (String url, String postData, String[] headers) {
  */
 public void stop() {
 	checkWidget();
-  ((CBrowser)handle).stop();
+	((CBrowser)handle).stop();
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof BrowserLocationChangingEvent) {
-//    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
-  } else if(e instanceof BrowserLocationChangedEvent) {
-//    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
-  } else { super.processEvent(e); return; }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof BrowserLocationChangingEvent) {
-      BrowserLocationChangingEvent browserLocationChangingEvent = (BrowserLocationChangingEvent)e;
-      LocationEvent newEvent = new LocationEvent(Browser.this);
-      newEvent.display = getDisplay();
-      newEvent.widget = Browser.this;
-      newEvent.location = browserLocationChangingEvent.getURL();
-      newEvent.doit = true;
-      for (int i = 0; i < locationListeners.length; i++) {
-        locationListeners[i].changing(newEvent);
-      }
-      if(!newEvent.doit) {
-        browserLocationChangingEvent.consume();
-      }
-    } else if(e instanceof BrowserLocationChangedEvent) {
-      BrowserLocationChangedEvent browserLocationChangedEvent = (BrowserLocationChangedEvent)e;
-      LocationEvent newEvent = new LocationEvent(Browser.this);
-      newEvent.display = getDisplay();
-      newEvent.widget = Browser.this;
-      newEvent.location = browserLocationChangedEvent.getURL();
-      for (int i = 0; i < locationListeners.length; i++) {
-        locationListeners[i].changed(newEvent);
-      }
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof BrowserLocationChangingEvent) {
+//		if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+	} else if(e instanceof BrowserLocationChangedEvent) {
+//		if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+	} else { super.processEvent(e); return; }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof BrowserLocationChangingEvent) {
+			BrowserLocationChangingEvent browserLocationChangingEvent = (BrowserLocationChangingEvent)e;
+			LocationEvent newEvent = new LocationEvent(Browser.this);
+			newEvent.display = getDisplay();
+			newEvent.widget = Browser.this;
+			newEvent.location = browserLocationChangingEvent.getURL();
+			newEvent.doit = true;
+			for (int i = 0; i < locationListeners.length; i++) {
+				locationListeners[i].changing(newEvent);
+			}
+			if(!newEvent.doit) {
+				browserLocationChangingEvent.consume();
+			}
+		} else if(e instanceof BrowserLocationChangedEvent) {
+			BrowserLocationChangedEvent browserLocationChangedEvent = (BrowserLocationChangedEvent)e;
+			LocationEvent newEvent = new LocationEvent(Browser.this);
+			newEvent.display = getDisplay();
+			newEvent.widget = Browser.this;
+			newEvent.location = browserLocationChangedEvent.getURL();
+			for (int i = 0; i < locationListeners.length; i++) {
+				locationListeners[i].changed(newEvent);
+			}
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

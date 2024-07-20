@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -41,11 +44,11 @@ import org.eclipse.swt.internal.swing.UIThreadUtils;
  * @since 3.0
  */
 public class TrayItem extends Item {
-  Tray parent;
-  ToolTip toolTip;
-  boolean visible = true;
-  TrayIcon trayIcon;
-  
+	Tray parent;
+	ToolTip toolTip;
+	boolean visible = true;
+	TrayIcon trayIcon;
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tray</code>) and a style value
@@ -77,10 +80,10 @@ public class TrayItem extends Item {
  * @see Widget#getStyle
  */
 public TrayItem (Tray parent, int style) {
-  super (parent, style);
-  this.parent = parent;
-  parent.createItem (this, parent.getItemCount ());
-  createWidget();
+	super (parent, style);
+	this.parent = parent;
+	parent.createItem (this, parent.getItemCount ());
+	createWidget();
 }
 
 /**
@@ -108,86 +111,86 @@ public TrayItem (Tray parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-  checkWidget ();
-  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-  TypedListener typedListener = new TypedListener (listener);
-  addListener (SWT.Selection,typedListener);
-  addListener (SWT.DefaultSelection,typedListener);
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Selection,typedListener);
+	addListener (SWT.DefaultSelection,typedListener);
 }
 
 protected void checkSubclass () {
-  if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
 void createWidget () {
-  trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
-//  trayIcon.setImageAutoSize(true);
-  trayIcon.addMouseListener(new MouseAdapter() {
-    protected boolean processMenuEvent(MouseEvent e) {
-      switch(e.getClickCount()) {
-      case 1:
-        if(e.isPopupTrigger()) {
-          if (hooks (SWT.MenuDetect)) {
-            UIThreadUtils.startExclusiveSection(display);
-            if(isDisposed()) {
-              UIThreadUtils.stopExclusiveSection();
-              return true;
-            }
-            sendEvent (SWT.MenuDetect);
-            UIThreadUtils.stopExclusiveSection();
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-    public void mousePressed(MouseEvent e) {
-      if(processMenuEvent(e)) return;
-    }
-    public void mouseReleased(MouseEvent e) {
-      if(processMenuEvent(e)) return;
-      // We can't use action listener because it does not make a difference between single click and double click...
-      switch(e.getClickCount()) {
-      case 1:
-        if (hooks (SWT.Selection)) {
-          UIThreadUtils.startExclusiveSection(display);
-          if(isDisposed()) {
-            UIThreadUtils.stopExclusiveSection();
-            return;
-          }
-          try {
-            postEvent (SWT.Selection);
-          } catch(Throwable t) {
-            UIThreadUtils.storeException(t);
-          } finally {
-            UIThreadUtils.stopExclusiveSection();
-          }
-        }
-        break;
-      case 2:
-        if (hooks (SWT.DefaultSelection)) {
-          UIThreadUtils.startExclusiveSection(display);
-          if(isDisposed()) {
-            UIThreadUtils.stopExclusiveSection();
-            return;
-          }
-          postEvent (SWT.DefaultSelection);
-          UIThreadUtils.stopExclusiveSection();
-        }
-        break;
-      }
-    }
-  });
-  try {
-    SystemTray.getSystemTray().add(trayIcon);
-  } catch(Exception e) {
-    e.printStackTrace();
-  }
+	trayIcon = new TrayIcon(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB));
+//	trayIcon.setImageAutoSize(true);
+	trayIcon.addMouseListener(new MouseAdapter() {
+		protected boolean processMenuEvent(MouseEvent e) {
+			switch(e.getClickCount()) {
+			case 1:
+				if(e.isPopupTrigger()) {
+					if (hooks (SWT.MenuDetect)) {
+						UIThreadUtils.startExclusiveSection(display);
+						if(isDisposed()) {
+							UIThreadUtils.stopExclusiveSection();
+							return true;
+						}
+						sendEvent (SWT.MenuDetect);
+						UIThreadUtils.stopExclusiveSection();
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		public void mousePressed(MouseEvent e) {
+			if(processMenuEvent(e)) return;
+		}
+		public void mouseReleased(MouseEvent e) {
+			if(processMenuEvent(e)) return;
+			// We can't use action listener because it does not make a difference between single click and double click...
+			switch(e.getClickCount()) {
+			case 1:
+				if (hooks (SWT.Selection)) {
+					UIThreadUtils.startExclusiveSection(display);
+					if(isDisposed()) {
+						UIThreadUtils.stopExclusiveSection();
+						return;
+					}
+					try {
+						postEvent (SWT.Selection);
+					} catch(Throwable t) {
+						UIThreadUtils.storeException(t);
+					} finally {
+						UIThreadUtils.stopExclusiveSection();
+					}
+				}
+				break;
+			case 2:
+				if (hooks (SWT.DefaultSelection)) {
+					UIThreadUtils.startExclusiveSection(display);
+					if(isDisposed()) {
+						UIThreadUtils.stopExclusiveSection();
+						return;
+					}
+					postEvent (SWT.DefaultSelection);
+					UIThreadUtils.stopExclusiveSection();
+				}
+				break;
+			}
+		}
+	});
+	try {
+		SystemTray.getSystemTray().add(trayIcon);
+	} catch(Exception e) {
+		e.printStackTrace();
+	}
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -203,8 +206,8 @@ void destroyWidget () {
  * @since 3.2
  */
 public Tray getParent () {
-  checkWidget ();
-  return parent;
+	checkWidget ();
+	return parent;
 }
 
 /**
@@ -221,8 +224,8 @@ public Tray getParent () {
  * @since 3.2
  */
 public ToolTip getToolTip () {
-  checkWidget ();
-  return toolTip;
+	checkWidget ();
+	return toolTip;
 }
 
 /**
@@ -237,8 +240,8 @@ public ToolTip getToolTip () {
  * </ul>
  */
 public String getToolTipText () {
-  checkWidget ();
-  return trayIcon.getToolTip();
+	checkWidget ();
+	return trayIcon.getToolTip();
 }
 
 /**
@@ -253,107 +256,107 @@ public String getToolTipText () {
  * </ul>
  */
 public boolean getVisible () {
-  checkWidget ();
-  return visible;
+	checkWidget ();
+	return visible;
 }
 
 //int messageProc (int hwnd, int msg, int wParam, int lParam) {
-//  /*
-//  * Feature in Windows.  When the user clicks on the tray
-//  * icon, another application may be the foreground window.
-//  * This means that the event loop is not running and can
-//  * cause problems.  For example, if a menu is shown, when
-//  * the user clicks outside of the menu to cancel it, the
-//  * menu is not hidden until an event is processed.  If
-//  * another application is the foreground window, then the
-//  * menu is not hidden.  The fix is to force the tray icon
-//  * message window to the foreground when sending an event.
-//  */
-//  switch (lParam) {
-//    case OS.WM_LBUTTONDOWN:
-//      if (hooks (SWT.Selection)) {
-//        OS.SetForegroundWindow (hwnd);
-//        postEvent (SWT.Selection);
-//      }
-//      break;
-//    case OS.WM_LBUTTONDBLCLK:
-//    case OS.WM_RBUTTONDBLCLK:
-//      if (hooks (SWT.DefaultSelection)) {
-//        OS.SetForegroundWindow (hwnd);
-//        postEvent (SWT.DefaultSelection);
-//      }
-//      break;
-//    case OS.WM_RBUTTONUP: {
-//      if (hooks (SWT.MenuDetect)) {
-//        OS.SetForegroundWindow (hwnd);
-//        sendEvent (SWT.MenuDetect);
-//        // widget could be disposed at this point
-//        if (isDisposed()) return 0;
-//      }
-//      break;
-//    }
-//    case OS.NIN_BALLOONSHOW:
-//      if (toolTip != null && !toolTip.visible) {
-//        toolTip.visible = true;
-//        if (toolTip.hooks (SWT.Show)) {
-//          OS.SetForegroundWindow (hwnd);
-//          toolTip.sendEvent (SWT.Show);
-//          // widget could be disposed at this point
-//          if (isDisposed()) return 0;
-//        }
-//      }
-//      break;
-//    case OS.NIN_BALLOONHIDE:
-//    case OS.NIN_BALLOONTIMEOUT:
-//    case OS.NIN_BALLOONUSERCLICK:
-//      if (toolTip != null) {
-//        if (toolTip.visible) {
-//          toolTip.visible = false;
-//          if (toolTip.hooks (SWT.Hide)) {
-//            OS.SetForegroundWindow (hwnd);
-//            toolTip.sendEvent (SWT.Hide);
-//            // widget could be disposed at this point
-//            if (isDisposed()) return 0;
-//          }
-//        }
-//        if (lParam == OS.NIN_BALLOONUSERCLICK) {
-//          if (toolTip.hooks (SWT.Selection)) {
-//            OS.SetForegroundWindow (hwnd);
-//            toolTip.postEvent (SWT.Selection);
-//            // widget could be disposed at this point
-//            if (isDisposed()) return 0;
-//          }
-//        }
-//      }
-//      break;
-//  }
-//  display.wakeThread ();
-//  return 0;
+//	/*
+//	* Feature in Windows.  When the user clicks on the tray
+//	* icon, another application may be the foreground window.
+//	* This means that the event loop is not running and can
+//	* cause problems.  For example, if a menu is shown, when
+//	* the user clicks outside of the menu to cancel it, the
+//	* menu is not hidden until an event is processed.  If
+//	* another application is the foreground window, then the
+//	* menu is not hidden.  The fix is to force the tray icon
+//	* message window to the foreground when sending an event.
+//	*/
+//	switch (lParam) {
+//		case OS.WM_LBUTTONDOWN:
+//			if (hooks (SWT.Selection)) {
+//				OS.SetForegroundWindow (hwnd);
+//				postEvent (SWT.Selection);
+//			}
+//			break;
+//		case OS.WM_LBUTTONDBLCLK:
+//		case OS.WM_RBUTTONDBLCLK:
+//			if (hooks (SWT.DefaultSelection)) {
+//				OS.SetForegroundWindow (hwnd);
+//				postEvent (SWT.DefaultSelection);
+//			}
+//			break;
+//		case OS.WM_RBUTTONUP: {
+//			if (hooks (SWT.MenuDetect)) {
+//				OS.SetForegroundWindow (hwnd);
+//				sendEvent (SWT.MenuDetect);
+//				// widget could be disposed at this point
+//				if (isDisposed()) return 0;
+//			}
+//			break;
+//		}
+//		case OS.NIN_BALLOONSHOW:
+//			if (toolTip != null && !toolTip.visible) {
+//				toolTip.visible = true;
+//				if (toolTip.hooks (SWT.Show)) {
+//					OS.SetForegroundWindow (hwnd);
+//					toolTip.sendEvent (SWT.Show);
+//					// widget could be disposed at this point
+//					if (isDisposed()) return 0;
+//				}
+//			}
+//			break;
+//		case OS.NIN_BALLOONHIDE:
+//		case OS.NIN_BALLOONTIMEOUT:
+//		case OS.NIN_BALLOONUSERCLICK:
+//			if (toolTip != null) {
+//				if (toolTip.visible) {
+//					toolTip.visible = false;
+//					if (toolTip.hooks (SWT.Hide)) {
+//						OS.SetForegroundWindow (hwnd);
+//						toolTip.sendEvent (SWT.Hide);
+//						// widget could be disposed at this point
+//						if (isDisposed()) return 0;
+//					}
+//				}
+//				if (lParam == OS.NIN_BALLOONUSERCLICK) {
+//					if (toolTip.hooks (SWT.Selection)) {
+//						OS.SetForegroundWindow (hwnd);
+//						toolTip.postEvent (SWT.Selection);
+//						// widget could be disposed at this point
+//						if (isDisposed()) return 0;
+//					}
+//				}
+//			}
+//			break;
+//	}
+//	display.wakeThread ();
+//	return 0;
 //}
 //
 //void recreate () {
-//  createWidget ();
-//  if (!visible) setVisible (false);
-//  if (text.length () != 0) setText (text);
-//  if (image != null) setImage (image);
-//  if (toolTipText != null) setToolTipText (toolTipText);
+//	createWidget ();
+//	if (!visible) setVisible (false);
+//	if (text.length () != 0) setText (text);
+//	if (image != null) setImage (image);
+//	if (toolTipText != null) setToolTipText (toolTipText);
 //}
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
-  super.releaseWidget ();
-  if (toolTip != null) toolTip.item = null;
-  toolTip = null;
-  if(visible) {
-    SystemTray.getSystemTray().remove(trayIcon);
-  }
-  // TODO: send hide event?
+	super.releaseWidget ();
+	if (toolTip != null) toolTip.item = null;
+	toolTip = null;
+	if(visible) {
+		SystemTray.getSystemTray().remove(trayIcon);
+	}
+	// TODO: send hide event?
 }
-  
+	
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver is selected.
@@ -372,11 +375,11 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-  checkWidget ();
-  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (eventTable == null) return;
-  eventTable.unhook (SWT.Selection, listener);
-  eventTable.unhook (SWT.DefaultSelection,listener);  
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection,listener);  
 }
 
 /**
@@ -393,10 +396,10 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setImage (Image image) {
-  checkWidget ();
-  if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  super.setImage (image);
-  trayIcon.setImage(image.handle);
+	checkWidget ();
+	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	super.setImage (image);
+	trayIcon.setImage(image.handle);
 }
 
 /**
@@ -413,11 +416,11 @@ public void setImage (Image image) {
  * @since 3.2
  */
 public void setToolTip (ToolTip toolTip) {
-  checkWidget ();
-  ToolTip oldTip = this.toolTip, newTip = toolTip;
-  if (oldTip != null) oldTip.item = null;
-  this.toolTip = newTip;
-  if (newTip != null) newTip.item = this;
+	checkWidget ();
+	ToolTip oldTip = this.toolTip, newTip = toolTip;
+	if (oldTip != null) oldTip.item = null;
+	this.toolTip = newTip;
+	if (newTip != null) newTip.item = this;
 }
 
 /**
@@ -432,8 +435,8 @@ public void setToolTip (ToolTip toolTip) {
  * </ul>
  */
 public void setToolTipText (String value) {
-  checkWidget ();
-  trayIcon.setToolTip(value);
+	checkWidget ();
+	trayIcon.setToolTip(value);
 }
 
 /**
@@ -448,20 +451,20 @@ public void setToolTipText (String value) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-  checkWidget ();
-  if(this.visible == visible) return;
-  this.visible = visible;
-  if(visible) {
-    try {
-      SystemTray.getSystemTray().add(trayIcon);
-      sendEvent (SWT.Show);
-    } catch(Exception e) {
-      e.printStackTrace();
-    }
-  } else {
-    SystemTray.getSystemTray().remove(trayIcon);
-    sendEvent (SWT.Hide);
-  }
+	checkWidget ();
+	if(this.visible == visible) return;
+	this.visible = visible;
+	if(visible) {
+		try {
+			SystemTray.getSystemTray().add(trayIcon);
+			sendEvent (SWT.Show);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	} else {
+		SystemTray.getSystemTray().remove(trayIcon);
+		sendEvent (SWT.Hide);
+	}
 }
 
 }

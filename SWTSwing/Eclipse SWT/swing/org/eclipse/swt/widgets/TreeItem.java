@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -53,13 +56,13 @@ public class TreeItem extends Item {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */	
-  CTreeItem handle;
+	CTreeItem handle;
 	Tree parent;
 	TreeItem parentItem;
-  ArrayList itemList;
+	ArrayList itemList;
 //	String [] strings;
 	Image [] images;
-  boolean cached;
+	boolean cached;
 //	int background = -1, foreground = -1, font = -1;
 //	int [] cellBackground, cellForeground, cellFont;
 	
@@ -96,7 +99,7 @@ public class TreeItem extends Item {
 public TreeItem (Tree parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-  handle = createHandle();
+	handle = createHandle();
 	parent.createItem (this, ((CTree)parent.handle).getRoot().getChildCount());
 }
 
@@ -135,8 +138,8 @@ public TreeItem (Tree parent, int style) {
 public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-  this.parent = parent;
-  handle = createHandle();
+	this.parent = parent;
+	handle = createHandle();
 	parent.createItem (this, index);
 }
 
@@ -173,8 +176,8 @@ public TreeItem (Tree parent, int style, int index) {
 public TreeItem (TreeItem parentItem, int style) {
 	super (checkNull (parentItem).parent, style);
 	parent = parentItem.parent;
-  this.parentItem = parentItem;
-  handle = createHandle();
+	this.parentItem = parentItem;
+	handle = createHandle();
 	parent.createItem (this, parentItem, parentItem.handle.getChildCount());
 }
 
@@ -214,9 +217,9 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	super (checkNull (parentItem).parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	parent = parentItem.parent;
-  this.parentItem = parentItem;
-  handle = createHandle();
-  parent.createItem (this, parentItem, index);
+	this.parentItem = parentItem;
+	handle = createHandle();
+	parent.createItem (this, parentItem, index);
 }
 
 static TreeItem checkNull (TreeItem item) {
@@ -229,7 +232,7 @@ protected void checkSubclass () {
 }
 
 CTreeItem createHandle () {
-  return CTreeItem.Factory.newInstance(this, style);
+	return CTreeItem.Factory.newInstance(this, style);
 }
 
 /**
@@ -256,33 +259,33 @@ CTreeItem createHandle () {
  * @since 3.2
  */
 public void clear (int index, boolean all) {
-  checkWidget ();
-  TreeItemObject treeItemObject = handle.getTreeItemObject(index);
-  treeItemObject.setText(null);
-  treeItemObject.setBackground(null);
-  treeItemObject.setForeground(null);
-  treeItemObject.setFont(null);
-  treeItemObject.setIcon(null);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  if(all) {
-    TreeItem[] items = getItems();
-    for(int i=0; i<items.length; i++) {
-      items[i].clear(index, all);
-    }
-  }
-//  int hwnd = parent.handle;
-//  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  hItem = parent.findItem (hItem, index);
-//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  TVITEM tvItem = new TVITEM ();
-//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-//  parent.clear (hItem, tvItem);
-//  if (all) {
-//    hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-//    parent.clearAll (hItem, tvItem, all);
-//  }
+	checkWidget ();
+	TreeItemObject treeItemObject = handle.getTreeItemObject(index);
+	treeItemObject.setText(null);
+	treeItemObject.setBackground(null);
+	treeItemObject.setForeground(null);
+	treeItemObject.setFont(null);
+	treeItemObject.setIcon(null);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	if(all) {
+		TreeItem[] items = getItems();
+		for(int i=0; i<items.length; i++) {
+			items[i].clear(index, all);
+		}
+	}
+//	int hwnd = parent.handle;
+//	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//	hItem = parent.findItem (hItem, index);
+//	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//	parent.clear (hItem, tvItem);
+//	if (all) {
+//		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+//		parent.clearAll (hItem, tvItem, all);
+//	}
 }
 
 /**
@@ -305,33 +308,33 @@ public void clear (int index, boolean all) {
  * @since 3.2
  */
 public void clearAll (boolean all) {
-  checkWidget ();
-  text = "";
-  image = null;
-  images = null;
-  handle.setBackground(null);
-  handle.setForeground(null);
-  handle.setFont(null);
-  handle.setChecked(false);
-  handle.setGrayed(false);
-  int count = parent.getColumnCount();
-  for(int i=0; i<count; i++) {
-    clear(i, all);
-  }
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-//  int hwnd = parent.handle;
-//  int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-//  if (hItem == 0) return;
-//  TVITEM tvItem = new TVITEM ();
-//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-//  parent.clearAll (hItem, tvItem, all);
+	checkWidget ();
+	text = "";
+	image = null;
+	images = null;
+	handle.setBackground(null);
+	handle.setForeground(null);
+	handle.setFont(null);
+	handle.setChecked(false);
+	handle.setGrayed(false);
+	int count = parent.getColumnCount();
+	for(int i=0; i<count; i++) {
+		clear(i, all);
+	}
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+//	int hwnd = parent.handle;
+//	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//	if (hItem == 0) return;
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//	parent.clearAll (hItem, tvItem, all);
 }
 
 void destroyWidget () {
-  parent.releaseItem (this, false);
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.releaseItem (this, false);
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -348,11 +351,11 @@ void destroyWidget () {
  * 
  */
 public Color getBackground () {
-  checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  java.awt.Color color = handle.getBackground();
-  if(color == null) return parent.getBackground();
-  return Color.swing_new(display, color);
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	java.awt.Color color = handle.getBackground();
+	if(color == null) return parent.getBackground();
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -370,17 +373,17 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getBackground ();
-  java.awt.Color color = handle.getTreeItemObject(index).getBackground();
-  if(color == null) {
-    if(index != 0) {
-      return getBackground();
-    }
-    return Color.swing_new(display, parent.handle.getBackground());
-  }
-  return Color.swing_new(display, color);
+	java.awt.Color color = handle.getTreeItemObject(index).getBackground();
+	if(color == null) {
+		if(index != 0) {
+			return getBackground();
+		}
+		return Color.swing_new(display, parent.handle.getBackground());
+	}
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -396,8 +399,8 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  return getBounds(0);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return getBounds(0);
 }
 
 /**
@@ -416,12 +419,12 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  CTree tree = (CTree)parent.handle;
-  int row = tree.getRowForPath(new TreePath(handle.getPath()));
-  if(row == -1) return new Rectangle(0, 0, 0, 0);
-  java.awt.Rectangle rect = tree.getCellRect(row, index, false);
-  return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	CTree tree = (CTree)parent.handle;
+	int row = tree.getRowForPath(new TreePath(handle.getPath()));
+	if(row == -1) return new Rectangle(0, 0, 0, 0);
+	java.awt.Rectangle rect = tree.getCellRect(row, index, false);
+	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -439,9 +442,9 @@ public Rectangle getBounds (int index) {
  */
 public boolean getChecked () {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
-  return handle.isChecked();
+	return handle.isChecked();
 }
 
 /**
@@ -458,7 +461,7 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget ();
-  return ((CTree)parent.handle).isExpanded(new TreePath(handle.getPath()));
+	return ((CTree)parent.handle).isExpanded(new TreePath(handle.getPath()));
 }
 
 /**
@@ -474,7 +477,7 @@ public boolean getExpanded () {
  * @since 3.0
  */
 public Font getFont () {
-  return getFont(0);
+	return getFont(0);
 }
 
 /**
@@ -493,17 +496,17 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count -1) return getFont ();
-  java.awt.Font font = handle.getTreeItemObject(index).getFont();
-  if(font == null) {
-    if(index != 0) {
-      return getFont();
-    }
-    return Font.swing_new(display, parent.handle.getFont());
-  }
-  return Font.swing_new(display, font);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count -1) return getFont ();
+	java.awt.Font font = handle.getTreeItemObject(index).getFont();
+	if(font == null) {
+		if(index != 0) {
+			return getFont();
+		}
+		return Font.swing_new(display, parent.handle.getFont());
+	}
+	return Font.swing_new(display, font);
 }
 
 /**
@@ -520,11 +523,11 @@ public Font getFont (int index) {
  * 
  */
 public Color getForeground () {
-  checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  java.awt.Color color = handle.getForeground();
-  if(color == null) return parent.getForeground();
-  return Color.swing_new(display, color);
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	java.awt.Color color = handle.getForeground();
+	if(color == null) return parent.getForeground();
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -543,17 +546,17 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getForeground ();
-  java.awt.Color color = handle.getTreeItemObject(index).getForeground();
-  if(color == null) {
-    if(index != 0) {
-      return getBackground();
-    }
-    return Color.swing_new(display, parent.handle.getForeground());
-  }
-  return Color.swing_new(display, color);
+	java.awt.Color color = handle.getTreeItemObject(index).getForeground();
+	if(color == null) {
+		if(index != 0) {
+			return getBackground();
+		}
+		return Color.swing_new(display, parent.handle.getForeground());
+	}
+	return Color.swing_new(display, color);
 }
 
 /**
@@ -571,9 +574,9 @@ public Color getForeground (int index) {
  */
 public boolean getGrayed () {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
-  return handle.isGrayed();
+	return handle.isGrayed();
 }
 
 /**
@@ -594,17 +597,17 @@ public boolean getGrayed () {
  * @since 3.1
  */
 public TreeItem getItem (int index) {
-  checkWidget ();
-  if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  if(index < 0 || index >= getItemCount()) error (SWT.ERROR_INVALID_RANGE);
-  return (TreeItem)itemList.get(index);
-//  int hwnd = parent.handle;
-//  int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-//  if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  int hItem = parent.findItem (hFirstItem, index);
-//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  return parent._getItem (hItem);
+	checkWidget ();
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if(index < 0 || index >= getItemCount()) error (SWT.ERROR_INVALID_RANGE);
+	return (TreeItem)itemList.get(index);
+//	int hwnd = parent.handle;
+//	int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//	if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//	int hItem = parent.findItem (hFirstItem, index);
+//	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//	return parent._getItem (hItem);
 }
 
 /**
@@ -620,8 +623,8 @@ public TreeItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  return itemList == null? 0: itemList.size();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return itemList == null? 0: itemList.size();
 }
 
 /**
@@ -642,14 +645,14 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  return itemList == null? new TreeItem [0]: (TreeItem [])itemList.toArray(new TreeItem [0]);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return itemList == null? new TreeItem [0]: (TreeItem [])itemList.toArray(new TreeItem [0]);
 }
 
 public Image getImage () {
-  checkWidget();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  return super.getImage ();
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getImage ();
 }
 
 /**
@@ -667,8 +670,8 @@ public Image getImage () {
  * @since 3.1
  */
 public Image getImage (int index) {
-  checkWidget();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
 	if (images != null) {
 		if (0 <= index && index < images.length) return images [index];
@@ -692,17 +695,17 @@ public Image getImage (int index) {
  * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
-  checkWidget();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count -1) return new Rectangle(0, 0, 0, 0);
-  CTree cTree = ((CTree)parent.handle);
-  int row = cTree.getRowForPath(new TreePath(handle.getPath()));
-  java.awt.Rectangle imageBounds = ((CTree)parent.handle).getImageBounds(row, index);
-  return new Rectangle(imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height);
-  
-//  java.awt.Color color = handle.getTreeItemObject(index).getForeground();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count -1) return new Rectangle(0, 0, 0, 0);
+	CTree cTree = ((CTree)parent.handle);
+	int row = cTree.getRowForPath(new TreePath(handle.getPath()));
+	java.awt.Rectangle imageBounds = ((CTree)parent.handle).getImageBounds(row, index);
+	return new Rectangle(imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height);
+	
+//	java.awt.Color color = handle.getTreeItemObject(index).getForeground();
 //	RECT rect = getBounds (index, false, true, false);
 //	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 //	return new Rectangle (rect.left, rect.top, width, height);
@@ -737,13 +740,13 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget ();
-  return parentItem;
+	return parentItem;
 }
 
 public String getText () {
-  checkWidget();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  return super.getText ();
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getText ();
 }
 
 /**
@@ -762,10 +765,10 @@ public String getText () {
  */
 public String getText (int index) {
 	checkWidget();
-  if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return "";
-  return handle.getTreeItemObject(index).getText();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return "";
+	return handle.getTreeItemObject(index).getText();
 }
 
 /**
@@ -814,25 +817,25 @@ public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-  return itemList == null? -1: itemList.indexOf(item);
+	return itemList == null? -1: itemList.indexOf(item);
 }
 
 void releaseChildren (boolean destroy) {
-  if (destroy) {
-    parent.destroyItem (this);
-  }
-  super.releaseChildren (destroy);
+	if (destroy) {
+		parent.destroyItem (this);
+	}
+	super.releaseChildren (destroy);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = null;
-  parent = null;
+	parent = null;
 }
 
 void releaseWidget() {
-  super.releaseWidget();
-  images = null;
+	super.releaseWidget();
+	images = null;
 }
 
 /**
@@ -846,33 +849,33 @@ void releaseWidget() {
  * @since 3.1
  */
 public void removeAll () {
-  checkWidget ();
-  if(itemList != null) {
-    for (int i=itemList.size()-1; i>=0; i--) {
-      TreeItem item = (TreeItem)itemList.get(i);
-      if (item != null && !item.isDisposed ()) {
-        item.dispose();
-//        item.release(false);
-      } else {
-        itemList.remove(i);
-      }
-    }
-  }
-//  int hwnd = parent.handle;
-//  TVITEM tvItem = new TVITEM ();
-//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-//  tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-//  while (tvItem.hItem != 0) {
-//    OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-//    TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
-//    if (item != null && !item.isDisposed ()) {
-//      item.dispose ();
-//    } else {
-//      parent.releaseItem (tvItem.hItem, tvItem, false);
-//      parent.destroyItem (null, tvItem.hItem);
-//    }
-//    tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-//  }
+	checkWidget ();
+	if(itemList != null) {
+		for (int i=itemList.size()-1; i>=0; i--) {
+			TreeItem item = (TreeItem)itemList.get(i);
+			if (item != null && !item.isDisposed ()) {
+				item.dispose();
+//				item.release(false);
+			} else {
+				itemList.remove(i);
+			}
+		}
+	}
+//	int hwnd = parent.handle;
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//	while (tvItem.hItem != 0) {
+//		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+//		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
+//		if (item != null && !item.isDisposed ()) {
+//			item.dispose ();
+//		} else {
+//			parent.releaseItem (tvItem.hItem, tvItem, false);
+//			parent.destroyItem (null, tvItem.hItem);
+//		}
+//		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+//	}
 }
 
 /**
@@ -894,14 +897,14 @@ public void removeAll () {
  * 
  */
 public void setBackground (Color color) {
-  checkWidget ();
-  if (color != null && color.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setBackground(color == null? null: color.handle);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  parent.handle.repaint();
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setBackground(color == null? null: color.handle);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	parent.handle.repaint();
 }
 
 /**
@@ -930,10 +933,10 @@ public void setBackground (int index, Color color) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-  handle.getTreeItemObject(index).setBackground(color == null? null: color.handle);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  parent.handle.repaint();
+	handle.getTreeItemObject(index).setBackground(color == null? null: color.handle);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	parent.handle.repaint();
 }
 
 /**
@@ -950,9 +953,9 @@ public void setBackground (int index, Color color) {
 public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
-  handle.setChecked(checked);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	handle.setChecked(checked);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
@@ -968,13 +971,13 @@ public void setChecked (boolean checked) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
-  
-  CTree tree = ((CTree)parent.handle);
-  if(expanded) {
-    tree.expandPath(new TreePath(handle.getPath()));
-  } else {
-    tree.collapsePath(new TreePath(handle.getPath()));
-  }
+	
+	CTree tree = ((CTree)parent.handle);
+	if(expanded) {
+		tree.expandPath(new TreePath(handle.getPath()));
+	} else {
+		tree.collapsePath(new TreePath(handle.getPath()));
+	}
 }
 
 /**
@@ -995,13 +998,13 @@ public void setExpanded (boolean expanded) {
  * @since 3.0
  */
 public void setFont (Font font){
-  checkWidget ();
-  if (font != null && font.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setFont(font == null? null: font.handle);
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  parent.handle.repaint();
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setFont(font == null? null: font.handle);
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	parent.handle.repaint();
 }
 
 
@@ -1029,12 +1032,12 @@ public void setFont (int index, Font font) {
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return;
-  handle.getTreeItemObject(index).setFont(font == null? null: font.handle);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  parent.handle.repaint();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	handle.getTreeItemObject(index).setFont(font == null? null: font.handle);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	parent.handle.repaint();
 }
 
 /**
@@ -1058,13 +1061,13 @@ public void setFont (int index, Font font) {
  * 
  */
 public void setForeground (Color color) {
-  checkWidget ();
-  if (color != null && color.isDisposed ()) {
-    SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setForeground(color == null? null: color.handle);
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  parent.handle.repaint();
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setForeground(color == null? null: color.handle);
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	parent.handle.repaint();
 }
 
 /**
@@ -1093,10 +1096,10 @@ public void setForeground (int index, Color color){
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-  handle.getTreeItemObject(index).setForeground(color == null? null: color.handle);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  parent.handle.repaint();
+	handle.getTreeItemObject(index).setForeground(color == null? null: color.handle);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	parent.handle.repaint();
 }
 
 /**
@@ -1113,9 +1116,9 @@ public void setForeground (int index, Color color){
 public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
-  handle.setGrayed(grayed);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	handle.setGrayed(grayed);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 /**
@@ -1169,21 +1172,21 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
-  int count = Math.max (1, parent.getColumnCount ());
-  if (0 > index || index > count - 1) return;
-  if (images == null && index != 0) {
-    images = new Image [count];
-    images [0] = image;
-  }
-  if (images != null) {
-    if (image != null && image.type == SWT.ICON) {
-      if (image.equals (images [index])) return;
-    }
-    images [index] = image;
-  }
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	if (images == null && index != 0) {
+		images = new Image [count];
+		images [0] = image;
+	}
+	if (images != null) {
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (images [index])) return;
+		}
+		images [index] = image;
+	}
 	handle.getTreeItemObject(index).setIcon(image != null? new ImageIcon(image.handle): null);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
 }
 
 public void setImage (Image image) {
@@ -1204,9 +1207,9 @@ public void setImage (Image image) {
  * @since 3.2
  */
 public void setItemCount (int count) {
-  checkWidget ();
-  count = Math.max (0, count);
-  parent.setItemCount (this, count);
+	checkWidget ();
+	count = Math.max (0, count);
+	parent.setItemCount (this, count);
 }
 
 /**
@@ -1254,13 +1257,13 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-  if(index == 0) {
-    super.setText(string);
-  }
-  handle.getTreeItemObject(index).setText(string);
-  if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-  ((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
-  parent.adjustColumnWidth();
+	if(index == 0) {
+		super.setText(string);
+	}
+	handle.getTreeItemObject(index).setText(string);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	((CTree)parent.handle).getModel().nodeChanged((TreeNode)handle);
+	parent.adjustColumnWidth();
 }
 
 public void setText (String string) {

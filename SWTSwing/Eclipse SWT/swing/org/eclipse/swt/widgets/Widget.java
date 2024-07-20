@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -58,31 +61,31 @@ public abstract class Widget {
 	static final int KEYED_DATA		= 1<<2;
 //	static final int DISABLED		= 1<<3;
 //	static final int HIDDEN			= 1<<4;
-  
-  /* A layout was requested on this widget */
+	
+	/* A layout was requested on this widget */
 	static final int LAYOUT_NEEDED	= 1<<5;
-  
-  /* The preferred size of a child has changed */
+	
+	/* The preferred size of a child has changed */
 	static final int LAYOUT_CHANGED = 1<<6;
 	
-  /* A layout was requested in this widget hierachy */
-  static final int LAYOUT_CHILD = 1<<7;
+	/* A layout was requested in this widget hierachy */
+	static final int LAYOUT_CHILD = 1<<7;
 
-  /* Background flags */
-  static final int THEME_BACKGROUND = 1<<8;
-  static final int DRAW_BACKGROUND = 1<<9;
-  static final int PARENT_BACKGROUND = 1<<10;
-  
-  /* Dispose and release flags */
-  static final int RELEASED   = 1<<11;
-  static final int DISPOSE_SENT = 1<<12;
-  
+	/* Background flags */
+	static final int THEME_BACKGROUND = 1<<8;
+	static final int DRAW_BACKGROUND = 1<<9;
+	static final int PARENT_BACKGROUND = 1<<10;
+	
+	/* Dispose and release flags */
+	static final int RELEASED   = 1<<11;
+	static final int DISPOSE_SENT = 1<<12;
+	
 	static final int DRAG_DETECT	= 1<<15;
 
 	/* Bidi "auto" text direction */
 	static final int HAS_AUTO_DIRECTION = 1<<22;
 
-  /* Default size for widgets */
+	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 
@@ -262,7 +265,7 @@ void checkOpened () {
  */
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (parent.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (parent.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	parent.checkWidget ();
 	parent.checkOpened ();
 }
@@ -326,12 +329,12 @@ protected void checkWidget () {
 	Display display = this.display;
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	Thread currentThread = Thread.currentThread ();
-  if (display.thread != currentThread && !SwingUtilities.isEventDispatchThread()) {
-    String name = currentThread.getName();
-    if(name == null /*|| !name.startsWith(Utils.getSWTSwingUIThreadsNamePrefix())*/) {
-      error (SWT.ERROR_THREAD_INVALID_ACCESS);
-    }
-  }
+	if (display.thread != currentThread && !SwingUtilities.isEventDispatchThread()) {
+		String name = currentThread.getName();
+		if(name == null /*|| !name.startsWith(Utils.getSWTSwingUIThreadsNamePrefix())*/) {
+			error (SWT.ERROR_THREAD_INVALID_ACCESS);
+		}
+	}
 	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
@@ -415,7 +418,7 @@ public void dispose () {
 	*/
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-  release (true);
+	release (true);
 }
 
 /**
@@ -458,34 +461,34 @@ boolean filters (int eventType) {
 //}
 
 int findMnemonicIndex (String string) {
-  int index = 0;
-  int length = string.length ();
-  do {
-    while (index < length && string.charAt (index) != '&') index++;
-    if (++index >= length) return -1;
-    if (string.charAt (index) != '&') return index;
-    index++;
-  } while (index < length);
-  return -1;
+	int index = 0;
+	int length = string.length ();
+	do {
+		while (index < length && string.charAt (index) != '&') index++;
+		if (++index >= length) return -1;
+		if (string.charAt (index) != '&') return index;
+		index++;
+	} while (index < length);
+	return -1;
 }
 
 String fixMnemonic (String string) {
-  char [] buffer = new char [string.length ()];
-  string.getChars (0, string.length (), buffer, 0);
-  int i = 0, j = 0;
-  while (i < buffer.length) {
-    if (buffer [i] == '&') {
-      if (i + 1 < buffer.length && buffer [i + 1] == '&') {
-        buffer [j++] = ' ';
-        i++;
-      }
-      i++;
-    } else {
-      buffer [j++] = buffer [i++];
-    }
-  }
-  while (j < buffer.length) buffer [j++] = 0;
-  return new String(buffer, 0, j);
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, string.length (), buffer, 0);
+	int i = 0, j = 0;
+	while (i < buffer.length) {
+		if (buffer [i] == '&') {
+			if (i + 1 < buffer.length && buffer [i + 1] == '&') {
+				buffer [j++] = ' ';
+				i++;
+			}
+			i++;
+		} else {
+			buffer [j++] = buffer [i++];
+		}
+	}
+	while (j < buffer.length) buffer [j++] = 0;
+	return new String(buffer, 0, j);
 }
 
 /**
@@ -805,24 +808,24 @@ void postEvent (int eventType, Event event) {
  * @see #releaseWidget
 */
 void release (boolean destroy) {
-  if ((state & DISPOSE_SENT) == 0) {
-    state |= DISPOSE_SENT;
-    sendEvent (SWT.Dispose);
-  }
-  if ((state & DISPOSED) == 0) {
-    releaseChildren (destroy);
-  }
-  if ((state & RELEASED) == 0) {
-    state |= RELEASED;
-    if (destroy) {
-      releaseParent ();
-      releaseWidget ();
-      destroyWidget ();
-    } else {
-      releaseWidget ();
-      releaseHandle ();
-    }
-  }
+	if ((state & DISPOSE_SENT) == 0) {
+		state |= DISPOSE_SENT;
+		sendEvent (SWT.Dispose);
+	}
+	if ((state & DISPOSED) == 0) {
+		releaseChildren (destroy);
+	}
+	if ((state & RELEASED) == 0) {
+		state |= RELEASED;
+		if (destroy) {
+			releaseParent ();
+			releaseWidget ();
+			destroyWidget ();
+		} else {
+			releaseWidget ();
+			releaseHandle ();
+		}
+	}
 }
 
 void releaseChildren (boolean destroy) {
@@ -1204,7 +1207,7 @@ boolean sendFocusEvent (int type) {
 }
 
 boolean setInputState (Event event, int type) {
-  event.stateMask |= Display.getInputState();
+	event.stateMask |= Display.getInputState();
 	switch (type) {
 		case SWT.MouseDown:
 		case SWT.MouseDoubleClick:

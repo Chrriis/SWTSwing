@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -110,13 +113,13 @@ Region(Device device, Shape handle) {
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  int[] xPoints = new int[pointArray.length/2];
-  int[] yPoints = new int[xPoints.length];
-  for (int i = 0; i < xPoints.length; i++) {
-    xPoints[i] = pointArray[i * 2];
-    yPoints[i] = pointArray[i * 2 + 1];
-  }
-  handle.add(new Area(new java.awt.Polygon(xPoints, yPoints, xPoints.length)));
+	int[] xPoints = new int[pointArray.length/2];
+	int[] yPoints = new int[xPoints.length];
+	for (int i = 0; i < xPoints.length; i++) {
+		xPoints[i] = pointArray[i * 2];
+		yPoints[i] = pointArray[i * 2 + 1];
+	}
+	handle.add(new Area(new java.awt.Polygon(xPoints, yPoints, xPoints.length)));
 }
 
 /**
@@ -160,7 +163,7 @@ public void add (Rectangle rect) {
 public void add (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.add(new Area(new java.awt.Rectangle(x, y, width, height)));
+	handle.add(new Area(new java.awt.Rectangle(x, y, width, height)));
 }
 
 /**
@@ -182,7 +185,7 @@ public void add (Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.add(region.handle);
+	handle.add(region.handle);
 }
 
 /**
@@ -200,7 +203,7 @@ public void add (Region region) {
  */
 public boolean contains (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return handle.contains(new java.awt.Point(x, y));
+	return handle.contains(new java.awt.Point(x, y));
 }
 
 /**
@@ -269,8 +272,8 @@ public boolean equals (Object object) {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Rectangle bounds = handle.getBounds();
-  return new Rectangle((int)bounds.getX(), (int)bounds.getY(), (int)bounds.getWidth(), (int)bounds.getHeight());
+	java.awt.Rectangle bounds = handle.getBounds();
+	return new Rectangle((int)bounds.getX(), (int)bounds.getY(), (int)bounds.getWidth(), (int)bounds.getHeight());
 }
 
 /**
@@ -330,7 +333,7 @@ public void intersect (Rectangle rect) {
 public void intersect (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.intersect(new Area(new java.awt.Rectangle(x, y, width, height)));
+	handle.intersect(new Area(new java.awt.Rectangle(x, y, width, height)));
 }
 
 /**
@@ -354,7 +357,7 @@ public void intersect (Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.intersect(region.handle);
+	handle.intersect(region.handle);
 }
 
 /**
@@ -376,7 +379,7 @@ public void intersect (Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return handle.intersects(x, y, width, height);
+	return handle.intersects(x, y, width, height);
 }
 
 /**
@@ -429,7 +432,7 @@ public boolean isDisposed() {
  */
 public boolean isEmpty () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return handle.isEmpty();
+	return handle.isEmpty();
 }
 
 /**
@@ -450,13 +453,13 @@ public boolean isEmpty () {
 public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  int[] xPoints = new int[pointArray.length/2];
-  int[] yPoints = new int[xPoints.length];
-  for (int i = 0; i < xPoints.length; i++) {
-    xPoints[i] = pointArray[i * 2];
-    yPoints[i] = pointArray[i * 2 + 1];
-  }
-  handle.subtract(new Area(new java.awt.Polygon(xPoints, yPoints, xPoints.length)));
+	int[] xPoints = new int[pointArray.length/2];
+	int[] yPoints = new int[xPoints.length];
+	for (int i = 0; i < xPoints.length; i++) {
+		xPoints[i] = pointArray[i * 2];
+		yPoints[i] = pointArray[i * 2 + 1];
+	}
+	handle.subtract(new Area(new java.awt.Polygon(xPoints, yPoints, xPoints.length)));
 }
 
 /**
@@ -502,7 +505,7 @@ public void subtract (Rectangle rect) {
 public void subtract (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);	
-  handle.subtract(new Area(new java.awt.Rectangle(x, y, width, height)));
+	handle.subtract(new Area(new java.awt.Rectangle(x, y, width, height)));
 }
 
 /**
@@ -526,7 +529,7 @@ public void subtract (Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.subtract(region.handle);
+	handle.subtract(region.handle);
 }
 
 /**
@@ -544,7 +547,7 @@ public void subtract (Region region) {
  */
 public void translate (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.transform(AffineTransform.getTranslateInstance(x, y));
+	handle.transform(AffineTransform.getTranslateInstance(x, y));
 }
 
 /**

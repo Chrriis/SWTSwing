@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -53,7 +56,7 @@ public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
 	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
-  Utils.notImplemented(); return null;
+	Utils.notImplemented(); return null;
 }
 
 /**
@@ -64,7 +67,7 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-  Utils.notImplemented(); return new String[0];
+	Utils.notImplemented(); return new String[0];
 }
 
 /**
@@ -75,7 +78,7 @@ public static String [] getExtensions () {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-  Utils.notImplemented(); return new Program[0];
+	Utils.notImplemented(); return new Program[0];
 }
 
 /**
@@ -95,21 +98,21 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	Desktop desktop = Desktop.getDesktop();
-  try {
-    desktop.open(new File(fileName));
-    return true;
-  } catch(Exception e) {
-    try {
-      URI uri = new URI(fileName);
-      if(fileName.startsWith("mailto:")) {
-        desktop.mail(uri);
-      } else if(fileName.startsWith("http:") || fileName.startsWith("https:") || fileName.startsWith("ftp:")) {
-        desktop.browse(uri);
-      }
-    } catch(Exception ex) {
-    }
-  }
-  return false;
+	try {
+		desktop.open(new File(fileName));
+		return true;
+	} catch(Exception e) {
+		try {
+			URI uri = new URI(fileName);
+			if(fileName.startsWith("mailto:")) {
+				desktop.mail(uri);
+			} else if(fileName.startsWith("http:") || fileName.startsWith("https:") || fileName.startsWith("ftp:")) {
+				desktop.browse(uri);
+			}
+		} catch(Exception ex) {
+		}
+	}
+	return false;
 }
 
 /**
@@ -127,14 +130,14 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  ProcessBuilder pb = new ProcessBuilder(new String[] {fileName});
-  try {
-    pb.start();
-    return true;
-  } catch(Exception e) {
-    return false;
-  }
+	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	ProcessBuilder pb = new ProcessBuilder(new String[] {fileName});
+	try {
+		pb.start();
+		return true;
+	} catch(Exception e) {
+		return false;
+	}
 }
 
 /**
@@ -145,7 +148,7 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-  Utils.notImplemented(); return null;
+	Utils.notImplemented(); return null;
 //	int nIconIndex = 0;
 //	String fileName = iconName;
 //	int index = iconName.indexOf (',');

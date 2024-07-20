@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -47,8 +50,8 @@ public final class Font extends Resource {
 	 */
 	public java.awt.Font handle;
 	
-  FontData fontData;
-  
+	FontData fontData;
+	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -209,21 +212,21 @@ public int hashCode () {
 void init (Device device, FontData fd) {
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-  fontData = new FontData(fd);
-  int style = fd.getStyle();
-  int height = Math.round(fd.getHeight() * device.getDPI().x / 72.0f);
-  if(fontData.data != null) {
-    Map attributeMap = new HashMap(fontData.data);
-    attributeMap.put(TextAttribute.FAMILY, fd.getName());
-    attributeMap.put(TextAttribute.POSTURE, (style & SWT.ITALIC) != 0? TextAttribute.POSTURE_OBLIQUE: TextAttribute.POSTURE_REGULAR);
-    attributeMap.put(TextAttribute.WEIGHT, (style & SWT.BOLD) != 0? TextAttribute.WEIGHT_BOLD: TextAttribute.WEIGHT_REGULAR);
-    handle = new java.awt.Font(attributeMap);
-  } else {
-    handle = new java.awt.Font(fd.getName(), 0
-        | (((style & SWT.ITALIC) != 0 ? java.awt.Font.ITALIC : 0))
-        | (((style & SWT.BOLD) != 0 ? java.awt.Font.BOLD : 0)), height);
-  }
-//  handle = new java.awt.Font(fd.getName(), 0 | (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0)), fd.getHeight());
+	fontData = new FontData(fd);
+	int style = fd.getStyle();
+	int height = Math.round(fd.getHeight() * device.getDPI().x / 72.0f);
+	if(fontData.data != null) {
+		Map attributeMap = new HashMap(fontData.data);
+		attributeMap.put(TextAttribute.FAMILY, fd.getName());
+		attributeMap.put(TextAttribute.POSTURE, (style & SWT.ITALIC) != 0? TextAttribute.POSTURE_OBLIQUE: TextAttribute.POSTURE_REGULAR);
+		attributeMap.put(TextAttribute.WEIGHT, (style & SWT.BOLD) != 0? TextAttribute.WEIGHT_BOLD: TextAttribute.WEIGHT_REGULAR);
+		handle = new java.awt.Font(attributeMap);
+	} else {
+		handle = new java.awt.Font(fd.getName(), 0
+				| (((style & SWT.ITALIC) != 0 ? java.awt.Font.ITALIC : 0))
+				| (((style & SWT.BOLD) != 0 ? java.awt.Font.BOLD : 0)), height);
+	}
+//	handle = new java.awt.Font(fd.getName(), 0 | (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0)), fd.getHeight());
 }
 
 /**
@@ -270,9 +273,9 @@ public static Font swing_new(Device device, java.awt.Font handle) {
 	Font font = new Font();
 	font.handle = handle;
 	font.device = device;
-  int style = handle.getStyle();
-  int height = Math.round(handle.getSize() * 72.0f / device.getDPI_().x);
-  font.fontData = new FontData(handle.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
+	int style = handle.getStyle();
+	int height = Math.round(handle.getSize() * 72.0f / device.getDPI_().x);
+	font.fontData = new FontData(handle.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
 	return font;
 }
 

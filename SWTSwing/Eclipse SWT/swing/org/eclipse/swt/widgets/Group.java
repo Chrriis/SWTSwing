@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -40,8 +43,8 @@ import org.eclipse.swt.internal.swing.CGroup;
 
 public class Group extends Composite {
 
-  String text;
-  
+	String text;
+	
 //	static final int CLIENT_INSET = 3;
 //	static final int GroupProc;
 //	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
@@ -194,13 +197,13 @@ protected void checkSubclass () {
 //}
 
 void createHandleInit() {
-  super.createHandleInit();
-  state |= DRAW_BACKGROUND;
-  state &= ~CANVAS;
+	super.createHandleInit();
+	state |= DRAW_BACKGROUND;
+	state &= ~CANVAS;
 }
 
 protected Container createHandle () {
-  return (Container)CGroup.Factory.newInstance(this, style);
+	return (Container)CGroup.Factory.newInstance(this, style);
 //	super.createHandle ();
 }
 
@@ -241,7 +244,7 @@ String getNameText () {
  */
 public String getText () {
 	checkWidget ();
-  return text == null? "": text;
+	return text == null? "": text;
 }
 
 boolean mnemonicHit (char key) {
@@ -281,17 +284,17 @@ boolean mnemonicMatch (char key) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  this.text = string;
-  int mnemonicIndex = findMnemonicIndex(string);
-  if(mnemonicIndex > 0) {
-    String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
-    string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
-    mnemonicIndex -= mnemonicIndex - 1 - s.length();
-    mnemonicIndex--;
-  } else {
-    string = string.replaceAll("&&", "&");
-  }
-  ((CGroup)handle).setText(string);
+	this.text = string;
+	int mnemonicIndex = findMnemonicIndex(string);
+	if(mnemonicIndex > 0) {
+		String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+		string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+		mnemonicIndex -= mnemonicIndex - 1 - s.length();
+		mnemonicIndex--;
+	} else {
+		string = string.replaceAll("&&", "&");
+	}
+	((CGroup)handle).setText(string);
 }
 
 //int widgetStyle () {

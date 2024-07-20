@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -62,8 +65,8 @@ import org.eclipse.swt.internal.swing.UIThreadUtils;
 public class MenuItem extends Item {
 	Menu parent, menu;
 //	int id, accelerator;
-  int accelerator;
-  JComponent handle;
+	int accelerator;
+	JComponent handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -102,7 +105,7 @@ public class MenuItem extends Item {
 public MenuItem (Menu parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-  createHandle();
+	createHandle();
 	parent.createItem (this, parent.getItemCount ());
 }
 
@@ -145,7 +148,7 @@ public MenuItem (Menu parent, int style) {
 public MenuItem (Menu parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-  createHandle();
+	createHandle();
 	parent.createItem (this, index);
 }
 
@@ -250,8 +253,8 @@ static int checkStyle (int style) {
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 //void fillAccel (ACCEL accel) {
@@ -336,8 +339,8 @@ public int getAccelerator () {
  */
 /*public*/ Rectangle getBounds () {
 	checkWidget ();
-  java.awt.Rectangle bounds = handle.getBounds();
-  return new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
+	java.awt.Rectangle bounds = handle.getBounds();
+	return new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
 //	if (OS.IsWinCE) return new Rectangle (0, 0, 0, 0);
 //	int index = parent.indexOf (this);
 //	if (index == -1) return new Rectangle (0, 0, 0, 0);
@@ -397,7 +400,7 @@ public int getAccelerator () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-  return handle.isEnabled();
+	return handle.isEnabled();
 }
 
 /**
@@ -456,7 +459,7 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-  return ((AbstractButton)handle).isSelected();
+	return ((AbstractButton)handle).isSelected();
 }
 
 /**
@@ -479,16 +482,16 @@ public boolean isEnabled () {
 }
 
 void releaseChildren (boolean destroy) {
-  if (menu != null) {
-    menu.release (false);
-    menu = null;
-  }
-  super.releaseChildren (destroy);
+	if (menu != null) {
+		menu.release (false);
+		menu = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseMenu () {
@@ -497,9 +500,9 @@ void releaseMenu () {
 }
 
 void releaseParent () {
-  super.releaseParent ();
-  if (menu != null) menu.dispose ();
-  menu = null;
+	super.releaseParent ();
+	if (menu != null) menu.dispose ();
+	menu = null;
 }
 
 void releaseWidget () {
@@ -613,26 +616,26 @@ public void setAccelerator (int accelerator) {
 	checkWidget ();
 	if (this.accelerator == accelerator) return;
 	this.accelerator = accelerator;
-  int key = accelerator & SWT.KEY_MASK;
-  int vKey = Display.untranslateKey(key);
-  if(vKey != 0) {
-    key = vKey; 
-  }
-  if(handle instanceof JMenu) {
-    ((JMenu)handle).setMnemonic(key);
-  } else {
-    int modifiers = 0;
-    if((accelerator & SWT.ALT) != 0) {
-      modifiers |= java.awt.event.KeyEvent.ALT_DOWN_MASK;
-    } 
-    if((accelerator & SWT.SHIFT) != 0) {
-      modifiers |= java.awt.event.KeyEvent.SHIFT_DOWN_MASK;
-    } 
-    if((accelerator & SWT.CONTROL) != 0) {
-      modifiers |= java.awt.event.KeyEvent.CTRL_DOWN_MASK;
-    } 
-    ((JMenuItem)handle).setAccelerator(KeyStroke.getKeyStroke(key, modifiers));
-  }
+	int key = accelerator & SWT.KEY_MASK;
+	int vKey = Display.untranslateKey(key);
+	if(vKey != 0) {
+		key = vKey; 
+	}
+	if(handle instanceof JMenu) {
+		((JMenu)handle).setMnemonic(key);
+	} else {
+		int modifiers = 0;
+		if((accelerator & SWT.ALT) != 0) {
+			modifiers |= java.awt.event.KeyEvent.ALT_DOWN_MASK;
+		} 
+		if((accelerator & SWT.SHIFT) != 0) {
+			modifiers |= java.awt.event.KeyEvent.SHIFT_DOWN_MASK;
+		} 
+		if((accelerator & SWT.CONTROL) != 0) {
+			modifiers |= java.awt.event.KeyEvent.CTRL_DOWN_MASK;
+		} 
+		((JMenuItem)handle).setAccelerator(KeyStroke.getKeyStroke(key, modifiers));
+	}
 //	parent.destroyAccelerators ();
 }
 
@@ -651,7 +654,7 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-  handle.setEnabled(enabled);
+	handle.setEnabled(enabled);
 //	parent.destroyAccelerators ();
 //	parent.redraw ();
 }
@@ -674,11 +677,11 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-  ImageIcon icon = null;
-  if (image != null && image.handle != null) {
-    icon = new ImageIcon (image.handle);
-  }
-  ((AbstractButton) handle).setIcon (icon);
+	ImageIcon icon = null;
+	if (image != null && image.handle != null) {
+		icon = new ImageIcon (image.handle);
+	}
+	((AbstractButton) handle).setIcon (icon);
 //	parent.redraw ();
 }
 
@@ -723,110 +726,110 @@ public void setMenu (Menu menu) {
 		}
 	}
 	if(!(handle instanceof JMenu)) {
-    JMenu popup = new JMenu() {
-      public void menuSelectionChanged(boolean isIncluded) {
-        super.menuSelectionChanged(isIncluded);
-        if(!isIncluded) return;
-        if(!hooks(SWT.Arm)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-//          Event event = new Event();
-//          event.stateMask = Display.getInputState();
-//          sendEvent(SWT.Arm, event);
-          sendEvent(SWT.Arm);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    };
-    popup.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
-      public void popupMenuCanceled(PopupMenuEvent e) {
-      }
-      public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        if(MenuItem.this.menu == null) return;
-        if(!MenuItem.this.menu.hooks(SWT.Hide)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-          Event event = new Event();
-          event.widget = MenuItem.this.menu;
-          MenuItem.this.menu.sendEvent(SWT.Hide, event);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-      public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-        if(MenuItem.this.menu == null) return;
-        if(!MenuItem.this.menu.hooks(SWT.Show)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-          Event event = new Event();
-          event.widget = MenuItem.this.menu;
-          MenuItem.this.menu.sendEvent(SWT.Show, event);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    });
-    Container p = handle.getParent();
-    if(p != null) {
-      for(int i=p.getComponentCount()-1; i>=0; i--) {
-        if(p.getComponent(i) == handle) {
-          p.remove(handle);
-          p.add(popup, i);
-          if(p instanceof JComponent) {
-            ((JComponent)p).revalidate();
-          } else {
-            p.invalidate();
-            p.validate();
-          }
-          p.repaint();
-          break;
-        }
-      }
-    }
-    JMenuItem menuItem = (JMenuItem)handle;
-    popup.setText(menuItem.getText());
-    popup.setMnemonic(menuItem.getMnemonic());
-//    popup.setToolTipText(menuItem.getToolTipText());
-    popup.setEnabled(menuItem.isEnabled());
-    popup.setSelected(menuItem.isSelected());
-    popup.setIcon(menuItem.getIcon());
-    handle = popup;
+		JMenu popup = new JMenu() {
+			public void menuSelectionChanged(boolean isIncluded) {
+				super.menuSelectionChanged(isIncluded);
+				if(!isIncluded) return;
+				if(!hooks(SWT.Arm)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+//					Event event = new Event();
+//					event.stateMask = Display.getInputState();
+//					sendEvent(SWT.Arm, event);
+					sendEvent(SWT.Arm);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+		};
+		popup.getPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+			public void popupMenuCanceled(PopupMenuEvent e) {
+			}
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				if(MenuItem.this.menu == null) return;
+				if(!MenuItem.this.menu.hooks(SWT.Hide)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+					Event event = new Event();
+					event.widget = MenuItem.this.menu;
+					MenuItem.this.menu.sendEvent(SWT.Hide, event);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				if(MenuItem.this.menu == null) return;
+				if(!MenuItem.this.menu.hooks(SWT.Show)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+					Event event = new Event();
+					event.widget = MenuItem.this.menu;
+					MenuItem.this.menu.sendEvent(SWT.Show, event);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+		});
+		Container p = handle.getParent();
+		if(p != null) {
+			for(int i=p.getComponentCount()-1; i>=0; i--) {
+				if(p.getComponent(i) == handle) {
+					p.remove(handle);
+					p.add(popup, i);
+					if(p instanceof JComponent) {
+						((JComponent)p).revalidate();
+					} else {
+						p.invalidate();
+						p.validate();
+					}
+					p.repaint();
+					break;
+				}
+			}
+		}
+		JMenuItem menuItem = (JMenuItem)handle;
+		popup.setText(menuItem.getText());
+		popup.setMnemonic(menuItem.getMnemonic());
+//		popup.setToolTipText(menuItem.getToolTipText());
+		popup.setEnabled(menuItem.isEnabled());
+		popup.setSelected(menuItem.isSelected());
+		popup.setIcon(menuItem.getIcon());
+		handle = popup;
 	}
 	JMenu menuHandle = (JMenu)handle;
 	JPopupMenu popupMenu = menuHandle.getPopupMenu();
-  popupMenu.removeAll();
-  /* Assign the new menu */
+	popupMenu.removeAll();
+	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
-  if (menu != null) {
-    menu.cascade = this; 
-    Component[] components = ((JMenu)menu.handle).getPopupMenu().getComponents();
-    for(int i=0; i<components.length; i++) {
-      popupMenu.add(components[i]);
-    }
-    menu.handle = popupMenu;
-  }
+	if (menu != null) {
+		menu.cascade = this; 
+		Component[] components = ((JMenu)menu.handle).getPopupMenu().getComponents();
+		for(int i=0; i<components.length; i++) {
+			popupMenu.add(components[i]);
+		}
+		menu.handle = popupMenu;
+	}
 //	parent.destroyAccelerators ();
 }
 
@@ -857,9 +860,9 @@ boolean adjustSelection;
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-  adjustSelection = true;
-  ((AbstractButton)handle).setSelected(selected);
-  adjustSelection = false;
+	adjustSelection = true;
+	((AbstractButton)handle).setSelected(selected);
+	adjustSelection = false;
 //	parent.redraw ();
 }
 
@@ -906,25 +909,25 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (text.equals (string)) return;
 	super.setText (string);
-  AbstractButton button = (AbstractButton)handle;
-  int index = findMnemonicIndex(string);
-  if(index != -1) {
-    button.setMnemonic(string.charAt(index));
-    string = string.substring(0, index - 1) + string.substring(index);
-  } else {
-    button.setMnemonic('\0');
-  }
-//  string = fixMnemonic (string);
-  // TODO: check what to do for cascade (CHECK, CASCADE, PUSH, RADIO and SEPARATOR)
-  index = string.lastIndexOf('\t');
-  if(index != -1) {
-    string = string.substring(0, index);
-  }
-  button.setText(string);
-  java.awt.Component comp = button.getParent();
-  if(comp instanceof javax.swing.JPopupMenu) {
-    ((javax.swing.JPopupMenu)comp).pack();
-  }
+	AbstractButton button = (AbstractButton)handle;
+	int index = findMnemonicIndex(string);
+	if(index != -1) {
+		button.setMnemonic(string.charAt(index));
+		string = string.substring(0, index - 1) + string.substring(index);
+	} else {
+		button.setMnemonic('\0');
+	}
+//	string = fixMnemonic (string);
+	// TODO: check what to do for cascade (CHECK, CASCADE, PUSH, RADIO and SEPARATOR)
+	index = string.lastIndexOf('\t');
+	if(index != -1) {
+		string = string.substring(0, index);
+	}
+	button.setText(string);
+	java.awt.Component comp = button.getParent();
+	if(comp instanceof javax.swing.JPopupMenu) {
+		((javax.swing.JPopupMenu)comp).pack();
+	}
 //	parent.redraw ();
 }
 
@@ -1069,152 +1072,152 @@ public void setToolTipText (String toolTip) {
 //}
 
 void createHandle() {
-  if((style & SWT.SEPARATOR) != 0) {
-    handle = new JSeparator();
-  } else if((style & SWT.CASCADE) != 0 || (style & SWT.PUSH) != 0) {
-    JMenuItem menuItem = new JMenuItem() {
-      public void menuSelectionChanged(boolean isIncluded) {
-        super.menuSelectionChanged(isIncluded);
-        if(!isIncluded) {
-          if(parent == null || parent.cascade == null) return;
-          if(!parent.cascade.hooks(SWT.Arm)) return;
-          UIThreadUtils.startExclusiveSection(getDisplay());
-          if(isDisposed()) {
-            UIThreadUtils.stopExclusiveSection();
-            return;
-          }
-//          Event event = new Event();
-//          event.stateMask = Display.getInputState();
-//          sendEvent(SWT.Arm, event);
-          parent.cascade.sendEvent(SWT.Arm);
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        if(!hooks(SWT.Arm)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-//        Event event = new Event();
-//        event.stateMask = Display.getInputState();
-//        sendEvent(SWT.Arm, event);
-        sendEvent(SWT.Arm);
-        UIThreadUtils.stopExclusiveSection();
-      }
-    };
-    handle = menuItem;
-//    menuItem.addChangeListener(new ChangeListener() {
-//      boolean isSelected;
-//      public void stateChanged(ChangeEvent e) {
-//        isSelected = !isSelected;
-//        if(isSelected) return;
-//        if(!hooks(SWT.Arm)) return;
-//        UIThreadUtil.startExclusiveSection(getDisplay());
-//        if(isDisposed()) {
-//          UIThreadUtil.stopExclusiveSection();
-//          return;
-//        }
+	if((style & SWT.SEPARATOR) != 0) {
+		handle = new JSeparator();
+	} else if((style & SWT.CASCADE) != 0 || (style & SWT.PUSH) != 0) {
+		JMenuItem menuItem = new JMenuItem() {
+			public void menuSelectionChanged(boolean isIncluded) {
+				super.menuSelectionChanged(isIncluded);
+				if(!isIncluded) {
+					if(parent == null || parent.cascade == null) return;
+					if(!parent.cascade.hooks(SWT.Arm)) return;
+					UIThreadUtils.startExclusiveSection(getDisplay());
+					if(isDisposed()) {
+						UIThreadUtils.stopExclusiveSection();
+						return;
+					}
+//					Event event = new Event();
+//					event.stateMask = Display.getInputState();
+//					sendEvent(SWT.Arm, event);
+					parent.cascade.sendEvent(SWT.Arm);
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				if(!hooks(SWT.Arm)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+//				Event event = new Event();
+//				event.stateMask = Display.getInputState();
+//				sendEvent(SWT.Arm, event);
+				sendEvent(SWT.Arm);
+				UIThreadUtils.stopExclusiveSection();
+			}
+		};
+		handle = menuItem;
+//		menuItem.addChangeListener(new ChangeListener() {
+//			boolean isSelected;
+//			public void stateChanged(ChangeEvent e) {
+//				isSelected = !isSelected;
+//				if(isSelected) return;
+//				if(!hooks(SWT.Arm)) return;
+//				UIThreadUtil.startExclusiveSection(getDisplay());
+//				if(isDisposed()) {
+//					UIThreadUtil.stopExclusiveSection();
+//					return;
+//				}
 ////        Event event = new Event();
 ////        event.stateMask = Display.getInputState();
 ////        sendEvent(SWT.Arm, event);
-//        sendEvent(SWT.Arm);
-//        UIThreadUtil.stopExclusiveSection();
-//      }
-//    });
-    menuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if(!hooks(SWT.Selection)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-          Event event = new Event();
-          event.stateMask = Display.getInputState();
-          sendEvent(SWT.Selection, event);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    });
-  } else if((style & SWT.CHECK) != 0) {
-    JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem();
-    handle = menuItem;
-    menuItem.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        if(adjustSelection || !hooks(SWT.Selection)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-//          Event event = new Event();
-//          event.stateMask = Display.getInputState();
-//          sendEvent(SWT.Selection, event);
-          sendEvent(SWT.Selection);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    });
-  } else if((style & SWT.RADIO) != 0) {
-    JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem() {
-      protected void fireActionPerformed(ActionEvent e) {
-        if(!isSelected()) {
-          setSelected(true);
-        }
-        Component[] components = getParent().getComponents();
-        for(int i=0; i<components.length; i++) {
-          Component component = components[i];
-          if(component instanceof JRadioButton && component != this) {
-            ((JRadioButton)component).setSelected(false);
-          }
-        }
-        super.fireActionPerformed(e);
-        if(adjustSelection || !hooks(SWT.Selection)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        Event event = new Event();
-        event.stateMask = Display.getInputState();
-        sendEvent(SWT.Selection, event);
-        UIThreadUtils.stopExclusiveSection();
-      }
-    };
-    handle = menuItem;
-    menuItem.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        if(e.getStateChange() == ItemEvent.SELECTED) {
-          selectRadio();
-        }
-        if(!hooks(SWT.Arm)) return;
-        UIThreadUtils.startExclusiveSection(getDisplay());
-        if(isDisposed()) {
-          UIThreadUtils.stopExclusiveSection();
-          return;
-        }
-        try {
-//          Event event = new Event();
-//          event.stateMask = Display.getInputState();
-//          sendEvent(SWT.Arm, event);
-          sendEvent(SWT.Arm);
-        } catch(Throwable t) {
-          UIThreadUtils.storeException(t);
-        } finally {
-          UIThreadUtils.stopExclusiveSection();
-        }
-      }
-    });
-  }
+//				sendEvent(SWT.Arm);
+//				UIThreadUtil.stopExclusiveSection();
+//			}
+//		});
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!hooks(SWT.Selection)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+					Event event = new Event();
+					event.stateMask = Display.getInputState();
+					sendEvent(SWT.Selection, event);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+		});
+	} else if((style & SWT.CHECK) != 0) {
+		JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem();
+		handle = menuItem;
+		menuItem.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(adjustSelection || !hooks(SWT.Selection)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+//					Event event = new Event();
+//					event.stateMask = Display.getInputState();
+//					sendEvent(SWT.Selection, event);
+					sendEvent(SWT.Selection);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+		});
+	} else if((style & SWT.RADIO) != 0) {
+		JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem() {
+			protected void fireActionPerformed(ActionEvent e) {
+				if(!isSelected()) {
+					setSelected(true);
+				}
+				Component[] components = getParent().getComponents();
+				for(int i=0; i<components.length; i++) {
+					Component component = components[i];
+					if(component instanceof JRadioButton && component != this) {
+						((JRadioButton)component).setSelected(false);
+					}
+				}
+				super.fireActionPerformed(e);
+				if(adjustSelection || !hooks(SWT.Selection)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				Event event = new Event();
+				event.stateMask = Display.getInputState();
+				sendEvent(SWT.Selection, event);
+				UIThreadUtils.stopExclusiveSection();
+			}
+		};
+		handle = menuItem;
+		menuItem.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					selectRadio();
+				}
+				if(!hooks(SWT.Arm)) return;
+				UIThreadUtils.startExclusiveSection(getDisplay());
+				if(isDisposed()) {
+					UIThreadUtils.stopExclusiveSection();
+					return;
+				}
+				try {
+//					Event event = new Event();
+//					event.stateMask = Display.getInputState();
+//					sendEvent(SWT.Arm, event);
+					sendEvent(SWT.Arm);
+				} catch(Throwable t) {
+					UIThreadUtils.storeException(t);
+				} finally {
+					UIThreadUtils.stopExclusiveSection();
+				}
+			}
+		});
+	}
 }
 
 }

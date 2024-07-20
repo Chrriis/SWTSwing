@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -57,7 +60,7 @@ public Clipboard(Display display) {
 			display = Display.getDefault();
 		}
 	}
-  if (display.getThread() != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (display.getThread() != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	this.display = display;
 }
 
@@ -171,19 +174,19 @@ public void clearContents() {
  */
 public void clearContents(int clipboards) {
 	checkWidget();
-  try {
-    if ((clipboards & DND.CLIPBOARD) != 0) {
-      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(null, null);
-    }
-    if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-      java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
-      if(systemSelection != null) {
-        systemSelection.setContents(null, null);
-      }
-    }
-  } catch(Exception e) {
-    DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-  }
+	try {
+		if ((clipboards & DND.CLIPBOARD) != 0) {
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(null, null);
+		}
+		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+			java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+			if(systemSelection != null) {
+				systemSelection.setContents(null, null);
+			}
+		}
+	} catch(Exception e) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+	}
 }
 
 /**
@@ -200,7 +203,7 @@ public void clearContents(int clipboards) {
  */
 public void dispose () {
 	if (isDisposed()) return;
-  if (display.getThread() != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (display.getThread() != Thread.currentThread () && !SwingUtilities.isEventDispatchThread()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	display = null;
 }
 
@@ -285,34 +288,34 @@ public Object getContents(Transfer transfer) {
 public Object getContents(Transfer transfer, int clipboards) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-  ArrayList clipboardList = new ArrayList();
-  if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-    java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
-    if(systemSelection != null) {
-      clipboardList.add(systemSelection);
-    }
-  }
-  if ((clipboards & DND.CLIPBOARD) != 0) {
-    clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
-  }
-  for(int i=clipboardList.size() - 1; i >= 0; i--) {
-    java.awt.datatransfer.Clipboard clipboard = (java.awt.datatransfer.Clipboard)clipboardList.get(i);
-    TransferData[] supportedTypes = transfer.getSupportedTypes();
-    for(int j=0; j<supportedTypes.length; j++) {
-      TransferData transferData = supportedTypes[j];
-      DataFlavor flavor = transferData.dataFlavor;
-      if(clipboard.isDataFlavorAvailable(flavor)) {
-    	  try {
-    		  Transferable contents = clipboard.getContents(null);
-    		  if(contents != null) {
-    			  transferData.transferable = contents;
-    			  return transfer.nativeToJava(transferData);
-    		  }
-    	  } catch(Exception e) {
-    	  }
-      }
-    }
-  }
+	ArrayList clipboardList = new ArrayList();
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+		java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+		if(systemSelection != null) {
+			clipboardList.add(systemSelection);
+		}
+	}
+	if ((clipboards & DND.CLIPBOARD) != 0) {
+		clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
+	}
+	for(int i=clipboardList.size() - 1; i >= 0; i--) {
+		java.awt.datatransfer.Clipboard clipboard = (java.awt.datatransfer.Clipboard)clipboardList.get(i);
+		TransferData[] supportedTypes = transfer.getSupportedTypes();
+		for(int j=0; j<supportedTypes.length; j++) {
+			TransferData transferData = supportedTypes[j];
+			DataFlavor flavor = transferData.dataFlavor;
+			if(clipboard.isDataFlavorAvailable(flavor)) {
+			  try {
+				  Transferable contents = clipboard.getContents(null);
+				  if(contents != null) {
+					  transferData.transferable = contents;
+					  return transfer.nativeToJava(transferData);
+				  }
+			  } catch(Exception e) {
+			  }
+			}
+		}
+	}
 	return null; // No data available for this transfer
 }
 /**
@@ -452,57 +455,57 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 			DND.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
-  ArrayList transferableList = new ArrayList();
-  ArrayList flavorList = new ArrayList();
-  for(int i=0; i<dataTypes.length; i++) {
-    TransferData transferData = new TransferData();
-    Transfer transfer = dataTypes[i];
-    transferData.dataFlavor = transfer.getDataFlavor();
-    transfer.javaToNative(data[i], transferData);
-    flavorList.add(transferData.dataFlavor);
-    transferableList.add(transferData.transferable);
-  }
-  final Transferable[] transferables = (Transferable[])transferableList.toArray(new Transferable[0]);
-  final DataFlavor[] flavors = (DataFlavor[])flavorList.toArray(new DataFlavor[0]);
-  Transferable transferable = new Transferable() {
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-      for(int i=0; i<flavors.length; i++) {
-        if(flavors[i].equals(flavor)) {
-          try {
-            return transferables[i].getTransferData(flavor);
-          } catch(IOException e) {
-          } catch(UnsupportedFlavorException e) {
-          }
-        }
-      }
-      throw new UnsupportedFlavorException(flavor);
-    }
-    public DataFlavor[] getTransferDataFlavors() {
-      return (DataFlavor[])flavors.clone();
-    }
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
-      for(int i=0; i<flavors.length; i++) {
-        if(flavors[i].equals(flavor)) {
-          return true;
-        }
-      }
-      return false;
-    }
-  };
-  ArrayList clipboardList = new ArrayList();
-  if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-    java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
-    if(systemSelection != null) {
-      clipboardList.add(systemSelection);
-    }
-  }
-  if ((clipboards & DND.CLIPBOARD) != 0) {
-    clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
-  }
-  for(int i=clipboardList.size() - 1; i >= 0; i--) {
-    java.awt.datatransfer.Clipboard clipboard = (java.awt.datatransfer.Clipboard)clipboardList.get(i);
-    clipboard.setContents(transferable, null);
-  }
+	ArrayList transferableList = new ArrayList();
+	ArrayList flavorList = new ArrayList();
+	for(int i=0; i<dataTypes.length; i++) {
+		TransferData transferData = new TransferData();
+		Transfer transfer = dataTypes[i];
+		transferData.dataFlavor = transfer.getDataFlavor();
+		transfer.javaToNative(data[i], transferData);
+		flavorList.add(transferData.dataFlavor);
+		transferableList.add(transferData.transferable);
+	}
+	final Transferable[] transferables = (Transferable[])transferableList.toArray(new Transferable[0]);
+	final DataFlavor[] flavors = (DataFlavor[])flavorList.toArray(new DataFlavor[0]);
+	Transferable transferable = new Transferable() {
+		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+			for(int i=0; i<flavors.length; i++) {
+				if(flavors[i].equals(flavor)) {
+					try {
+						return transferables[i].getTransferData(flavor);
+					} catch(IOException e) {
+					} catch(UnsupportedFlavorException e) {
+					}
+				}
+			}
+			throw new UnsupportedFlavorException(flavor);
+		}
+		public DataFlavor[] getTransferDataFlavors() {
+			return (DataFlavor[])flavors.clone();
+		}
+		public boolean isDataFlavorSupported(DataFlavor flavor) {
+			for(int i=0; i<flavors.length; i++) {
+				if(flavors[i].equals(flavor)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+	ArrayList clipboardList = new ArrayList();
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+		java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+		if(systemSelection != null) {
+			clipboardList.add(systemSelection);
+		}
+	}
+	if ((clipboards & DND.CLIPBOARD) != 0) {
+		clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
+	}
+	for(int i=clipboardList.size() - 1; i >= 0; i--) {
+		java.awt.datatransfer.Clipboard clipboard = (java.awt.datatransfer.Clipboard)clipboardList.get(i);
+		clipboard.setContents(transferable, null);
+	}
 //DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 }
 
@@ -550,27 +553,27 @@ public TransferData[] getAvailableTypes() {
  */
 public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
-  ArrayList clipboardList = new ArrayList();
-  if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-    java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
-    if(systemSelection != null) {
-      clipboardList.add(systemSelection);
-    }
-  }
-  if ((clipboards & DND.CLIPBOARD) != 0) {
-    clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
-  }
-  for(int i=clipboardList.size() - 1; i >= 0; i--) {
-    java.awt.datatransfer.Clipboard clipboard = (java.awt.datatransfer.Clipboard)clipboardList.get(i);
-    DataFlavor[] dataFlavors = clipboard.getAvailableDataFlavors();
-    TransferData[] dataArray = new TransferData[dataFlavors.length];
-    for(int j=0; j<dataArray.length; j++) {
-      TransferData data = new TransferData();
-      data.dataFlavor = dataFlavors[j];
-      dataArray[j] = data;
-    }
-    return dataArray;
-  }
+	ArrayList clipboardList = new ArrayList();
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+		java.awt.datatransfer.Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
+		if(systemSelection != null) {
+			clipboardList.add(systemSelection);
+		}
+	}
+	if ((clipboards & DND.CLIPBOARD) != 0) {
+		clipboardList.add(Toolkit.getDefaultToolkit().getSystemClipboard());
+	}
+	for(int i=clipboardList.size() - 1; i >= 0; i--) {
+		java.awt.datatransfer.Clipboard clipboard = (java.awt.datatransfer.Clipboard)clipboardList.get(i);
+		DataFlavor[] dataFlavors = clipboard.getAvailableDataFlavors();
+		TransferData[] dataArray = new TransferData[dataFlavors.length];
+		for(int j=0; j<dataArray.length; j++) {
+			TransferData data = new TransferData();
+			data.dataFlavor = dataFlavors[j];
+			dataArray[j] = data;
+		}
+		return dataArray;
+	}
 	return new TransferData[0];
 }
 
@@ -592,12 +595,12 @@ public TransferData[] getAvailableTypes(int clipboards) {
  */
 public String[] getAvailableTypeNames() {
 	checkWidget();
-  DataFlavor[] flavors = Toolkit.getDefaultToolkit().getSystemClipboard().getAvailableDataFlavors();
-  String[] typeNames = new String[flavors.length];
-  for(int i=0; i<flavors.length; i++) {
-    typeNames[i] = flavors[i].getDefaultRepresentationClassAsString();
-  }
-  return typeNames;
+	DataFlavor[] flavors = Toolkit.getDefaultToolkit().getSystemClipboard().getAvailableDataFlavors();
+	String[] typeNames = new String[flavors.length];
+	for(int i=0; i<flavors.length; i++) {
+		typeNames[i] = flavors[i].getDefaultRepresentationClassAsString();
+	}
+	return typeNames;
 }
 
 }

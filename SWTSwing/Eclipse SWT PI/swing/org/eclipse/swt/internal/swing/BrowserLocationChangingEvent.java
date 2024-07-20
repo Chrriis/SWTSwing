@@ -11,25 +11,25 @@ import java.util.EventObject;
 
 public class BrowserLocationChangingEvent extends EventObject {
 
-  protected String url;
+	protected String url;
 
-  public BrowserLocationChangingEvent(Object source, String url) {
-    super(source);
-    this.url = url;
-  }
+	public BrowserLocationChangingEvent(Object source, String url) {
+		super(source);
+		this.url = url;
+	}
 
-  public String getURL() {
-    return url;
-  }
+	public String getURL() {
+		return url;
+	}
 
-  protected boolean isConsumed;
-  
-  public void consume() {
-    isConsumed = true;
-  }
-  
-  public boolean isConsumed() {
-    return isConsumed;
-  }
+	protected boolean isConsumed;
+	
+	public void consume() {
+		isConsumed = true;
+	}
+	
+	public boolean isConsumed() {
+		return isConsumed;
+	}
 
 }

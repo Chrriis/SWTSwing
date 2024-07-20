@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -116,12 +119,12 @@ protected void checkSubclass () {
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~(CANVAS | THEME_BACKGROUND);
+	super.createHandleInit();
+	state &= ~(CANVAS | THEME_BACKGROUND);
 }
 
 protected Container createHandle () {
-  return (Container)CSpinner.Factory.newInstance(this, style);
+	return (Container)CSpinner.Factory.newInstance(this, style);
 }
 
 /**
@@ -272,8 +275,8 @@ void addVerifyListener (VerifyListener listener) {
 //}
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-  Point p = super.computeSize(wHint, hHint, changed);
-  return new Point(p.x, handle.getPreferredSize().height);
+	Point p = super.computeSize(wHint, hHint, changed);
+	return new Point(p.x, handle.getPreferredSize().height);
 }
 
 /**
@@ -289,7 +292,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-  ((CSpinner)handle).copy();
+	((CSpinner)handle).copy();
 }
 
 /**
@@ -307,7 +310,7 @@ public void copy () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-  ((CSpinner)handle).cut();
+	((CSpinner)handle).cut();
 }
 
 /**
@@ -321,8 +324,8 @@ public void cut () {
  * </ul>
  */
 public int getDigits () {
-  checkWidget ();
-  return ((CSpinner)handle).getDigitCount();
+	checkWidget ();
+	return ((CSpinner)handle).getDigitCount();
 }
 
 /**
@@ -338,7 +341,7 @@ public int getDigits () {
  */
 public int getIncrement () {
 	checkWidget ();
-  return ((CSpinner)handle).getStepSize();
+	return ((CSpinner)handle).getStepSize();
 }
 
 /**
@@ -353,7 +356,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-  return ((CSpinner)handle).getMaximum();
+	return ((CSpinner)handle).getMaximum();
 }
 
 /**
@@ -368,7 +371,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-  return ((CSpinner)handle).getMinimum();
+	return ((CSpinner)handle).getMinimum();
 }
 
 /**
@@ -399,7 +402,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-  return ((CSpinner)handle).getSelectedValue();
+	return ((CSpinner)handle).getSelectedValue();
 }
 
 /**
@@ -418,7 +421,7 @@ public int getSelection () {
  */
 public String getText () {
 	checkWidget ();
-  return ((CSpinner)handle).getText();
+	return ((CSpinner)handle).getText();
 }
 
 /**
@@ -459,7 +462,7 @@ public int getTextLimit () {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-  ((CSpinner)handle).paste();
+	((CSpinner)handle).paste();
 }
 
 //void releaseHandle () {
@@ -645,9 +648,9 @@ void removeVerifyListener (VerifyListener listener) {
  * </ul>
  */
 public void setDigits (int value) {
-  checkWidget ();
-  if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-  ((CSpinner)handle).setDigitCount(value);
+	checkWidget ();
+	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	((CSpinner)handle).setDigitCount(value);
 }
 
 /**
@@ -665,7 +668,7 @@ public void setDigits (int value) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-  ((CSpinner)handle).setStepSize(value);
+	((CSpinner)handle).setStepSize(value);
 }
 
 /**
@@ -684,7 +687,7 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget ();
 	if (value < 0) return;
-  ((CSpinner)handle).setMaximum(value);
+	((CSpinner)handle).setMaximum(value);
 }
 
 /**
@@ -703,7 +706,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget ();
 	if (value < 0) return;
-  ((CSpinner)handle).setMinimum(value);
+	((CSpinner)handle).setMinimum(value);
 }
 
 /**
@@ -739,7 +742,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-  ((CSpinner)handle).setSelectedValue(value);
+	((CSpinner)handle).setSelectedValue(value);
 }
 
 /**
@@ -793,17 +796,17 @@ public void setTextLimit (int limit) {
  * @since 3.2
  */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
-  checkWidget ();
-  if (minimum < 0) return;
-  if (maximum <= minimum) return;
-  if (digits < 0) return;
-  if (increment < 1) return;
-  if (pageIncrement < 1) return;
-  selection = Math.min (Math.max (minimum, selection), maximum);
-  setIncrement (increment);
-  setPageIncrement(pageIncrement);
-  setDigits(digits);
-  setSelection (selection);
+	checkWidget ();
+	if (minimum < 0) return;
+	if (maximum <= minimum) return;
+	if (digits < 0) return;
+	if (increment < 1) return;
+	if (pageIncrement < 1) return;
+	selection = Math.min (Math.max (minimum, selection), maximum);
+	setIncrement (increment);
+	setPageIncrement(pageIncrement);
+	setDigits(digits);
+	setSelection (selection);
 }
 
 //String verifyText (String string, int start, int end, Event keyEvent) {
@@ -916,11 +919,11 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 //	LRESULT result = super.WM_SIZE (wParam, lParam);
 //	if (isDisposed ()) return result;
 //	int width = lParam & 0xFFFF, height = lParam >> 16;
-//    int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-//    int textWidth = width - upDownWidth;
-//    int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;    
-//    SetWindowPos (hwndText, 0, 0, 0, textWidth, height, flags);
-//    SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);              	
+//		int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+//		int textWidth = width - upDownWidth;
+//		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;    
+//		SetWindowPos (hwndText, 0, 0, 0, textWidth, height, flags);
+//		SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);              	
 //	return result;
 //}
 //
@@ -1079,60 +1082,60 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 //}
 
 String verifyText (String string, int start, int end, Event keyEvent) {
-  Event event = new Event ();
-  event.text = string;
-  event.start = start;
-  event.end = end;
-  if (keyEvent != null) {
-    event.character = keyEvent.character;
-    event.keyCode = keyEvent.keyCode;
-    event.stateMask = keyEvent.stateMask;
-  }
-  sendEvent (SWT.Verify, event);
-  if (!event.doit || isDisposed ()) return null;
-  return event.text;
+	Event event = new Event ();
+	event.text = string;
+	event.start = start;
+	event.end = end;
+	if (keyEvent != null) {
+		event.character = keyEvent.character;
+		event.keyCode = keyEvent.keyCode;
+		event.stateMask = keyEvent.stateMask;
+	}
+	sendEvent (SWT.Verify, event);
+	if (!event.doit || isDisposed ()) return null;
+	return event.text;
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof ChangeEvent) {
-    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
-  } else if(e instanceof TextFilterEvent) {
-    if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
-  } else { super.processEvent(e); return; }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof ChangeEvent) {
-      sendEvent (SWT.Selection);
-    } else if(e instanceof TextFilterEvent) {
-      TextFilterEvent filterEvent = (TextFilterEvent)e;
-      filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof ChangeEvent) {
+		if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+	} else if(e instanceof TextFilterEvent) {
+		if(!hooks(SWT.Verify)) { super.processEvent(e); return; }
+	} else { super.processEvent(e); return; }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof ChangeEvent) {
+			sendEvent (SWT.Selection);
+		} else if(e instanceof TextFilterEvent) {
+			TextFilterEvent filterEvent = (TextFilterEvent)e;
+			filterEvent.setText(verifyText(filterEvent.getText(), filterEvent.getStart(), filterEvent.getStart() + filterEvent.getEnd(), createKeyEvent(filterEvent.getKeyEvent())));
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 public void processEvent(DocumentEvent e) {
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    return;
-  }
-  try {
-    sendEvent(SWT.Modify, new Event());
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		return;
+	}
+	try {
+		sendEvent(SWT.Modify, new Event());
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

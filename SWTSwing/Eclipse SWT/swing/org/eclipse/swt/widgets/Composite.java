@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -103,18 +106,18 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-  Component[] children = ((CControl)handle).getClientArea().getComponents();
-  if(children.length == 0) {
-    return new Control[0];
-  }
-  ArrayList controlsList = new ArrayList(children.length);
-  for(int i=0; i<children.length; i++) {
-    Control control = display.getControl(children[i]);
-    if (control != null && control != this) {
-      controlsList.add(control);
-    }
-  }
-  return (Control[])controlsList.toArray(new Control[0]);
+	Component[] children = ((CControl)handle).getClientArea().getComponents();
+	if(children.length == 0) {
+		return new Control[0];
+	}
+	ArrayList controlsList = new ArrayList(children.length);
+	for(int i=0; i<children.length; i++) {
+		Control control = display.getControl(children[i]);
+		if (control != null && control != this) {
+			controlsList.add(control);
+		}
+	}
+	return (Control[])controlsList.toArray(new Control[0]);
 }
 
 Control [] _getTabList () {
@@ -226,19 +229,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandleInit () {
-  super.createHandleInit ();
-  state |= CANVAS;
-  if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
-    state |= THEME_BACKGROUND;
-  }
+	super.createHandleInit ();
+	state |= CANVAS;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+		state |= THEME_BACKGROUND;
+	}
 }
 
 protected Container createHandle () {
-  return (Container)CComposite.Factory.newInstance(this, style);
+	return (Container)CComposite.Factory.newInstance(this, style);
 }
 
 Composite findDeferredControl () {
-  return layoutCount > 0 || parent == null? this : parent.findDeferredControl ();
+	return layoutCount > 0 || parent == null? this : parent.findDeferredControl ();
 }
 
 //Menu [] findMenus (Control control) {
@@ -306,8 +309,8 @@ void fixTabList (Control control) {
  * @since 3.2
  */
 public int getBackgroundMode () {
-  checkWidget ();
-  return backgroundMode;
+	checkWidget ();
+	return backgroundMode;
 }
 
 /**
@@ -420,7 +423,7 @@ boolean hooksKeys () {
  */
 public boolean getLayoutDeferred () {
 	checkWidget ();
-  return layoutCount > 0 ;
+	return layoutCount > 0 ;
 }
 
 /**
@@ -447,7 +450,7 @@ public boolean isLayoutDeferred () {
 }
 
 protected boolean isLayoutManaged() {
-  return false;
+	return false;
 }
 
 /**
@@ -622,14 +625,14 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 }
 
 void releaseChildren (boolean destroy) {
-  Control [] children = _getChildren ();
-  for (int i=0; i<children.length; i++) {
-    Control child = children [i];
-    if (child != null && !child.isDisposed ()) {
-      child.release (false);
-    }
-  }
-  super.releaseChildren (destroy);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child != null && !child.isDisposed ()) {
+			child.release (false);
+		}
+	}
+	super.releaseChildren (destroy);
 }
 
 void releaseWidget () {
@@ -650,8 +653,8 @@ void releaseWidget () {
 
 void removeControl (Control control) {
 	fixTabList (control);
-//  layout();
-  handle.repaint();
+//	layout();
+	handle.repaint();
 //	resizeChildren ();
 }
 
@@ -739,14 +742,14 @@ int backgroundMode;
  * @since 3.2
  */
 public void setBackgroundMode (int mode) {
-  checkWidget ();
-  if(backgroundMode == mode) return;
-  backgroundMode = mode;
-  Control [] children = _getChildren ();
-  for (int i = 0; i < children.length; i++) {
-    children [i].updateBackgroundMode ();   
-  }
-  handle.repaint();
+	checkWidget ();
+	if(backgroundMode == mode) return;
+	backgroundMode = mode;
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();   
+	}
+	handle.repaint();
 }
 
 public boolean setFocus () {
@@ -804,9 +807,9 @@ public void setLayout (Layout layout) {
 public void setLayoutDeferred (boolean defer) {
 	if (!defer) {
 		if (--layoutCount == 0) {
-      if ((state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0) {
-        updateLayout (true, true);
-      }
+			if ((state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0) {
+				updateLayout (true, true);
+			}
 		}
 	} else {
 		layoutCount++;
@@ -923,14 +926,14 @@ boolean translateMnemonic (Event event, Control control) {
 //}
 
 void updateBackgroundMode () {
-//  int oldMode = this.backgroundMode;
-  this.backgroundMode = parent.getBackgroundMode();
-  super.updateBackgroundMode ();
-  Control [] children = _getChildren ();
-  for (int i = 0; i < children.length; i++) {
-    children [i].updateBackgroundMode ();   
-  }
-//  this.backgroundMode = oldMode;
+//	int oldMode = this.backgroundMode;
+	this.backgroundMode = parent.getBackgroundMode();
+	super.updateBackgroundMode ();
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();   
+	}
+//	this.backgroundMode = oldMode;
 }
 
 void updateLayout (boolean resize, boolean all) {
@@ -1368,45 +1371,45 @@ void updateLayout (boolean resize, boolean all) {
 //}
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case ComponentEvent.COMPONENT_RESIZED: if(layout == null) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case ComponentEvent.COMPONENT_RESIZED:
-      if(layout != null) {
-        markLayout(false, false);
-        updateLayout(false, false);
-//        ((CControl)handle).getClientArea().invalidate();
-//        handle.validate();
-//        if(handle instanceof JComponent) {
-//          ((JComponent)handle).revalidate();
-//        } else {
-//          handle.invalidate();
-//          handle.validate();
-//        }
-        handle.repaint();
-      }
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case ComponentEvent.COMPONENT_RESIZED: if(layout == null) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case ComponentEvent.COMPONENT_RESIZED:
+			if(layout != null) {
+				markLayout(false, false);
+				updateLayout(false, false);
+//				((CControl)handle).getClientArea().invalidate();
+//				handle.validate();
+//				if(handle instanceof JComponent) {
+//					((JComponent)handle).revalidate();
+//				} else {
+//					handle.invalidate();
+//					handle.validate();
+//				}
+				handle.repaint();
+			}
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

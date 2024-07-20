@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -142,47 +145,47 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-  Window window = (Window)getParent().handle;
-  JFontChooser fontChooser;
-  if(window instanceof Frame) {
-    fontChooser = new JFontChooser((Frame)window);
-  } else {
-    fontChooser = new JFontChooser((java.awt.Dialog)window);
-  }
-  if(rgb != null) {
-    fontChooser.setDefaultColor(new Color(rgb.red, rgb.green, rgb.blue));
-  }
-  int dpi = getParent().getDisplay().getDPI().x;
-  if(fontData != null) {
-    int height = Math.round(fontData.getHeight() * dpi / 72.0f);
-    int style = fontData.getStyle();
-    style = (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0));
-    
-    java.awt.Font defaultFont;
-    if(fontData.data != null) {
-      Map attributeMap = new HashMap(fontData.data);
-      attributeMap.put(TextAttribute.FAMILY, fontData.getName());
-      attributeMap.put(TextAttribute.POSTURE, (style & SWT.ITALIC) != 0? TextAttribute.POSTURE_OBLIQUE: TextAttribute.POSTURE_REGULAR);
-      attributeMap.put(TextAttribute.WEIGHT, (style & SWT.BOLD) != 0? TextAttribute.WEIGHT_BOLD: TextAttribute.WEIGHT_REGULAR);
-      defaultFont = new java.awt.Font(attributeMap);
-    } else {
-      defaultFont = new java.awt.Font(fontData.getName(), style, height);
-    }
-    fontChooser.setDefaultFont(defaultFont);
-  }
-  fontChooser.setModal(true);
-  fontChooser.setVisible(true);
-  java.awt.Font font = fontChooser.getNewFont();
-  if(font == null) {
-    return null;
-  }
-  Color color = fontChooser.getNewColor();
-  int height = Math.round(font.getSize() * 72.0f / dpi);
-  int style = font.getStyle();
-  fontData = new FontData(font.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
-  fontData.data = font.getAttributes();
-  rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
-  return fontData;
+	Window window = (Window)getParent().handle;
+	JFontChooser fontChooser;
+	if(window instanceof Frame) {
+		fontChooser = new JFontChooser((Frame)window);
+	} else {
+		fontChooser = new JFontChooser((java.awt.Dialog)window);
+	}
+	if(rgb != null) {
+		fontChooser.setDefaultColor(new Color(rgb.red, rgb.green, rgb.blue));
+	}
+	int dpi = getParent().getDisplay().getDPI().x;
+	if(fontData != null) {
+		int height = Math.round(fontData.getHeight() * dpi / 72.0f);
+		int style = fontData.getStyle();
+		style = (((style & SWT.ITALIC) != 0? java.awt.Font.ITALIC: 0)) | (((style & SWT.BOLD) != 0? java.awt.Font.BOLD: 0));
+		
+		java.awt.Font defaultFont;
+		if(fontData.data != null) {
+			Map attributeMap = new HashMap(fontData.data);
+			attributeMap.put(TextAttribute.FAMILY, fontData.getName());
+			attributeMap.put(TextAttribute.POSTURE, (style & SWT.ITALIC) != 0? TextAttribute.POSTURE_OBLIQUE: TextAttribute.POSTURE_REGULAR);
+			attributeMap.put(TextAttribute.WEIGHT, (style & SWT.BOLD) != 0? TextAttribute.WEIGHT_BOLD: TextAttribute.WEIGHT_REGULAR);
+			defaultFont = new java.awt.Font(attributeMap);
+		} else {
+			defaultFont = new java.awt.Font(fontData.getName(), style, height);
+		}
+		fontChooser.setDefaultFont(defaultFont);
+	}
+	fontChooser.setModal(true);
+	fontChooser.setVisible(true);
+	java.awt.Font font = fontChooser.getNewFont();
+	if(font == null) {
+		return null;
+	}
+	Color color = fontChooser.getNewColor();
+	int height = Math.round(font.getSize() * 72.0f / dpi);
+	int style = font.getStyle();
+	fontData = new FontData(font.getName(), height, 0 | (((style & java.awt.Font.ITALIC) != 0? SWT.ITALIC: 0)) | (((style & java.awt.Font.BOLD) != 0? SWT.BOLD: 0)));
+	fontData.data = font.getAttributes();
+	rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
+	return fontData;
 }
 
 /**

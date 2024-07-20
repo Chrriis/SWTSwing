@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -95,7 +98,7 @@ public List (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  ((CList)handle).addElement(string);
+	((CList)handle).addElement(string);
 }
 /**
  * Adds the argument to the receiver's list at the given
@@ -124,9 +127,9 @@ public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-  int count = getItemCount();
-  if (index < 0 || count < index) error (SWT.ERROR_INVALID_RANGE);
-  ((CList)handle).addElement(string);
+	int count = getItemCount();
+	if (index < 0 || count < index) error (SWT.ERROR_INVALID_RANGE);
+	((CList)handle).addElement(string);
 }
 
 /**
@@ -184,17 +187,17 @@ static int checkStyle (int style) {
  */
 public void deselect (int [] indices) {
 	checkWidget ();
-  if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-  int length = indices.length;
-  if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-  for(int i=0; i<indices.length; i++) {
-    int index = indices[i];
-    ((CList)handle).removeSelectionInterval(index, index);
-  }
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	for(int i=0; i<indices.length; i++) {
+		int index = indices[i];
+		((CList)handle).removeSelectionInterval(index, index);
+	}
 }
 
 Container createHandle () {
-  return (Container)CList.Factory.newInstance(this, style);
+	return (Container)CList.Factory.newInstance(this, style);
 }
 
 /**
@@ -211,7 +214,7 @@ Container createHandle () {
  */
 public void deselect (int index) {
 	checkWidget ();
-  ((CList)handle).removeSelectionInterval(index, index);
+	((CList)handle).removeSelectionInterval(index, index);
 }
 
 /**
@@ -231,7 +234,7 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget ();
-  ((CList)handle).removeSelectionInterval(start, end);
+	((CList)handle).removeSelectionInterval(start, end);
 }
 
 /**
@@ -244,9 +247,9 @@ public void deselect (int start, int end) {
  */
 public void deselectAll () {
 	checkWidget ();
-  int count = getItemCount();
-  if(count == 0) return;
-  ((CList)handle).removeSelectionInterval(0, count - 1);
+	int count = getItemCount();
+	if(count == 0) return;
+	((CList)handle).removeSelectionInterval(0, count - 1);
 }
 
 /**
@@ -262,7 +265,7 @@ public void deselectAll () {
  */
 public int getFocusIndex () {
 	checkWidget ();
-  return ((CList)handle).getFocusIndex();
+	return ((CList)handle).getFocusIndex();
 //	int result = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 //	if (result == 0) {
 //		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -288,12 +291,12 @@ public int getFocusIndex () {
  */
 public String getItem (int index) {
 	checkWidget ();
-  if(index < 0) {
-    error (SWT.ERROR_INVALID_RANGE);
-  }
-  int count = getItemCount();
-  if (index < 0 || count <= index) error (SWT.ERROR_INVALID_RANGE);
-  return (String)((CList)handle).getElementAt(index);
+	if(index < 0) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int count = getItemCount();
+	if (index < 0 || count <= index) error (SWT.ERROR_INVALID_RANGE);
+	return (String)((CList)handle).getElementAt(index);
 }
 
 /**
@@ -308,7 +311,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-  return ((CList)handle).getItemCount();
+	return ((CList)handle).getItemCount();
 }
 
 /**
@@ -324,10 +327,10 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-  java.awt.Rectangle bounds = ((CList)handle).getCellBounds(0);
-  // TODO: find another way to get a default value.
-  if(bounds == null) return 16;
-  return bounds.height;
+	java.awt.Rectangle bounds = ((CList)handle).getCellBounds(0);
+	// TODO: find another way to get a default value.
+	if(bounds == null) return 16;
+	return bounds.height;
 //	int result = OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
 //	if (result == OS.LB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 //	return result;
@@ -395,11 +398,11 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-  int min = ((CList)handle).getMinSelectionIndex();
-  if(min == -1) {
-    return 0;
-  }
-  return ((CList)handle).getMaxSelectionIndex() - min + 1;
+	int min = ((CList)handle).getMinSelectionIndex();
+	if(min == -1) {
+		return 0;
+	}
+	return ((CList)handle).getMaxSelectionIndex() - min + 1;
 }
 
 /**
@@ -415,7 +418,7 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget ();
-  return ((CList)handle).getMinSelectionIndex();
+	return ((CList)handle).getMinSelectionIndex();
 }
 
 /**
@@ -436,7 +439,7 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-  return ((CList)handle).getSelectionIndices();
+	return ((CList)handle).getSelectionIndices();
 }
 
 /**
@@ -519,7 +522,7 @@ public int indexOf (String string, int start) {
  */
 public boolean isSelected (int index) {
 	checkWidget ();
-  return ((CList)handle).isSelectedIndex(index);
+	return ((CList)handle).isSelectedIndex(index);
 }
 
 /**
@@ -545,12 +548,12 @@ public void remove (int [] indices) {
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
 	int start = newIndices [newIndices.length - 1], end = newIndices [0];
-  int count = getItemCount();
+	int count = getItemCount();
 	if (start < 0 || start > end || end >= count) error (SWT.ERROR_INVALID_RANGE);
-  CList cList = (CList)handle;
-  for(int i=newIndices.length-1; i>=0; i--) {
-    cList.removeElementAt(newIndices[i]);
-  }
+	CList cList = (CList)handle;
+	for(int i=newIndices.length-1; i>=0; i--) {
+		cList.removeElementAt(newIndices[i]);
+	}
 }
 
 /**
@@ -569,9 +572,9 @@ public void remove (int [] indices) {
  */
 public void remove (int index) {
 	checkWidget ();
-  int count = getItemCount();
-  if (index < 0 || count <= index) error (SWT.ERROR_INVALID_RANGE);
-  ((CList)handle).removeElementAt(index);
+	int count = getItemCount();
+	if (index < 0 || count <= index) error (SWT.ERROR_INVALID_RANGE);
+	((CList)handle).removeElementAt(index);
 }
 
 /**
@@ -593,9 +596,9 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
-  int count = getItemCount();
-  if (start < 0 || start > end || end >= count) error (SWT.ERROR_INVALID_RANGE);
-  ((CList)handle).removeRange(start, end);
+	int count = getItemCount();
+	if (start < 0 || start > end || end >= count) error (SWT.ERROR_INVALID_RANGE);
+	((CList)handle).removeRange(start, end);
 }
 
 /**
@@ -632,7 +635,7 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget ();
-  ((CList)handle).removeAllElements();
+	((CList)handle).removeAllElements();
 }
 
 /**
@@ -689,12 +692,12 @@ public void select (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-  isAdjustingSelection = true;
-  for(int i=0; i<indices.length; i++) {
-    int index = indices[i];
-    ((CList)handle).addSelectionInterval(index, index);
-  }
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	for(int i=0; i<indices.length; i++) {
+		int index = indices[i];
+		((CList)handle).addSelectionInterval(index, index);
+	}
+	isAdjustingSelection = false;
 }
 
 /**
@@ -711,9 +714,9 @@ public void select (int [] indices) {
  */
 public void select (int index) {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CList)handle).addSelectionInterval(index, index);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CList)handle).addSelectionInterval(index, index);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -743,11 +746,11 @@ public void select (int start, int end) {
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	int count = getItemCount();
 	if (count == 0 || start >= count) return;
-  isAdjustingSelection = true;
+	isAdjustingSelection = true;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
-  ((CList)handle).addSelectionInterval(start, end);
-  isAdjustingSelection = false;
+	((CList)handle).addSelectionInterval(start, end);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -763,11 +766,11 @@ public void select (int start, int end) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-  int count = getItemCount();
-  if(count == 0) return;
-  isAdjustingSelection = true;
-  ((CList)handle).setSelectionInterval(0, count - 1);
-  isAdjustingSelection = false;
+	int count = getItemCount();
+	if(count == 0) return;
+	isAdjustingSelection = true;
+	((CList)handle).setSelectionInterval(0, count - 1);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -791,7 +794,7 @@ public void selectAll () {
 public void setItem (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  ((CList)handle).setElementAt(string, index);
+	((CList)handle).setElementAt(string, index);
 }
 
 /**
@@ -814,7 +817,7 @@ public void setItems (String [] items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-  ((CList)handle).setElements(items);
+	((CList)handle).setElements(items);
 }
 
 /**
@@ -844,12 +847,12 @@ public void setSelection(int [] indices) {
 	deselectAll ();
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-  isAdjustingSelection = true;
-  for(int i=0; i<indices.length; i++) {
-    int index = indices[i];
-    ((CList)handle).addSelectionInterval(index, index);
-  }
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	for(int i=0; i<indices.length; i++) {
+		int index = indices[i];
+		((CList)handle).addSelectionInterval(index, index);
+	}
+	isAdjustingSelection = false;
 }
 
 /**
@@ -877,13 +880,13 @@ public void setSelection(int [] indices) {
 public void setSelection (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-  isAdjustingSelection = true;
+	isAdjustingSelection = true;
 	deselectAll ();
 	int length = items.length;
 	if (length != 0 && ((style & SWT.SINGLE) == 0 || length <= 1)) {
 	  ((CList)handle).setSelectedElements(items);
-  }
-  isAdjustingSelection = false;
+	}
+	isAdjustingSelection = false;
 }
 
 /**
@@ -903,9 +906,9 @@ public void setSelection (String [] items) {
  */
 public void setSelection (int index) {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CList)handle).setSelectionInterval(index, index);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CList)handle).setSelectionInterval(index, index);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -935,11 +938,11 @@ public void setSelection (int start, int end) {
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	int count = getItemCount();
 	if (count == 0 || start >= count) return;
-  isAdjustingSelection = true;
+	isAdjustingSelection = true;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
-  ((CList)handle).setSelectionInterval(start, end);
-  isAdjustingSelection = false;
+	((CList)handle).setSelectionInterval(start, end);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -956,7 +959,7 @@ public void setSelection (int start, int end) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
-  ((CList)handle).setFirstVisibleIndex(index);
+	((CList)handle).setFirstVisibleIndex(index);
 }
 
 /**
@@ -971,61 +974,61 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget ();
-  ((CList)handle).showSelection();
+	((CList)handle).showSelection();
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof ListSelectionEvent) {
-    if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; }
-  } else { super.processEvent(e); return; }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof ListSelectionEvent) {
-      if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
-        sendEvent(SWT.Selection);
-      }
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof ListSelectionEvent) {
+		if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; }
+	} else { super.processEvent(e); return; }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof ListSelectionEvent) {
+			if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
+				sendEvent(SWT.Selection);
+			}
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case ActionEvent.ACTION_PERFORMED:
-      sendEvent(SWT.DefaultSelection);
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case ActionEvent.ACTION_PERFORMED:
+			sendEvent(SWT.DefaultSelection);
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

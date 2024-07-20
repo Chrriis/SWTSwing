@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -160,76 +163,76 @@ protected static String currentDirectoryPath;
  * </ul>
  */
 public String open () {
-  final JFileChooser fileChooser = new JFileChooser(currentDirectoryPath);
-  String title = getText();
-  if(title != null && title.length() > 0) {
-    fileChooser.setDialogTitle(title);
-  }
-  if(filterPath != null && filterPath.length() > 0) {
-    fileChooser.setCurrentDirectory(new File(filterPath));
-  }
-  if(fileName != null && fileName.length() > 0) {
-    fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory().getAbsolutePath() + "/" + fileName));
-  }
-  fileName = "";
-  fileNames = null;
-  String fullPath = null;
-  fileChooser.setMultiSelectionEnabled((style & SWT.MULTI) != 0);
-  if(filterExtensions != null && filterExtensions.length > 0) {
-    fileChooser.setAcceptAllFileFilterUsed(false);
-    for(int i=0; i<filterExtensions.length; i++) {
-      String filterExtension = filterExtensions[i];
-      final String[] filters = filterExtensions[i].split(";");
-      final String description = (filterNames == null || i >= filterNames.length)? filterExtension: filterNames[i];
-      fileChooser.addChoosableFileFilter(new FileFilter() {
-        public boolean accept(File f) {
-          if(f.isDirectory()) {
-            return true;
-          }
-          for(int i=0; i<filters.length; i++) {
-            String filterExtension = filters[i].trim();
-            String regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
-            final Pattern pattern = Pattern.compile(regExp.toString());
-            Matcher m = pattern.matcher(f.getName());
-            if(m.matches()) {
-              return true;
-            }
-          }
-          return false;
-        }
-        public String getDescription() {
-          return description;
-        }
-      });
-      
-    }
-    fileChooser.setFileFilter(fileChooser.getChoosableFileFilters()[0]);
-  }
-  int returnValue;
-  if((style & SWT.SAVE) != 0) {
-    returnValue = fileChooser.showSaveDialog(getParent().handle);
-  } else {
-    returnValue = fileChooser.showOpenDialog(getParent().handle);
-  }
-  if(returnValue == JFileChooser.APPROVE_OPTION) {
-    currentDirectoryPath = fileChooser.getSelectedFile().getParent();
-    if((style & SWT.MULTI) != 0) {
-      File[] selectedFiles = fileChooser.getSelectedFiles();
-      fileNames = new String[selectedFiles.length];
-      for(int i=0; i<fileNames.length; i++) {
-        fileNames[i] = selectedFiles[i].getName();
-      }
-      if(selectedFiles.length > 0) {
-        fullPath = selectedFiles[0].getParentFile().getAbsolutePath();
-      }
-    } else {
-      File selectedFile = fileChooser.getSelectedFile();
-      fileName = selectedFile.getName();
-      fullPath = selectedFile.getAbsolutePath();
-    }
-    filterPath = new String(fullPath);
-  }
-  return fullPath;
+	final JFileChooser fileChooser = new JFileChooser(currentDirectoryPath);
+	String title = getText();
+	if(title != null && title.length() > 0) {
+		fileChooser.setDialogTitle(title);
+	}
+	if(filterPath != null && filterPath.length() > 0) {
+		fileChooser.setCurrentDirectory(new File(filterPath));
+	}
+	if(fileName != null && fileName.length() > 0) {
+		fileChooser.setSelectedFile(new File(fileChooser.getCurrentDirectory().getAbsolutePath() + "/" + fileName));
+	}
+	fileName = "";
+	fileNames = null;
+	String fullPath = null;
+	fileChooser.setMultiSelectionEnabled((style & SWT.MULTI) != 0);
+	if(filterExtensions != null && filterExtensions.length > 0) {
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		for(int i=0; i<filterExtensions.length; i++) {
+			String filterExtension = filterExtensions[i];
+			final String[] filters = filterExtensions[i].split(";");
+			final String description = (filterNames == null || i >= filterNames.length)? filterExtension: filterNames[i];
+			fileChooser.addChoosableFileFilter(new FileFilter() {
+				public boolean accept(File f) {
+					if(f.isDirectory()) {
+						return true;
+					}
+					for(int i=0; i<filters.length; i++) {
+						String filterExtension = filters[i].trim();
+						String regExp = "\\Q" + filterExtension.replace("\\E", "\\\\E").replace("\\Q", "\\\\Q").replace("?", "\\E.\\Q").replace("*", "\\E.*\\Q");
+						final Pattern pattern = Pattern.compile(regExp.toString());
+						Matcher m = pattern.matcher(f.getName());
+						if(m.matches()) {
+							return true;
+						}
+					}
+					return false;
+				}
+				public String getDescription() {
+					return description;
+				}
+			});
+			
+		}
+		fileChooser.setFileFilter(fileChooser.getChoosableFileFilters()[0]);
+	}
+	int returnValue;
+	if((style & SWT.SAVE) != 0) {
+		returnValue = fileChooser.showSaveDialog(getParent().handle);
+	} else {
+		returnValue = fileChooser.showOpenDialog(getParent().handle);
+	}
+	if(returnValue == JFileChooser.APPROVE_OPTION) {
+		currentDirectoryPath = fileChooser.getSelectedFile().getParent();
+		if((style & SWT.MULTI) != 0) {
+			File[] selectedFiles = fileChooser.getSelectedFiles();
+			fileNames = new String[selectedFiles.length];
+			for(int i=0; i<fileNames.length; i++) {
+				fileNames[i] = selectedFiles[i].getName();
+			}
+			if(selectedFiles.length > 0) {
+				fullPath = selectedFiles[0].getParentFile().getAbsolutePath();
+			}
+		} else {
+			File selectedFile = fileChooser.getSelectedFile();
+			fileName = selectedFile.getName();
+			fullPath = selectedFile.getAbsolutePath();
+		}
+		filterPath = new String(fullPath);
+	}
+	return fullPath;
 }
 
 /**

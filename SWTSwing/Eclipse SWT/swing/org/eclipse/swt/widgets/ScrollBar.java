@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -90,7 +93,7 @@ import org.eclipse.swt.events.*;
 
 public class ScrollBar extends Widget {	
 	Scrollable parent;
-  JScrollBar handle;
+	JScrollBar handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -172,7 +175,7 @@ static int checkStyle (int style) {
 }
 
 void createWidget () {
-  handle = (style & SWT.HORIZONTAL) != 0? ((CScrollable)parent.handle).getHorizontalScrollBar(): ((CScrollable)parent.handle).getVerticalScrollBar();
+	handle = (style & SWT.HORIZONTAL) != 0? ((CScrollable)parent.handle).getHorizontalScrollBar(): ((CScrollable)parent.handle).getVerticalScrollBar();
 	/*
 	* Do not set the intial values of the maximum
 	* or the thumb.  These values normally default
@@ -183,28 +186,28 @@ void createWidget () {
 	* override the initial values provided by the
 	* list widget.
 	*/
-  handle.addAdjustmentListener(new AdjustmentListener() {
-    public void adjustmentValueChanged(AdjustmentEvent e) {
-      if(blockListener || isDisposed()) return;
-      Event event = new Event ();
-      event.detail = SWT.DRAG;
-      switch(e.getAdjustmentType()) {
-      case AdjustmentEvent.BLOCK_DECREMENT:
-        event.detail = SWT.PAGE_DOWN;
-        break;
-      case AdjustmentEvent.BLOCK_INCREMENT:
-        event.detail = SWT.PAGE_UP;
-        break;
-      case AdjustmentEvent.UNIT_DECREMENT:
-        event.detail = SWT.ARROW_DOWN;
-        break;
-      case AdjustmentEvent.UNIT_INCREMENT:
-        event.detail = SWT.ARROW_UP;
-        break;
-      }
-      sendEvent (SWT.Selection, event);
-    }
-  });
+	handle.addAdjustmentListener(new AdjustmentListener() {
+		public void adjustmentValueChanged(AdjustmentEvent e) {
+			if(blockListener || isDisposed()) return;
+			Event event = new Event ();
+			event.detail = SWT.DRAG;
+			switch(e.getAdjustmentType()) {
+			case AdjustmentEvent.BLOCK_DECREMENT:
+				event.detail = SWT.PAGE_DOWN;
+				break;
+			case AdjustmentEvent.BLOCK_INCREMENT:
+				event.detail = SWT.PAGE_UP;
+				break;
+			case AdjustmentEvent.UNIT_DECREMENT:
+				event.detail = SWT.ARROW_DOWN;
+				break;
+			case AdjustmentEvent.UNIT_INCREMENT:
+				event.detail = SWT.ARROW_UP;
+				break;
+			}
+			sendEvent (SWT.Selection, event);
+		}
+	});
 }
 
 void destroyWidget () {
@@ -222,7 +225,7 @@ void destroyWidget () {
 //	} else {
 //		OS.ShowScrollBar (hwnd, type, false);
 //	}
-  releaseHandle ();
+	releaseHandle ();
 }
 
 ///*
@@ -263,7 +266,7 @@ void destroyWidget () {
  */
 public boolean getEnabled () {
 	checkWidget();
-  return handle.isEnabled();
+	return handle.isEnabled();
 //	return (state & DISABLED) == 0;
 }
 
@@ -281,7 +284,7 @@ public boolean getEnabled () {
  */
 public int getIncrement () {
 	checkWidget();
-  return handle.getUnitIncrement();
+	return handle.getUnitIncrement();
 }
 
 /**
@@ -296,7 +299,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget();
-  return handle.getMaximum();
+	return handle.getMaximum();
 }
 
 /**
@@ -311,7 +314,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget();
-  return handle.getMinimum();
+	return handle.getMinimum();
 }
 
 /**
@@ -358,7 +361,7 @@ public Scrollable getParent () {
  */
 public int getSelection () {
 	checkWidget();
-  return handle.getValue();
+	return handle.getValue();
 }
 
 /**
@@ -376,13 +379,13 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-  java.awt.Dimension size;
-  if ((style & SWT.HORIZONTAL) != 0) {
-    size = ((CScrollable)parent.handle).getHorizontalScrollBar().getSize();
-  } else {
-    size = ((CScrollable)parent.handle).getVerticalScrollBar().getSize();
-  }
-  return new Point(size.width, size.height);
+	java.awt.Dimension size;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		size = ((CScrollable)parent.handle).getHorizontalScrollBar().getSize();
+	} else {
+		size = ((CScrollable)parent.handle).getVerticalScrollBar().getSize();
+	}
+	return new Point(size.width, size.height);
 //	parent.forceResize ();
 //	RECT rect = new RECT ();
 //	OS.GetClientRect (parent.scrolledHandle (), rect);
@@ -412,7 +415,7 @@ public Point getSize () {
  */
 public int getThumb () {
 	checkWidget();
-  return handle.getVisibleAmount();
+	return handle.getVisibleAmount();
 }
 
 /**
@@ -475,7 +478,7 @@ public Rectangle getThumbTrackBounds () {
  */
 public boolean getVisible () {
 	checkWidget();
-  return handle.isVisible();
+	return handle.isVisible();
 //	return (state & HIDDEN) == 0;
 }
 
@@ -523,8 +526,8 @@ public boolean isVisible () {
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseParent () {
@@ -585,7 +588,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-  handle.setEnabled(enabled);
+	handle.setEnabled(enabled);
 //	/*
 //	* This line is intentionally commented.  Currently
 //	* always show scrollbar as being enabled and visible.
@@ -637,12 +640,12 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget();
-  if (value < 0) return;
-  int minimum = handle.getMinimum();
-  if (value <= minimum) return;
-  blockListener = true;
-  handle.setMaximum(value);
-  blockListener = false;
+	if (value < 0) return;
+	int minimum = handle.getMinimum();
+	if (value <= minimum) return;
+	blockListener = true;
+	handle.setMaximum(value);
+	blockListener = false;
 }
 
 /**
@@ -661,11 +664,11 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-  int maximum = handle.getMaximum();
-  if (value >= maximum) return;
-  blockListener = true;
-  handle.setMinimum(value);
-  blockListener = false;
+	int maximum = handle.getMaximum();
+	if (value >= maximum) return;
+	blockListener = true;
+	handle.setMinimum(value);
+	blockListener = false;
 }
 
 /**
@@ -764,9 +767,9 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int selection) {
 	checkWidget();
-  blockListener = true;
-  handle.setValue(selection);
-  blockListener = false;
+	blockListener = true;
+	handle.setValue(selection);
+	blockListener = false;
 }
 
 boolean blockListener;
@@ -788,20 +791,20 @@ boolean blockListener;
 public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
-  int minimum = handle.getMinimum();
-  int maximum = handle.getMaximum();
-  int range = maximum - minimum;
-  if (value > range) {
-    value = range;
-  }
-  int maxSelection = maximum - value;
-  int selection = handle.getValue();
-  if (selection > maxSelection) {
-    selection = maxSelection;
-  }
-  blockListener = true;
-  handle.setValues(selection, value, minimum, maximum);
-  blockListener = false;
+	int minimum = handle.getMinimum();
+	int maximum = handle.getMaximum();
+	int range = maximum - minimum;
+	if (value > range) {
+		value = range;
+	}
+	int maxSelection = maximum - value;
+	int selection = handle.getValue();
+	if (selection > maxSelection) {
+		selection = maxSelection;
+	}
+	blockListener = true;
+	handle.setValues(selection, value, minimum, maximum);
+	blockListener = false;
 }
 
 /**
@@ -832,9 +835,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (thumb < 1) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
-  blockListener = true;
-  handle.setValues(selection, thumb, minimum, maximum);
-  blockListener = false;
+	blockListener = true;
+	handle.setValues(selection, thumb, minimum, maximum);
+	blockListener = false;
 }
 
 /**
@@ -860,11 +863,11 @@ public void setVisible (boolean visible) {
 	if(handle.getParent() instanceof JScrollPane) {
 	  JScrollPane scrollPane = ((JScrollPane)handle.getParent());
 	  if((style & SWT.HORIZONTAL) != 0) {
-      if(visible) {
-        scrollPane.setHorizontalScrollBarPolicy((parent.getStyle() & SWT.H_SCROLL) != 0? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS: ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      } else {
+			if(visible) {
+				scrollPane.setHorizontalScrollBarPolicy((parent.getStyle() & SWT.H_SCROLL) != 0? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS: ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			} else {
 	      scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-      }
+			}
 	  } else {
 	    if(visible) {
 	      scrollPane.setVerticalScrollBarPolicy((parent.getStyle() & SWT.V_SCROLL) != 0? ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS: ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -901,10 +904,10 @@ public void setVisible (boolean visible) {
 //			info.nMax = max;
 //			OS.SetScrollInfo (hwnd, type, info, true);
 //		} else {
-//        	/*
-//        	* This line is intentionally commented.  Currently
-//        	* always show scrollbar as being enabled and visible.
-//        	*/
+//					/*
+//					* This line is intentionally commented.  Currently
+//					* always show scrollbar as being enabled and visible.
+//					*/
 ////			if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 //		}
 //		return;

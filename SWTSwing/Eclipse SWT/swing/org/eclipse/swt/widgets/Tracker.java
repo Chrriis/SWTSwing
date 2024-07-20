@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -51,80 +54,80 @@ import org.eclipse.swt.internal.swing.Utils;
  * </p>
  */
 public class Tracker extends Widget {
-  
+	
 	protected final class JTrackerExtension extends JTracker {
-    
+		
 	  protected final Window window;
 
-    private JTrackerExtension(Component component, boolean isResizeType, Window window) {
-      super(component, isResizeType);
-      this.window = window;
-    }
+		private JTrackerExtension(Component component, boolean isResizeType, Window window) {
+			super(component, isResizeType);
+			this.window = window;
+		}
 
-    protected TrackerWindow createTrackerWindow(Window ownerWindow) {
-      return new TrackerWindow(ownerWindow) {
-        public java.awt.Cursor getCursor() {
-          return Utils.globalCursor != null? Utils.globalCursor: super.getCursor();
-        }
-      };
-    }
+		protected TrackerWindow createTrackerWindow(Window ownerWindow) {
+			return new TrackerWindow(ownerWindow) {
+				public java.awt.Cursor getCursor() {
+					return Utils.globalCursor != null? Utils.globalCursor: super.getCursor();
+				}
+			};
+		}
 
-    protected Window createSharedOwnerWindow() {
-      return window != null? window: super.createSharedOwnerWindow();
-    }
+		protected Window createSharedOwnerWindow() {
+			return window != null? window: super.createSharedOwnerWindow();
+		}
 
-    protected void releaseSharedOwnerWindow(Window sharedOwnerWindow) {
-      if(window == null) {
-        super.releaseSharedOwnerWindow(sharedOwnerWindow);
-      }
-    }
+		protected void releaseSharedOwnerWindow(Window sharedOwnerWindow) {
+			if(window == null) {
+				super.releaseSharedOwnerWindow(sharedOwnerWindow);
+			}
+		}
 
-    protected void processMouseEvent(MouseEvent me) {
-      super.processMouseEvent(me);
-      if(Utils.capturedControl != null) {
-        Component target = ((CControl)Utils.capturedControl.handle).getClientArea();
-        java.awt.Point point = SwingUtilities.convertPoint((Component)me.getSource(), me.getX(), me.getY(), target);
-        if(me.getID() == MouseEvent.MOUSE_WHEEL) {
-          MouseWheelEvent mwe = (MouseWheelEvent)me;
-          me = new MouseWheelEvent(target, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), point.x, point.y, mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation());
-        } else {
-          me = new MouseEvent(target, me.getID(), me.getWhen(), me.getModifiers(), point.x, point.y, me.getClickCount(), me.isPopupTrigger());
-        }
-        target.dispatchEvent(me);
-      }
-    }
-    
-    public void updateCursor() {
-      Window ownerWindow = getSharedOwnerWindow();
-      if(ownerWindow == null) {
-        return;
-      }
-      Window w = new Window(ownerWindow) {
-        public boolean isFocusable() {
-          return false;
-        }
-        public java.awt.Cursor getCursor() {
-          return Utils.globalCursor != null? Utils.globalCursor: super.getCursor();
-        }
-      };
-      w.setFocusableWindowState(false);
-      Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
-      if(mouseLocation != null) {
-        w.setBounds(mouseLocation.x, mouseLocation.y, 1, 1);
-        w.setVisible(true);
-        w.dispose();
-      }
-    }
-    
-    public void hide() {
-      Utils.setGlobalCursor(null);
-      updateCursor();
-      super.hide();
-    }
-    
-  }
+		protected void processMouseEvent(MouseEvent me) {
+			super.processMouseEvent(me);
+			if(Utils.capturedControl != null) {
+				Component target = ((CControl)Utils.capturedControl.handle).getClientArea();
+				java.awt.Point point = SwingUtilities.convertPoint((Component)me.getSource(), me.getX(), me.getY(), target);
+				if(me.getID() == MouseEvent.MOUSE_WHEEL) {
+					MouseWheelEvent mwe = (MouseWheelEvent)me;
+					me = new MouseWheelEvent(target, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), point.x, point.y, mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation());
+				} else {
+					me = new MouseEvent(target, me.getID(), me.getWhen(), me.getModifiers(), point.x, point.y, me.getClickCount(), me.isPopupTrigger());
+				}
+				target.dispatchEvent(me);
+			}
+		}
+		
+		public void updateCursor() {
+			Window ownerWindow = getSharedOwnerWindow();
+			if(ownerWindow == null) {
+				return;
+			}
+			Window w = new Window(ownerWindow) {
+				public boolean isFocusable() {
+					return false;
+				}
+				public java.awt.Cursor getCursor() {
+					return Utils.globalCursor != null? Utils.globalCursor: super.getCursor();
+				}
+			};
+			w.setFocusableWindowState(false);
+			Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+			if(mouseLocation != null) {
+				w.setBounds(mouseLocation.x, mouseLocation.y, 1, 1);
+				w.setVisible(true);
+				w.dispose();
+			}
+		}
+		
+		public void hide() {
+			Utils.setGlobalCursor(null);
+			updateCursor();
+			super.hide();
+		}
+		
+	}
 
-  Control parent;
+	Control parent;
 	JTrackerExtension handle;
 	boolean stippled;
 	Cursor cursor;
@@ -176,7 +179,7 @@ public class Tracker extends Widget {
 public Tracker (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-  createWidget ();
+	createWidget ();
 }
 
 /**
@@ -221,7 +224,7 @@ public Tracker (Display display, int style) {
 	}
 	this.style = checkStyle (style);
 	this.display = display;
-  createWidget ();
+	createWidget ();
 }
 
 /**
@@ -281,7 +284,7 @@ public void addKeyListener (KeyListener listener) {
 //Point adjustMoveCursor () {
 //	int newX = bounds.x + bounds.width / 2;
 //	int newY = bounds.y;
-//  Utils.notImplemented(); return null;
+//	Utils.notImplemented(); return null;
 ////	POINT pt = new POINT ();
 ////	pt.x = newX;  pt.y = newY;
 ////	/*
@@ -313,7 +316,7 @@ public void addKeyListener (KeyListener listener) {
 //		newY = bounds.y + bounds.height / 2;
 //	}
 //
-//  Utils.notImplemented(); return null;
+//	Utils.notImplemented(); return null;
 //	POINT pt = new POINT ();
 //	pt.x = newX;  pt.y = newY;
 //	/*
@@ -463,37 +466,37 @@ public void close () {
 //}
 
 void createWidget () {
-  final Window window = null;
-  Component component = parent == null? null: ((CControl)parent.handle).getClientArea();
-  handle = new JTrackerExtension(component, (style & SWT.RESIZE) != 0, window);
-  handle.addTrackerListener(new JTracker.TrackerListener() {
-    public void trackerMoved(JTracker.TrackerEvent e) {
-      Event event = new Event();
-      event.x = e.getX();
-      event.y = e.getY();
-      sendEvent(SWT.Move, event);
-    }
-    public void trackerResized(JTracker.TrackerEvent e) {
-      Event event = new Event();
-      event.x = e.getX();
-      event.y = e.getY();
-      sendEvent(SWT.Resize, event);
-    }
-  });
-  int constraints = 0;
-  if((style & SWT.UP) != 0) {
-    constraints |= JTracker.UP_MASK;
-  }
-  if((style & SWT.LEFT) != 0) {
-    constraints |= JTracker.LEFT_MASK;
-  }
-  if((style & SWT.DOWN) != 0) {
-    constraints |= JTracker.DOWN_MASK;
-  }
-  if((style & SWT.RIGHT) != 0) {
-    constraints |= JTracker.RIGHT_MASK;
-  }
-  handle.setConstraints(constraints);
+	final Window window = null;
+	Component component = parent == null? null: ((CControl)parent.handle).getClientArea();
+	handle = new JTrackerExtension(component, (style & SWT.RESIZE) != 0, window);
+	handle.addTrackerListener(new JTracker.TrackerListener() {
+		public void trackerMoved(JTracker.TrackerEvent e) {
+			Event event = new Event();
+			event.x = e.getX();
+			event.y = e.getY();
+			sendEvent(SWT.Move, event);
+		}
+		public void trackerResized(JTracker.TrackerEvent e) {
+			Event event = new Event();
+			event.x = e.getX();
+			event.y = e.getY();
+			sendEvent(SWT.Resize, event);
+		}
+	});
+	int constraints = 0;
+	if((style & SWT.UP) != 0) {
+		constraints |= JTracker.UP_MASK;
+	}
+	if((style & SWT.LEFT) != 0) {
+		constraints |= JTracker.LEFT_MASK;
+	}
+	if((style & SWT.DOWN) != 0) {
+		constraints |= JTracker.DOWN_MASK;
+	}
+	if((style & SWT.RIGHT) != 0) {
+		constraints |= JTracker.RIGHT_MASK;
+	}
+	handle.setConstraints(constraints);
 }
 
 /**
@@ -579,10 +582,10 @@ public boolean open () {
 //	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
 //		cursorOrientation |= hStyle;
 //	}
-  Utils.setGlobalCursor(cursor == null? null: cursor.handle);
+	Utils.setGlobalCursor(cursor == null? null: cursor.handle);
 	boolean isValid = handle.show();
-  Utils.setGlobalCursor(null);
-  return isValid;
+	Utils.setGlobalCursor(null);
+	return isValid;
 //	/*
 //	* If this tracker is being created without a mouse drag then
 //	* we need to create a transparent window that fills the screen

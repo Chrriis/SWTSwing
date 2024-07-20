@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -55,7 +58,7 @@ public void javaToNative (Object object, TransferData transferData){
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-  transferData.transferable = new StringSelection((String)object);
+	transferData.transferable = new StringSelection((String)object);
 }
 
 /**
@@ -69,21 +72,21 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-  Object o = super.nativeToJava(transferData);
-  if(o instanceof Reader) {
-    StringBuilder sb = new StringBuilder();
-    Reader reader = (Reader)o;
-    char[] chars = new char[128];
-    try {
-      for(int i; (i=reader.read(chars)) != -1; ) {
-        sb.append(chars, 0, i);
-      }
-    } catch(Exception e) {
-      e.printStackTrace();
-    }
-    return sb.toString();
-  }
-  return o;
+	Object o = super.nativeToJava(transferData);
+	if(o instanceof Reader) {
+		StringBuilder sb = new StringBuilder();
+		Reader reader = (Reader)o;
+		char[] chars = new char[128];
+		try {
+			for(int i; (i=reader.read(chars)) != -1; ) {
+				sb.append(chars, 0, i);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
+	return o;
 }
 
 boolean checkHTML(Object object) {
@@ -98,16 +101,16 @@ static DataFlavor HTML_FLAVOR_1 = new DataFlavor("text/html; class=java.lang.Str
 //static DataFlavor HTML_FLAVOR_2 = new DataFlavor("text/html; class=java.io.Reader", "HTML Text");
 
 public TransferData[] getSupportedTypes() {
-  TransferData data1 = new TransferData();
-  data1.dataFlavor = HTML_FLAVOR_1;
-  return new TransferData[] {data1};
-//  TransferData data2 = new TransferData();
-//  data2.dataFlavor = HTML_FLAVOR_2;
-//  return new TransferData[] {data1, data2};
+	TransferData data1 = new TransferData();
+	data1.dataFlavor = HTML_FLAVOR_1;
+	return new TransferData[] {data1};
+//	TransferData data2 = new TransferData();
+//	data2.dataFlavor = HTML_FLAVOR_2;
+//	return new TransferData[] {data1, data2};
 }
 
 protected DataFlavor getDataFlavor() {
-  return HTML_FLAVOR_1;
+	return HTML_FLAVOR_1;
 }
 
 }

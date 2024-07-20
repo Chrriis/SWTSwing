@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -150,7 +153,7 @@ public class Display extends Device {
 
 	Event [] eventQueue;
 	EventTable eventTable, filterTable;
-  Vector timerList = new Vector();
+	Vector timerList = new Vector();
 	
 	/* Menus */
 	Menu [] bars, popups;
@@ -278,79 +281,79 @@ public class Display extends Device {
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 
-  static {
-    Utils.initializeProperties();
-    CShell.ModalityHandler.initialize();
-    Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
-      protected Window hoveredWindow;
-      public void eventDispatched(AWTEvent event) {
-        java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
-        Utils.storeModifiersEx(ie.getModifiersEx());
-        if(ie instanceof MouseEvent) {
-          // It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
-          Component component = ie.getComponent();
-          if(component == null) {
-            return;
-          }
-          Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
-          switch(ie.getID()) {
-          case MouseEvent.MOUSE_WHEEL:
-            if(window != hoveredWindow && hoveredWindow != null && window != null) {
-              MouseWheelEvent mwe = (MouseWheelEvent)ie;
-              mwe.consume();
-              java.awt.Point mouseLocation = mwe.getPoint();
-              mouseLocation = SwingUtilities.convertPoint(component, mouseLocation, hoveredWindow);
-              Component c = hoveredWindow.findComponentAt(mouseLocation.x, mouseLocation.y);
-              mouseLocation = SwingUtilities.convertPoint(hoveredWindow, mouseLocation, c);
-              if(c != null) {
-                c.dispatchEvent(new MouseWheelEvent(c, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mouseLocation.x, mouseLocation.y, mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
-              }
-            }
-            break;
-          case MouseEvent.MOUSE_ENTERED:
-            break;
-          case MouseEvent.MOUSE_EXITED:
-            if(hoveredWindow != null) {
-              MouseEvent me = (MouseEvent)ie;
-              java.awt.Point mouseLocation = me.getPoint();
-              mouseLocation = SwingUtilities.convertPoint(component, mouseLocation, hoveredWindow);
-              if(!hoveredWindow.contains(mouseLocation)) {
-                hoveredWindow = null;
-              }
-            }
-            break;
-          default:
-            if(window != null) {
-              hoveredWindow = window;
-            }
-            break;
-          }
-          return;
-        }
-        if(ie.getID() == KeyEvent.KEY_PRESSED) {
-          int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
-          if((Utils.modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
-            Component component = ie.getComponent();
-            Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
-            if(window instanceof CShell) {
-              Component targetComponent;
-              java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
-              SwingUtilities.convertPointFromScreen(mouseLocation, window);
-              targetComponent = window.findComponentAt(mouseLocation);
-              for(; targetComponent != null && !(targetComponent instanceof CControl); targetComponent = targetComponent.getParent());
-              Control control;
-              if(targetComponent != null) {
-                control = ((CControl)targetComponent).getSWTHandle();
-              } else {
-                control = ((CShell)window).getSWTHandle();
-              }
-              Utils.dumpTree(control);
-            }
-          }
-        }
-      }
-    }, AWTEvent.MOUSE_WHEEL_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
-  }
+	static {
+		Utils.initializeProperties();
+		CShell.ModalityHandler.initialize();
+		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+			protected Window hoveredWindow;
+			public void eventDispatched(AWTEvent event) {
+				java.awt.event.InputEvent ie = (java.awt.event.InputEvent)event;
+				Utils.storeModifiersEx(ie.getModifiersEx());
+				if(ie instanceof MouseEvent) {
+					// It seems the mouse wheel event is sent to the wrong window. We have to retarget it in that case.
+					Component component = ie.getComponent();
+					if(component == null) {
+						return;
+					}
+					Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
+					switch(ie.getID()) {
+					case MouseEvent.MOUSE_WHEEL:
+						if(window != hoveredWindow && hoveredWindow != null && window != null) {
+							MouseWheelEvent mwe = (MouseWheelEvent)ie;
+							mwe.consume();
+							java.awt.Point mouseLocation = mwe.getPoint();
+							mouseLocation = SwingUtilities.convertPoint(component, mouseLocation, hoveredWindow);
+							Component c = hoveredWindow.findComponentAt(mouseLocation.x, mouseLocation.y);
+							mouseLocation = SwingUtilities.convertPoint(hoveredWindow, mouseLocation, c);
+							if(c != null) {
+								c.dispatchEvent(new MouseWheelEvent(c, mwe.getID(), mwe.getWhen(), mwe.getModifiers(), mouseLocation.x, mouseLocation.y, mwe.getClickCount(), mwe.isPopupTrigger(), mwe.getScrollType(), mwe.getScrollAmount(), mwe.getWheelRotation()));
+							}
+						}
+						break;
+					case MouseEvent.MOUSE_ENTERED:
+						break;
+					case MouseEvent.MOUSE_EXITED:
+						if(hoveredWindow != null) {
+							MouseEvent me = (MouseEvent)ie;
+							java.awt.Point mouseLocation = me.getPoint();
+							mouseLocation = SwingUtilities.convertPoint(component, mouseLocation, hoveredWindow);
+							if(!hoveredWindow.contains(mouseLocation)) {
+								hoveredWindow = null;
+							}
+						}
+						break;
+					default:
+						if(window != null) {
+							hoveredWindow = window;
+						}
+						break;
+					}
+					return;
+				}
+				if(ie.getID() == KeyEvent.KEY_PRESSED) {
+					int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
+					if((Utils.modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
+						Component component = ie.getComponent();
+						Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
+						if(window instanceof CShell) {
+							Component targetComponent;
+							java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+							SwingUtilities.convertPointFromScreen(mouseLocation, window);
+							targetComponent = window.findComponentAt(mouseLocation);
+							for(; targetComponent != null && !(targetComponent instanceof CControl); targetComponent = targetComponent.getParent());
+							Control control;
+							if(targetComponent != null) {
+								control = ((CControl)targetComponent).getSWTHandle();
+							} else {
+								control = ((CShell)window).getSWTHandle();
+							}
+							Utils.dumpTree(control);
+						}
+					}
+				}
+			}
+		}, AWTEvent.MOUSE_WHEEL_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK | AWTEvent.KEY_EVENT_MASK);
+	}
 	/*
 	* TEMPORARY CODE.  Install the runnable that
 	* gets the current display. This code will
@@ -405,18 +408,18 @@ public Display () {
  */
 public Display (DeviceData data) {
 	super (data);
-  boolean lightweightPopups = Utils.isLightweightPopups();
-  ToolTipManager.sharedInstance().setLightWeightPopupEnabled(lightweightPopups);
-  JPopupMenu.setDefaultLightWeightPopupEnabled(lightweightPopups);
-  Utils.installDefaultLookAndFeel();
+	boolean lightweightPopups = Utils.isLightweightPopups();
+	ToolTipManager.sharedInstance().setLightWeightPopupEnabled(lightweightPopups);
+	JPopupMenu.setDefaultLightWeightPopupEnabled(lightweightPopups);
+	Utils.installDefaultLookAndFeel();
 }
 
 public static void main(final String[] args) {
-  UIThreadUtils.main(args);
+	UIThreadUtils.main(args);
 }
 
 public static void swtExec(Runnable runnable) {
-  UIThreadUtils.swtExec(runnable);
+	UIThreadUtils.swtExec(runnable);
 }
 
 void addBar (Menu menu) {
@@ -440,7 +443,7 @@ void addBar (Menu menu) {
 
 void addControl (Component handle, Control control) {
 	if (handle == null) return;
-  componentToControlMap.put(handle, control);
+	componentToControlMap.put(handle, control);
 }
 
 /**
@@ -518,7 +521,7 @@ public void addListener (int eventType, Listener listener) {
 }
 
 void addMenuItem (MenuItem item) {
-  menuItemsList.add(item);
+	menuItemsList.add(item);
 }
 
 void addPopup (Menu menu) {
@@ -578,7 +581,7 @@ public void asyncExec (Runnable runnable) {
  */
 public void beep () {
 	checkDevice ();
-  Toolkit.getDefaultToolkit().beep();
+	Toolkit.getDefaultToolkit().beep();
 }
 
 /**
@@ -604,12 +607,12 @@ protected void checkDevice () {
 }
 
 static synchronized void checkDisplay (Thread thread, boolean multiple) {
-  for (int i=0; i<Displays.length; i++) {
-    if (Displays [i] != null) {
-      if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
-      if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
-    }
-  }
+	for (int i=0; i<Displays.length; i++) {
+		if (Displays [i] != null) {
+			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
+			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+		}
+	}
 }
 
 /**
@@ -648,7 +651,7 @@ protected void create (DeviceData data) {
 	checkSubclass ();
 	thread = Thread.currentThread ();
 	UIThreadUtils.setMainThread(thread);
-  checkDisplay (thread, true);
+	checkDisplay (thread, true);
 	createDisplay (data);
 	register (this);
 	if (Default == null) Default = this;
@@ -680,15 +683,15 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
-  if(UIThreadUtils.isRealDispatch()) {
-    UIThreadUtils.popQueue();
-//    /*
-//    * When the session is ending, no SWT program can continue
-//    * to run.  In order to avoid running code after the display
-//    * has been disposed, exit from Java.
-//    */
-//    System.exit (0);
-  }
+	if(UIThreadUtils.isRealDispatch()) {
+		UIThreadUtils.popQueue();
+//		/*
+//		* When the session is ending, no SWT program can continue
+//		* to run.  In order to avoid running code after the display
+//		* has been disposed, exit from Java.
+//		*/
+//		System.exit (0);
+	}
 }
 
 /**
@@ -744,12 +747,12 @@ boolean filters (int eventType) {
 HashMap componentToControlMap = new HashMap();
 
 Control findControl (Component handle) {
-  if (handle == null) return null;
-  do {
-    Control control = getControl (handle);
-    if (control != null) return control;
-  } while ((handle = handle.getParent()) != null);
-  return null;
+	if (handle == null) return null;
+	do {
+		Control control = getControl (handle);
+		if (control != null) return control;
+	} while ((handle = handle.getParent()) != null);
+	return null;
 }
 
 /**
@@ -763,10 +766,10 @@ Control findControl (Component handle) {
  * @return the display for the given thread
  */
 public static synchronized Display findDisplay (Thread thread) {
-  if(Displays.length == 0) return null;
-  if(Thread.currentThread() == thread && SwingUtilities.isEventDispatchThread()) {
-    return Displays[0];
-  }
+	if(Displays.length == 0) return null;
+	if(Thread.currentThread() == thread && SwingUtilities.isEventDispatchThread()) {
+		return Displays[0];
+	}
 	for (int i=0; i<Displays.length; i++) {
 		Display display = Displays [i];
 		if (display != null && display.thread == thread) {
@@ -790,9 +793,9 @@ public static synchronized Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-  Window window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
-  if(window == null) return null;
-  return (Shell)findControl(window);
+	Window window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+	if(window == null) return null;
+	return (Shell)findControl(window);
 }
 
 /**
@@ -808,13 +811,13 @@ public Shell getActiveShell () {
 public Rectangle getBounds () {
 	checkDevice ();
 	java.awt.Rectangle rectangle = new java.awt.Rectangle();
-  GraphicsEnvironment ge = GraphicsEnvironment.
-  getLocalGraphicsEnvironment();
-  GraphicsDevice[] gs = ge.getScreenDevices();
-  for(int j=0; j<gs.length; j++) {
-    rectangle.add(gs[j].getDefaultConfiguration().getBounds());
-  }
-  return new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	GraphicsEnvironment ge = GraphicsEnvironment.
+	getLocalGraphicsEnvironment();
+	GraphicsDevice[] gs = ge.getScreenDevices();
+	for(int j=0; j<gs.length; j++) {
+		rectangle.add(gs[j].getDefaultConfiguration().getBounds());
+	}
+	return new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
 /**
@@ -843,11 +846,11 @@ public static synchronized Display getCurrent () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-  return getBounds();
+	return getBounds();
 }
 
 Control getControl (Component handle) {
-  return (Control)componentToControlMap.get(handle);
+	return (Control)componentToControlMap.get(handle);
 }
 
 /**
@@ -863,20 +866,20 @@ Control getControl (Component handle) {
  * </ul>
  */
 public Control getCursorControl () {
-  checkDevice ();
-  java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
-  // TODO: what about windows?
-  Frame[] frames = Frame.getFrames();
-  for(int i=0; i<frames.length; i++) {
-    Frame frame = frames[i];
-    Component component = frame.findComponentAt(point);
-    if(component != null) {
-      Control control = findControl(component);
-      if(control != null) {
-        return control;
-      }
-    }
-  }
+	checkDevice ();
+	java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
+	// TODO: what about windows?
+	Frame[] frames = Frame.getFrames();
+	for(int i=0; i<frames.length; i++) {
+		Frame frame = frames[i];
+		Component component = frame.findComponentAt(point);
+		if(component != null) {
+			Control control = findControl(component);
+			if(control != null) {
+				return control;
+			}
+		}
+	}
 	return null;
 }
 
@@ -893,8 +896,8 @@ public Control getCursorControl () {
  */
 public Point getCursorLocation () {
 	checkDevice ();
-  java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
-  return new Point(point.x, point.y);
+	java.awt.Point point = MouseInfo.getPointerInfo().getLocation();
+	return new Point(point.x, point.y);
 }
 
 /**
@@ -911,19 +914,19 @@ public Point getCursorLocation () {
  */
 public Point [] getCursorSizes () {
 	checkDevice ();
-  HashSet set = new HashSet();
-  Toolkit toolkit = Toolkit.getDefaultToolkit();
-  for(int i=8; i<64; i++) {
-    set.add(toolkit.getBestCursorSize(i, i));
-  }
-  set.remove(new java.awt.Dimension(0, 0));
-  Point[] sizes = new Point[set.size()];
-  int i=0;
-  for(Iterator it=set.iterator(); it.hasNext(); ) {
-    java.awt.Dimension d = ((java.awt.Dimension)it.next());
-    sizes[i++] = new Point(d.width, d.height);
-  }
-  return sizes;
+	HashSet set = new HashSet();
+	Toolkit toolkit = Toolkit.getDefaultToolkit();
+	for(int i=8; i<64; i++) {
+		set.add(toolkit.getBestCursorSize(i, i));
+	}
+	set.remove(new java.awt.Dimension(0, 0));
+	Point[] sizes = new Point[set.size()];
+	int i=0;
+	for(Iterator it=set.iterator(); it.hasNext(); ) {
+		java.awt.Dimension d = ((java.awt.Dimension)it.next());
+		sizes[i++] = new Point(d.width, d.height);
+	}
+	return sizes;
 }
 
 /**
@@ -972,9 +975,9 @@ static boolean isValidClass (Class clazz) {
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-//  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
-//    return new Boolean (runMessagesInIdle);
-//  }
+//	if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
+//		return new Boolean (runMessagesInIdle);
+//	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -1047,7 +1050,7 @@ public int getDismissalAlignment () {
  */
 public int getDoubleClickTime () {
 	checkDevice ();
-  // TODO: Method in Swing to do that?
+	// TODO: Method in Swing to do that?
 	return 200;
 }
 
@@ -1066,9 +1069,9 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
-  Component component = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-  if(component == null) return null;
-  return findControl(component);
+	Component component = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+	if(component == null) return null;
+	return findControl(component);
 }
 
 /**
@@ -1090,9 +1093,9 @@ public Control getFocusControl () {
  */
 public boolean getHighContrast () {
 	checkDevice ();
-  // TODO: What about other platforms
-  Boolean highContrast = (Boolean)Toolkit.getDefaultToolkit().getDesktopProperty("win.highContrast.on");
-  return highContrast != null? highContrast.booleanValue(): false;
+	// TODO: What about other platforms
+	Boolean highContrast = (Boolean)Toolkit.getDefaultToolkit().getDesktopProperty("win.highContrast.on");
+	return highContrast != null? highContrast.booleanValue(): false;
 }
 
 /**
@@ -1110,8 +1113,8 @@ public boolean getHighContrast () {
  */
 public int getIconDepth () {
 	checkDevice ();
-  // TODO: is this correct?
-  return getDepth();
+	// TODO: is this correct?
+	return getDepth();
 }
 
 /**
@@ -1130,7 +1133,7 @@ public int getIconDepth () {
  */
 public Point [] getIconSizes () {
 	checkDevice ();
-  // TODO: method to do so in Swing?
+	// TODO: method to do so in Swing?
 	return new Point [] {
 		new Point (32, 32),
 		new Point (64, 64),
@@ -1138,13 +1141,13 @@ public Point [] getIconSizes () {
 }
 
 MenuItem getMenuItem (JComponent component) {
-  for(int i=0; i<menuItemsList.size(); i++) {
-    MenuItem menuItem = (MenuItem)menuItemsList.get(i);
-    if(menuItem.handle == component) {
-      return menuItem;
-    }
-  }
-  return null;
+	for(int i=0; i<menuItemsList.size(); i++) {
+		MenuItem menuItem = (MenuItem)menuItemsList.get(i);
+		if(menuItem.handle == component) {
+			return menuItem;
+		}
+	}
+	return null;
 }
 
 /*int getMessageCount () {
@@ -1160,33 +1163,33 @@ MenuItem getMenuItem (JComponent component) {
  */
 public Monitor [] getMonitors () {
 	checkDevice ();
-  GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-  GraphicsDevice[] gs = ge.getScreenDevices();
-  ArrayList monitorsList = new ArrayList();
-  Set boundsSet = new HashSet();
-  for (int j = 0; j < gs.length; j++) {
-    GraphicsDevice gd = gs[j];
-    // Always true isnt'it?
-//    if(gd.getType() == GraphicsDevice.TYPE_RASTER_SCREEN) {
-    GraphicsConfiguration gc = gd.getDefaultConfiguration();
-    Monitor monitor = new Monitor();
-    monitor.handle = gc;
-    java.awt.Rectangle bounds = gc.getBounds();
-    if(boundsSet.add(bounds)) {
-      monitor.x = bounds.x;
-      monitor.y = bounds.y;
-      monitor.width = bounds.width;
-      monitor.height = bounds.height;
-      java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
-      monitor.clientX = bounds.x + insets.left;
-      monitor.clientY = bounds.y + insets.top;
-      monitor.clientWidth = bounds.width - insets.left - insets.right;
-      monitor.clientHeight = bounds.height - insets.top - insets.bottom;
-      monitorsList.add(monitor);
-    }
-//    }
-  }
-  return (Monitor[])monitorsList.toArray(new Monitor[0]);
+	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	GraphicsDevice[] gs = ge.getScreenDevices();
+	ArrayList monitorsList = new ArrayList();
+	Set boundsSet = new HashSet();
+	for (int j = 0; j < gs.length; j++) {
+		GraphicsDevice gd = gs[j];
+		// Always true isnt'it?
+//		if(gd.getType() == GraphicsDevice.TYPE_RASTER_SCREEN) {
+		GraphicsConfiguration gc = gd.getDefaultConfiguration();
+		Monitor monitor = new Monitor();
+		monitor.handle = gc;
+		java.awt.Rectangle bounds = gc.getBounds();
+		if(boundsSet.add(bounds)) {
+			monitor.x = bounds.x;
+			monitor.y = bounds.y;
+			monitor.width = bounds.width;
+			monitor.height = bounds.height;
+			java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+			monitor.clientX = bounds.x + insets.left;
+			monitor.clientY = bounds.y + insets.top;
+			monitor.clientWidth = bounds.width - insets.left - insets.right;
+			monitor.clientHeight = bounds.height - insets.top - insets.bottom;
+			monitorsList.add(monitor);
+		}
+//		}
+	}
+	return (Monitor[])monitorsList.toArray(new Monitor[0]);
 }
 
 /**
@@ -1198,19 +1201,19 @@ public Monitor [] getMonitors () {
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
-  GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-  Monitor monitor = new Monitor();
-  monitor.handle = gc;
-  java.awt.Rectangle bounds = gc.getBounds();
-  monitor.x = bounds.x;
-  monitor.y = bounds.y;
-  monitor.width = bounds.width;
-  monitor.height = bounds.height;
-  java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
-  monitor.clientX = bounds.x + insets.left;
-  monitor.clientY = bounds.y + insets.top;
-  monitor.clientWidth = bounds.width - insets.left - insets.right;
-  monitor.clientHeight = bounds.height - insets.top - insets.bottom;
+	GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+	Monitor monitor = new Monitor();
+	monitor.handle = gc;
+	java.awt.Rectangle bounds = gc.getBounds();
+	monitor.x = bounds.x;
+	monitor.y = bounds.y;
+	monitor.width = bounds.width;
+	monitor.height = bounds.height;
+	java.awt.Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+	monitor.clientX = bounds.x + insets.left;
+	monitor.clientY = bounds.y + insets.top;
+	monitor.clientWidth = bounds.width - insets.left - insets.right;
+	monitor.clientHeight = bounds.height - insets.top - insets.bottom;
 	return monitor;		
 }
 
@@ -1227,18 +1230,18 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-  ArrayList controlsList = new ArrayList();
-  for(Iterator it = componentToControlMap.keySet().iterator(); it.hasNext(); ) {
-    Component component = (Component)it.next();
-    // TODO: what about file dialogs and such?
-    if(component instanceof Window) {
-      Control control = findControl(component);
-      if(control instanceof Shell) {
-        controlsList.add(control);
-      }
-    }
-  }
-  return (Shell[])controlsList.toArray(new Shell[0]);
+	ArrayList controlsList = new ArrayList();
+	for(Iterator it = componentToControlMap.keySet().iterator(); it.hasNext(); ) {
+		Component component = (Component)it.next();
+		// TODO: what about file dialogs and such?
+		if(component instanceof Window) {
+			Control control = findControl(component);
+			if(control instanceof Shell) {
+				controlsList.add(control);
+			}
+		}
+	}
+	return (Shell[])controlsList.toArray(new Shell[0]);
 }
 
 /**
@@ -1285,8 +1288,8 @@ public Color getSystemColor (int id) {
 	java.awt.Color swingColor = LookAndFeelUtils.getSystemColor(id);
 	if(swingColor == null) {
 	  return super.getSystemColor(id);
-  }
-  return Color.swing_new(this, swingColor);
+	}
+	return Color.swing_new(this, swingColor);
 }
 
 /**
@@ -1399,19 +1402,19 @@ public Image getSystemImage (int id) {
 	switch (id) {
 		case SWT.ICON_ERROR:
 			if (errorIcon == null) {
-        errorIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
+				errorIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = errorIcon;
 			break;
 		case SWT.ICON_INFORMATION:
 			if (infoIcon == null) {
-        infoIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
+				infoIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = infoIcon;
 			break;
 		case SWT.ICON_WORKING:
 			if (workingIcon == null) {
-        workingIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
+				workingIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = workingIcon;
 			break;
@@ -1423,7 +1426,7 @@ public Image getSystemImage (int id) {
 		  break;
 		case SWT.ICON_WARNING:
 			if (warningIcon == null) {
-        warningIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
+				warningIcon = getImage(LookAndFeelUtils.getSystemIcon(id));
 			}
 			hIcon = warningIcon;
 			break;
@@ -1433,11 +1436,11 @@ public Image getSystemImage (int id) {
 }
 
 static java.awt.Image getImage(Icon icon) {
-  BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-  Graphics g = image.getGraphics();
-  icon.paintIcon(Utils.getDefaultComponent(), g, 0, 0);
-  g.dispose();
-  return image;
+	BufferedImage image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+	Graphics g = image.getGraphics();
+	icon.paintIcon(Utils.getDefaultComponent(), g, 0, 0);
+	g.dispose();
+	return image;
 }
 
 /**
@@ -1490,9 +1493,9 @@ public TaskBar getSystemTaskBar () {
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
-  if (!SystemTray.isSupported()) {
-    return null;
-  }
+	if (!SystemTray.isSupported()) {
+		return null;
+	}
 	return tray = new Tray (this, SWT.NONE);
 }
 
@@ -1532,9 +1535,9 @@ public Thread getThread () {
  */
 public CGC internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-  if (data != null) {
-    data.device = this;
-  }
+	if (data != null) {
+		data.device = this;
+	}
 //	int hDC = OS.GetDC (0);
 //	if (hDC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 //	if (data != null) {
@@ -1548,37 +1551,37 @@ public CGC internal_new_GC (GCData data) {
 //		data.hFont = systemFont ();
 //	}
 //	return hDC;
-  Frame[] frames = Frame.getFrames ();
-  Graphics2D g = null;
-  for (int i = 0; i < frames.length; i++) {
-    if (frames[i].isActive ()) {
-      g = (Graphics2D) frames[i].getGraphics ();
-      break;
-    }
-  }
-  if(g == null) {
-    for (int i = 0; i < frames.length; i++) {
-      if (frames[i].isShowing()) {
-        g = (Graphics2D) frames[i].getGraphics ();
-      }
-    }
-  }
-  for (int i = 0; i < frames.length && g == null; i++) {
-    g = (Graphics2D) frames[i].getGraphics ();
-  }
-  if(g == null) {
-    g = new NullGraphics2D();
-  }
-  final Graphics2D g2D = g;
-  return new CGC.CGCGraphics2D() {
-    public Graphics2D getGraphics() {
-      return g2D;
-    }
-    public Dimension getDeviceSize() {
-      Rectangle bounds = getBounds();
-      return new Dimension(bounds.width, bounds.height);
-    }
-  };
+	Frame[] frames = Frame.getFrames ();
+	Graphics2D g = null;
+	for (int i = 0; i < frames.length; i++) {
+		if (frames[i].isActive ()) {
+			g = (Graphics2D) frames[i].getGraphics ();
+			break;
+		}
+	}
+	if(g == null) {
+		for (int i = 0; i < frames.length; i++) {
+			if (frames[i].isShowing()) {
+				g = (Graphics2D) frames[i].getGraphics ();
+			}
+		}
+	}
+	for (int i = 0; i < frames.length && g == null; i++) {
+		g = (Graphics2D) frames[i].getGraphics ();
+	}
+	if(g == null) {
+		g = new NullGraphics2D();
+	}
+	final Graphics2D g2D = g;
+	return new CGC.CGCGraphics2D() {
+		public Graphics2D getGraphics() {
+			return g2D;
+		}
+		public Dimension getDeviceSize() {
+			Rectangle bounds = getBounds();
+			return new Dimension(bounds.width, bounds.height);
+		}
+	};
 }
 
 /**
@@ -1697,8 +1700,8 @@ public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-  Rectangle r = map(from, to, x, y, 0, 0);
-  return new Point(r.x, r.y);
+	Rectangle r = map(from, to, x, y, 0, 0);
+	return new Point(r.x, r.y);
 }
 
 /**
@@ -1783,59 +1786,59 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
-  java.awt.Point point = new java.awt.Point(x, y);
-  if(from == null) {
-    if(to == null) return new Rectangle(x, y, width, height);
-    Point offset = to.getInternalOffset();
-    point.x += offset.x;
-    point.y += offset.y;
-    SwingUtilities.convertPointFromScreen(point, ((CControl)to.handle).getClientArea());
-  } else {
-    Point offset = from.getInternalOffset();
-    point.x -= offset.x;
-    point.y -= offset.y;
-    if(to == null) {
-      SwingUtilities.convertPointToScreen(point, ((CControl)from.handle).getClientArea());
-    } else {
-      offset = to.getInternalOffset();
-      point.x += offset.x;
-      point.y += offset.y;
-      point = SwingUtilities.convertPoint(((CControl)from.handle).getClientArea(), point, ((CControl)to.handle).getClientArea());
-    }
-  }
-  // TODO: check what the "mirror" stuff mentioned in the comments is about.
-  return new Rectangle(point.x, point.y, width, height);
+	java.awt.Point point = new java.awt.Point(x, y);
+	if(from == null) {
+		if(to == null) return new Rectangle(x, y, width, height);
+		Point offset = to.getInternalOffset();
+		point.x += offset.x;
+		point.y += offset.y;
+		SwingUtilities.convertPointFromScreen(point, ((CControl)to.handle).getClientArea());
+	} else {
+		Point offset = from.getInternalOffset();
+		point.x -= offset.x;
+		point.y -= offset.y;
+		if(to == null) {
+			SwingUtilities.convertPointToScreen(point, ((CControl)from.handle).getClientArea());
+		} else {
+			offset = to.getInternalOffset();
+			point.x += offset.x;
+			point.y += offset.y;
+			point = SwingUtilities.convertPoint(((CControl)from.handle).getClientArea(), point, ((CControl)to.handle).getClientArea());
+		}
+	}
+	// TODO: check what the "mirror" stuff mentioned in the comments is about.
+	return new Rectangle(point.x, point.y, width, height);
 }
 
 static int getPreviousInputState() {
-  return convertModifiersEx(Utils.previousModifiersEx);
+	return convertModifiersEx(Utils.previousModifiersEx);
 }
 
 static int getInputState() {
-  return convertModifiersEx(Utils.modifiersEx);
+	return convertModifiersEx(Utils.modifiersEx);
 }
 
 static int convertModifiersEx(int modifiersEx) {
-  int state = 0;
-  if((modifiersEx & java.awt.event.KeyEvent.SHIFT_DOWN_MASK) != 0) {
-    state |= SWT.SHIFT;
-  }
-  if((modifiersEx & java.awt.event.KeyEvent.ALT_DOWN_MASK) != 0) {
-    state |= SWT.ALT;
-  }
-  if((modifiersEx & java.awt.event.KeyEvent.CTRL_DOWN_MASK) != 0) {
-    state |= SWT.CTRL;
-  }
-  if((modifiersEx & java.awt.event.KeyEvent.BUTTON1_DOWN_MASK) != 0) {
-    state |= SWT.BUTTON1;
-  }
-  if((modifiersEx & java.awt.event.KeyEvent.BUTTON2_DOWN_MASK) != 0) {
-    state |= SWT.BUTTON2;
-  }
-  if((modifiersEx & java.awt.event.KeyEvent.BUTTON3_DOWN_MASK) != 0) {
-    state |= SWT.BUTTON3;
-  }
-  return state;
+	int state = 0;
+	if((modifiersEx & java.awt.event.KeyEvent.SHIFT_DOWN_MASK) != 0) {
+		state |= SWT.SHIFT;
+	}
+	if((modifiersEx & java.awt.event.KeyEvent.ALT_DOWN_MASK) != 0) {
+		state |= SWT.ALT;
+	}
+	if((modifiersEx & java.awt.event.KeyEvent.CTRL_DOWN_MASK) != 0) {
+		state |= SWT.CTRL;
+	}
+	if((modifiersEx & java.awt.event.KeyEvent.BUTTON1_DOWN_MASK) != 0) {
+		state |= SWT.BUTTON1;
+	}
+	if((modifiersEx & java.awt.event.KeyEvent.BUTTON2_DOWN_MASK) != 0) {
+		state |= SWT.BUTTON2;
+	}
+	if((modifiersEx & java.awt.event.KeyEvent.BUTTON3_DOWN_MASK) != 0) {
+		state |= SWT.BUTTON3;
+	}
+	return state;
 }
 
 /**
@@ -1894,47 +1897,47 @@ static int convertModifiersEx(int modifiersEx) {
 public boolean post (Event event) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-  try {
-  	int type = event.type;
-  	switch (type) {
-  		case SWT.KeyDown: {
-        int keyCode = event.keyCode == 0? untranslateChar(event.character): untranslateKey(event.keyCode);
-        if(keyCode == 0) {
-          return false;
-        }
-        new Robot().keyPress(keyCode);
-        return true;
-      }
-  		case SWT.KeyUp:
-  		  int keyCode = event.keyCode == 0? untranslateChar(event.character): untranslateKey(event.keyCode);
-  		  if(keyCode == 0) {
-  		    return false;
-  		  }
-        new Robot().keyRelease(keyCode);
-        return true;
-      case SWT.MouseMove: 
-        new Robot().mouseMove(event.x, event.y);
-        return true;
-  		case SWT.MouseDown:
-  		case SWT.MouseUp: {
-        int buttons;
-        switch (event.button) {
-          case 1: buttons = java.awt.event.InputEvent.BUTTON1_MASK; break;
-          case 2: buttons = java.awt.event.InputEvent.BUTTON2_MASK; break;
-          case 3: buttons = java.awt.event.InputEvent.BUTTON3_MASK; break;
-          default: return false;
-        }
-        if(type == SWT.MouseDown) {
-          new Robot().mousePress(buttons);
-        } else {
-          new Robot().mouseRelease(buttons);
-        }
-        return true;
-  		}
-  	} 
-  } catch(Exception e) {
-    return false;
-  }
+	try {
+		int type = event.type;
+		switch (type) {
+			case SWT.KeyDown: {
+				int keyCode = event.keyCode == 0? untranslateChar(event.character): untranslateKey(event.keyCode);
+				if(keyCode == 0) {
+					return false;
+				}
+				new Robot().keyPress(keyCode);
+				return true;
+			}
+			case SWT.KeyUp:
+			  int keyCode = event.keyCode == 0? untranslateChar(event.character): untranslateKey(event.keyCode);
+			  if(keyCode == 0) {
+			    return false;
+			  }
+				new Robot().keyRelease(keyCode);
+				return true;
+			case SWT.MouseMove: 
+				new Robot().mouseMove(event.x, event.y);
+				return true;
+			case SWT.MouseDown:
+			case SWT.MouseUp: {
+				int buttons;
+				switch (event.button) {
+					case 1: buttons = java.awt.event.InputEvent.BUTTON1_MASK; break;
+					case 2: buttons = java.awt.event.InputEvent.BUTTON2_MASK; break;
+					case 3: buttons = java.awt.event.InputEvent.BUTTON3_MASK; break;
+					default: return false;
+				}
+				if(type == SWT.MouseDown) {
+					new Robot().mousePress(buttons);
+				} else {
+					new Robot().mouseRelease(buttons);
+				}
+				return true;
+			}
+		} 
+	} catch(Exception e) {
+		return false;
+	}
 	return false;
 }
 
@@ -1988,50 +1991,50 @@ AWTEvent event;
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-  if(UIThreadUtils.isRealDispatch()) {
-    boolean result = UIThreadUtils.swingEventQueue.dispatchEvent();
-    UIThreadUtils.throwStoredException();
-    runDeferredEvents ();
-    return result || isDisposed();
-  }
-  if(event != null) {
-    AWTEvent awtEvent = event;
-    event = null;
-    try {
-      Object source = awtEvent.getSource();
-      if (awtEvent instanceof ActiveEvent) {
-        ((ActiveEvent)awtEvent).dispatch();
-      } else if(source instanceof Component) {
-        ((Component)source).dispatchEvent(awtEvent);
-      } else if(source instanceof MenuComponent) {
-        ((MenuComponent)source).dispatchEvent(awtEvent);
-      }
-    } catch(Throwable t) {
-      UIThreadUtils.storeException(t);
-    }
-    UIThreadUtils.throwStoredException();
-    return true;
-  }
-  if(SwingUtilities.isEventDispatchThread()) {
-    return isDisposed();
-  }
-  synchronized(UIThreadUtils.UI_LOCK) {
-    if(UIThreadUtils.exclusiveSectionCount == 0) {
-      return isDisposed();
-    }
-    try {
-      UIThreadUtils.UI_LOCK.notify();
-      UIThreadUtils.UI_LOCK.wait();
-    } catch(Exception e) {
-    }
-    UIThreadUtils.throwStoredException();
-  }
-  runDeferredEvents ();
+	if(UIThreadUtils.isRealDispatch()) {
+		boolean result = UIThreadUtils.swingEventQueue.dispatchEvent();
+		UIThreadUtils.throwStoredException();
+		runDeferredEvents ();
+		return result || isDisposed();
+	}
+	if(event != null) {
+		AWTEvent awtEvent = event;
+		event = null;
+		try {
+			Object source = awtEvent.getSource();
+			if (awtEvent instanceof ActiveEvent) {
+				((ActiveEvent)awtEvent).dispatch();
+			} else if(source instanceof Component) {
+				((Component)source).dispatchEvent(awtEvent);
+			} else if(source instanceof MenuComponent) {
+				((MenuComponent)source).dispatchEvent(awtEvent);
+			}
+		} catch(Throwable t) {
+			UIThreadUtils.storeException(t);
+		}
+		UIThreadUtils.throwStoredException();
+		return true;
+	}
+	if(SwingUtilities.isEventDispatchThread()) {
+		return isDisposed();
+	}
+	synchronized(UIThreadUtils.UI_LOCK) {
+		if(UIThreadUtils.exclusiveSectionCount == 0) {
+			return isDisposed();
+		}
+		try {
+			UIThreadUtils.UI_LOCK.notify();
+			UIThreadUtils.UI_LOCK.wait();
+		} catch(Exception e) {
+		}
+		UIThreadUtils.throwStoredException();
+	}
+	runDeferredEvents ();
 //		return true;
 //	}
 //	/*boolean result =*/ runAsyncMessages (false);
-//  System.err.println(synchronizer.getMessageCount());
-  return true;
+//	System.err.println(synchronizer.getMessageCount());
+	return true;
 }
 
 static synchronized void register (Display display) {
@@ -2178,11 +2181,11 @@ void removeBar (Menu menu) {
 
 Control removeControl (Component handle) {
 	if (handle == null) return null;
-  return (Control)componentToControlMap.remove(handle);
+	return (Control)componentToControlMap.remove(handle);
 }
 
 void removeMenuItem (MenuItem item) {
-  menuItemsList.remove(item);
+	menuItemsList.remove(item);
 }
 
 void removePopup (Menu menu) {
@@ -2196,9 +2199,9 @@ void removePopup (Menu menu) {
 }
 
 boolean runAsyncMessages (boolean all) {
-  if(synchronizer == null) {
-    return false;
-  }
+	if(synchronizer == null) {
+		return false;
+	}
 	return synchronizer.runAsyncMessages (all);
 }
 
@@ -2324,9 +2327,9 @@ public void sendPostExternalEventDispatchEvent () {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-  try {
-    new Robot().mouseMove(x, y);
-  } catch(Exception e) {}
+	try {
+		new Robot().mouseMove(x, y);
+	} catch(Exception e) {}
 }
 
 /**
@@ -2378,11 +2381,11 @@ public void setCursorLocation (Point point) {
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-//  if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
-//    Boolean data = (Boolean) value;
-//    runMessagesInIdle = data != null && data.booleanValue ();
-//    return;
-//  }
+//	if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
+//		Boolean data = (Boolean) value;
+//		runMessagesInIdle = data != null && data.booleanValue ();
+//		return;
+//	}
 	
 	/* Remove the key/value pair */
 	if (value == null) {
@@ -2567,28 +2570,28 @@ public final Consumer<Error> getErrorHandler () {
 public boolean sleep () {
 	checkDevice ();
 	if(UIThreadUtils.isRealDispatch()) {
-    return UIThreadUtils.swingEventQueue.sleep();
-  }
-  if(SwingUtilities.isEventDispatchThread()) {
-    boolean result = true;
-    UIThreadUtils.fakeDispatchingEDT = Thread.currentThread();
-    try {
-      event = Toolkit.getDefaultToolkit().getSystemEventQueue().getNextEvent();
-    } catch(InterruptedException e) {
-      result = false;
-    }
-    UIThreadUtils.fakeDispatchingEDT = null;
-    return result;
-  }
-  synchronized(UIThreadUtils.UI_LOCK) {
-    if(UIThreadUtils.exclusiveSectionCount == 0) {
-      try {
-        UIThreadUtils.UI_LOCK.wait();
-      } catch(Exception e) {
-      }
-    }
-    return UIThreadUtils.exclusiveSectionCount > 0;
-  }
+		return UIThreadUtils.swingEventQueue.sleep();
+	}
+	if(SwingUtilities.isEventDispatchThread()) {
+		boolean result = true;
+		UIThreadUtils.fakeDispatchingEDT = Thread.currentThread();
+		try {
+			event = Toolkit.getDefaultToolkit().getSystemEventQueue().getNextEvent();
+		} catch(InterruptedException e) {
+			result = false;
+		}
+		UIThreadUtils.fakeDispatchingEDT = null;
+		return result;
+	}
+	synchronized(UIThreadUtils.UI_LOCK) {
+		if(UIThreadUtils.exclusiveSectionCount == 0) {
+			try {
+				UIThreadUtils.UI_LOCK.wait();
+			} catch(Exception e) {
+			}
+		}
+		return UIThreadUtils.exclusiveSectionCount > 0;
+	}
 }
 
 /**
@@ -2615,7 +2618,7 @@ public boolean sleep () {
  */
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-  synchronizer.syncExec (runnable);
+	synchronizer.syncExec (runnable);
 }
 
 /**
@@ -2646,29 +2649,29 @@ public void syncExec (Runnable runnable) {
 public void timerExec (final int milliseconds, final Runnable runnable) {
 	checkDevice ();
 	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (milliseconds < 0) {
-    timerList.remove(runnable);
-    return;
-  }
-  timerList.add(runnable);
-  new Thread("Display.timerExecThread") {
-    public void run() {
-      try {
-        sleep(milliseconds);
-        boolean isRemoved = timerList.remove(runnable);
-        if(isRemoved) {
-          SwingUtilities.invokeLater(runnable);
-        }
-      } catch(Exception e) {}
-    }
-  }.start();
+	if (milliseconds < 0) {
+		timerList.remove(runnable);
+		return;
+	}
+	timerList.add(runnable);
+	new Thread("Display.timerExecThread") {
+		public void run() {
+			try {
+				sleep(milliseconds);
+				boolean isRemoved = timerList.remove(runnable);
+				if(isRemoved) {
+					SwingUtilities.invokeLater(runnable);
+				}
+			} catch(Exception e) {}
+		}
+	}.start();
 }
 
 static int translateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
 		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
 	}
-  // TODO: return translateChar or something
+	// TODO: return translateChar or something
 	return 0;
 }
 
@@ -2680,49 +2683,49 @@ static int untranslateKey (int key) {
 }
 
 static int untranslateChar(char c) {
-  if(c >= '0' && c <='9') {
-    return c;
-  }
-  char uc = Character.toUpperCase(c);
-  if(uc >= 'A' && uc <= 'Z') {
-    return uc;
-  }
-  switch(c) {
-  case '\n': return java.awt.event.KeyEvent.VK_ENTER;
-  case '\b': return java.awt.event.KeyEvent.VK_BACK_SPACE;
-  case '\t': return java.awt.event.KeyEvent.VK_TAB;
-  case ' ': return java.awt.event.KeyEvent.VK_SPACE;
-  case ',': return java.awt.event.KeyEvent.VK_COMMA;
-  case '-': return java.awt.event.KeyEvent.VK_MINUS;
-  case '.': return java.awt.event.KeyEvent.VK_PERIOD;
-  case ';': return java.awt.event.KeyEvent.VK_SEMICOLON;
-  case '=': return java.awt.event.KeyEvent.VK_EQUALS;
-  case '[': return java.awt.event.KeyEvent.VK_OPEN_BRACKET;
-  case '\\': return java.awt.event.KeyEvent.VK_BACK_SLASH;
-  case ']': return java.awt.event.KeyEvent.VK_CLOSE_BRACKET;
-  case '`': return java.awt.event.KeyEvent.VK_BACK_QUOTE;
-  case '\u00B4': return java.awt.event.KeyEvent.VK_QUOTE;
-  case '&': return java.awt.event.KeyEvent.VK_AMPERSAND;
-  case '*': return java.awt.event.KeyEvent.VK_ASTERISK;
-  case '"': return java.awt.event.KeyEvent.VK_QUOTEDBL;
-  case '<': return java.awt.event.KeyEvent.VK_LESS;
-  case '>': return java.awt.event.KeyEvent.VK_GREATER;
-  case '{': return java.awt.event.KeyEvent.VK_BRACELEFT;
-  case '}': return java.awt.event.KeyEvent.VK_BRACERIGHT;
-  case '@': return java.awt.event.KeyEvent.VK_AT;
-  case ':': return java.awt.event.KeyEvent.VK_COLON;
-  case '^': return java.awt.event.KeyEvent.VK_CIRCUMFLEX;
-  case '$': return java.awt.event.KeyEvent.VK_DOLLAR;
-  case '\u20AC': return java.awt.event.KeyEvent.VK_EURO_SIGN;
-  case '!': return java.awt.event.KeyEvent.VK_EXCLAMATION_MARK;
-  case '\u00A1': return java.awt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK;
-  case '(': return java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
-  case '#': return java.awt.event.KeyEvent.VK_NUMBER_SIGN;
-  case '+': return java.awt.event.KeyEvent.VK_PLUS;
-  case ')': return java.awt.event.KeyEvent.VK_RIGHT_PARENTHESIS;
-  case '_': return java.awt.event.KeyEvent.VK_UNDERSCORE;
-  }
-  return 0;
+	if(c >= '0' && c <='9') {
+		return c;
+	}
+	char uc = Character.toUpperCase(c);
+	if(uc >= 'A' && uc <= 'Z') {
+		return uc;
+	}
+	switch(c) {
+	case '\n': return java.awt.event.KeyEvent.VK_ENTER;
+	case '\b': return java.awt.event.KeyEvent.VK_BACK_SPACE;
+	case '\t': return java.awt.event.KeyEvent.VK_TAB;
+	case ' ': return java.awt.event.KeyEvent.VK_SPACE;
+	case ',': return java.awt.event.KeyEvent.VK_COMMA;
+	case '-': return java.awt.event.KeyEvent.VK_MINUS;
+	case '.': return java.awt.event.KeyEvent.VK_PERIOD;
+	case ';': return java.awt.event.KeyEvent.VK_SEMICOLON;
+	case '=': return java.awt.event.KeyEvent.VK_EQUALS;
+	case '[': return java.awt.event.KeyEvent.VK_OPEN_BRACKET;
+	case '\\': return java.awt.event.KeyEvent.VK_BACK_SLASH;
+	case ']': return java.awt.event.KeyEvent.VK_CLOSE_BRACKET;
+	case '`': return java.awt.event.KeyEvent.VK_BACK_QUOTE;
+	case '\u00B4': return java.awt.event.KeyEvent.VK_QUOTE;
+	case '&': return java.awt.event.KeyEvent.VK_AMPERSAND;
+	case '*': return java.awt.event.KeyEvent.VK_ASTERISK;
+	case '"': return java.awt.event.KeyEvent.VK_QUOTEDBL;
+	case '<': return java.awt.event.KeyEvent.VK_LESS;
+	case '>': return java.awt.event.KeyEvent.VK_GREATER;
+	case '{': return java.awt.event.KeyEvent.VK_BRACELEFT;
+	case '}': return java.awt.event.KeyEvent.VK_BRACERIGHT;
+	case '@': return java.awt.event.KeyEvent.VK_AT;
+	case ':': return java.awt.event.KeyEvent.VK_COLON;
+	case '^': return java.awt.event.KeyEvent.VK_CIRCUMFLEX;
+	case '$': return java.awt.event.KeyEvent.VK_DOLLAR;
+	case '\u20AC': return java.awt.event.KeyEvent.VK_EURO_SIGN;
+	case '!': return java.awt.event.KeyEvent.VK_EXCLAMATION_MARK;
+	case '\u00A1': return java.awt.event.KeyEvent.VK_INVERTED_EXCLAMATION_MARK;
+	case '(': return java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
+	case '#': return java.awt.event.KeyEvent.VK_NUMBER_SIGN;
+	case '+': return java.awt.event.KeyEvent.VK_PLUS;
+	case ')': return java.awt.event.KeyEvent.VK_RIGHT_PARENTHESIS;
+	case '_': return java.awt.event.KeyEvent.VK_UNDERSCORE;
+	}
+	return 0;
 }
 
 /**
@@ -2741,7 +2744,7 @@ public void update() {
 	Shell[] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-//    if (!shell.isDisposed ()) shell.update (true);
+//		if (!shell.isDisposed ()) shell.update (true);
 		if (!shell.isDisposed ()) shell.update ();
 	}
 }
@@ -2764,18 +2767,18 @@ public void wake () {
 }
 
 void wakeThread () {
-  SwingUtilities.invokeLater(new Runnable() {
-    public void run() {
-      UIThreadUtils.startExclusiveSection(Display.this);
-      try {
-        runAsyncMessages (true);
-      } catch(Throwable t) {
-        UIThreadUtils.storeException(t);
-      }
-      UIThreadUtils.stopExclusiveSection();
-      UIThreadUtils.throwStoredException();
-    }
-  });
+	SwingUtilities.invokeLater(new Runnable() {
+		public void run() {
+			UIThreadUtils.startExclusiveSection(Display.this);
+			try {
+				runAsyncMessages (true);
+			} catch(Throwable t) {
+				UIThreadUtils.storeException(t);
+			}
+			UIThreadUtils.stopExclusiveSection();
+			UIThreadUtils.throwStoredException();
+		}
+	});
 }
 
 }

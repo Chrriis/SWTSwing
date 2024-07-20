@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -40,46 +43,46 @@ public class ToolTip extends Widget {
 	Shell parent;
 	TrayItem item;
 	String text = "";
-  String message = "";
+	String message = "";
 	int x;
-  int y;
+	int y;
 	boolean autoHide = true, hasLocation, visible;
 
-  /**
-   * Constructs a new instance of this class given its parent
-   * and a style value describing its behavior and appearance.
-   * <p>
-   * The style value is either one of the style constants defined in
-   * class <code>SWT</code> which is applicable to instances of this
-   * class, or must be built by <em>bitwise OR</em>'ing together 
-   * (that is, using the <code>int</code> "|" operator) two or more
-   * of those <code>SWT</code> style constants. The class description
-   * lists the style constants that are applicable to the class.
-   * Style bits are also inherited from superclasses.
-   * </p>
-   *
-   * @param parent a composite control which will be the parent of the new instance (cannot be null)
-   * @param style the style of control to construct
-   *
-   * @exception IllegalArgumentException <ul>
-   *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
-   * </ul>
-   * @exception SWTException <ul>
-   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
-   *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
-   * </ul>
-   *
-   * @see SWT#ICON_ERROR
-   * @see SWT#ICON_INFORMATION
-   * @see SWT#ICON_WARNING
-   * @see Widget#checkSubclass
-   * @see Widget#getStyle
-   */
+	/**
+	 * Constructs a new instance of this class given its parent
+	 * and a style value describing its behavior and appearance.
+	 * <p>
+	 * The style value is either one of the style constants defined in
+	 * class <code>SWT</code> which is applicable to instances of this
+	 * class, or must be built by <em>bitwise OR</em>'ing together 
+	 * (that is, using the <code>int</code> "|" operator) two or more
+	 * of those <code>SWT</code> style constants. The class description
+	 * lists the style constants that are applicable to the class.
+	 * Style bits are also inherited from superclasses.
+	 * </p>
+	 *
+	 * @param parent a composite control which will be the parent of the new instance (cannot be null)
+	 * @param style the style of control to construct
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+	 *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+	 * </ul>
+	 *
+	 * @see SWT#ICON_ERROR
+	 * @see SWT#ICON_INFORMATION
+	 * @see SWT#ICON_WARNING
+	 * @see Widget#checkSubclass
+	 * @see Widget#getStyle
+	 */
 public ToolTip (Shell parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	checkOrientation (parent);
-  Utils.notImplemented();
+	Utils.notImplemented();
 //	parent.createToolTip (this);
 }
 
@@ -118,7 +121,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void destroyWidget () {
-  Utils.notImplemented();
+	Utils.notImplemented();
 //	if (parent != null) parent.destroyToolTip (this);
 	releaseHandle ();
 }
@@ -206,7 +209,7 @@ public String getText () {
  */
 public boolean getVisible () {
 	checkWidget();
-  Utils.notImplemented(); return false;
+	Utils.notImplemented(); return false;
 //	if (OS.IsWinCE) return false;
 //	if (item != null) return visible;
 //	int hwndToolTip = hwndToolTip ();
@@ -254,7 +257,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (item == null) {
 		if (autoHide) {
-      Utils.notImplemented();
+			Utils.notImplemented();
 //			int hwndToolTip = hwndToolTip ();
 //			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 //				TOOLINFO lpti = new TOOLINFO ();
@@ -430,27 +433,27 @@ public void setText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-  if (visible == getVisible ()) return;
-  if(item == null) {
-    Utils.notImplemented();
-  } else {
-    if(visible) {
-      MessageType messageType = null;
-      if((style & SWT.ICON_ERROR) != 0) {
-        messageType = MessageType.ERROR;
-      } else if((style & SWT.ICON_WARNING) != 0) {
-        messageType = MessageType.WARNING;
-      } else if((style & SWT.ICON_INFORMATION) != 0) {
-        messageType = MessageType.INFO;
-      } else {
-        messageType = MessageType.NONE;
-      }
-      item.trayIcon.displayMessage(text, message, messageType);
-      sendEvent (SWT.Show);
-    } else {
-      Utils.notImplemented();
-    }
-  }
+	if (visible == getVisible ()) return;
+	if(item == null) {
+		Utils.notImplemented();
+	} else {
+		if(visible) {
+			MessageType messageType = null;
+			if((style & SWT.ICON_ERROR) != 0) {
+				messageType = MessageType.ERROR;
+			} else if((style & SWT.ICON_WARNING) != 0) {
+				messageType = MessageType.WARNING;
+			} else if((style & SWT.ICON_INFORMATION) != 0) {
+				messageType = MessageType.INFO;
+			} else {
+				messageType = MessageType.NONE;
+			}
+			item.trayIcon.displayMessage(text, message, messageType);
+			sendEvent (SWT.Show);
+		} else {
+			Utils.notImplemented();
+		}
+	}
 //	if (OS.IsWinCE) return;
 //	if (visible == getVisible ()) return;
 //	if (item == null) {

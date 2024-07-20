@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -151,7 +154,7 @@ static int checkStyle (int style) {
 }
 
 Container createHandle () {
-  return (Container)CSlider.Factory.newInstance(this, style);
+	return (Container)CSlider.Factory.newInstance(this, style);
 }
 
 /**
@@ -168,7 +171,7 @@ Container createHandle () {
  */
 public int getIncrement () {
 	checkWidget ();
-  return ((CSlider)handle).getUnitIncrement();
+	return ((CSlider)handle).getUnitIncrement();
 }
 
 /**
@@ -183,7 +186,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-  return ((CSlider)handle).getMaximum();
+	return ((CSlider)handle).getMaximum();
 }
 
 /**
@@ -198,7 +201,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-  return ((CSlider)handle).getMinimum();
+	return ((CSlider)handle).getMinimum();
 }
 
 /**
@@ -215,7 +218,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-  return ((CSlider)handle).getBlockIncrement();
+	return ((CSlider)handle).getBlockIncrement();
 }
 
 /**
@@ -230,7 +233,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-  return ((CSlider)handle).getValue();
+	return ((CSlider)handle).getValue();
 }
 
 /**
@@ -246,7 +249,7 @@ public int getSelection () {
  */
 public int getThumb () {
 	checkWidget ();
-  return ((CSlider)handle).getVisibleAmount();
+	return ((CSlider)handle).getVisibleAmount();
 }
 
 /**
@@ -290,7 +293,7 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-  ((CSlider)handle).setUnitIncrement(value);
+	((CSlider)handle).setUnitIncrement(value);
 }
 
 /**
@@ -309,7 +312,7 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget ();
 	if (value < 0) return;
-  ((CSlider)handle).setMaximum(value);
+	((CSlider)handle).setMaximum(value);
 }
 
 /**
@@ -328,7 +331,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget ();
 	if (value < 0) return;
-  ((CSlider)handle).setMinimum(value);
+	((CSlider)handle).setMinimum(value);
 }
 
 /**
@@ -347,7 +350,7 @@ public void setMinimum (int value) {
 public void setPageIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-  ((CSlider)handle).setBlockIncrement(value);
+	((CSlider)handle).setBlockIncrement(value);
 }
 
 /**
@@ -364,7 +367,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-  ((CSlider)handle).setValue(value);
+	((CSlider)handle).setValue(value);
 }
 
 /**
@@ -384,7 +387,7 @@ public void setSelection (int value) {
 public void setThumb (int value) {
 	checkWidget ();
 	if (value < 1) return;
-  ((CSlider)handle).setVisibleAmount(value);
+	((CSlider)handle).setVisibleAmount(value);
 }
 
 /**
@@ -415,56 +418,56 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (thumb < 1) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
-  CSlider cSlider = (CSlider)handle;
-  cSlider.setValues(selection, thumb, minimum, maximum);
-  cSlider.setUnitIncrement(increment);
-  cSlider.setBlockIncrement(increment);
+	CSlider cSlider = (CSlider)handle;
+	cSlider.setValues(selection, thumb, minimum, maximum);
+	cSlider.setUnitIncrement(increment);
+	cSlider.setBlockIncrement(increment);
 }
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED:
-      Event event = new Event ();
-      event.detail = SWT.DRAG;
-      switch(((AdjustmentEvent)e).getAdjustmentType()) {
-      case AdjustmentEvent.BLOCK_DECREMENT:
-        event.detail = SWT.PAGE_DOWN;
-        break;
-      case AdjustmentEvent.BLOCK_INCREMENT:
-        event.detail = SWT.PAGE_UP;
-        break;
-      case AdjustmentEvent.UNIT_DECREMENT:
-        event.detail = SWT.ARROW_DOWN;
-        break;
-      case AdjustmentEvent.UNIT_INCREMENT:
-        event.detail = SWT.ARROW_UP;
-        break;
-      }
-      sendEvent (SWT.Selection, event);
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED:
+			Event event = new Event ();
+			event.detail = SWT.DRAG;
+			switch(((AdjustmentEvent)e).getAdjustmentType()) {
+			case AdjustmentEvent.BLOCK_DECREMENT:
+				event.detail = SWT.PAGE_DOWN;
+				break;
+			case AdjustmentEvent.BLOCK_INCREMENT:
+				event.detail = SWT.PAGE_UP;
+				break;
+			case AdjustmentEvent.UNIT_DECREMENT:
+				event.detail = SWT.ARROW_DOWN;
+				break;
+			case AdjustmentEvent.UNIT_INCREMENT:
+				event.detail = SWT.ARROW_UP;
+				break;
+			}
+			sendEvent (SWT.Selection, event);
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

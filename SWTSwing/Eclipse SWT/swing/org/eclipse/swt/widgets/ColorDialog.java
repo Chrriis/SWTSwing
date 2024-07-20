@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -115,25 +118,25 @@ public RGB getRGB () {
  * </ul>
  */
 public RGB open () {
-//  JColorChooser cc = new JColorChooser();
-//  cc.addPropertyChangeListener(new PropertyChangeListener() {
-//    public void propertyChange(PropertyChangeEvent e) {
-//      if("color".equals(e.getPropertyName())) {
-//        Color color = (Color)e.getNewValue();
-//        if(color != null) {
-//          rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
-//        }
-//      }
-//    }
-//  });
-  java.awt.Color color = null;
-  if(rgb != null) {
-    color = new java.awt.Color(rgb.red, rgb.green, rgb.blue);
-  }
-  color = JColorChooser.showDialog(getParent().handle, null, color);
-  if(color == null) return null;
-  rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
-  return rgb;
+//	JColorChooser cc = new JColorChooser();
+//	cc.addPropertyChangeListener(new PropertyChangeListener() {
+//		public void propertyChange(PropertyChangeEvent e) {
+//			if("color".equals(e.getPropertyName())) {
+//				Color color = (Color)e.getNewValue();
+//				if(color != null) {
+//					rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
+//				}
+//			}
+//		}
+//	});
+	java.awt.Color color = null;
+	if(rgb != null) {
+		color = new java.awt.Color(rgb.red, rgb.green, rgb.blue);
+	}
+	color = JColorChooser.showDialog(getParent().handle, null, color);
+	if(color == null) return null;
+	rgb = new RGB(color.getRed(), color.getGreen(), color.getBlue());
+	return rgb;
 }
 
 /**

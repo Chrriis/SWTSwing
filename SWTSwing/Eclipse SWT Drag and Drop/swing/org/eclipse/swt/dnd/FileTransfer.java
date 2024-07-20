@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -69,24 +72,24 @@ public void javaToNative(Object object, TransferData transferData) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String[] fileNames = (String[]) object;
-  final List fileList = new ArrayList(fileNames.length);
-  for(int i=0; i<fileNames.length; i++) {
-    fileList.add(new File(fileNames[i]));
-  }
-  transferData.transferable = new Transferable() {
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-      if(!isDataFlavorSupported(flavor)) {
-        throw new UnsupportedFlavorException(flavor);
-      }
-      return fileList;
-    }
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
-      return getDataFlavor().equals(flavor);
-    }
-    public DataFlavor[] getTransferDataFlavors() {
-      return new DataFlavor[] {getDataFlavor()};
-    }
-  };
+	final List fileList = new ArrayList(fileNames.length);
+	for(int i=0; i<fileNames.length; i++) {
+		fileList.add(new File(fileNames[i]));
+	}
+	transferData.transferable = new Transferable() {
+		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+			if(!isDataFlavorSupported(flavor)) {
+				throw new UnsupportedFlavorException(flavor);
+			}
+			return fileList;
+		}
+		public boolean isDataFlavorSupported(DataFlavor flavor) {
+			return getDataFlavor().equals(flavor);
+		}
+		public DataFlavor[] getTransferDataFlavors() {
+			return new DataFlavor[] {getDataFlavor()};
+		}
+	};
 }
 
 /**
@@ -101,14 +104,14 @@ public void javaToNative(Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
-  if (!isSupportedType(transferData) || transferData.transferable == null) return null;
-  List fileList = (List)super.nativeToJava(transferData);
-  File[] files = (File[])fileList.toArray(new File[0]);
-  String[] fileNames = new String[files.length];
-  for(int i=0; i<fileNames.length; i++) {
-    fileNames[i] = files[i].getAbsolutePath();
-  }
-  return fileNames;
+	if (!isSupportedType(transferData) || transferData.transferable == null) return null;
+	List fileList = (List)super.nativeToJava(transferData);
+	File[] files = (File[])fileList.toArray(new File[0]);
+	String[] fileNames = new String[files.length];
+	for(int i=0; i<fileNames.length; i++) {
+		fileNames[i] = files[i].getAbsolutePath();
+	}
+	return fileNames;
 }
 
 boolean checkFile(Object object) {
@@ -125,7 +128,7 @@ protected boolean validate(Object object) {
 }
 
 protected DataFlavor getDataFlavor() {
-  return DataFlavor.javaFileListFlavor;
+	return DataFlavor.javaFileListFlavor;
 }
 
 }

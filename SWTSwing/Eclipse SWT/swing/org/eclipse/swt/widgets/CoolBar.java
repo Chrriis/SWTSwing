@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -51,7 +54,7 @@ import org.eclipse.swt.graphics.*;
 
 public class CoolBar extends Composite {
 	ArrayList itemList;
-  ArrayList originalItemList;
+	ArrayList originalItemList;
 //	CoolItem [] originalItems;
 //	boolean locked;
 //	boolean ignoreResize;
@@ -172,16 +175,16 @@ protected void checkSubclass () {
 //}
 
 boolean autoAddChildren() {
-  return false;
+	return false;
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~(CANVAS | THEME_BACKGROUND);
+	super.createHandleInit();
+	state &= ~(CANVAS | THEME_BACKGROUND);
 }
 
 protected Container createHandle () {
-  return (Container)CCoolBar.Factory.newInstance(this, style);
+	return (Container)CCoolBar.Factory.newInstance(this, style);
 }
 
 //void createHandle () {
@@ -207,12 +210,12 @@ protected Container createHandle () {
 void createItem (CoolItem item, int index) {
 	int count = getItemCount();
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-  itemList.add(index, item);
+	itemList.add(index, item);
 //	if (index == 0 && count > 0) {
 //		getItem (0).setWrap (false); 
 //	}
-  handle.add(item.handle, index);
-  originalItemList.add(index, item);
+	handle.add(item.handle, index);
+	originalItemList.add(index, item);
 //	/* Insert the item */
 //	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
 //		error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -236,32 +239,32 @@ void createItem (CoolItem item, int index) {
 void createWidget () {
 	super.createWidget ();
 	itemList = new ArrayList(4);
-  originalItemList = new ArrayList(4);
+	originalItemList = new ArrayList(4);
 //	originalItems = new CoolItem [0];
 }
 
 void destroyItem (CoolItem item) {
-  if(!itemList.remove(item)) {
-    return;
-  }
-  Component[] components = handle.getComponents();
-  for(int i=0; i<components.length; i++) {
-    if(components[i] == item.handle) {
-      if(i + 1 < components.length && ((CCoolItem)item.handle).isWrapped()) {
-        ((CCoolItem)components[i+1]).setWrapped(true);
-      }
-      handle.remove(i);
-      ((JComponent)handle).revalidate();
-      handle.repaint();
-      break;
-    }
-  }
-  originalItemList.remove(item);
-  if(itemList.isEmpty()) {
-    itemList = new ArrayList(4);
-    originalItemList = new ArrayList(4);
-  }
-//  int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
+	if(!itemList.remove(item)) {
+		return;
+	}
+	Component[] components = handle.getComponents();
+	for(int i=0; i<components.length; i++) {
+		if(components[i] == item.handle) {
+			if(i + 1 < components.length && ((CCoolItem)item.handle).isWrapped()) {
+				((CCoolItem)components[i+1]).setWrapped(true);
+			}
+			handle.remove(i);
+			((JComponent)handle).revalidate();
+			handle.repaint();
+			break;
+		}
+	}
+	originalItemList.remove(item);
+	if(itemList.isEmpty()) {
+		itemList = new ArrayList(4);
+		originalItemList = new ArrayList(4);
+	}
+//	int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
 //	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 //	if (count != 0) {
 //		int lastIndex = getLastIndexOfRow (index);
@@ -372,15 +375,15 @@ public CoolItem getItem (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-  Component component = handle.getComponent(index);
-  for(int i=itemList.size()-1; i>=0; i--) {
-    CoolItem coolItem = (CoolItem)itemList.get(i);
-    if(coolItem.handle == component) {
-      return coolItem;
-    }
-  }
-  // Should not happen
-  return null;
+	Component component = handle.getComponent(index);
+	for(int i=itemList.size()-1; i>=0; i--) {
+		CoolItem coolItem = (CoolItem)itemList.get(i);
+		if(coolItem.handle == component) {
+			return coolItem;
+		}
+	}
+	// Should not happen
+	return null;
 }
 
 /**
@@ -421,7 +424,7 @@ public int getItemCount () {
  */
 public int [] getItemOrder () {
 	checkWidget ();
-  Utils.notImplemented(); return null;
+	Utils.notImplemented(); return null;
 //	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 //	int [] indices = new int [count];
 //	REBARBANDINFO rbBand = new REBARBANDINFO ();
@@ -460,21 +463,21 @@ public int [] getItemOrder () {
 public CoolItem [] getItems () {
 	checkWidget ();
 	int count = getItemCount();
-  CoolItem[] coolItems = new CoolItem[count];
-  ArrayList itemList = (ArrayList)this.itemList.clone();
-  Component[] components = handle.getComponents();
-  for(int i=0; i<components.length; i++) {
-    Component component = components[i];
-    for(int j=itemList.size()-1; j>=0; j--) {
-      CoolItem coolItem = (CoolItem)itemList.get(j);
-      if(coolItem.handle == component) {
-        itemList.remove(j);
-        coolItems[i] = coolItem;
-        break;
-      }
-    }
-  }
-  return coolItems;
+	CoolItem[] coolItems = new CoolItem[count];
+	ArrayList itemList = (ArrayList)this.itemList.clone();
+	Component[] components = handle.getComponents();
+	for(int i=0; i<components.length; i++) {
+		Component component = components[i];
+		for(int j=itemList.size()-1; j>=0; j--) {
+			CoolItem coolItem = (CoolItem)itemList.get(j);
+			if(coolItem.handle == component) {
+				itemList.remove(j);
+				coolItems[i] = coolItem;
+				break;
+			}
+		}
+	}
+	return coolItems;
 }
 
 /**
@@ -491,14 +494,14 @@ public CoolItem [] getItems () {
  */
 public Point [] getItemSizes () {
 	checkWidget ();	
-  Component[] components = handle.getComponents();
+	Component[] components = handle.getComponents();
 	int count = components.length;
-  Point [] sizes = new Point [count];
-  for(int i=0; i<count; i++) {
-    java.awt.Dimension size = components[i].getSize();
-    sizes[i] = new Point(size.width, size.height);
-  }
-  return sizes;
+	Point [] sizes = new Point [count];
+	for(int i=0; i<count; i++) {
+		java.awt.Dimension size = components[i].getSize();
+		sizes[i] = new Point(size.width, size.height);
+	}
+	return sizes;
 }
 
 //int getLastIndexOfRow (int index) {
@@ -559,18 +562,18 @@ public boolean getLocked () {
  */
 public int [] getWrapIndices () {
 	checkWidget ();
-  Component[] components = handle.getComponents();
-  ArrayList wrapIndiceList = new ArrayList();
-  for(int i=1; i<components.length; i++) {
-    if(((JCoolBarItem)components[i]).isWrapped()) {
-    	wrapIndiceList.add(Integer.valueOf(i));
-    }
-  }
-  int[] indices = new int[wrapIndiceList.size()];
-  for(int i=0; i<indices.length; i++) {
-    indices[i] = ((Integer)wrapIndiceList.get(i)).intValue();
-  }
-  return indices;
+	Component[] components = handle.getComponents();
+	ArrayList wrapIndiceList = new ArrayList();
+	for(int i=1; i<components.length; i++) {
+		if(((JCoolBarItem)components[i]).isWrapped()) {
+			wrapIndiceList.add(Integer.valueOf(i));
+		}
+	}
+	int[] indices = new int[wrapIndiceList.size()];
+	for(int i=0; i<indices.length; i++) {
+		indices[i] = ((Integer)wrapIndiceList.get(i)).intValue();
+	}
+	return indices;
 }
 
 /**
@@ -595,13 +598,13 @@ public int indexOf (CoolItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-  Component[] components = handle.getComponents();
-  for(int i=0; i<components.length; i++) {
-    if(components[i] == item.handle) {
-      return i;
-    }
-  }
-  return -1;
+	Component[] components = handle.getComponents();
+	for(int i=0; i<components.length; i++) {
+		if(components[i] == item.handle) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 //void resizeToPreferredWidth (int index) {
@@ -634,29 +637,29 @@ public int indexOf (CoolItem item) {
 //}	
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-  java.awt.Dimension size = handle.getPreferredSize();
-  return new Point(size.width, size.height);
+	java.awt.Dimension size = handle.getPreferredSize();
+	return new Point(size.width, size.height);
 }
 
 void releaseChildren (boolean destroy) {
-  if(itemList != null) {
-    for (int i=itemList.size()-1; i>=0; i--) {
-      CoolItem item = (CoolItem)itemList.get(i);
-      if (item != null && !item.isDisposed ()) {
-        item.release (false);
-      }
-    }
-    itemList = null;
-    originalItemList = null;
-  }
-  super.releaseChildren (destroy);
+	if(itemList != null) {
+		for (int i=itemList.size()-1; i>=0; i--) {
+			CoolItem item = (CoolItem)itemList.get(i);
+			if (item != null && !item.isDisposed ()) {
+				item.release (false);
+			}
+		}
+		itemList = null;
+		originalItemList = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {
-  if(isDisposed()) return;
+	if(isDisposed()) return;
 	super.removeControl (control);
-  int count = itemList.size();
-  for (int i=0; i<count; i++) {
+	int count = itemList.size();
+	for (int i=0; i<count; i++) {
 		CoolItem item = (CoolItem)itemList.get(i);
 		if (item != null && item.control == control) {
 			item.setControl (null);
@@ -741,7 +744,7 @@ void removeControl (Control control) {
 public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
 	checkWidget ();
 	setRedraw (false);
-  Utils.notImplemented();
+	Utils.notImplemented();
 //	setItemOrder (itemOrder);
 //	setWrapIndices (wrapIndices);
 //	setItemSizes (sizes);
@@ -852,7 +855,7 @@ public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes)
  */
 public void setLocked (boolean locked) {
 	checkWidget ();
-  ((CCoolBar)handle).setLocked(locked);
+	((CCoolBar)handle).setLocked(locked);
 }
 
 /**
@@ -879,8 +882,8 @@ public void setWrapIndices (int [] indices) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}	
 	}
-  setRedraw (false);
-  ((CCoolBar)handle).setWrappedIndices(indices);
+	setRedraw (false);
+	((CCoolBar)handle).setWrappedIndices(indices);
 	setRedraw (true);
 }
 

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -49,7 +52,7 @@ import org.eclipse.swt.internal.swing.Utils;
  */
 public class TreeColumn extends Item {
 	Tree parent;
-  CTreeColumn handle;
+	CTreeColumn handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -85,7 +88,7 @@ public class TreeColumn extends Item {
  */
 public TreeColumn (Tree parent, int style) {
 	super (parent, checkStyle (style));
-  handle = createHandle();
+	handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, parent.getColumnCount ());
 }
@@ -126,7 +129,7 @@ public TreeColumn (Tree parent, int style) {
  */
 public TreeColumn (Tree parent, int style, int index) {
 	super (parent, checkStyle (style));
-  handle = createHandle();
+	handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, index);
 }
@@ -199,12 +202,12 @@ protected void checkSubclass () {
 }
 
 CTreeColumn createHandle () {
-  return CTreeColumn.Factory.newInstance(this, style);
+	return CTreeColumn.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -250,8 +253,8 @@ boolean moveable;
  * @since 3.2
  */
 public boolean getMoveable () {
-  checkWidget ();
-  return moveable;
+	checkWidget ();
+	return moveable;
 }
 
 String getNameText () {
@@ -287,7 +290,7 @@ public Tree getParent () {
  */
 public boolean getResizable () {
 	checkWidget ();
-  return ((TableColumn)handle).getResizable();
+	return ((TableColumn)handle).getResizable();
 }
 
 /**
@@ -304,8 +307,8 @@ public boolean getResizable () {
  * @since 3.2
  */
 public String getToolTipText () {
-  checkWidget();
-  return handle.getToolTipText();
+	checkWidget();
+	return handle.getToolTipText();
 }
 
 /**
@@ -320,7 +323,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-  return ((TableColumn)handle).getWidth();
+	return ((TableColumn)handle).getWidth();
 }
 
 /**
@@ -335,14 +338,14 @@ public int getWidth () {
  *
  */
 public void pack () {
-  checkWidget ();
-  int index = parent.indexOf (this);
-  if (index == -1) return;
-//  int oldWidth = getWidth();
-  CTree cTree = (CTree)parent.handle;
-  int newWidth = cTree.getPreferredColumnWidth(index);
-  // TODO: check why in the old SWTSwing, +2 is added.
-  cTree.getColumnModel().getColumn(index).setPreferredWidth(newWidth + 2);
+	checkWidget ();
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+//	int oldWidth = getWidth();
+	CTree cTree = (CTree)parent.handle;
+	int newWidth = cTree.getPreferredColumnWidth(index);
+	// TODO: check why in the old SWTSwing, +2 is added.
+	cTree.getColumnModel().getColumn(index).setPreferredWidth(newWidth + 2);
 //	checkWidget ();
 //	int columnWidth = 0;
 //	int hwnd = parent.handle;
@@ -400,8 +403,8 @@ public void pack () {
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 /**
@@ -473,10 +476,10 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-  if ((style & SWT.LEFT) == SWT.LEFT) handle.setAlignment(SwingConstants.LEFT);
-  if ((style & SWT.CENTER) == SWT.CENTER) handle.setAlignment(SwingConstants.CENTER);
-  if ((style & SWT.RIGHT) == SWT.RIGHT) handle.setAlignment(SwingConstants.RIGHT);
-  // TODO: notify change
+	if ((style & SWT.LEFT) == SWT.LEFT) handle.setAlignment(SwingConstants.LEFT);
+	if ((style & SWT.CENTER) == SWT.CENTER) handle.setAlignment(SwingConstants.CENTER);
+	if ((style & SWT.RIGHT) == SWT.RIGHT) handle.setAlignment(SwingConstants.RIGHT);
+	// TODO: notify change
 }
 
 public void setImage (Image image) {
@@ -487,8 +490,8 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-  handle.setIcon(image == null? null: new ImageIcon(image.handle));
-  // TODO: notify repaint
+	handle.setIcon(image == null? null: new ImageIcon(image.handle));
+	// TODO: notify repaint
 }
 
 /**
@@ -513,8 +516,8 @@ public void setImage (Image image) {
  * @since 3.2
  */
 public void setMoveable (boolean moveable) {
-  checkWidget ();
-  this.moveable = moveable;
+	checkWidget ();
+	this.moveable = moveable;
 }
 
 /**
@@ -531,16 +534,16 @@ public void setMoveable (boolean moveable) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget ();
-  ((TableColumn)handle).setResizable(resizable);
+	((TableColumn)handle).setResizable(resizable);
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (string.equals (text)) return;
+	if (string.equals (text)) return;
 	super.setText (string);
-  // TODO: check what happens with mnemonics
-  ((TableColumn)handle).setHeaderValue(string);
+	// TODO: check what happens with mnemonics
+	((TableColumn)handle).setHeaderValue(string);
 }
 
 /**
@@ -557,14 +560,14 @@ public void setText (String string) {
  * @since 3.2
  */
 public void setToolTipText (String string) {
-  checkWidget();
-  handle.setToolTipText(string);
-//  toolTipText = string;
-//  int hwndHeaderToolTip = parent.headerToolTipHandle;
-//  if (hwndHeaderToolTip == 0) {
-//    parent.createHeaderToolTips ();
-//    parent.updateHeaderToolTips ();
-//  }
+	checkWidget();
+	handle.setToolTipText(string);
+//	toolTipText = string;
+//	int hwndHeaderToolTip = parent.headerToolTipHandle;
+//	if (hwndHeaderToolTip == 0) {
+//		parent.createHeaderToolTips ();
+//		parent.updateHeaderToolTips ();
+//	}
 }
 
 /**
@@ -584,66 +587,66 @@ public void setWidth (int width) {
 }
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case java.awt.event.MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.Selection)) return; break;
-  }
-  if(isDisposed()) {
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    return;
-  }
-  try {
-    switch(id) {
-    case java.awt.event.MouseEvent.MOUSE_CLICKED: {
-      sendEvent(SWT.Selection);
-      break;
-    }
-    }
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case java.awt.event.MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.Selection)) return; break;
+	}
+	if(isDisposed()) {
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		return;
+	}
+	try {
+		switch(id) {
+		case java.awt.event.MouseEvent.MOUSE_CLICKED: {
+			sendEvent(SWT.Selection);
+			break;
+		}
+		}
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof PropertyChangeEvent) {
-    if(!hooks(SWT.Resize) && !hooks(SWT.Move) || !"width".equals(((PropertyChangeEvent)e).getPropertyName())) { return; }
-  } else if(e instanceof TableColumnModelEvent) {
-    if(!hooks(SWT.Move)) { return; }
-  } else {
-    return;
-  }
-  if(isDisposed()) {
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    return;
-  }
-  try {
-    if(e instanceof PropertyChangeEvent) {
-      String propertyName = ((PropertyChangeEvent)e).getPropertyName();
-      if("width".equals(propertyName)) {
-        sendEvent(SWT.Resize);
-        int columnCount = parent.getColumnCount();
-        for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
-          parent.getColumn(i).sendEvent(SWT.Move);
-        }
-      }
-    } else if(e instanceof TableColumnModelEvent) {
-      sendEvent(SWT.Move);
-    }
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof PropertyChangeEvent) {
+		if(!hooks(SWT.Resize) && !hooks(SWT.Move) || !"width".equals(((PropertyChangeEvent)e).getPropertyName())) { return; }
+	} else if(e instanceof TableColumnModelEvent) {
+		if(!hooks(SWT.Move)) { return; }
+	} else {
+		return;
+	}
+	if(isDisposed()) {
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		return;
+	}
+	try {
+		if(e instanceof PropertyChangeEvent) {
+			String propertyName = ((PropertyChangeEvent)e).getPropertyName();
+			if("width".equals(propertyName)) {
+				sendEvent(SWT.Resize);
+				int columnCount = parent.getColumnCount();
+				for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
+					parent.getColumn(i).sendEvent(SWT.Move);
+				}
+			}
+		} else if(e instanceof TableColumnModelEvent) {
+			sendEvent(SWT.Move);
+		}
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

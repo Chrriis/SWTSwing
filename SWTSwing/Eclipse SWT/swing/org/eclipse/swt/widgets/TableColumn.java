@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -45,7 +48,7 @@ import org.eclipse.swt.internal.swing.UIThreadUtils;
  */
 public class TableColumn extends Item {
 	Table parent;
-  CTableColumn handle;
+	CTableColumn handle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -81,7 +84,7 @@ public class TableColumn extends Item {
  */
 public TableColumn (Table parent, int style) {
 	super (parent, checkStyle (style));
-  handle = createHandle();
+	handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, parent.getColumnCount ());
 }
@@ -122,7 +125,7 @@ public TableColumn (Table parent, int style) {
  */
 public TableColumn (Table parent, int style, int index) {
 	super (parent, checkStyle (style));
-  handle = createHandle();
+	handle = createHandle();
 	this.parent = parent;
 	parent.createItem (this, index);
 }
@@ -195,12 +198,12 @@ protected void checkSubclass () {
 }
 
 CTableColumn createHandle () {
-  return CTableColumn.Factory.newInstance(this, style);
+	return CTableColumn.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -266,7 +269,7 @@ boolean moveable;
  */
 public boolean getMoveable () {
 	checkWidget ();
-  return moveable;
+	return moveable;
 }
 
 /**
@@ -283,7 +286,7 @@ public boolean getMoveable () {
  */
 public boolean getResizable () {
 	checkWidget ();
-  return ((javax.swing.table.TableColumn)handle).getResizable();
+	return ((javax.swing.table.TableColumn)handle).getResizable();
 }
 
 /**
@@ -300,8 +303,8 @@ public boolean getResizable () {
  * @since 3.2
  */
 public String getToolTipText () {
-  checkWidget();
-  return handle.getToolTipText();
+	checkWidget();
+	return handle.getToolTipText();
 }
 
 /**
@@ -318,7 +321,7 @@ public int getWidth () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
-  return ((javax.swing.table.TableColumn)handle).getWidth();
+	return ((javax.swing.table.TableColumn)handle).getWidth();
 }
 
 /**
@@ -336,11 +339,11 @@ public void pack () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-  int oldWidth = getWidth();
-  CTable cTable = (CTable)parent.handle;
-  int newWidth = cTable.getPreferredColumnWidth(index);
-  // TODO: check why in the old SWTSwing, +2 is added.
-  cTable.getColumnModel().getColumn(index).setPreferredWidth(newWidth + 2);
+	int oldWidth = getWidth();
+	CTable cTable = (CTable)parent.handle;
+	int newWidth = cTable.getPreferredColumnWidth(index);
+	// TODO: check why in the old SWTSwing, +2 is added.
+	cTable.getColumnModel().getColumn(index).setPreferredWidth(newWidth + 2);
 
 //	int hwnd = parent.handle;
 //	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
@@ -435,12 +438,12 @@ public void pack () {
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseParent () {
-  super.releaseParent ();
+	super.releaseParent ();
 }
 
 /**
@@ -512,10 +515,10 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-  if ((style & SWT.LEFT) == SWT.LEFT) handle.setAlignment(SwingConstants.LEFT);
-  if ((style & SWT.CENTER) == SWT.CENTER) handle.setAlignment(SwingConstants.CENTER);
-  if ((style & SWT.RIGHT) == SWT.RIGHT) handle.setAlignment(SwingConstants.RIGHT);
-  // TODO: notify change
+	if ((style & SWT.LEFT) == SWT.LEFT) handle.setAlignment(SwingConstants.LEFT);
+	if ((style & SWT.CENTER) == SWT.CENTER) handle.setAlignment(SwingConstants.CENTER);
+	if ((style & SWT.RIGHT) == SWT.RIGHT) handle.setAlignment(SwingConstants.RIGHT);
+	// TODO: notify change
 }
 
 public void setImage (Image image) {
@@ -526,7 +529,7 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-  handle.setIcon(image == null? null: new ImageIcon(image.handle));
+	handle.setIcon(image == null? null: new ImageIcon(image.handle));
 }
 
 /**
@@ -571,18 +574,18 @@ public void setMoveable (boolean moveable) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget ();
-  ((javax.swing.table.TableColumn)handle).setResizable(resizable);
+	((javax.swing.table.TableColumn)handle).setResizable(resizable);
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (string.equals (text)) return;
+	if (string.equals (text)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-  super.setText (string);
-  // TODO: check what happens with mnemonics
-  ((javax.swing.table.TableColumn)handle).setHeaderValue(string);
+	super.setText (string);
+	// TODO: check what happens with mnemonics
+	((javax.swing.table.TableColumn)handle).setHeaderValue(string);
 }
 
 /**
@@ -599,8 +602,8 @@ public void setText (String string) {
  * @since 3.2
  */
 public void setToolTipText (String string) {
-  checkWidget();
-  handle.setToolTipText(string);
+	checkWidget();
+	handle.setToolTipText(string);
 }
 
 /**
@@ -617,70 +620,70 @@ public void setWidth (int width) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-  ((javax.swing.table.TableColumn)handle).setPreferredWidth(width);
+	((javax.swing.table.TableColumn)handle).setPreferredWidth(width);
 }
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case java.awt.event.MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.Selection)) return; break;
-  }
-  if(isDisposed()) {
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    return;
-  }
-  try {
-    switch(id) {
-    case java.awt.event.MouseEvent.MOUSE_CLICKED: {
-      sendEvent(SWT.Selection);
-      break;
-    }
-    }
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case java.awt.event.MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.Selection)) return; break;
+	}
+	if(isDisposed()) {
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		return;
+	}
+	try {
+		switch(id) {
+		case java.awt.event.MouseEvent.MOUSE_CLICKED: {
+			sendEvent(SWT.Selection);
+			break;
+		}
+		}
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof PropertyChangeEvent) {
-    if(!hooks(SWT.Resize) && !hooks(SWT.Move) || !"width".equals(((PropertyChangeEvent)e).getPropertyName())) { return; }
-  } else if(e instanceof TableColumnModelEvent) {
-    if(!hooks(SWT.Move)) { return; }
-  } else {
-    return;
-  }
-  if(isDisposed()) {
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    return;
-  }
-  try {
-    if(e instanceof PropertyChangeEvent) {
-      String propertyName = ((PropertyChangeEvent)e).getPropertyName();
-      if("width".equals(propertyName)) {
-        sendEvent(SWT.Resize);
-        int columnCount = parent.getColumnCount();
-        for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
-          parent.getColumn(i).sendEvent(SWT.Move);
-        }
-      }
-    } else if(e instanceof TableColumnModelEvent) {
-      sendEvent(SWT.Move);
-    }
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof PropertyChangeEvent) {
+		if(!hooks(SWT.Resize) && !hooks(SWT.Move) || !"width".equals(((PropertyChangeEvent)e).getPropertyName())) { return; }
+	} else if(e instanceof TableColumnModelEvent) {
+		if(!hooks(SWT.Move)) { return; }
+	} else {
+		return;
+	}
+	if(isDisposed()) {
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		return;
+	}
+	try {
+		if(e instanceof PropertyChangeEvent) {
+			String propertyName = ((PropertyChangeEvent)e).getPropertyName();
+			if("width".equals(propertyName)) {
+				sendEvent(SWT.Resize);
+				int columnCount = parent.getColumnCount();
+				for(int i=parent.indexOf(this) + 1; i<columnCount; i++) {
+					parent.getColumn(i).sendEvent(SWT.Move);
+				}
+			}
+		} else if(e instanceof TableColumnModelEvent) {
+			sendEvent(SWT.Move);
+		}
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

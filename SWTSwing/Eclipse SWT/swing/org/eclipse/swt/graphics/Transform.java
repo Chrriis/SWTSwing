@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -28,16 +31,16 @@ import org.eclipse.swt.SWT;
  */
 public class Transform extends Resource {
 
-  /**
-   * the OS resource for the Transform
-   * (Warning: This field is platform dependent)
-   * <p>
-   * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-   * public API. It is marked public only so that it can be shared
-   * within the packages provided by SWT. It is not available on all
-   * platforms and should never be accessed from application code.
-   * </p>
-   */
+	/**
+	 * the OS resource for the Transform
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 */
 	public AffineTransform handle;
 
 /**

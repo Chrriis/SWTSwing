@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -42,42 +45,42 @@ import org.eclipse.swt.SWT;
 
 public final class FontData {
 	
-  /**
-   * A Swing font Map of TextAttributes
-   * (Warning: This field is platform dependent)
-   * <p>
-   * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-   * public API. It is marked public only so that it can be shared
-   * within the packages provided by SWT. It is not available on all
-   * platforms and should never be accessed from application code.
-   * </p>
-   */
-  public Map data;
-  
+	/**
+	 * A Swing font Map of TextAttributes
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 */
+	public Map data;
+	
 	/**
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)
 	 */
 	int height;
 	
-  /**
-   * The style of the font data
-   * (Warning: This field is platform dependent)
-   */
-  int style;
-  
-  /**
-   * The name of the font data
-   * (Warning: This field is platform dependent)
-   */
-  String name;
-  
-  /**
-   * The locale of the font data
-   * (Warning: This field is platform dependent)
-   */
-  java.util.Locale locale;
-  
+	/**
+	 * The style of the font data
+	 * (Warning: This field is platform dependent)
+	 */
+	int style;
+	
+	/**
+	 * The name of the font data
+	 * (Warning: This field is platform dependent)
+	 */
+	String name;
+	
+	/**
+	 * The locale of the font data
+	 * (Warning: This field is platform dependent)
+	 */
+	java.util.Locale locale;
+	
 /**	 
  * Constructs a new un-initialized font data.
  */
@@ -93,10 +96,10 @@ public FontData() {
  */
 FontData(FontData fontData) {
 	this.height = fontData.height;
-  this.style = fontData.style;
-  this.name = fontData.name;
-  this.locale = fontData.locale;
-  this.data = fontData.data;
+	this.style = fontData.style;
+	this.name = fontData.name;
+	this.locale = fontData.locale;
+	this.data = fontData.data;
 }
 
 /**
@@ -200,8 +203,8 @@ public boolean equals (Object object) {
 	if (!(object instanceof FontData)) return false;
 	FontData fd = (FontData)object;
 	return height == fd.height &&
-    style == fd.style &&
-    (name == null && fd.name == null || name != null && name.equals(fd.name));
+		style == fd.style &&
+		(name == null && fd.name == null || name != null && name.equals(fd.name));
 }
 
 /**
@@ -239,11 +242,11 @@ public String getLocale () {
 		buffer.append (locale.getLanguage());
 		buffer.append (sep);
 	}
-  if (locale != null && !"".equals(locale.getCountry())) {
+	if (locale != null && !"".equals(locale.getCountry())) {
 		buffer.append (locale.getCountry());
 		buffer.append (sep);
 	}
-  if (locale != null && !"".equals(locale.getVariant())) {
+	if (locale != null && !"".equals(locale.getVariant())) {
 		buffer.append (locale.getVariant());
 	}
 	
@@ -267,7 +270,7 @@ public String getLocale () {
  * @see #setName
  */
 public String getName() {
-  return name;
+	return name;
 }
 
 /**
@@ -312,7 +315,7 @@ public int hashCode () {
  */
 public void setHeight(int height) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  this.height = height;
+	this.height = height;
 }
 
 /**
@@ -345,13 +348,13 @@ public void setLocale(String locale) {
 			secondSep = locale.indexOf(sep, firstSep + 1);
 			if (secondSep == -1) secondSep = length;
 		}
-    String lang = "";
-    String country = "";
-    String variant = "";
+		String lang = "";
+		String country = "";
+		String variant = "";
 		if (firstSep > 0) lang = locale.substring(0, firstSep);
 		if (secondSep > firstSep + 1) country = locale.substring(firstSep + 1, secondSep);
 		if (length > secondSep + 1) variant = locale.substring(secondSep + 1);
-    this.locale = new java.util.Locale(lang, country, variant);
+		this.locale = new java.util.Locale(lang, country, variant);
 	}
 }
 
@@ -382,7 +385,7 @@ public void setLocale(String locale) {
  */
 public void setName(String name) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  this.name = name;
+	this.name = name;
 }
 
 /**
@@ -396,7 +399,7 @@ public void setName(String name) {
  * @see #getStyle
  */
 public void setStyle(int style) {
-  this.style = style;
+	this.style = style;
 }
 
 /**
@@ -417,11 +420,11 @@ public String toString() {
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getStyle());
 	buffer.append("|"); //$NON-NLS-1$
-  String locale = getLocale();
-  if(locale != null) {
-    buffer.append(locale);
-    buffer.append("|"); //$NON-NLS-1$
-  }
+	String locale = getLocale();
+	if(locale != null) {
+		buffer.append(locale);
+		buffer.append("|"); //$NON-NLS-1$
+	}
 	return buffer.toString();
 }
 

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -108,7 +111,7 @@ public class Decorations extends Canvas {
 	Button defaultButton, saveDefault;
 //	int swFlags, hAccel, nAccel;
 //	boolean moved, resized, opened;
-  boolean opened;
+	boolean opened;
 //	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 //	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
 
@@ -175,8 +178,8 @@ void addMenu (Menu menu) {
 }
 
 void bringToTop () {
-  ((CShell)handle).toFront();
-  // widget could be disposed at this point
+	((CShell)handle).toFront();
+	// widget could be disposed at this point
 //	/*
 //	* This code is intentionally commented.  On some platforms,
 //	* the ON_TOP style creates a shell that will stay on top
@@ -586,7 +589,7 @@ public Image [] getImages () {
  */
 public boolean getMaximized () {
 	checkWidget ();
-  return (((CShell)handle).getExtendedState() & CShell.MAXIMIZED_BOTH) != 0;
+	return (((CShell)handle).getExtendedState() & CShell.MAXIMIZED_BOTH) != 0;
 }
 
 /**
@@ -621,7 +624,7 @@ public Menu getMenuBar () {
  */
 public boolean getMinimized () {
 	checkWidget ();
-  return (((CShell)handle).getExtendedState() & CShell.ICONIFIED) != 0;
+	return (((CShell)handle).getExtendedState() & CShell.ICONIFIED) != 0;
 }
 
 String getNameText () {
@@ -658,8 +661,8 @@ String getNameText () {
  */
 public String getText () {
 	checkWidget ();
-  String title = ((CShell)handle).getTitle();
-  return title == null? "": title;
+	String title = ((CShell)handle).getTitle();
+	return title == null? "": title;
 }
 
 public boolean isReparentable () {
@@ -692,11 +695,11 @@ Decorations menuShell () {
 }
 
 void releaseChildren (boolean destroy) {
-  if (menuBar != null) {
-    menuBar.release (false);
-    menuBar = null;
-  }
-  super.releaseChildren (destroy);
+	if (menuBar != null) {
+		menuBar.release (false);
+		menuBar = null;
+	}
+	super.releaseChildren (destroy);
 	if (menus != null) {
 		do {
 			int index = 0;
@@ -821,10 +824,10 @@ void removeMenu (Menu menu) {
  */
 public void setDefaultButton (Button button) {
 	checkWidget ();
-  if (button != null) {
-    if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-    if (button.menuShell () != this) error(SWT.ERROR_INVALID_PARENT);
-  }
+	if (button != null) {
+		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (button.menuShell () != this) error(SWT.ERROR_INVALID_PARENT);
+	}
 	setDefaultButton (button, true);
 }
 
@@ -870,7 +873,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-  ((CShell)handle).setIconImage(image.handle);
+	((CShell)handle).setIconImage(image.handle);
 }
 
 /**
@@ -904,16 +907,16 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
-  
-  if(images.length > 0) {
-    java.util.List imageList = new ArrayList(images.length);
-    for(int i=0; i<images.length; i++) {
-      imageList.add(images[i].handle);
-    }
-    ((CShell)handle).setIconImages(imageList);
-  } else {
-    ((CShell)handle).setIconImage(null);
-  }
+	
+	if(images.length > 0) {
+		java.util.List imageList = new ArrayList(images.length);
+		for(int i=0; i<images.length; i++) {
+			imageList.add(images[i].handle);
+		}
+		((CShell)handle).setIconImages(imageList);
+	} else {
+		((CShell)handle).setIconImage(null);
+	}
 }
 
 /**
@@ -941,12 +944,12 @@ public void setImages (Image [] images) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
-  CShell cShell = (CShell)handle;
-  if(maximized) {
-    cShell.setExtendedState(CShell.MAXIMIZED_BOTH);
-  } else {
-    cShell.setExtendedState(cShell.getExtendedState() & ~CShell.MAXIMIZED_BOTH);
-  }
+	CShell cShell = (CShell)handle;
+	if(maximized) {
+		cShell.setExtendedState(CShell.MAXIMIZED_BOTH);
+	} else {
+		cShell.setExtendedState(cShell.getExtendedState() & ~CShell.MAXIMIZED_BOTH);
+	}
 }
 
 /**
@@ -974,7 +977,7 @@ public void setMenuBar (Menu menu) {
 	}
 	if (menu != null) display.removeBar (menu);
 	menuBar = menu;
-  ((CShell)handle).setJMenuBar(menuBar == null? null: (JMenuBar)menuBar.handle);
+	((CShell)handle).setJMenuBar(menuBar == null? null: (JMenuBar)menuBar.handle);
 //	destroyAccelerators ();
 }
 
@@ -1003,12 +1006,12 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
-  CShell cShell = (CShell)handle;
-  if(minimized) {
-    cShell.setExtendedState(CShell.ICONIFIED);
-  } else {
-    cShell.setExtendedState(cShell.getExtendedState() & ~CShell.ICONIFIED);
-  }
+	CShell cShell = (CShell)handle;
+	if(minimized) {
+		cShell.setExtendedState(CShell.ICONIFIED);
+	} else {
+		cShell.setExtendedState(cShell.getExtendedState() & ~CShell.ICONIFIED);
+	}
 }
 
 //void setParent () {
@@ -1147,7 +1150,7 @@ public void setMinimized (boolean minimized) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  ((CShell)handle).setTitle(string);
+	((CShell)handle).setTitle(string);
 }
 
 public void setVisible (boolean visible) {
@@ -1165,7 +1168,7 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-    handle.setVisible(true);
+		handle.setVisible(true);
 //		if (drawCount != 0) {
 //			state &= ~HIDDEN;
 //		} else {
@@ -1191,7 +1194,7 @@ public void setVisible (boolean visible) {
 //			OS.UpdateWindow (handle);
 //		}
 	} else {
-    handle.setVisible(false);
+		handle.setVisible(false);
 //		if (!OS.IsWinCE) {
 //			if (OS.IsIconic (handle)) {
 //				swFlags = OS.SW_SHOWMINNOACTIVE;
@@ -1218,23 +1221,23 @@ public void setVisible (boolean visible) {
 }
 
 //void sort (Image [] images, ImageData [] datas, int width, int height, int depth) {
-//  /* Shell Sort from K&R, pg 108 */
-//  int length = images.length;
-//  if (length <= 1) return;
-//  for (int gap=length/2; gap>0; gap/=2) {
-//    for (int i=gap; i<length; i++) {
-//      for (int j=i-gap; j>=0; j-=gap) {
-//          if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
-//          Image swap = images [j];
-//          images [j] = images [j + gap];
-//          images [j + gap] = swap;
-//          ImageData swapData = datas [j];
-//          datas [j] = datas [j + gap];
-//          datas [j + gap] = swapData;
-//          }
-//        }
-//      }
-//  }
+//	/* Shell Sort from K&R, pg 108 */
+//	int length = images.length;
+//	if (length <= 1) return;
+//	for (int gap=length/2; gap>0; gap/=2) {
+//		for (int i=gap; i<length; i++) {
+//			for (int j=i-gap; j>=0; j-=gap) {
+//					if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
+//					Image swap = images [j];
+//					images [j] = images [j + gap];
+//					images [j + gap] = swap;
+//					ImageData swapData = datas [j];
+//					datas [j] = datas [j + gap];
+//					datas [j + gap] = swapData;
+//					}
+//				}
+//			}
+//	}
 //}
 
 //boolean translateAccelerator (MSG msg) {

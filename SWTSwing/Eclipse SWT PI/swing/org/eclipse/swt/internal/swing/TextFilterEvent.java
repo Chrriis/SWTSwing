@@ -12,37 +12,37 @@ import java.util.EventObject;
 
 public class TextFilterEvent extends EventObject {
 
-  protected String text;
-  protected int start;
-  protected int end;
-  protected KeyEvent keyEvent;
+	protected String text;
+	protected int start;
+	protected int end;
+	protected KeyEvent keyEvent;
 
-  public TextFilterEvent(Object source, String text, int start, int end, KeyEvent keyEvent) {
-    super(source);
-    this.text = text;
-    this.start = start;
-    this.end = end;
-    this.keyEvent = keyEvent;
-  }
+	public TextFilterEvent(Object source, String text, int start, int end, KeyEvent keyEvent) {
+		super(source);
+		this.text = text;
+		this.start = start;
+		this.end = end;
+		this.keyEvent = keyEvent;
+	}
 
-  public String getText() {
-    return text;
-  }
+	public String getText() {
+		return text;
+	}
 
-  public void setText(String text) {
-    this.text = text;
-  }
+	public void setText(String text) {
+		this.text = text;
+	}
 
-  public int getStart() {
-    return start;
-  }
+	public int getStart() {
+		return start;
+	}
 
-  public int getEnd() {
-    return end;
-  }
+	public int getEnd() {
+		return end;
+	}
 
-  public KeyEvent getKeyEvent() {
-    return keyEvent;
-  }
+	public KeyEvent getKeyEvent() {
+		return keyEvent;
+	}
 
 }

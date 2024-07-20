@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -50,8 +53,8 @@ import org.eclipse.swt.internal.swing.JExpandPane.JExpandPaneItem;
  * @since 3.2
  */
 public class ExpandBar extends Composite {
-  
-  ArrayList itemList;
+	
+	ArrayList itemList;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -81,29 +84,29 @@ public class ExpandBar extends Composite {
  * @see Widget#getStyle
  */
 public ExpandBar (Composite parent, int style) {
-  super (parent, checkStyle (style));
+	super (parent, checkStyle (style));
 }
 
 Control [] _getChildren () {
-  Component[] children = ((CControl)handle).getClientArea().getComponents();
-  if(children.length == 0) {
-    return new Control[0];
-  }
-  ArrayList controlsList = new ArrayList(children.length);
-  for(int i=0; i<children.length; i++) {
-    Component childComponent = children[i];
-    if(childComponent instanceof JExpandPaneItem) {
-      childComponent = ((JExpandPaneItem)childComponent).getComponent();
-      if(childComponent != null && childComponent instanceof CExpandItem) {
-        childComponent = ((CExpandItem)childComponent).getContent();
-        Control control = display.getControl(childComponent);
-        if (control != null && control != this) {
-          controlsList.add(control);
-        }
-      }
-    }
-  }
-  return (Control[])controlsList.toArray(new Control[0]);
+	Component[] children = ((CControl)handle).getClientArea().getComponents();
+	if(children.length == 0) {
+		return new Control[0];
+	}
+	ArrayList controlsList = new ArrayList(children.length);
+	for(int i=0; i<children.length; i++) {
+		Component childComponent = children[i];
+		if(childComponent instanceof JExpandPaneItem) {
+			childComponent = ((JExpandPaneItem)childComponent).getComponent();
+			if(childComponent != null && childComponent instanceof CExpandItem) {
+				childComponent = ((CExpandItem)childComponent).getContent();
+				Control control = display.getControl(childComponent);
+				if (control != null && control != this) {
+					controlsList.add(control);
+				}
+			}
+		}
+	}
+	return (Control[])controlsList.toArray(new Control[0]);
 }
 
 /**
@@ -126,58 +129,58 @@ Control [] _getChildren () {
  * @see #removeExpandListener
  */
 public void addExpandListener (ExpandListener listener) {
-  checkWidget ();
-  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-  TypedListener typedListener = new TypedListener (listener);
-  addListener (SWT.Expand, typedListener);
-  addListener (SWT.Collapse, typedListener);
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Expand, typedListener);
+	addListener (SWT.Collapse, typedListener);
 }
 
 protected void checkSubclass () {
-  if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
 static int checkStyle (int style) {
-  style &= ~SWT.H_SCROLL;
-  return style | SWT.NO_BACKGROUND;
+	style &= ~SWT.H_SCROLL;
+	return style | SWT.NO_BACKGROUND;
 }
 
 boolean autoAddChildren() {
-  return false;
+	return false;
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~CANVAS;
+	super.createHandleInit();
+	state &= ~CANVAS;
 }
 
 protected Container createHandle () {
-  return (Container)CExpandBar.Factory.newInstance(this, style);
+	return (Container)CExpandBar.Factory.newInstance(this, style);
 }
 
 void createItem (ExpandItem item, int style, int index) {
-  int count = getItemCount();
-  if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-  itemList.add(index, item);
-  ((CExpandBar)handle).insertExpandPaneItem(null, null, item.handle, index);
-  handle.invalidate();
-  handle.validate();
+	int count = getItemCount();
+	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
+	itemList.add(index, item);
+	((CExpandBar)handle).insertExpandPaneItem(null, null, item.handle, index);
+	handle.invalidate();
+	handle.validate();
 }
 
 void createWidget () {
-  super.createWidget ();
-  itemList = new ArrayList();
+	super.createWidget ();
+	itemList = new ArrayList();
 }
 
 void destroyItem (ExpandItem item) {
-  int index = indexOf(item);
-  if(index != -1) {
-    ((CExpandBar)handle).removeExpandPaneItem(item.handle);
-    handle.invalidate();
-    handle.validate();
-    handle.repaint();
-  }
-  itemList = null;
+	int index = indexOf(item);
+	if(index != -1) {
+		((CExpandBar)handle).removeExpandPaneItem(item.handle);
+		handle.invalidate();
+		handle.validate();
+		handle.repaint();
+	}
+	itemList = null;
 }
 
 /**
@@ -196,10 +199,10 @@ void destroyItem (ExpandItem item) {
  * </ul>
  */
 public ExpandItem getItem (int index) {
-  checkWidget ();
-  int count = getItemCount();
-  if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-  return (ExpandItem)itemList.get(index);
+	checkWidget ();
+	int count = getItemCount();
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	return (ExpandItem)itemList.get(index);
 }
 
 /**
@@ -213,8 +216,8 @@ public ExpandItem getItem (int index) {
  * </ul>
  */
 public int getItemCount () {
-  checkWidget ();
-  return itemList.size();
+	checkWidget ();
+	return itemList.size();
 }
 
 /**
@@ -234,8 +237,8 @@ public int getItemCount () {
  * </ul>
  */
 public ExpandItem [] getItems () {
-  checkWidget ();
-  return (ExpandItem[])itemList.toArray(new ExpandItem [0]);
+	checkWidget ();
+	return (ExpandItem[])itemList.toArray(new ExpandItem [0]);
 }
 
 /**
@@ -249,8 +252,8 @@ public ExpandItem [] getItems () {
  * </ul>
  */
 public int getSpacing () {
-  checkWidget ();
-  return ((CExpandBar)handle).getSpacing();
+	checkWidget ();
+	return ((CExpandBar)handle).getSpacing();
 }
 
 /**
@@ -272,31 +275,31 @@ public int getSpacing () {
  * </ul>
  */
 public int indexOf (ExpandItem item) {
-  checkWidget ();
-  if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-  int count = getItemCount();
-  for (int i=0; i<count; i++) {
-    if (itemList.get(i) == item) return i;
-  }
-  return -1;
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = getItemCount();
+	for (int i=0; i<count; i++) {
+		if (itemList.get(i) == item) return i;
+	}
+	return -1;
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-  java.awt.Dimension size = handle.getPreferredSize();
-  int width = ((CExpandBar)handle).getVerticalScrollBar().getPreferredSize().width;
-  return new Point(size.width + width, size.height);
+	java.awt.Dimension size = handle.getPreferredSize();
+	int width = ((CExpandBar)handle).getVerticalScrollBar().getPreferredSize().width;
+	return new Point(size.width + width, size.height);
 }
 
 void releaseChildren (boolean destroy) {
-  if(itemList != null) {
-    int count = getItemCount();
-    for (int i=0; i<count; i++) {
-      ExpandItem item = (ExpandItem)itemList.get(i);
-      if (!item.isDisposed ()) item.release (false);
-    }
-    itemList = null;
-  }
-  super.releaseChildren (destroy);
+	if(itemList != null) {
+		int count = getItemCount();
+		for (int i=0; i<count; i++) {
+			ExpandItem item = (ExpandItem)itemList.get(i);
+			if (!item.isDisposed ()) item.release (false);
+		}
+		itemList = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 /**
@@ -317,11 +320,11 @@ void releaseChildren (boolean destroy) {
  * @see #addExpandListener
  */
 public void removeExpandListener (ExpandListener listener) {
-  checkWidget ();
-  if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (eventTable == null) return;
-  eventTable.unhook (SWT.Expand, listener);
-  eventTable.unhook (SWT.Collapse, listener); 
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Expand, listener);
+	eventTable.unhook (SWT.Collapse, listener); 
 }
 
 /**
@@ -334,9 +337,9 @@ public void removeExpandListener (ExpandListener listener) {
  * </ul>
  */
 public void setSpacing (int spacing) {
-  checkWidget ();
-  if (spacing < 0) return;
-  ((CExpandBar)handle).setSpacing(spacing);
+	checkWidget ();
+	if (spacing < 0) return;
+	((CExpandBar)handle).setSpacing(spacing);
 }
 
 }

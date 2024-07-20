@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -43,8 +46,8 @@ import org.eclipse.swt.internal.swing.Compatibility;
 public class CoolItem extends Item {
 	CoolBar parent;
 	Control control;
-  Container handle;
-  
+	Container handle;
+	
 //	int id;
 //	boolean ideal, minimum;
 
@@ -83,7 +86,7 @@ public class CoolItem extends Item {
 public CoolItem (CoolBar parent, int style) {
 	super (parent, style);
 	this.parent = parent;
-  handle = createHandle();
+	handle = createHandle();
 	parent.createItem (this, parent.getItemCount ());
 }
 
@@ -121,8 +124,8 @@ public CoolItem (CoolBar parent, int style) {
 public CoolItem (CoolBar parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
-  handle = createHandle();
-  parent.createItem (this, index);
+	handle = createHandle();
+	parent.createItem (this, index);
 }
 
 /**
@@ -201,21 +204,21 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = handle.getWidth();
 	if (hHint == SWT.DEFAULT) height = handle.getHeight();
-//  if ((parent.style & SWT.VERTICAL) != 0) {
-//    height += parent.getMargin (index);
-//  } else {
-//    width += parent.getMargin (index);
-//  }
+//	if ((parent.style & SWT.VERTICAL) != 0) {
+//		height += parent.getMargin (index);
+//	} else {
+//		width += parent.getMargin (index);
+//	}
 	return new Point (width, height);
 }
 
 Container createHandle () {
-  return (Container)CCoolItem.Factory.newInstance(this, style);
+	return (Container)CCoolItem.Factory.newInstance(this, style);
 }
 
 void destroyWidget () {
-  parent.destroyItem (this);
-  releaseHandle ();
+	parent.destroyItem (this);
+	releaseHandle ();
 }
 
 /**
@@ -231,8 +234,8 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-  java.awt.Rectangle bounds = handle.getBounds();
-  return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+	java.awt.Rectangle bounds = handle.getBounds();
+	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 ///*
@@ -297,9 +300,9 @@ public CoolBar getParent () {
 }
 
 void releaseHandle () {
-  super.releaseHandle ();
-  parent = null;
-  control = null;
+	super.releaseHandle ();
+	parent = null;
+	control = null;
 }
 
 /**
@@ -323,16 +326,16 @@ public void setControl (Control control) {
 		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
-  if(this.control != null) {
-    handle.removeAll();
-  }
-  this.control = control;
-  if(control != null) {
-    handle.add(control.handle);
-  }
-  handle.invalidate();
-  handle.validate();
-  handle.repaint();
+	if(this.control != null) {
+		handle.removeAll();
+	}
+	this.control = control;
+	if(control != null) {
+		handle.add(control.handle);
+	}
+	handle.invalidate();
+	handle.validate();
+	handle.repaint();
 }
 
 /**
@@ -349,8 +352,8 @@ public void setControl (Control control) {
  */
 public Point getPreferredSize () {
 	checkWidget ();
-  Dimension preferredSize = handle.getPreferredSize();
-  return new Point (preferredSize.width, preferredSize.height);
+	Dimension preferredSize = handle.getPreferredSize();
+	return new Point (preferredSize.width, preferredSize.height);
 }
 
 /**
@@ -367,9 +370,9 @@ public Point getPreferredSize () {
 public void setPreferredSize (int width, int height) {
 	checkWidget ();
 	handle.setPreferredSize(new Dimension(width, height));
-  handle.invalidate();
-  handle.validate();
-  handle.repaint();
+	handle.invalidate();
+	handle.validate();
+	handle.repaint();
 }
 
 /**
@@ -406,8 +409,8 @@ public void setPreferredSize (Point size) {
  */
 public Point getSize() {
 	checkWidget ();
-  Dimension size = handle.getSize();
-  return new Point (size.width, size.height);
+	Dimension size = handle.getSize();
+	return new Point (size.width, size.height);
 }
 
 /**
@@ -428,7 +431,7 @@ public Point getSize() {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
-  handle.setSize(new Dimension(width, height));
+	handle.setSize(new Dimension(width, height));
 }
 
 /**
@@ -469,8 +472,8 @@ public void setSize (Point size) {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-  Dimension minimumSize = handle.getMinimumSize();
-  return new Point (minimumSize.width, minimumSize.height);
+	Dimension minimumSize = handle.getMinimumSize();
+	return new Point (minimumSize.width, minimumSize.height);
 }
 
 /**

@@ -11,6 +11,6 @@ import java.awt.Component;
 
 public interface TreeTableCellRenderer {
 
-  public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean selected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus);
+	public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean selected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus);
 
 }

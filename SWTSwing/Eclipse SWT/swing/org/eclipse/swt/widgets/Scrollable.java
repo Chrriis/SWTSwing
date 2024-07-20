@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -157,23 +160,23 @@ void createWidget () {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-  Container clientArea = ((CControl)handle).getClientArea();
-  java.awt.Rectangle bounds = clientArea.getBounds();
-  if(handle instanceof Window) {
-    return new Rectangle(0, 0, bounds.width, bounds.height);
-  }
-  Container parent = clientArea.getParent();
-  bounds = SwingUtilities.convertRectangle(parent, bounds, handle);
-  Container handleParent = handle.getParent();
-  while(parent != handleParent) {
-    Insets insets = parent.getInsets();
-    bounds.x -= insets.left;
-    bounds.y -= insets.top;
-    parent = parent.getParent();
-  }
-  Point internalOffset = getInternalOffset();
-  return new Rectangle(bounds.x - internalOffset.x, bounds.y - internalOffset.y, bounds.width + internalOffset.x, bounds.height + internalOffset.y);
-//    forceResize ();
+	Container clientArea = ((CControl)handle).getClientArea();
+	java.awt.Rectangle bounds = clientArea.getBounds();
+	if(handle instanceof Window) {
+		return new Rectangle(0, 0, bounds.width, bounds.height);
+	}
+	Container parent = clientArea.getParent();
+	bounds = SwingUtilities.convertRectangle(parent, bounds, handle);
+	Container handleParent = handle.getParent();
+	while(parent != handleParent) {
+		Insets insets = parent.getInsets();
+		bounds.x -= insets.left;
+		bounds.y -= insets.top;
+		parent = parent.getParent();
+	}
+	Point internalOffset = getInternalOffset();
+	return new Rectangle(bounds.x - internalOffset.x, bounds.y - internalOffset.y, bounds.width + internalOffset.x, bounds.height + internalOffset.y);
+//		forceResize ();
 //	RECT rect = new RECT ();
 //	int scrolledHandle = scrolledHandle ();
 //	OS.GetClientRect (scrolledHandle, rect);
@@ -241,15 +244,15 @@ public ScrollBar getVerticalBar () {
 }
 
 void releaseChildren (boolean destroy) {
-  if (horizontalBar != null) {
-    horizontalBar.release (false);
-    horizontalBar = null;
-  }
-  if (verticalBar != null) {
-    verticalBar.release (false);
-    verticalBar = null;
-  }
-  super.releaseChildren (destroy);
+	if (horizontalBar != null) {
+		horizontalBar.release (false);
+		horizontalBar = null;
+	}
+	if (verticalBar != null) {
+		verticalBar.release (false);
+		verticalBar = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 //int scrolledHandle () {
@@ -319,19 +322,19 @@ void releaseChildren (boolean destroy) {
 //		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
 //		int delta = (short) (wParam >> 16);
 //		int code = 0, count = 0;
-//  		if (value [0] == OS.WHEEL_PAGESCROLL) {	
-//   			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
-//   			count = Math.abs (delta / OS.WHEEL_DELTA);
-//  		} else {
-//  			code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
-//  			delta = Math.abs (delta);
-//  			if (delta < OS.WHEEL_DELTA) return result;
-//  			if (msg == OS.WM_VSCROLL) {
-//  				count = value [0] * delta / OS.WHEEL_DELTA;
-//  			} else {
-//  				count = delta / OS.WHEEL_DELTA;
-//  			}
-//  		}
+//			if (value [0] == OS.WHEEL_PAGESCROLL) {	
+//	 			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
+//	 			count = Math.abs (delta / OS.WHEEL_DELTA);
+//			} else {
+//				code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
+//				delta = Math.abs (delta);
+//				if (delta < OS.WHEEL_DELTA) return result;
+//				if (msg == OS.WM_VSCROLL) {
+//					count = value [0] * delta / OS.WHEEL_DELTA;
+//				} else {
+//					count = delta / OS.WHEEL_DELTA;
+//				}
+//			}
 //		for (int i=0; i<count; i++) {
 //			OS.SendMessage (handle, msg, code, 0);
 //		}

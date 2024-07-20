@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -123,23 +126,23 @@ import java.io.IOException;
 public abstract class ByteArrayTransfer extends Transfer {
 
 public TransferData[] getSupportedTypes() {
-  TransferData transferData = new TransferData();
-  // TODO: how to obtain the list of types?
-  transferData.dataFlavor = byteArrayDataFlavor;
-  return new TransferData[] {transferData};
-//  int[] types = getTypeNames();
-//  TransferData[] data = new TransferData[names.length];
-//  for (int i = 0; i < names.length; i++) {
-//    data[i] = new TransferData();
-//    data[i].type = types[i];
-//  }
-//  return data;
+	TransferData transferData = new TransferData();
+	// TODO: how to obtain the list of types?
+	transferData.dataFlavor = byteArrayDataFlavor;
+	return new TransferData[] {transferData};
+//	int[] types = getTypeNames();
+//	TransferData[] data = new TransferData[names.length];
+//	for (int i = 0; i < names.length; i++) {
+//		data[i] = new TransferData();
+//		data[i].type = types[i];
+//	}
+//	return data;
 }
 
 DataFlavor byteArrayDataFlavor = new DataFlavor(byte[].class, "Bytes");
 
 protected DataFlavor getDataFlavor() {
-  return byteArrayDataFlavor;
+	return byteArrayDataFlavor;
 }
 
 /**
@@ -154,26 +157,26 @@ protected DataFlavor getDataFlavor() {
  *  object will be filled in on return with the platform specific format of the data
  */
 protected void javaToNative (final Object object, TransferData transferData) {
-  if (!checkByteArray(object) && !isSupportedType(transferData)) {
-    DND.error(DND.ERROR_INVALID_DATA);
-  }
-  transferData.transferable = new Transferable() {
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-      if(flavor != byteArrayDataFlavor) {
-        throw new UnsupportedFlavorException(flavor);
-      }
-      return object;
-    }
-    public DataFlavor[] getTransferDataFlavors() {
-      return new DataFlavor[] {byteArrayDataFlavor};
-    }
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
-      return flavor == byteArrayDataFlavor;
-    }
-  };
+	if (!checkByteArray(object) && !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	transferData.transferable = new Transferable() {
+		public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+			if(flavor != byteArrayDataFlavor) {
+				throw new UnsupportedFlavorException(flavor);
+			}
+			return object;
+		}
+		public DataFlavor[] getTransferDataFlavors() {
+			return new DataFlavor[] {byteArrayDataFlavor};
+		}
+		public boolean isDataFlavorSupported(DataFlavor flavor) {
+			return flavor == byteArrayDataFlavor;
+		}
+	};
 }
 
 boolean checkByteArray(Object object) {
-  return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
+	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
 }
 }

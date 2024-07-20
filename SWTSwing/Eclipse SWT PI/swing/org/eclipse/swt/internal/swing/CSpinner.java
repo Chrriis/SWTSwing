@@ -34,185 +34,185 @@ import org.eclipse.swt.widgets.Spinner;
 
 class CSpinnerImplementation extends JSpinner implements CSpinner {
 
-  protected Spinner handle;
+	protected Spinner handle;
 
-  protected SpinnerNumberModel model;
+	protected SpinnerNumberModel model;
 
-  public Container getSwingComponent() {
-    return this;
-  }
+	public Container getSwingComponent() {
+		return this;
+	}
 
-  public Control getSWTHandle() {
-    return handle;
-  }
+	public Control getSWTHandle() {
+		return handle;
+	}
 
-  protected UserAttributeHandler userAttributeHandler;
-  
-  public UserAttributeHandler getUserAttributeHandler() {
-    return userAttributeHandler;
-  }
-  
-  public CSpinnerImplementation(Spinner spinner, int style) {
-    this.handle = spinner;
-    userAttributeHandler = new UserAttributeHandler(this);
-    model = new SpinnerNumberModel(0, minimum, maximum, 1.0);
-    setModel(model);
-    model.setMinimum(new Comparable() {
-      public int compareTo(Object o) {
-        return minimum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
-      }
-    });
-    model.setMaximum(new Comparable() {
-      public int compareTo(Object o) {
-        return maximum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
-      }
-    });
-    init(style);
-  }
+	protected UserAttributeHandler userAttributeHandler;
+	
+	public UserAttributeHandler getUserAttributeHandler() {
+		return userAttributeHandler;
+	}
+	
+	public CSpinnerImplementation(Spinner spinner, int style) {
+		this.handle = spinner;
+		userAttributeHandler = new UserAttributeHandler(this);
+		model = new SpinnerNumberModel(0, minimum, maximum, 1.0);
+		setModel(model);
+		model.setMinimum(new Comparable() {
+			public int compareTo(Object o) {
+				return minimum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
+			}
+		});
+		model.setMaximum(new Comparable() {
+			public int compareTo(Object o) {
+				return maximum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
+			}
+		});
+		init(style);
+	}
 
-  protected KeyEvent keyEvent = null;
+	protected KeyEvent keyEvent = null;
 
-  protected void init(int style) {
-    JFormattedTextField textField = ((DefaultEditor)getEditor()).getTextField();
-    if((style & SWT.READ_ONLY) != 0) {
-      textField.setEditable(false);
-    }
-//    if((style & SWT.BORDER) == 0) {
-//      setBorder(null);
-//      textField.setBorder(null);
-//    }
-    Utils.installMouseListener(this, handle);
-    Utils.installKeyListener(this, handle);
-    Utils.installFocusListener(this, handle);
-    Utils.installComponentListener(this, handle);
-    textField.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        keyEvent = e;
-      }
-      public void keyReleased(KeyEvent e) {
-        keyEvent = null;
-      }
-    });
-    addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    AbstractDocument document = (AbstractDocument)textField.getDocument();
-    document.addDocumentListener(new DocumentListener() {
-      public void changedUpdate(DocumentEvent e) {
-        handle.processEvent(e);
-      }
-      public void insertUpdate(DocumentEvent e) {
-        handle.processEvent(e);
-      }
-      public void removeUpdate(DocumentEvent e) {
-        handle.processEvent(e);
-      }
-    });
-    document.setDocumentFilter(new DocumentFilter() {
-//    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-//    }
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-      TextFilterEvent filterEvent = new TextFilterEvent(this, text, offset, length, keyEvent);
-      handle.processEvent(filterEvent);
-      String s = filterEvent.getText();
-      if(s != null) {
-        super.replace(fb, offset, length, s, attrs);
-      }
-    }
-    public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-      TextFilterEvent filterEvent = new TextFilterEvent(this, "", offset, length, keyEvent);
-      handle.processEvent(filterEvent);
-      String s = filterEvent.getText();
-      if(s != null) {
-        super.replace(fb, offset, length, s, null);
-      }
-    }
-  });
-  }
+	protected void init(int style) {
+		JFormattedTextField textField = ((DefaultEditor)getEditor()).getTextField();
+		if((style & SWT.READ_ONLY) != 0) {
+			textField.setEditable(false);
+		}
+//		if((style & SWT.BORDER) == 0) {
+//			setBorder(null);
+//			textField.setBorder(null);
+//		}
+		Utils.installMouseListener(this, handle);
+		Utils.installKeyListener(this, handle);
+		Utils.installFocusListener(this, handle);
+		Utils.installComponentListener(this, handle);
+		textField.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				keyEvent = e;
+			}
+			public void keyReleased(KeyEvent e) {
+				keyEvent = null;
+			}
+		});
+		addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				handle.processEvent(e);
+			}
+		});
+		AbstractDocument document = (AbstractDocument)textField.getDocument();
+		document.addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				handle.processEvent(e);
+			}
+			public void insertUpdate(DocumentEvent e) {
+				handle.processEvent(e);
+			}
+			public void removeUpdate(DocumentEvent e) {
+				handle.processEvent(e);
+			}
+		});
+		document.setDocumentFilter(new DocumentFilter() {
+//		public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+//		}
+		public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+			TextFilterEvent filterEvent = new TextFilterEvent(this, text, offset, length, keyEvent);
+			handle.processEvent(filterEvent);
+			String s = filterEvent.getText();
+			if(s != null) {
+				super.replace(fb, offset, length, s, attrs);
+			}
+		}
+		public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+			TextFilterEvent filterEvent = new TextFilterEvent(this, "", offset, length, keyEvent);
+			handle.processEvent(filterEvent);
+			String s = filterEvent.getText();
+			if(s != null) {
+				super.replace(fb, offset, length, s, null);
+			}
+		}
+	});
+	}
 
-  public Container getClientArea() {
-    return this;
-  }
+	public Container getClientArea() {
+		return this;
+	}
 
-  public int getStepSize() {
-    return Math.round(model.getStepSize().floatValue() * (int)Math.pow(10, digitCount));
-  }
+	public int getStepSize() {
+		return Math.round(model.getStepSize().floatValue() * (int)Math.pow(10, digitCount));
+	}
 
-  public void setStepSize(int stepSize) {
-    model.setStepSize(new Float((float)stepSize / (int)Math.pow(10, digitCount)));
-  }
+	public void setStepSize(int stepSize) {
+		model.setStepSize(new Float((float)stepSize / (int)Math.pow(10, digitCount)));
+	}
 
-  protected int minimum = 0;
-  protected int maximum = 100;
-  
-  public int getMinimum() {
-    return minimum;
-  }
+	protected int minimum = 0;
+	protected int maximum = 100;
+	
+	public int getMinimum() {
+		return minimum;
+	}
 
-  public int getMaximum() {
-    return maximum;
-  }
-  
-  public void setMinimum(int minimum) {
-    this.minimum = minimum;
-  }
+	public int getMaximum() {
+		return maximum;
+	}
+	
+	public void setMinimum(int minimum) {
+		this.minimum = minimum;
+	}
 
-  public void setMaximum(int maximum) {
-    this.maximum = maximum;
-  }
-  
-  public void setSelectedValue(int value) {
-    model.setValue(new Float((float)value / (int)Math.pow(10, digitCount)));
-  }
+	public void setMaximum(int maximum) {
+		this.maximum = maximum;
+	}
+	
+	public void setSelectedValue(int value) {
+		model.setValue(new Float((float)value / (int)Math.pow(10, digitCount)));
+	}
 
-  public int getSelectedValue() {
-    return Math.round(((Number)model.getValue()).floatValue() * (int)Math.pow(10, digitCount));
-  }
+	public int getSelectedValue() {
+		return Math.round(((Number)model.getValue()).floatValue() * (int)Math.pow(10, digitCount));
+	}
 
-  public void copy() {
-    ((DefaultEditor)getEditor()).getTextField().copy();
-  }
+	public void copy() {
+		((DefaultEditor)getEditor()).getTextField().copy();
+	}
 
-  public void cut() {
-    ((DefaultEditor)getEditor()).getTextField().cut();
-  }
+	public void cut() {
+		((DefaultEditor)getEditor()).getTextField().cut();
+	}
 
-  public void paste() {
-    ((DefaultEditor)getEditor()).getTextField().paste();
-  }
+	public void paste() {
+		((DefaultEditor)getEditor()).getTextField().paste();
+	}
 
-  protected int digitCount;
+	protected int digitCount;
 
-  public void setDigitCount(int digitCount) {
-    if(digitCount == this.digitCount) {
-      return;
-    }
-    this.digitCount = digitCount;
-  }
+	public void setDigitCount(int digitCount) {
+		if(digitCount == this.digitCount) {
+			return;
+		}
+		this.digitCount = digitCount;
+	}
 
-  public int getDigitCount() {
-    return digitCount;
-  }
+	public int getDigitCount() {
+		return digitCount;
+	}
 
-  public Color getBackground() {
-    return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
-  }
-  public Color getForeground() {
-    return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
-  }
-  public Font getFont() {
-    return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
-  }
-  public Cursor getCursor() {
-    if(Utils.globalCursor != null) {
-      return Utils.globalCursor;
-    }
-    return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
-  }
-  
-  @Override
+	public Color getBackground() {
+		return userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
+	}
+	public Color getForeground() {
+		return userAttributeHandler != null && userAttributeHandler.foreground != null? userAttributeHandler.foreground: super.getForeground();
+	}
+	public Font getFont() {
+		return userAttributeHandler != null && userAttributeHandler.font != null? userAttributeHandler.font: super.getFont();
+	}
+	public Cursor getCursor() {
+		if(Utils.globalCursor != null) {
+			return Utils.globalCursor;
+		}
+		return userAttributeHandler != null && userAttributeHandler.cursor != null? userAttributeHandler.cursor: super.getCursor();
+	}
+	
+	@Override
 	public String getText() {
 		// TODO Auto-generated method stub
 		JComponent editor = getEditor();
@@ -221,18 +221,18 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 		}
 		return null;
 	}
-  
-  public void setBackgroundImage(Image backgroundImage) {
-    // TODO: implement
-  }
+	
+	public void setBackgroundImage(Image backgroundImage) {
+		// TODO: implement
+	}
 
-  public void setBackgroundInheritance(int backgroundInheritanceType) {
-    switch(backgroundInheritanceType) {
-    case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
-    case PREFERRED_BACKGROUND_INHERITANCE:
-    case BACKGROUND_INHERITANCE: setOpaque(false); break;
-    }
-  }
+	public void setBackgroundInheritance(int backgroundInheritanceType) {
+		switch(backgroundInheritanceType) {
+		case NO_BACKGROUND_INHERITANCE: setOpaque(true); break;
+		case PREFERRED_BACKGROUND_INHERITANCE:
+		case BACKGROUND_INHERITANCE: setOpaque(false); break;
+		}
+	}
 
 }
 
@@ -243,41 +243,41 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
  */
 public interface CSpinner extends CControl {
 
-  public static class Factory {
-    private Factory() {}
+	public static class Factory {
+		private Factory() {}
 
-    public static CSpinner newInstance(Spinner spinner, int style) {
-      return new CSpinnerImplementation(spinner, style);
-    }
+		public static CSpinner newInstance(Spinner spinner, int style) {
+			return new CSpinnerImplementation(spinner, style);
+		}
 
-  }
+	}
 
-  public int getStepSize();
+	public int getStepSize();
 
-  public void setStepSize(int stepSize);
+	public void setStepSize(int stepSize);
 
-  public int getMinimum();
+	public int getMinimum();
 
-  public int getMaximum();
-  
-  public void setMinimum(int minimum);
+	public int getMaximum();
+	
+	public void setMinimum(int minimum);
 
-  public void setMaximum(int maximum);
+	public void setMaximum(int maximum);
 
-  public void setSelectedValue(int value);
+	public void setSelectedValue(int value);
 
-  public int getSelectedValue();
+	public int getSelectedValue();
 
-  public void copy();
+	public void copy();
 
-  public void cut();
+	public void cut();
 
-  public void paste();
+	public void paste();
 
-  public void setDigitCount(int digitCount);
+	public void setDigitCount(int digitCount);
 
-  public int getDigitCount();
+	public int getDigitCount();
 
-  public String getText();
+	public String getText();
 
 }

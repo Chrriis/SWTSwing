@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -133,9 +136,9 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  isAdjustingSelection = true;
-  ((CCombo)handle).addItem(string);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CCombo)handle).addItem(string);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -164,9 +167,9 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-  isAdjustingSelection = true;
-  ((CCombo)handle).insertElementAt(string, index);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CCombo)handle).insertElementAt(string, index);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -292,21 +295,21 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CCombo)handle).setEditorCaretPosition(0);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CCombo)handle).setEditorCaretPosition(0);
+	isAdjustingSelection = false;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-  if((style & SWT.SIMPLE) != 0) {
-    return super.computeSize(wHint, hHint, changed);
-  }
-  Dimension preferredSize = handle.getPreferredSize();
-  if(wHint == SWT.DEFAULT) {
-    return new Point(preferredSize.width, preferredSize.height);
-  }
-  Point p = super.computeSize(wHint, hHint, changed);
-  return new Point(p.x, preferredSize.height);
+	if((style & SWT.SIMPLE) != 0) {
+		return super.computeSize(wHint, hHint, changed);
+	}
+	Dimension preferredSize = handle.getPreferredSize();
+	if(wHint == SWT.DEFAULT) {
+		return new Point(preferredSize.width, preferredSize.height);
+	}
+	Point p = super.computeSize(wHint, hHint, changed);
+	return new Point(p.x, preferredSize.height);
 }
 
 /**
@@ -324,16 +327,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-  ((CCombo)handle).copyEditor();
+	((CCombo)handle).copyEditor();
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~(CANVAS | THEME_BACKGROUND);
+	super.createHandleInit();
+	state &= ~(CANVAS | THEME_BACKGROUND);
 }
 
 protected Container createHandle () {
-  return (Container)CCombo.Factory.newInstance(this, style);
+	return (Container)CCombo.Factory.newInstance(this, style);
 }
 
 /**
@@ -353,7 +356,7 @@ protected Container createHandle () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-  ((CCombo)handle).cutEditor();
+	((CCombo)handle).cutEditor();
 }
 
 /**
@@ -370,13 +373,13 @@ public void cut () {
  */
 public void deselect (int index) {
 	checkWidget ();
-  CCombo cCombo = (CCombo)handle;
-  if(index == cCombo.getSelectedIndex()) {
-    isAdjustingSelection = true;
-    cCombo.setSelectedIndex(-1);
-    isAdjustingSelection = false;
-    sendEvent (SWT.Modify);
-  }
+	CCombo cCombo = (CCombo)handle;
+	if(index == cCombo.getSelectedIndex()) {
+		isAdjustingSelection = true;
+		cCombo.setSelectedIndex(-1);
+		isAdjustingSelection = false;
+		sendEvent (SWT.Modify);
+	}
 	// widget could be disposed at this point
 }
 
@@ -396,9 +399,9 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CCombo)handle).clearEditorSelection();
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CCombo)handle).clearEditorSelection();
+	isAdjustingSelection = false;
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
 }
@@ -460,14 +463,14 @@ public int getCaretPosition () {
  */
 public String getItem (int index) {
 	checkWidget ();
-  int count = getItemCount();
-  if (!(0 <= index && index < count)) error (SWT.ERROR_CANNOT_GET_ITEM);
-  try {
-    return (String)((CCombo)handle).getItemAt(index);
-  } catch(Exception e) {
-    error (SWT.ERROR_INVALID_RANGE);
-  }
-  return "";
+	int count = getItemCount();
+	if (!(0 <= index && index < count)) error (SWT.ERROR_CANNOT_GET_ITEM);
+	try {
+		return (String)((CCombo)handle).getItemAt(index);
+	} catch(Exception e) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	return "";
 }
 
 /**
@@ -482,7 +485,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-  return ((CCombo)handle).getItemCount();
+	return ((CCombo)handle).getItemCount();
 }
 
 /**
@@ -498,7 +501,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-  Utils.notImplemented(); return 15;
+	Utils.notImplemented(); return 15;
 //	int result = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
 //	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 //	return result;
@@ -573,7 +576,7 @@ public Point getSelection () {
 	if ((style & SWT.DROP_DOWN) != 0 && (style & SWT.READ_ONLY) != 0) {
 		return new Point (0, getText().length());
 	}
-  CCombo cCombo = (CCombo)handle;
+	CCombo cCombo = (CCombo)handle;
 	return new Point (cCombo.getEditorSelectionStart(), cCombo.getEditorSelectionEnd());
 }
 
@@ -607,7 +610,7 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget ();
-  return ((CCombo)handle).getEditorText();
+	return ((CCombo)handle).getEditorText();
 }
 
 /**
@@ -622,7 +625,7 @@ public String getText () {
  */
 public int getTextHeight () {
 	checkWidget ();
-  return ((CCombo)handle).getEditorSize().height;
+	return ((CCombo)handle).getEditorSize().height;
 }
 
 /**
@@ -642,7 +645,7 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget ();
-  return ((CCombo)handle).getEditorTextLimit();
+	return ((CCombo)handle).getEditorTextLimit();
 }
 
 /**
@@ -664,7 +667,7 @@ public int getTextLimit () {
  */
 public int getVisibleItemCount () {
 	checkWidget ();
-  return ((CCombo)handle).getMaximumRowCount();
+	return ((CCombo)handle).getMaximumRowCount();
 }
 
 /**
@@ -718,13 +721,13 @@ public int indexOf (String string, int start) {
 }
 
 Point minimumSize(int wHint, int hHint, boolean changed) {
-  Dimension preferredSize = handle.getPreferredSize();
-  if((style & SWT.SIMPLE) != 0) {
-    return new Point(preferredSize.width, preferredSize.height);
-  }
-  Point size = super.minimumSize(wHint, hHint, changed);
-  size.y = preferredSize.height;
-  return size;
+	Dimension preferredSize = handle.getPreferredSize();
+	if((style & SWT.SIMPLE) != 0) {
+		return new Point(preferredSize.width, preferredSize.height);
+	}
+	Point size = super.minimumSize(wHint, hHint, changed);
+	size.y = preferredSize.height;
+	return size;
 }
 
 /**
@@ -744,7 +747,7 @@ Point minimumSize(int wHint, int hHint, boolean changed) {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-  ((CCombo)handle).pasteEditor();
+	((CCombo)handle).pasteEditor();
 }
 
 /**
@@ -763,12 +766,12 @@ public void paste () {
  */
 public void remove (int index) {
 	checkWidget ();
-  int count = getItemCount();
-  if (!(0 <= index && index < count)) error (SWT.ERROR_ITEM_NOT_REMOVED);
-  isAdjustingSelection = true;
-  ((CCombo)handle).removeItemAt(index);
-  isAdjustingSelection = false;
-  sendEvent (SWT.Modify);
+	int count = getItemCount();
+	if (!(0 <= index && index < count)) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	isAdjustingSelection = true;
+	((CCombo)handle).removeItemAt(index);
+	isAdjustingSelection = false;
+	sendEvent (SWT.Modify);
 }
 
 /**
@@ -790,16 +793,16 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
-  int count = getItemCount();
+	int count = getItemCount();
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-  isAdjustingSelection = true;
-  CCombo cCombo = (CCombo)handle;
-  for (int i=start; i<=end; i++) {
-    cCombo.removeItemAt(i);
-  }
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	CCombo cCombo = (CCombo)handle;
+	for (int i=start; i<=end; i++) {
+		cCombo.removeItemAt(i);
+	}
+	isAdjustingSelection = false;
 }
 
 /**
@@ -837,9 +840,9 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CCombo)handle).removeAllItems();
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CCombo)handle).removeAllItems();
+	isAdjustingSelection = false;
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
 }
@@ -937,13 +940,13 @@ public void select (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (0 <= index && index < count) {
-    CCombo cCombo = (CCombo)handle;
-    if(index != cCombo.getSelectedIndex()) {
-      isAdjustingSelection = true;
-      cCombo.setSelectedIndex(index);
-      isAdjustingSelection = false;
-      sendEvent (SWT.Modify);
-    }
+		CCombo cCombo = (CCombo)handle;
+		if(index != cCombo.getSelectedIndex()) {
+			isAdjustingSelection = true;
+			cCombo.setSelectedIndex(index);
+			isAdjustingSelection = false;
+			sendEvent (SWT.Modify);
+		}
 	}
 }
 
@@ -999,13 +1002,13 @@ public void setItems (String [] items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-  isAdjustingSelection = true;
-  CCombo cCombo = (CCombo)handle;
-  cCombo.removeAllItems();
-  for (int i=0; i<items.length; i++) {
-    cCombo.addItem(items[i]);
-  }
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	CCombo cCombo = (CCombo)handle;
+	cCombo.removeAllItems();
+	for (int i=0; i<items.length; i++) {
+		cCombo.addItem(items[i]);
+	}
+	isAdjustingSelection = false;
 	// widget could be disposed at this point
 	sendEvent (SWT.Modify);
 }
@@ -1030,13 +1033,13 @@ public void setOrientation (int orientation) {
 	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
 	style &= ~flags;
 	style |= orientation & flags;
-  ComponentOrientation o;
-  if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-    o = ComponentOrientation.RIGHT_TO_LEFT;
-  } else {
-    o = ComponentOrientation.LEFT_TO_RIGHT;
-  }
-  ((CCombo)handle).setComponentOrientation(o);
+	ComponentOrientation o;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		o = ComponentOrientation.RIGHT_TO_LEFT;
+	} else {
+		o = ComponentOrientation.LEFT_TO_RIGHT;
+	}
+	((CCombo)handle).setComponentOrientation(o);
 }
 
 /**
@@ -1058,9 +1061,9 @@ public void setOrientation (int orientation) {
 public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
-  CCombo cCombo = (CCombo)handle;
-  cCombo.setEditorSelectionStart(selection.x);
-  cCombo.setEditorSelectionEnd(selection.y);
+	CCombo cCombo = (CCombo)handle;
+	cCombo.setEditorSelectionStart(selection.x);
+	cCombo.setEditorSelectionEnd(selection.y);
 }
 
 /**
@@ -1092,9 +1095,9 @@ public void setText (String string) {
 		if (index != -1) select (index);
 		return;
 	}
-  ((CCombo)handle).setEditorText(string);
-  sendEvent (SWT.Modify);
-  // widget could be disposed at this point
+	((CCombo)handle).setEditorText(string);
+	sendEvent (SWT.Modify);
+	// widget could be disposed at this point
 }
 
 /**
@@ -1120,7 +1123,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-  ((CCombo)handle).setEditorTextLimit(limit);
+	((CCombo)handle).setEditorTextLimit(limit);
 }
 
 /**
@@ -1143,7 +1146,7 @@ public void setTextLimit (int limit) {
 public void setVisibleItemCount (int count) {
 	checkWidget ();
 	if (count < 0) return;
-  ((CCombo)handle).setMaximumRowCount(count);
+	((CCombo)handle).setMaximumRowCount(count);
 }
 
 boolean traverseEscape () {
@@ -1158,58 +1161,58 @@ boolean traverseEscape () {
 }
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) {
-    super.processEvent(e);
-    JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
-    if(defaultButton != null) {
-      defaultButton.doClick();
-    }
-    return;
-  }
-  break;
-  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case ActionEvent.ACTION_PERFORMED:
-      Event event = new Event();
-      event.detail = SWT.TRAVERSE_RETURN;
-      sendEvent(SWT.Traverse, event);
-      boolean isSending = true;
-      if(event.doit) {
-        JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
-        if(defaultButton != null) {
-          isSending = false;
-          defaultButton.doClick();
-        }
-      }
-      if(isSending) {
-        sendEvent(SWT.DefaultSelection);
-      }
-      break;
-    case ItemEvent.ITEM_STATE_CHANGED:
-      sendEvent(SWT.Selection);
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case ActionEvent.ACTION_PERFORMED: if(!hooks(SWT.Traverse) && !hooks(SWT.DefaultSelection)) {
+		super.processEvent(e);
+		JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+		if(defaultButton != null) {
+			defaultButton.doClick();
+		}
+		return;
+	}
+	break;
+	case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case ActionEvent.ACTION_PERFORMED:
+			Event event = new Event();
+			event.detail = SWT.TRAVERSE_RETURN;
+			sendEvent(SWT.Traverse, event);
+			boolean isSending = true;
+			if(event.doit) {
+				JButton defaultButton = ((RootPaneContainer)getShell().handle).getRootPane().getDefaultButton();
+				if(defaultButton != null) {
+					isSending = false;
+					defaultButton.doClick();
+				}
+			}
+			if(isSending) {
+				sendEvent(SWT.DefaultSelection);
+			}
+			break;
+		case ItemEvent.ITEM_STATE_CHANGED:
+			sendEvent(SWT.Selection);
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

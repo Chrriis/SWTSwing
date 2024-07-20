@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -95,9 +98,9 @@ import org.eclipse.swt.internal.swing.Utils;
  * </p>
  */
 public class Tree extends Composite {
-  ArrayList itemList;
-  ArrayList columnList;
-  TreeItem currentItem;
+	ArrayList itemList;
+	ArrayList columnList;
+	TreeItem currentItem;
 //	TreeColumn [] columns;
 //	int hwndParent, hwndHeader, hAnchor;
 //	ImageList imageList;
@@ -159,11 +162,11 @@ static int checkStyle (int style) {
 }
 
 void adjustColumnWidth() {
-  // Could be more efficient. Should post, with coalescing?
-  if(getColumnCount() == 0) {
-    CTree cTree = (CTree)handle;
-    cTree.getColumnModel().getColumn(0).setPreferredWidth(cTree.getPreferredColumnWidth(0));
-  }
+	// Could be more efficient. Should post, with coalescing?
+	if(getColumnCount() == 0) {
+		CTree cTree = (CTree)handle;
+		cTree.getColumnModel().getColumn(0).setPreferredWidth(cTree.getPreferredColumnWidth(0));
+	}
 }
 
 /**
@@ -233,27 +236,27 @@ protected void checkSubclass () {
 }
 
 boolean checkData (TreeItem item, boolean redraw) {
-  if ((style & SWT.VIRTUAL) == 0) return true;
-  TreeItem parentItem = item.getParentItem ();
-  return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
+	if ((style & SWT.VIRTUAL) == 0) return true;
+	TreeItem parentItem = item.getParentItem ();
+	return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
 }
 
 boolean checkData (TreeItem item, int index, boolean redraw) {
-  if ((style & SWT.VIRTUAL) == 0) return true;
-  if (!item.cached) {
-    item.cached = true;
-    Event event = new Event ();
-    event.item = item;
-    event.index = index;
-    TreeItem oldItem = currentItem;
-    currentItem = item;
-    sendEvent (SWT.SetData, event);
-    //widget could be disposed at this point
-    currentItem = oldItem;
-    if (isDisposed () || item.isDisposed ()) return false;
-//    if (redraw) item.redraw ();
-  }
-  return true;
+	if ((style & SWT.VIRTUAL) == 0) return true;
+	if (!item.cached) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		event.index = index;
+		TreeItem oldItem = currentItem;
+		currentItem = item;
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		currentItem = oldItem;
+		if (isDisposed () || item.isDisposed ()) return false;
+//		if (redraw) item.redraw ();
+	}
+	return true;
 }
 
 /**
@@ -280,19 +283,19 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
  * @since 3.2
  */
 public void clear (int index, boolean all) {
-  checkWidget ();
-  getItem(index).clearAll(all);
-//  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  hItem = findItem (hItem, index);
-//  if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-//  TVITEM tvItem = new TVITEM ();
-//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-//  clear (hItem, tvItem);
-//  if (all) {
-//    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-//    clearAll (hItem, tvItem, all);
-//  }
+	checkWidget ();
+	getItem(index).clearAll(all);
+//	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//	hItem = findItem (hItem, index);
+//	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//	clear (hItem, tvItem);
+//	if (all) {
+//		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+//		clearAll (hItem, tvItem, all);
+//	}
 }
 
 /**
@@ -315,31 +318,31 @@ public void clear (int index, boolean all) {
  * @since 3.2
  */
 public void clearAll (boolean all) {
-  checkWidget ();
-  for(int i=getItemCount()-1; i>=0; i--) {
-    getItem(i).clearAll(all);
-  }
-//  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-//  if (hItem == 0) return;
-//  TVITEM tvItem = new TVITEM ();
-//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-//  clearAll (hItem, tvItem, all);
+	checkWidget ();
+	for(int i=getItemCount()-1; i>=0; i--) {
+		getItem(i).clearAll(all);
+	}
+//	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//	if (hItem == 0) return;
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//	clearAll (hItem, tvItem, all);
 }
 
 public Rectangle computeTrim(int x, int y, int width, int height) {
-  CTree cTree = (CTree)handle;
-  width += cTree.getVerticalScrollBar().getPreferredSize().width;
-  height += cTree.getHorizontalScrollBar().getPreferredSize().height;
-  return super.computeTrim(x, y, width, height);
+	CTree cTree = (CTree)handle;
+	width += cTree.getVerticalScrollBar().getPreferredSize().width;
+	height += cTree.getHorizontalScrollBar().getPreferredSize().height;
+	return super.computeTrim(x, y, width, height);
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~(CANVAS | THEME_BACKGROUND);
+	super.createHandleInit();
+	state &= ~(CANVAS | THEME_BACKGROUND);
 }
 
 protected Container createHandle () {
-  return (Container)CTree.Factory.newInstance(this, style);
+	return (Container)CTree.Factory.newInstance(this, style);
 }
 
 //void createHandle () {
@@ -385,39 +388,39 @@ void createItem (TreeColumn column, int index) {
 //	int columnCount = getColumnCount();
 	for (int i=0; i<itemList.size(); i++) {
 		TreeItem item = (TreeItem)itemList.get(i);
-    item.handle.insertColumn(index);
+		item.handle.insertColumn(index);
 		if (index == 0) {
-      item.text = "";
-      item.image = null;
+			item.text = "";
+			item.image = null;
 		}
 	}
-  TableColumnModel columnModel = ((CTree)handle).getColumnModel();
-  TableColumn tableColumn = (TableColumn)column.handle;
-  if(columnList.isEmpty()) {
-    // TODO: remove a first bogus column? (3)
-    columnModel.removeColumn(columnModel.getColumn(0));
-  }
-  columnModel.addColumn(tableColumn);
-  tableColumn.setModelIndex(index);
-  columnList.add(index, column);
-  // TODO: check it is enough
-  handle.repaint();
+	TableColumnModel columnModel = ((CTree)handle).getColumnModel();
+	TableColumn tableColumn = (TableColumn)column.handle;
+	if(columnList.isEmpty()) {
+		// TODO: remove a first bogus column? (3)
+		columnModel.removeColumn(columnModel.getColumn(0));
+	}
+	columnModel.addColumn(tableColumn);
+	tableColumn.setModelIndex(index);
+	columnList.add(index, column);
+	// TODO: check it is enough
+	handle.repaint();
 }
 
 void createItem (TreeItem item, int index) {
-  itemList.add(index, item);
-  ((CTree)handle).getRoot().insert((MutableTreeNode)item.handle, index);
-  // TODO: check how to notify addition and if it is needed, because this line causes snippet8 not to work
-//  ((CTree)handle).getModel().nodesWereInserted(((CTree)handle).getRoot(), new int[] {index});
+	itemList.add(index, item);
+	((CTree)handle).getRoot().insert((MutableTreeNode)item.handle, index);
+	// TODO: check how to notify addition and if it is needed, because this line causes snippet8 not to work
+//	((CTree)handle).getModel().nodesWereInserted(((CTree)handle).getRoot(), new int[] {index});
 }
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {
-  if(parentItem.itemList == null) {
-    parentItem.itemList = new ArrayList();
-  }
-  parentItem.itemList.add(index, item);
-  ((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
-  ((CTree)handle).getModel().nodesWereInserted((MutableTreeNode)parentItem.handle, new int[] {index});
+	if(parentItem.itemList == null) {
+		parentItem.itemList = new ArrayList();
+	}
+	parentItem.itemList.add(index, item);
+	((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
+	((CTree)handle).getModel().nodesWereInserted((MutableTreeNode)parentItem.handle, new int[] {index});
 }
 
 //void createParent () {
@@ -501,8 +504,8 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 
 void createWidget () {
 	super.createWidget ();
-  itemList = new ArrayList();
-  columnList = new ArrayList();
+	itemList = new ArrayList();
+	columnList = new ArrayList();
 }
 
 //void deregister () {
@@ -520,38 +523,38 @@ void createWidget () {
  */
 public void deselectAll () {
 	checkWidget ();
-  ((CTree)handle).clearSelection();
+	((CTree)handle).clearSelection();
 }
 
 void destroyItem (TreeColumn column) {
-  int index = columnList.indexOf(column);
-  for (int i=0; i<itemList.size(); i++) {
-    TreeItem item = (TreeItem)itemList.get(i);
-    item.handle.removeColumn(index);
-  }
-  columnList.remove(index);
-  if(columnList.isEmpty()) {
-    // TODO: add a first bogus column? (2)
-    TableColumnModel columnModel = ((CTree)handle).getColumnModel();
-    javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
-    columnModel.addColumn(tableColumn);
-  }
-  if(sortColumn == column) {
-    sortColumn = null;
-    sortDirection = SWT.NONE;
-  }
-  handle.repaint();
+	int index = columnList.indexOf(column);
+	for (int i=0; i<itemList.size(); i++) {
+		TreeItem item = (TreeItem)itemList.get(i);
+		item.handle.removeColumn(index);
+	}
+	columnList.remove(index);
+	if(columnList.isEmpty()) {
+		// TODO: add a first bogus column? (2)
+		TableColumnModel columnModel = ((CTree)handle).getColumnModel();
+		javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
+		columnModel.addColumn(tableColumn);
+	}
+	if(sortColumn == column) {
+		sortColumn = null;
+		sortDirection = SWT.NONE;
+	}
+	handle.repaint();
 }
 
 void destroyItem (TreeItem item) {
-//  TreeItem parentItem = item.getParentItem();
-//  if(parentItem == null) {
-//    ((CTree)handle).getRoot().remove((MutableTreeNode)item.handle);
-//    itemList.remove(item);
-//  } else {
-//    ((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)item.handle);
-//    parentItem.itemList.remove(item);
-//  }
+//	TreeItem parentItem = item.getParentItem();
+//	if(parentItem == null) {
+//		((CTree)handle).getRoot().remove((MutableTreeNode)item.handle);
+//		itemList.remove(item);
+//	} else {
+//		((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)item.handle);
+//		parentItem.itemList.remove(item);
+//	}
 }
 
 //void enableWidget (boolean enabled) {
@@ -646,8 +649,8 @@ public Color getHeaderForeground () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-  JTableHeader tableHeader = ((CTree)handle).getTableHeader();
-  return tableHeader.isVisible()? tableHeader.getHeight(): 0;
+	JTableHeader tableHeader = ((CTree)handle).getTableHeader();
+	return tableHeader.isVisible()? tableHeader.getHeight(): 0;
 }
 
 /**
@@ -671,7 +674,7 @@ public int getHeaderHeight () {
  */
 public boolean getHeaderVisible () {
 	checkWidget ();
-  return ((CTree)handle).getTableHeader().isVisible();
+	return ((CTree)handle).getTableHeader().isVisible();
 }
 
 //Point getImageSize () {
@@ -767,13 +770,13 @@ public int getColumnCount () {
  * @since 3.2
  */
 public int[] getColumnOrder () {
-  checkWidget ();
-  return ((CTree)handle).getColumnOrder();
-//  if (hwndHeader == 0) return new int [0];
-//  int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-//  int [] order = new int [count];
-//  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-//  return order;
+	checkWidget ();
+	return ((CTree)handle).getColumnOrder();
+//	if (hwndHeader == 0) return new int [0];
+//	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+//	int [] order = new int [count];
+//	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+//	return order;
 }
 
 /**
@@ -808,7 +811,7 @@ public int[] getColumnOrder () {
 public TreeColumn [] getColumns () {
 	checkWidget ();
 	if (columnList == null) return new TreeColumn [0];
-  return (TreeColumn[])columnList.toArray(new TreeColumn[0]);
+	return (TreeColumn[])columnList.toArray(new TreeColumn[0]);
 }
 
 /**
@@ -829,10 +832,10 @@ public TreeColumn [] getColumns () {
  * @since 3.1
  */
 public TreeItem getItem (int index) {
-  checkWidget ();
-  if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-  if (index >= itemList.size()) error (SWT.ERROR_INVALID_RANGE);
-  return (TreeItem)itemList.get(index);
+	checkWidget ();
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	if (index >= itemList.size()) error (SWT.ERROR_INVALID_RANGE);
+	return (TreeItem)itemList.get(index);
 }
 
 /**
@@ -861,12 +864,12 @@ public TreeItem getItem (int index) {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-  TreePath treePath = ((CTree)handle).getPathForLocation(point.x, point.y);
-  if(treePath == null) {
-    return null;
-  }
-  CTreeItem.TreeItemObject treeItemObject = ((CTreeItem.TreeItemObject)((DefaultMutableTreeNode)treePath.getLastPathComponent()).getUserObject());
-  return treeItemObject.getTreeItem().getTreeItem();
+	TreePath treePath = ((CTree)handle).getPathForLocation(point.x, point.y);
+	if(treePath == null) {
+		return null;
+	}
+	CTreeItem.TreeItemObject treeItemObject = ((CTreeItem.TreeItemObject)((DefaultMutableTreeNode)treePath.getLastPathComponent()).getUserObject());
+	return treeItemObject.getTreeItem().getTreeItem();
 }
 
 /**
@@ -884,7 +887,7 @@ public TreeItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget ();
-  return itemList == null? 0: itemList.size();
+	return itemList == null? 0: itemList.size();
 }
 
 //int getItemCount (int hItem) {
@@ -909,7 +912,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-  return ((CTree)handle).getRowHeight();
+	return ((CTree)handle).getRowHeight();
 }
 
 /**
@@ -931,7 +934,7 @@ public int getItemHeight () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
-  return (TreeItem[])itemList.toArray(new TreeItem[0]);
+	return (TreeItem[])itemList.toArray(new TreeItem[0]);
 }
 
 //TreeItem [] getItems (int hTreeItem) {
@@ -987,7 +990,7 @@ public TreeItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
-  return ((CTree)handle).isGridVisible();
+	return ((CTree)handle).isGridVisible();
 }
 
 /**
@@ -1025,13 +1028,13 @@ public TreeItem getParentItem () {
  */
 public TreeItem [] getSelection () {
 	checkWidget ();
-  TreePath[] paths = ((CTree)handle).getSelectionModel().getSelectionPaths();
-  if(paths == null || paths.length == 0) return new TreeItem[0];
-  TreeItem[] items = new TreeItem[paths.length];
-  for(int i=0; i<items.length; i++) {
-    items[i] = ((CTreeItem.TreeItemObject)((DefaultMutableTreeNode)paths[i].getLastPathComponent()).getUserObject()).getTreeItem().getTreeItem();
-  }
-  return items;
+	TreePath[] paths = ((CTree)handle).getSelectionModel().getSelectionPaths();
+	if(paths == null || paths.length == 0) return new TreeItem[0];
+	TreeItem[] items = new TreeItem[paths.length];
+	for(int i=0; i<items.length; i++) {
+		items[i] = ((CTreeItem.TreeItemObject)((DefaultMutableTreeNode)paths[i].getLastPathComponent()).getUserObject()).getTreeItem().getTreeItem();
+	}
+	return items;
 }
 
 /**
@@ -1046,7 +1049,7 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-  return ((CTree)handle).getSelectionModel().getSelectionCount();
+	return ((CTree)handle).getSelectionModel().getSelectionCount();
 }
 
 TreeColumn sortColumn;
@@ -1069,8 +1072,8 @@ int sortDirection;
  * @since 3.2
  */
 public TreeColumn getSortColumn () {
-  checkWidget ();
-  return sortColumn;
+	checkWidget ();
+	return sortColumn;
 }
 
 /**
@@ -1090,8 +1093,8 @@ public TreeColumn getSortColumn () {
  * @since 3.2
  */
 public int getSortDirection () {
-  checkWidget ();
-  return sortDirection;
+	checkWidget ();
+	return sortDirection;
 }
 
 /**
@@ -1110,9 +1113,9 @@ public int getSortDirection () {
  */
 public TreeItem getTopItem () {
 	checkWidget ();
-  int index = ((CTree)handle).getTopIndex();
-  if(index < 0) return null;
-  return ((CTreeItem)((CTree)handle).getPathForRow(index).getLastPathComponent()).getTreeItem();
+	int index = ((CTree)handle).getTopIndex();
+	if(index < 0) return null;
+	return ((CTreeItem)((CTree)handle).getPathForRow(index).getLastPathComponent()).getTreeItem();
 }
 
 //int imageIndex (Image image) {
@@ -1169,7 +1172,7 @@ public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-  return columnList.indexOf(column);
+	return columnList.indexOf(column);
 }
 
 /**
@@ -1196,7 +1199,7 @@ public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-  return itemList.indexOf(item);
+	return itemList.indexOf(item);
 }
 
 //void register () {
@@ -1233,20 +1236,20 @@ public int indexOf (TreeItem item) {
 //}
 
 void releaseChildren (boolean destroy) {
-  if(itemList != null) {
-    for (int i=0; i<itemList.size(); i++) {
-      TreeItem item = (TreeItem)itemList.get(i);
-      if (item != null && !item.isDisposed ()) item.release(false);
-    }
-    itemList = null;
-  }
-  if(columnList != null) {
-    for(int i=0; i<columnList.size(); i++) {
-      TreeColumn column = (TreeColumn)columnList.get(i);
-      if (column != null && !column.isDisposed ()) column.release(false);
-    }
-    columnList = null;
-  }
+	if(itemList != null) {
+		for (int i=0; i<itemList.size(); i++) {
+			TreeItem item = (TreeItem)itemList.get(i);
+			if (item != null && !item.isDisposed ()) item.release(false);
+		}
+		itemList = null;
+	}
+	if(columnList != null) {
+		for(int i=0; i<columnList.size(); i++) {
+			TreeColumn column = (TreeColumn)columnList.get(i);
+			if (column != null && !column.isDisposed ()) column.release(false);
+		}
+		columnList = null;
+	}
 //	/*
 //	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
 //	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW
@@ -1271,26 +1274,26 @@ void releaseChildren (boolean destroy) {
 //	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 //	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
 //	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
-  super.releaseChildren (destroy);
+	super.releaseChildren (destroy);
 }
 
 void releaseItem (TreeItem treeItem, boolean release) {
-  TreeItem parentItem = treeItem.getParentItem();
-  if(parentItem == null) {
-    ((CTree)handle).getRoot().remove((MutableTreeNode)treeItem.handle);
-    int index = itemList.indexOf(treeItem);
-    itemList.remove(index);
-    ((CTree)handle).getModel().nodesWereRemoved(((CTree)handle).getRoot(), new int[] {index}, new Object[] {treeItem.handle});
-  } else {
-    ((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)treeItem.handle);
-    int index = parentItem.itemList.indexOf(treeItem);
-    parentItem.itemList.remove(index);
-    ((CTree)handle).getModel().nodesWereRemoved((DefaultMutableTreeTableNode)parentItem.handle, new int[] {index}, new Object[] {treeItem.handle});
-  }
-  handle.repaint();
-  if(release) {
-    treeItem.release (false);
-  }
+	TreeItem parentItem = treeItem.getParentItem();
+	if(parentItem == null) {
+		((CTree)handle).getRoot().remove((MutableTreeNode)treeItem.handle);
+		int index = itemList.indexOf(treeItem);
+		itemList.remove(index);
+		((CTree)handle).getModel().nodesWereRemoved(((CTree)handle).getRoot(), new int[] {index}, new Object[] {treeItem.handle});
+	} else {
+		((DefaultMutableTreeTableNode)parentItem.handle).remove((MutableTreeNode)treeItem.handle);
+		int index = parentItem.itemList.indexOf(treeItem);
+		parentItem.itemList.remove(index);
+		((CTree)handle).getModel().nodesWereRemoved((DefaultMutableTreeTableNode)parentItem.handle, new int[] {index}, new Object[] {treeItem.handle});
+	}
+	handle.repaint();
+	if(release) {
+		treeItem.release (false);
+	}
 }
 
 /**
@@ -1303,16 +1306,16 @@ void releaseItem (TreeItem treeItem, boolean release) {
  */
 public void removeAll () {
 	checkWidget ();
-  for (int i=itemList.size()-1; i>=0; i--) {
-    TreeItem item = (TreeItem)itemList.get(i);
-    if (item != null && !item.isDisposed ()) {
-      item.dispose();
-//      item.release (false);
-    } else {
-      itemList.remove(i);
-    }
-  }
-//  ((CTree)handle).getRoot().removeAllChildren();
+	for (int i=itemList.size()-1; i>=0; i--) {
+		TreeItem item = (TreeItem)itemList.get(i);
+		if (item != null && !item.isDisposed ()) {
+			item.dispose();
+//			item.release (false);
+		} else {
+			itemList.remove(i);
+		}
+	}
+//	((CTree)handle).getRoot().removeAllChildren();
 }
 
 /**
@@ -1383,7 +1386,7 @@ public void removeTreeListener(TreeListener listener) {
  */
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
-  Utils.notImplemented();
+	Utils.notImplemented();
 //	int hItem = 0;
 //	if (item != null) {
 //		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1405,110 +1408,110 @@ public void setInsertMark (TreeItem item, boolean before) {
  * @since 3.2
  */
 public void setItemCount (int count) {
-  checkWidget ();
-  count = Math.max (0, count);
-  setItemCount (null, itemList, count);
+	checkWidget ();
+	count = Math.max (0, count);
+	setItemCount (null, itemList, count);
 
-//  itemList.add(index, item);
-//  ((CTree)handle).getRoot().insert((MutableTreeNode)item.handle, index);
-  
-//  Utils.notImplemented();
-//  int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-//  setItemCount (count, OS.TVGN_ROOT, hItem);
+//	itemList.add(index, item);
+//	((CTree)handle).getRoot().insert((MutableTreeNode)item.handle, index);
+	
+//	Utils.notImplemented();
+//	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//	setItemCount (count, OS.TVGN_ROOT, hItem);
 }
 
 void setItemCount (TreeItem treeItem, int count) {
-  if(treeItem.itemList == null) {
-    treeItem.itemList = new ArrayList();
-  }
-  setItemCount (treeItem, treeItem.itemList, count);
+	if(treeItem.itemList == null) {
+		treeItem.itemList = new ArrayList();
+	}
+	setItemCount (treeItem, treeItem.itemList, count);
 }
 
 void setItemCount (TreeItem parentItem, ArrayList itemList, int count) {
-  count = Math.max (0, count);
-  for(int i=itemList.size()-1; i>= count; i--) {
-    TreeItem item = (TreeItem)itemList.get(i);
-    if (item != null && !item.isDisposed ()) {
-      item.release (false);
-    }
-    if(parentItem == null) {
-      ((CTree)handle).getRoot().remove(i);
-    } else {
-      ((DefaultMutableTreeTableNode)parentItem.handle).remove(i);
-    }
-  }
-  int itemCount = count - itemList.size();
-  if(itemCount <= 0) {
-    return;
-  }
-  itemList.ensureCapacity(count);
-  for(int i=0; i<itemCount; i++) {
-//    childIndices[i] = itemCount;
-    if(parentItem != null) {
-      new TreeItem(parentItem, SWT.NONE);
-    } else {
-      new TreeItem(this, SWT.NONE);
-    }
-  }
-//  if(isVirtual) {
-//    if(parentItem != null) {
-//      ((CTree)handle).getModel().nodeStructureChanged(((DefaultMutableTreeTableNode)parentItem.handle));
+	count = Math.max (0, count);
+	for(int i=itemList.size()-1; i>= count; i--) {
+		TreeItem item = (TreeItem)itemList.get(i);
+		if (item != null && !item.isDisposed ()) {
+			item.release (false);
+		}
+		if(parentItem == null) {
+			((CTree)handle).getRoot().remove(i);
+		} else {
+			((DefaultMutableTreeTableNode)parentItem.handle).remove(i);
+		}
+	}
+	int itemCount = count - itemList.size();
+	if(itemCount <= 0) {
+		return;
+	}
+	itemList.ensureCapacity(count);
+	for(int i=0; i<itemCount; i++) {
+//		childIndices[i] = itemCount;
+		if(parentItem != null) {
+			new TreeItem(parentItem, SWT.NONE);
+		} else {
+			new TreeItem(this, SWT.NONE);
+		}
+	}
+//	if(isVirtual) {
+//		if(parentItem != null) {
+//			((CTree)handle).getModel().nodeStructureChanged(((DefaultMutableTreeTableNode)parentItem.handle));
 ////      ((CTree)handle).getModel().nodesWereInserted(((DefaultMutableTreeTableNode)parentItem.handle), childIndices);
 ////    } else {
 ////      ((CTree)handle).getModel().nodeStructureChanged(((CTree)handle).getRoot());
 //////      ((CTree)handle).getModel().nodesWereInserted(((CTree)handle).getRoot(), childIndices);
-//    }
-//  }
-  
-//  if(parentItem.itemList == null) {
-//    parentItem.itemList = new ArrayList();
-//  }
-//  parentItem.itemList.add(index, item);
-//  ((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
-//  ((CTree)handle).getModel().nodesWereInserted((MutableTreeNode)parentItem.handle, new int[] {index});
+//		}
+//	}
+	
+//	if(parentItem.itemList == null) {
+//		parentItem.itemList = new ArrayList();
+//	}
+//	parentItem.itemList.add(index, item);
+//	((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
+//	((CTree)handle).getModel().nodesWereInserted((MutableTreeNode)parentItem.handle, new int[] {index});
 
-//  boolean redraw = false;
-//  if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
-//    redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-//    if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-//  }
-//  int itemCount = 0;
-//  while (hItem != 0 && itemCount < count) {
-//    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-//    itemCount++;
-//  }
-//  TVITEM tvItem = new TVITEM ();
-//  tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-//  while (hItem != 0) {
-//    tvItem.hItem = hItem;
-//    OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-//    hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-//    TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
-//    if (item != null && !item.isDisposed ()) {
-//      item.dispose ();
-//    } else {
-//      releaseItem (tvItem.hItem, tvItem, false);
-//      destroyItem (null, tvItem.hItem);
-//    }
-//  }
-//  if ((style & SWT.VIRTUAL) != 0) {
-//    for (int i=itemCount; i<count; i++) {
-//      createItem (null, hParent, OS.TVI_LAST, 0);
-//    }
-//  } else {
-//    shrink = true;
-//    int extra = Math.max (4, (count + 3) / 4 * 4);
-//    TreeItem [] newItems = new TreeItem [items.length + extra];
-//    System.arraycopy (items, 0, newItems, 0, items.length);
-//    items = newItems;
-//    for (int i=itemCount; i<count; i++) {
-//      new TreeItem (this, SWT.NONE, hParent, OS.TVI_LAST, 0);
-//    }
-//  }
-//  if (redraw) {
-//    OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-//    OS.InvalidateRect (handle, null, true);
-//  }
+//	boolean redraw = false;
+//	if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
+//		redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+//		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+//	}
+//	int itemCount = 0;
+//	while (hItem != 0 && itemCount < count) {
+//		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+//		itemCount++;
+//	}
+//	TVITEM tvItem = new TVITEM ();
+//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+//	while (hItem != 0) {
+//		tvItem.hItem = hItem;
+//		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+//		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+//		TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
+//		if (item != null && !item.isDisposed ()) {
+//			item.dispose ();
+//		} else {
+//			releaseItem (tvItem.hItem, tvItem, false);
+//			destroyItem (null, tvItem.hItem);
+//		}
+//	}
+//	if ((style & SWT.VIRTUAL) != 0) {
+//		for (int i=itemCount; i<count; i++) {
+//			createItem (null, hParent, OS.TVI_LAST, 0);
+//		}
+//	} else {
+//		shrink = true;
+//		int extra = Math.max (4, (count + 3) / 4 * 4);
+//		TreeItem [] newItems = new TreeItem [items.length + extra];
+//		System.arraycopy (items, 0, newItems, 0, items.length);
+//		items = newItems;
+//		for (int i=itemCount; i<count; i++) {
+//			new TreeItem (this, SWT.NONE, hParent, OS.TVI_LAST, 0);
+//		}
+//	}
+//	if (redraw) {
+//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+//		OS.InvalidateRect (handle, null, true);
+//	}
 }
 
 /**
@@ -1525,9 +1528,9 @@ void setItemCount (TreeItem parentItem, ArrayList itemList, int count) {
  * @since 3.2
  */
 /*public*/ void setItemHeight (int itemHeight) {
-  checkWidget ();
-  if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
-  ((CTree)handle).setRowHeight(itemHeight);
+	checkWidget ();
+	if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
+	((CTree)handle).setRowHeight(itemHeight);
 }
 
 /**
@@ -1550,7 +1553,7 @@ void setItemCount (TreeItem parentItem, ArrayList itemList, int count) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
-  ((CTree)handle).setGridVisible(show);
+	((CTree)handle).setGridVisible(show);
 }
 
 //int scrolledHandle () {
@@ -1573,7 +1576,7 @@ public void setLinesVisible (boolean show) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-  ((CTree)handle).selectAll();
+	((CTree)handle).selectAll();
 }
 
 //void setBounds (int x, int y, int width, int height, int flags) {
@@ -1687,54 +1690,54 @@ public void selectAll () {
  * @since 3.2
  */
 public void setColumnOrder (int [] order) {
-  checkWidget ();
-  if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-  int columnCount = getColumnCount();
-  if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
-  ((CTree)handle).setColumnOrder(order);
-//  int count = 0;
-//  if (hwndHeader != 0) {
-//    count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-//  }
-//  if (count == 0) {
-//    if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
-//    return;
-//  }
-//  if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
-//  int [] oldOrder = new int [count];
-//  OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
-//  boolean reorder = false;
-//  boolean [] seen = new boolean [count];
-//  for (int i=0; i<order.length; i++) {
-//    int index = order [i];
-//    if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
-//    if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
-//    seen [index] = true;
-//    if (index != oldOrder [i]) reorder = true;
-//  }
-//  if (reorder) {
-//    RECT [] oldRects = new RECT [count];
-//    for (int i=0; i<count; i++) {
-//      oldRects [i] = new RECT ();
-//      OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
-//    }
-//    OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
-//    OS.InvalidateRect (handle, null, true);
-//    updateImageList ();
-//    TreeColumn [] newColumns = new TreeColumn [count];
-//    System.arraycopy (columns, 0, newColumns, 0, count);
-//    RECT newRect = new RECT ();
-//    for (int i=0; i<count; i++) {
-//      TreeColumn column = newColumns [i];
-//      if (!column.isDisposed ()) {
-//        OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
-//        if (newRect.left != oldRects [i].left) {
-//          column.updateToolTip (i);
-//          column.sendEvent (SWT.Move);
-//        }
-//      }
-//    }
-//  }
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int columnCount = getColumnCount();
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	((CTree)handle).setColumnOrder(order);
+//	int count = 0;
+//	if (hwndHeader != 0) {
+//		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+//	}
+//	if (count == 0) {
+//		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+//		return;
+//	}
+//	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+//	int [] oldOrder = new int [count];
+//	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
+//	boolean reorder = false;
+//	boolean [] seen = new boolean [count];
+//	for (int i=0; i<order.length; i++) {
+//		int index = order [i];
+//		if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+//		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+//		seen [index] = true;
+//		if (index != oldOrder [i]) reorder = true;
+//	}
+//	if (reorder) {
+//		RECT [] oldRects = new RECT [count];
+//		for (int i=0; i<count; i++) {
+//			oldRects [i] = new RECT ();
+//			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
+//		}
+//		OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
+//		OS.InvalidateRect (handle, null, true);
+//		updateImageList ();
+//		TreeColumn [] newColumns = new TreeColumn [count];
+//		System.arraycopy (columns, 0, newColumns, 0, count);
+//		RECT newRect = new RECT ();
+//		for (int i=0; i<count; i++) {
+//			TreeColumn column = newColumns [i];
+//			if (!column.isDisposed ()) {
+//				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
+//				if (newRect.left != oldRects [i].left) {
+//					column.updateToolTip (i);
+//					column.sendEvent (SWT.Move);
+//				}
+//			}
+//		}
+//	}
 }
 
 /**
@@ -1807,7 +1810,7 @@ public void setHeaderForeground (Color color) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-  ((CTree)handle).setHeaderVisible(show);
+	((CTree)handle).setHeaderVisible(show);
 }
 
 //void setScrollWidth () {
@@ -1883,9 +1886,9 @@ public void setHeaderVisible (boolean show) {
  * @since 3.2
  */
 public void setSelection (TreeItem item) {
-  checkWidget ();
-  if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-  setSelection (new TreeItem [] {item});
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (new TreeItem [] {item});
 }
 
 /**
@@ -1918,11 +1921,11 @@ public void setSelection (TreeItem [] items) {
 		deselectAll();
 		return;
 	}
-  TreePath[] paths = new TreePath[items.length];
-  for (int i = 0; i < items.length; i++) {
-    paths[i] = new TreePath(items[i].handle.getPath());
-  }
-  ((CTree)handle).getSelectionModel().setSelectionPaths(paths);
+	TreePath[] paths = new TreePath[items.length];
+	for (int i = 0; i < items.length; i++) {
+		paths[i] = new TreePath(items[i].handle.getPath());
+	}
+	((CTree)handle).getSelectionModel().setSelectionPaths(paths);
 }
 
 /**
@@ -1943,10 +1946,10 @@ public void setSelection (TreeItem [] items) {
  * @since 3.2
  */
 public void setSortColumn (TreeColumn column) {
-  checkWidget ();
-  if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  sortColumn = column;
-  handle.repaint();
+	checkWidget ();
+	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	sortColumn = column;
+	handle.repaint();
 }
 
 /**
@@ -1963,10 +1966,10 @@ public void setSortColumn (TreeColumn column) {
  * @since 3.2
  */
 public void setSortDirection (int direction) {
-  checkWidget ();
-  if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
-  sortDirection = direction;
-  handle.repaint();
+	checkWidget ();
+	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
+	sortDirection = direction;
+	handle.repaint();
 }
 
 /**
@@ -1993,11 +1996,11 @@ public void setTopItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  int row = ((CTree)handle).getRowForPath(new TreePath(item.handle.getPath()));
-  if(row < 0) {
-    return;
-  }
-  ((CTree)handle).setTopIndex(row);
+	int row = ((CTree)handle).getRowForPath(new TreePath(item.handle.getPath()));
+	if(row < 0) {
+		return;
+	}
+	((CTree)handle).setTopIndex(row);
 }
 
 //void showItem (int hItem) {
@@ -2103,7 +2106,7 @@ public void showColumn (TreeColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (index == -1) return;
-  ((CTree)handle).ensureColumnVisible(index);
+	((CTree)handle).ensureColumnVisible(index);
 }
 
 /**
@@ -2128,11 +2131,11 @@ public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-  int row = ((CTree)handle).getRowForPath(new TreePath(item.handle.getPath()));
-  if(row < 0) {
-    return;
-  }
-  ((CTree)handle).ensureRowVisible(row);
+	int row = ((CTree)handle).getRowForPath(new TreePath(item.handle.getPath()));
+	if(row < 0) {
+		return;
+	}
+	((CTree)handle).ensureRowVisible(row);
 }
 
 /**
@@ -2149,11 +2152,11 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
-  int selectionRow = ((CTree)handle).getSelectionModel().getLeadSelectionRow();
-  if(selectionRow == -1) {
-    return;
-  }
-  ((CTree)handle).ensureRowVisible(selectionRow);
+	int selectionRow = ((CTree)handle).getSelectionModel().getLeadSelectionRow();
+	if(selectionRow == -1) {
+		return;
+	}
+	((CTree)handle).ensureRowVisible(selectionRow);
 }
 
 //void showWidget (boolean visible) {
@@ -3589,194 +3592,194 @@ public void showSelection () {
 //}
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-  java.awt.Dimension size = handle.getPreferredSize();
-  return new Point(size.width, size.height);
+	java.awt.Dimension size = handle.getPreferredSize();
+	return new Point(size.width, size.height);
 }
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.DefaultSelection) || ((MouseEvent)e).getClickCount() != 2) { super.processEvent(e); return; } break;
-  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case MouseEvent.MOUSE_CLICKED:
-      MouseEvent me = (MouseEvent)e;
-      if(me.getClickCount() == 2) {
-        java.awt.Point location = me.getPoint();
-        TreePath path = ((CTree)handle).getPathForLocation(location.x, location.y);
-        if(path != null) {
-          Event event = new Event();
-          event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-          sendEvent(SWT.DefaultSelection, event);
-        }
-      }
-      break;
-    case ItemEvent.ITEM_STATE_CHANGED:
-      Event event = new Event();
-      event.detail = SWT.CHECK;
-      event.item = ((CTreeItem)((ItemEvent)e).getItem()).getTreeItem();
-      sendEvent(SWT.Selection, event);
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case MouseEvent.MOUSE_CLICKED: if(!hooks(SWT.DefaultSelection) || ((MouseEvent)e).getClickCount() != 2) { super.processEvent(e); return; } break;
+	case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection)) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case MouseEvent.MOUSE_CLICKED:
+			MouseEvent me = (MouseEvent)e;
+			if(me.getClickCount() == 2) {
+				java.awt.Point location = me.getPoint();
+				TreePath path = ((CTree)handle).getPathForLocation(location.x, location.y);
+				if(path != null) {
+					Event event = new Event();
+					event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+					sendEvent(SWT.DefaultSelection, event);
+				}
+			}
+			break;
+		case ItemEvent.ITEM_STATE_CHANGED:
+			Event event = new Event();
+			event.detail = SWT.CHECK;
+			event.item = ((CTreeItem)((ItemEvent)e).getItem()).getTreeItem();
+			sendEvent(SWT.Selection, event);
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof TreeExpansionEvent) {
-    TreePath path = ((TreeExpansionEvent)e).getPath();
-    if(!(path.getLastPathComponent() instanceof CTreeItem)) {
-      super.processEvent(e);
-      return;
-    }
-    boolean isExpanded = ((CTree)handle).isExpanded(path);
-    if(isExpanded) {
-      if(!hooks(SWT.Expand)) { super.processEvent(e); return; }
-    } else {
-      if(!hooks(SWT.Collapse)) { super.processEvent(e); return; }
-    }
-  } else if(e instanceof TreeSelectionEvent) {
-    TreePath path = ((TreeSelectionEvent)e).getPath();
-    if(!(path.getLastPathComponent() instanceof CTreeItem)) {
-      super.processEvent(e);
-      return;
-    }
-    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
-  } else if(e instanceof CellPaintEvent) {
-      switch(((CellPaintEvent)e).getType()) {
-      case CellPaintEvent.ERASE_TYPE: if(!hooks(SWT.EraseItem)) { super.processEvent(e); return; } break;
-      case CellPaintEvent.PAINT_TYPE: if(!hooks(SWT.PaintItem)) { super.processEvent(e); return; } break;
-      case CellPaintEvent.MEASURE_TYPE: if(!hooks(SWT.MeasureItem)) { super.processEvent(e); return; } break;
-      default: super.processEvent(e); return;
-      }
-  } else {
-    super.processEvent(e);
-    return;
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  try {
-    UIThreadUtils.startExclusiveSection(getDisplay());
-    if(isDisposed()) {
-      UIThreadUtils.stopExclusiveSection();
-      super.processEvent(e);
-      return;
-    }
-    if(e instanceof TreeExpansionEvent) {
-      TreePath path = ((TreeExpansionEvent)e).getPath();
-      boolean isExpanded = ((CTree)handle).isExpanded(path);
-      Event event = new Event();
-      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-      if(isExpanded) {
-        sendEvent(SWT.Expand, event);
-        ((CTree)handle).expandPath(path);
-      } else {
-        sendEvent(SWT.Collapse, event);
-        ((CTree)handle).collapsePath(path);
-      }
-    } else if(e instanceof TreeSelectionEvent) {
-      TreePath path = ((TreeSelectionEvent)e).getPath();
-      Event event = new Event();
-      event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
-      sendEvent(SWT.Selection, event);
-    } else   if(e instanceof CellPaintEvent) {
-      CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
-      switch(cellPaintEvent.getType()) {
-      case CellPaintEvent.ERASE_TYPE: {
-        TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
-        Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
-        Event event = new Event();
-        event.x = cellBounds.x;
-        event.y = cellBounds.y;
-        event.width = cellBounds.width;
-        event.height = cellBounds.height;
-        event.item = treeItem;
-        event.index = cellPaintEvent.column;
-        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-        event.gc = new GC(this);
-        event.gc.handle.setUserClip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-//        event.gc.isSwingPainting = true;
-        sendEvent(SWT.EraseItem, event);
-        if(event.doit) {
-          cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
-          cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
-          cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-          cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
-        } else {
-          cellPaintEvent.ignoreDrawForeground = true;
-          cellPaintEvent.ignoreDrawBackground = true;
-          cellPaintEvent.ignoreDrawSelection = true;
-          cellPaintEvent.ignoreDrawFocused = true;
-        }
-//        event.gc.isSwingPainting = false; 
-        break;
-      }
-      case CellPaintEvent.PAINT_TYPE: {
-        TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
-        Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
-        Event event = new Event();
-        event.x = cellBounds.x;
-        event.y = cellBounds.y;
-        event.width = cellBounds.width;
-        event.height = cellBounds.height;
-        event.item = treeItem;
-        event.index = cellPaintEvent.column;
-        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-        event.gc = new GC(this);
-        event.gc.handle.setUserClip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-        sendEvent(SWT.PaintItem, event);
-        break;
-      }
-      case CellPaintEvent.MEASURE_TYPE:
-        TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
-//        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-        Event event = new Event();
-//        event.x = cellBounds.x;
-//        event.y = cellBounds.y;
-//        event.width = cellBounds.width;
-//        event.height = cellBounds.height;
-        event.height = cellPaintEvent.rowHeight;
-        event.item = treeItem;
-        event.index = cellPaintEvent.column;
-        event.gc = new GC(this);
-//        event.gc.handle.clip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-        sendEvent(SWT.MeasureItem, event);
-//        cellPaintEvent.rowHeight -= event.height - cellBounds.height;
-        cellPaintEvent.rowHeight = event.height;
-        break;
-      }
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof TreeExpansionEvent) {
+		TreePath path = ((TreeExpansionEvent)e).getPath();
+		if(!(path.getLastPathComponent() instanceof CTreeItem)) {
+			super.processEvent(e);
+			return;
+		}
+		boolean isExpanded = ((CTree)handle).isExpanded(path);
+		if(isExpanded) {
+			if(!hooks(SWT.Expand)) { super.processEvent(e); return; }
+		} else {
+			if(!hooks(SWT.Collapse)) { super.processEvent(e); return; }
+		}
+	} else if(e instanceof TreeSelectionEvent) {
+		TreePath path = ((TreeSelectionEvent)e).getPath();
+		if(!(path.getLastPathComponent() instanceof CTreeItem)) {
+			super.processEvent(e);
+			return;
+		}
+		if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+	} else if(e instanceof CellPaintEvent) {
+			switch(((CellPaintEvent)e).getType()) {
+			case CellPaintEvent.ERASE_TYPE: if(!hooks(SWT.EraseItem)) { super.processEvent(e); return; } break;
+			case CellPaintEvent.PAINT_TYPE: if(!hooks(SWT.PaintItem)) { super.processEvent(e); return; } break;
+			case CellPaintEvent.MEASURE_TYPE: if(!hooks(SWT.MeasureItem)) { super.processEvent(e); return; } break;
+			default: super.processEvent(e); return;
+			}
+	} else {
+		super.processEvent(e);
+		return;
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	try {
+		UIThreadUtils.startExclusiveSection(getDisplay());
+		if(isDisposed()) {
+			UIThreadUtils.stopExclusiveSection();
+			super.processEvent(e);
+			return;
+		}
+		if(e instanceof TreeExpansionEvent) {
+			TreePath path = ((TreeExpansionEvent)e).getPath();
+			boolean isExpanded = ((CTree)handle).isExpanded(path);
+			Event event = new Event();
+			event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+			if(isExpanded) {
+				sendEvent(SWT.Expand, event);
+				((CTree)handle).expandPath(path);
+			} else {
+				sendEvent(SWT.Collapse, event);
+				((CTree)handle).collapsePath(path);
+			}
+		} else if(e instanceof TreeSelectionEvent) {
+			TreePath path = ((TreeSelectionEvent)e).getPath();
+			Event event = new Event();
+			event.item = ((CTreeItem)path.getLastPathComponent()).getTreeItem();
+			sendEvent(SWT.Selection, event);
+		} else   if(e instanceof CellPaintEvent) {
+			CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
+			switch(cellPaintEvent.getType()) {
+			case CellPaintEvent.ERASE_TYPE: {
+				TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+				Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+				Event event = new Event();
+				event.x = cellBounds.x;
+				event.y = cellBounds.y;
+				event.width = cellBounds.width;
+				event.height = cellBounds.height;
+				event.item = treeItem;
+				event.index = cellPaintEvent.column;
+				if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+				if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+				if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+				if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+				event.gc = new GC(this);
+				event.gc.handle.setUserClip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+//				event.gc.isSwingPainting = true;
+				sendEvent(SWT.EraseItem, event);
+				if(event.doit) {
+					cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
+					cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+					cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+					cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
+				} else {
+					cellPaintEvent.ignoreDrawForeground = true;
+					cellPaintEvent.ignoreDrawBackground = true;
+					cellPaintEvent.ignoreDrawSelection = true;
+					cellPaintEvent.ignoreDrawFocused = true;
+				}
+//				event.gc.isSwingPainting = false; 
+				break;
+			}
+			case CellPaintEvent.PAINT_TYPE: {
+				TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+				Rectangle cellBounds = treeItem.getBounds(cellPaintEvent.column);
+				Event event = new Event();
+				event.x = cellBounds.x;
+				event.y = cellBounds.y;
+				event.width = cellBounds.width;
+				event.height = cellBounds.height;
+				event.item = treeItem;
+				event.index = cellPaintEvent.column;
+				if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+				if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+				if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+				if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+				event.gc = new GC(this);
+				event.gc.handle.setUserClip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+				sendEvent(SWT.PaintItem, event);
+				break;
+			}
+			case CellPaintEvent.MEASURE_TYPE:
+				TreeItem treeItem = cellPaintEvent.treeItem.getTreeItem();
+//				Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+				Event event = new Event();
+//				event.x = cellBounds.x;
+//				event.y = cellBounds.y;
+//				event.width = cellBounds.width;
+//				event.height = cellBounds.height;
+				event.height = cellPaintEvent.rowHeight;
+				event.item = treeItem;
+				event.index = cellPaintEvent.column;
+				event.gc = new GC(this);
+//				event.gc.handle.clip(((CTree)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+				sendEvent(SWT.MeasureItem, event);
+//				cellPaintEvent.rowHeight -= event.height - cellBounds.height;
+				cellPaintEvent.rowHeight = event.height;
+				break;
+			}
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -83,12 +86,12 @@ import org.eclipse.swt.internal.swing.CTable.CellPaintEvent;
  */
 
 public class Table extends Composite {
-  ArrayList itemList;
-  ArrayList columnList;
+	ArrayList itemList;
+	ArrayList columnList;
 //	ImageList imageList;
 	TableItem currentItem;
 	int lastIndexOf;
-//  int lastWidth;
+//	int lastWidth;
 //	boolean customDraw, dragStarted, fixScrollWidth, mouseDown, tipRequested;
 //	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
 	static final int INSET = 4;
@@ -134,11 +137,11 @@ public Table (Composite parent, int style) {
 }
 
 void adjustColumnWidth() {
-  // Could be more efficient. Should post, with coalescing?
-  if(getColumnCount() == 0) {
-    CTable cTable = (CTable)handle;
-    cTable.getColumnModel().getColumn(0).setPreferredWidth(cTable.getPreferredColumnWidth(0));
-  }
+	// Could be more efficient. Should post, with coalescing?
+	if(getColumnCount() == 0) {
+		CTable cTable = (CTable)handle;
+		cTable.getColumnModel().getColumn(0).setPreferredWidth(cTable.getPreferredColumnWidth(0));
+	}
 }
 
 /**
@@ -177,29 +180,29 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 boolean checkData (TableItem item, boolean redraw) {
-  if ((style & SWT.VIRTUAL) == 0) return true;
-  return checkData (item, indexOf (item), redraw);
+	if ((style & SWT.VIRTUAL) == 0) return true;
+	return checkData (item, indexOf (item), redraw);
 }
 
 boolean checkData (TableItem item, int index, boolean redraw) {
-  if ((style & SWT.VIRTUAL) == 0) return true;
-  if (!item.cached) {
-    item.cached = true;
-    Event event = new Event ();
-    event.item = item;
-    event.index = index;
-    currentItem = item;
-    sendEvent (SWT.SetData, event);
-    //widget could be disposed at this point
-    currentItem = null;
-    if (isDisposed () || item.isDisposed ()) return false;
-//    if (redraw) {
-//      if (!setScrollWidth (item, false)) {
-//        item.redraw ();
-//      }
-//    }
-  }
-  return true;
+	if ((style & SWT.VIRTUAL) == 0) return true;
+	if (!item.cached) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		event.index = index;
+		currentItem = item;
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		currentItem = null;
+		if (isDisposed () || item.isDisposed ()) return false;
+//		if (redraw) {
+//			if (!setScrollWidth (item, false)) {
+//				item.redraw ();
+//			}
+//		}
+	}
+	return true;
 }
 
 protected void checkSubclass () {
@@ -229,11 +232,11 @@ protected void checkSubclass () {
  */
 public void clear (int index) {
 	checkWidget ();
-  TableItem item = (TableItem)itemList.get(index);
-  if(item != null) {
-    item.clear();
-  }
-  handle.repaint();
+	TableItem item = (TableItem)itemList.get(index);
+	if(item != null) {
+		item.clear();
+	}
+	handle.repaint();
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 //	TableItem item = items [index];
@@ -291,13 +294,13 @@ public void clear (int index) {
 public void clear (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
-  for(int i=start; i<=end; i++) {
-    TableItem item = (TableItem)itemList.get(i);
-    if(item != null) {
-      item.clear();
-    }
-  }
-  handle.repaint();
+	for(int i=start; i<=end; i++) {
+		TableItem item = (TableItem)itemList.get(i);
+		if(item != null) {
+			item.clear();
+		}
+	}
+	handle.repaint();
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	if (!(0 <= start && start <= end && end < count)) {
 //		error (SWT.ERROR_INVALID_RANGE);
@@ -379,7 +382,7 @@ public void clear (int [] indices) {
 	    item.clear();
 	  }
 	}
-  handle.repaint();
+	handle.repaint();
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 //	for (int i=0; i<indices.length; i++) {
 //		if (!(0 <= indices [i] && indices [i] < count)) {
@@ -443,13 +446,13 @@ public void clear (int [] indices) {
  */
 public void clearAll () {
 	checkWidget ();
-  for (int i=itemList.size()-1; i>=0; i--) {
-    TableItem item = (TableItem)itemList.get(i);
-    if(item != null) {
-      item.clear();
-    }
-  }
-  handle.repaint();
+	for (int i=itemList.size()-1; i>=0; i--) {
+		TableItem item = (TableItem)itemList.get(i);
+		if(item != null) {
+			item.clear();
+		}
+	}
+	handle.repaint();
 //	LVITEM lvItem = null;
 //	boolean cleared = false;
 //	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -535,63 +538,63 @@ public void clearAll () {
 //}
 
 public Rectangle computeTrim(int x, int y, int width, int height) {
-  CTable cTable = (CTable)handle;
-  width += cTable.getVerticalScrollBar().getPreferredSize().width;
-  height += cTable.getHorizontalScrollBar().getPreferredSize().height;
-  return super.computeTrim(x, y, width, height);
+	CTable cTable = (CTable)handle;
+	width += cTable.getVerticalScrollBar().getPreferredSize().width;
+	height += cTable.getHorizontalScrollBar().getPreferredSize().height;
+	return super.computeTrim(x, y, width, height);
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state &= ~(CANVAS | THEME_BACKGROUND);
+	super.createHandleInit();
+	state &= ~(CANVAS | THEME_BACKGROUND);
 }
 
 protected Container createHandle () {
-  return (Container)CTable.Factory.newInstance(this, style);
+	return (Container)CTable.Factory.newInstance(this, style);
 }
 
 void createItem (TableColumn column, int index) {
-  for (int i=0; i<itemList.size(); i++) {
-    TableItem item = (TableItem)itemList.get(i);
-    if(item != null) {
-      item.handle.insertColumn(index);
-      if (index == 0) {
-        item.text = "";
-        item.image = null;
-      }
-    }
-  }
-  TableColumnModel columnModel = ((CTable)handle).getColumnModel();
-  javax.swing.table.TableColumn tableColumn = (javax.swing.table.TableColumn)column.handle;
-  if(columnList.isEmpty()) {
-    // TODO: remove a first bogus column? (3)
-    columnModel.removeColumn(columnModel.getColumn(0));
-  }
-  columnList.add(index, column);
-  for(int i=columnModel.getColumnCount()-1; i>=0; i--) {
-    javax.swing.table.TableColumn tColumn = columnModel.getColumn(i);
-    int modelIndex = tColumn.getModelIndex();
-    if(modelIndex >= index) {
-      tColumn.setModelIndex(modelIndex + 1);
-    }
-  }
-  columnModel.addColumn(tableColumn);
-  tableColumn.setModelIndex(index);
-  ((CTable)handle).moveColumn(getColumnCount()-1, index);
-  // TODO: check it is enough
-  handle.repaint();
+	for (int i=0; i<itemList.size(); i++) {
+		TableItem item = (TableItem)itemList.get(i);
+		if(item != null) {
+			item.handle.insertColumn(index);
+			if (index == 0) {
+				item.text = "";
+				item.image = null;
+			}
+		}
+	}
+	TableColumnModel columnModel = ((CTable)handle).getColumnModel();
+	javax.swing.table.TableColumn tableColumn = (javax.swing.table.TableColumn)column.handle;
+	if(columnList.isEmpty()) {
+		// TODO: remove a first bogus column? (3)
+		columnModel.removeColumn(columnModel.getColumn(0));
+	}
+	columnList.add(index, column);
+	for(int i=columnModel.getColumnCount()-1; i>=0; i--) {
+		javax.swing.table.TableColumn tColumn = columnModel.getColumn(i);
+		int modelIndex = tColumn.getModelIndex();
+		if(modelIndex >= index) {
+			tColumn.setModelIndex(modelIndex + 1);
+		}
+	}
+	columnModel.addColumn(tableColumn);
+	tableColumn.setModelIndex(index);
+	((CTable)handle).moveColumn(getColumnCount()-1, index);
+	// TODO: check it is enough
+	handle.repaint();
 }
 
 void createItem (TableItem item, int index) {
 	int count = getItemCount();
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-  itemList.add(index, item);
-  ((CTable)handle).addItem(index);
+	itemList.add(index, item);
+	((CTable)handle).addItem(index);
 }
 
 void createWidget () {
-  itemList = new ArrayList();
-  columnList = new ArrayList();
+	itemList = new ArrayList();
+	columnList = new ArrayList();
 	super.createWidget ();
 }
 
@@ -617,12 +620,12 @@ public void deselect (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
 	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  isAdjustingSelection = true;
-  for(int i=0; i<indices.length; i++) {
-    int index = indices[i];
-    selectionModel.removeSelectionInterval(index, index);
-  }
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	for(int i=0; i<indices.length; i++) {
+		int index = indices[i];
+		selectionModel.removeSelectionInterval(index, index);
+	}
+	isAdjustingSelection = false;
 }
 
 /**
@@ -640,9 +643,9 @@ public void deselect (int [] indices) {
 public void deselect (int index) {
 	checkWidget ();
 	if (index < 0) return;
-  isAdjustingSelection = true;
-  ((CTable)handle).getSelectionModel().removeSelectionInterval(index, index);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CTable)handle).getSelectionModel().removeSelectionInterval(index, index);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -662,9 +665,9 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CTable)handle).getSelectionModel().removeSelectionInterval(start, end);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CTable)handle).getSelectionModel().removeSelectionInterval(start, end);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -677,37 +680,37 @@ public void deselect (int start, int end) {
  */
 public void deselectAll () {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CTable)handle).getSelectionModel().clearSelection();
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CTable)handle).getSelectionModel().clearSelection();
+	isAdjustingSelection = false;
 }
 
 void destroyItem (TableColumn column) {
-  int index = columnList.indexOf(column);
-  for (int i=0; i<itemList.size(); i++) {
-    TableItem item = (TableItem)itemList.get(i);
-    if(item != null) {
-      item.handle.removeColumn(index);
-    }
-  }
-  columnList.remove(index);
-  if(columnList.isEmpty()) {
-    // TODO: add a first bogus column? (2)
-    TableColumnModel columnModel = ((CTable)handle).getColumnModel();
-    javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
-    columnModel.addColumn(tableColumn);
-  }
-  if(sortColumn == column) {
-    sortColumn = null;
-    sortDirection = SWT.NONE;
-  }
-  handle.repaint();
+	int index = columnList.indexOf(column);
+	for (int i=0; i<itemList.size(); i++) {
+		TableItem item = (TableItem)itemList.get(i);
+		if(item != null) {
+			item.handle.removeColumn(index);
+		}
+	}
+	columnList.remove(index);
+	if(columnList.isEmpty()) {
+		// TODO: add a first bogus column? (2)
+		TableColumnModel columnModel = ((CTable)handle).getColumnModel();
+		javax.swing.table.TableColumn tableColumn = new javax.swing.table.TableColumn(0);
+		columnModel.addColumn(tableColumn);
+	}
+	if(sortColumn == column) {
+		sortColumn = null;
+		sortDirection = SWT.NONE;
+	}
+	handle.repaint();
 }
 
 void destroyItem (TableItem item) {
-  int index = indexOf(item);
-  itemList.remove(item);
-  ((CTable)handle).removeItem(index);
+	int index = indexOf(item);
+	itemList.remove(item);
+	((CTable)handle).removeItem(index);
 }
 
 /**
@@ -739,10 +742,10 @@ void destroyItem (TableItem item) {
  */
 public TableColumn getColumn (int index) {
 	checkWidget ();
-  if (columnList == null) error (SWT.ERROR_INVALID_RANGE);
-  int count = getColumnCount();
-  if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-  return (TableColumn)columnList.get(index);
+	if (columnList == null) error (SWT.ERROR_INVALID_RANGE);
+	int count = getColumnCount();
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	return (TableColumn)columnList.get(index);
 }
 
 /**
@@ -761,7 +764,7 @@ public TableColumn getColumn (int index) {
  */
 public int getColumnCount () {
 	checkWidget ();
-  return columnList == null? 0: columnList.size();
+	return columnList == null? 0: columnList.size();
 }
 
 /**
@@ -826,8 +829,8 @@ public int[] getColumnOrder () {
  */
 public TableColumn [] getColumns () {
 	checkWidget ();
-  if (columnList == null) return new TableColumn [0];
-  return (TableColumn[])columnList.toArray(new TableColumn[0]);
+	if (columnList == null) return new TableColumn [0];
+	return (TableColumn[])columnList.toArray(new TableColumn[0]);
 }
 
 ///*
@@ -901,8 +904,8 @@ public Color getHeaderForeground () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-  JTableHeader tableHeader = ((CTable)handle).getTableHeader();
-  return tableHeader.isVisible()? tableHeader.getHeight(): 0;
+	JTableHeader tableHeader = ((CTable)handle).getTableHeader();
+	return tableHeader.isVisible()? tableHeader.getHeight(): 0;
 }
 
 /**
@@ -924,7 +927,7 @@ public int getHeaderHeight () {
  */
 public boolean getHeaderVisible () {
 	checkWidget ();
-  return ((CTable)handle).getTableHeader().isVisible();
+	return ((CTable)handle).getTableHeader().isVisible();
 }
 
 /**
@@ -975,18 +978,18 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-  int row = ((CTable)handle).rowAtPoint(new java.awt.Point(point.x, point.y));
-  if(row < 0) return null;
-  return _getItem(row);
+	int row = ((CTable)handle).rowAtPoint(new java.awt.Point(point.x, point.y));
+	if(row < 0) return null;
+	return _getItem(row);
 }
 
 TableItem _getItem (int index) {
-  TableItem tableItem = (TableItem)itemList.get(index);
-  if ((style & SWT.VIRTUAL) == 0) return tableItem;
-  if (tableItem != null) return tableItem;
-  tableItem = new TableItem (this, SWT.NONE, -1, false);
-  itemList.set(index, tableItem);
-  return tableItem;
+	TableItem tableItem = (TableItem)itemList.get(index);
+	if ((style & SWT.VIRTUAL) == 0) return tableItem;
+	if (tableItem != null) return tableItem;
+	tableItem = new TableItem (this, SWT.NONE, -1, false);
+	itemList.set(index, tableItem);
+	return tableItem;
 }
 
 /**
@@ -1001,7 +1004,7 @@ TableItem _getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-  return itemList == null? 0: itemList.size();
+	return itemList == null? 0: itemList.size();
 }
 
 /**
@@ -1017,7 +1020,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-  return ((CTable)handle).getRowHeight();
+	return ((CTable)handle).getRowHeight();
 }
 
 /**
@@ -1038,14 +1041,14 @@ public int getItemHeight () {
  */
 public TableItem [] getItems () {
 	checkWidget ();
-  if ((style & SWT.VIRTUAL) != 0) {
-    TableItem[] items = new TableItem[getItemCount()];
-    for(int i=0; i<items.length; i++) {
-      items[i] = _getItem(i);
-    }
-    return items;
-  }
-  return (TableItem[])itemList.toArray(new TableItem[0]);
+	if ((style & SWT.VIRTUAL) != 0) {
+		TableItem[] items = new TableItem[getItemCount()];
+		for(int i=0; i<items.length; i++) {
+			items[i] = _getItem(i);
+		}
+		return items;
+	}
+	return (TableItem[])itemList.toArray(new TableItem[0]);
 }
 
 /**
@@ -1067,7 +1070,7 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
-  return ((CTable)handle).isGridVisible();
+	return ((CTable)handle).isGridVisible();
 }
 
 /**
@@ -1088,22 +1091,22 @@ public boolean getLinesVisible () {
  */
 public TableItem [] getSelection () {
 	checkWidget ();
-  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  int minSelectionIndex = selectionModel.getMinSelectionIndex();
-  int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
-  if(minSelectionIndex == -1 || maxSelectionIndex == -1) {
-    return new TableItem[0];
-  }
-  TableItem[] selectedIndices_ = new TableItem[1 + maxSelectionIndex - minSelectionIndex];
-  int count = 0;
-  for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
-    if(selectionModel.isSelectedIndex(i)) {
-      selectedIndices_[count++] = _getItem(i);
-    }
-  }
-  TableItem[] selectedIndices = new TableItem[count];
-  System.arraycopy(selectedIndices_, 0, selectedIndices, 0, count);
-  return selectedIndices;
+	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+	int minSelectionIndex = selectionModel.getMinSelectionIndex();
+	int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
+	if(minSelectionIndex == -1 || maxSelectionIndex == -1) {
+		return new TableItem[0];
+	}
+	TableItem[] selectedIndices_ = new TableItem[1 + maxSelectionIndex - minSelectionIndex];
+	int count = 0;
+	for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
+		if(selectionModel.isSelectedIndex(i)) {
+			selectedIndices_[count++] = _getItem(i);
+		}
+	}
+	TableItem[] selectedIndices = new TableItem[count];
+	System.arraycopy(selectedIndices_, 0, selectedIndices, 0, count);
+	return selectedIndices;
 }
 
 /**
@@ -1118,16 +1121,16 @@ public TableItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  int minSelectionIndex = selectionModel.getMinSelectionIndex();
-  int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
-  int count = 0;
-  for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
-    if(selectionModel.isSelectedIndex(i)) {
-      count++;
-    }
-  }
-  return count;
+	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+	int minSelectionIndex = selectionModel.getMinSelectionIndex();
+	int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
+	int count = 0;
+	for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
+		if(selectionModel.isSelectedIndex(i)) {
+			count++;
+		}
+	}
+	return count;
 }
 
 /**
@@ -1143,8 +1146,8 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget ();
-  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  return selectionModel.getMinSelectionIndex();
+	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+	return selectionModel.getMinSelectionIndex();
 }
 
 /**
@@ -1165,22 +1168,22 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  int minSelectionIndex = selectionModel.getMinSelectionIndex();
-  int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
-  if(minSelectionIndex == -1 || maxSelectionIndex == -1) {
-    return new int[0];
-  }
-  int[] selectedIndices_ = new int[1 + maxSelectionIndex - minSelectionIndex];
-  int count = 0;
-  for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
-    if(selectionModel.isSelectedIndex(i)) {
-      selectedIndices_[count++] = i;
-    }
-  }
-  int[] selectedIndices = new int[count];
-  System.arraycopy(selectedIndices_, 0, selectedIndices, 0, count);
-  return selectedIndices;
+	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+	int minSelectionIndex = selectionModel.getMinSelectionIndex();
+	int maxSelectionIndex = selectionModel.getMaxSelectionIndex();
+	if(minSelectionIndex == -1 || maxSelectionIndex == -1) {
+		return new int[0];
+	}
+	int[] selectedIndices_ = new int[1 + maxSelectionIndex - minSelectionIndex];
+	int count = 0;
+	for(int i=minSelectionIndex; i<=maxSelectionIndex; i++) {
+		if(selectionModel.isSelectedIndex(i)) {
+			selectedIndices_[count++] = i;
+		}
+	}
+	int[] selectedIndices = new int[count];
+	System.arraycopy(selectedIndices_, 0, selectedIndices, 0, count);
+	return selectedIndices;
 }
 
 TableColumn sortColumn;
@@ -1203,8 +1206,8 @@ int sortDirection;
  * @since 3.2
  */
 public TableColumn getSortColumn () {
-  checkWidget ();
-  return sortColumn;
+	checkWidget ();
+	return sortColumn;
 }
 
 /**
@@ -1224,8 +1227,8 @@ public TableColumn getSortColumn () {
  * @since 3.2
  */
 public int getSortDirection () {
-  checkWidget ();
-  return sortDirection;
+	checkWidget ();
+	return sortDirection;
 }
 
 /**
@@ -1242,8 +1245,8 @@ public int getSortDirection () {
  */
 public int getTopIndex () {
 	checkWidget ();
-  // Should we return -1 or 0 when there are no items?
-  return Math.max(0, ((CTable)handle).getTopIndex());
+	// Should we return -1 or 0 when there are no items?
+	return Math.max(0, ((CTable)handle).getTopIndex());
 }
 
 //int imageIndex (Image image) {
@@ -1297,8 +1300,8 @@ public int getTopIndex () {
 public int indexOf (TableColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
-  if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-  return columnList.indexOf(column);
+	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	return columnList.indexOf(column);
 }
 
 /**
@@ -1354,31 +1357,31 @@ public int indexOf (TableItem item) {
  */
 public boolean isSelected (int index) {
 	checkWidget ();
-  return ((CTable)handle).getSelectionModel().isSelectedIndex(index);
+	return ((CTable)handle).getSelectionModel().isSelectedIndex(index);
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-  java.awt.Dimension size = handle.getPreferredSize();
-  return new Point(size.width, size.height);
+	java.awt.Dimension size = handle.getPreferredSize();
+	return new Point(size.width, size.height);
 }
 
 void releaseChildren (boolean destroy) {
-  if(itemList != null) {
-    for (int i=itemList.size()-1; i>=0; i--) {
-      TableItem item = (TableItem)itemList.get(i);
-      if (item != null && !item.isDisposed ()) item.release (false);
-    }
-    itemList = null;
-  }
-  if(columnList != null) {
-    for(int i=0; i<columnList.size(); i++) {
-      TableColumn column = (TableColumn)columnList.get(i);
-      if (!column.isDisposed ()) column.release (false);
-    }
-    columnList = null;
-  }
-//  
-//  int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	if(itemList != null) {
+		for (int i=itemList.size()-1; i>=0; i--) {
+			TableItem item = (TableItem)itemList.get(i);
+			if (item != null && !item.isDisposed ()) item.release (false);
+		}
+		itemList = null;
+	}
+	if(columnList != null) {
+		for(int i=0; i<columnList.size(); i++) {
+			TableColumn column = (TableColumn)columnList.get(i);
+			if (!column.isDisposed ()) column.release (false);
+		}
+		columnList = null;
+	}
+//	
+//	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 //	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 //	if (columnCount == 1 && columns [0] == null) columnCount = 0;
 //	for (int i=0; i<columnCount; i++) {
@@ -1460,16 +1463,16 @@ public void remove (int [] indices) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-  for(int i=0; i<newIndices.length; i++) {
-    int index = newIndices[i];
-    TableItem tableItem = (TableItem)itemList.get(index);
-    if(tableItem != null) {
-      tableItem.dispose();
-    } else {
-      itemList.remove(index);
-      ((CTable)handle).removeItem(index);
-    }
-  }
+	for(int i=0; i<newIndices.length; i++) {
+		int index = newIndices[i];
+		TableItem tableItem = (TableItem)itemList.get(index);
+		if(tableItem != null) {
+			tableItem.dispose();
+		} else {
+			itemList.remove(index);
+			((CTable)handle).removeItem(index);
+		}
+	}
 }
 
 /**
@@ -1490,13 +1493,13 @@ public void remove (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-  TableItem tableItem = (TableItem)itemList.get(index);
-  if(tableItem != null) {
-    tableItem.dispose();
-  } else {
-    itemList.remove(index);
-    ((CTable)handle).removeItem(index);
-  }
+	TableItem tableItem = (TableItem)itemList.get(index);
+	if(tableItem != null) {
+		tableItem.dispose();
+	} else {
+		itemList.remove(index);
+		((CTable)handle).removeItem(index);
+	}
 }
 
 /**
@@ -1522,15 +1525,15 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-  for(int i=end; i>=start; i--) {
-    TableItem tableItem = (TableItem)itemList.get(i);
-    if(tableItem != null) {
-      tableItem.dispose();
-    } else {
-      itemList.remove(i);
-      ((CTable)handle).removeItem(i);
-    }
-  }
+	for(int i=end; i>=start; i--) {
+		TableItem tableItem = (TableItem)itemList.get(i);
+		if(tableItem != null) {
+			tableItem.dispose();
+		} else {
+			itemList.remove(i);
+			((CTable)handle).removeItem(i);
+		}
+	}
 }
 
 /**
@@ -1543,15 +1546,15 @@ public void remove (int start, int end) {
  */
 public void removeAll () {
 	checkWidget ();
-  for(int i=itemList.size()-1; i>=0; i--) {
-    TableItem tableItem = (TableItem)itemList.get(i);
-    if(tableItem != null) {
-      tableItem.dispose();
-    } else {
-      itemList.remove(i);
-      ((CTable)handle).removeItem(i);
-    }
-  }
+	for(int i=itemList.size()-1; i>=0; i--) {
+		TableItem tableItem = (TableItem)itemList.get(i);
+		if(tableItem != null) {
+			tableItem.dispose();
+		} else {
+			itemList.remove(i);
+			((CTable)handle).removeItem(i);
+		}
+	}
 }
 
 /**
@@ -1610,12 +1613,12 @@ public void select (int [] indices) {
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  isAdjustingSelection = true;
-  for(int i=0; i<indices.length; i++) {
-    int index = indices[i];
-    selectionModel.addSelectionInterval(index, index);
-  }
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	for(int i=0; i<indices.length; i++) {
+		int index = indices[i];
+		selectionModel.addSelectionInterval(index, index);
+	}
+	isAdjustingSelection = false;
 }
 
 /**
@@ -1632,9 +1635,9 @@ public void select (int [] indices) {
  */
 public void select (int index) {
 	checkWidget ();
-  isAdjustingSelection = true;
-  ((CTable)handle).getSelectionModel().addSelectionInterval(index, index);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CTable)handle).getSelectionModel().addSelectionInterval(index, index);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -1663,9 +1666,9 @@ public void select (int index) {
 public void select (int start, int end) {
 	checkWidget ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-  isAdjustingSelection = true;
-  ((CTable)handle).getSelectionModel().addSelectionInterval(start, end);
-  isAdjustingSelection = false;
+	isAdjustingSelection = true;
+	((CTable)handle).getSelectionModel().addSelectionInterval(start, end);
+	isAdjustingSelection = false;
 }
 
 /**
@@ -1682,11 +1685,11 @@ public void select (int start, int end) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-  if(!itemList.isEmpty()) {
-    isAdjustingSelection = true;
-    ((CTable)handle).getSelectionModel().addSelectionInterval(0, itemList.size() - 1);
-    isAdjustingSelection = false;
-  }
+	if(!itemList.isEmpty()) {
+		isAdjustingSelection = true;
+		((CTable)handle).getSelectionModel().addSelectionInterval(0, itemList.size() - 1);
+		isAdjustingSelection = false;
+	}
 }
 
 //LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lParam) {
@@ -1806,9 +1809,9 @@ public void selectAll () {
 public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
-  int columnCount = getColumnCount();
-  if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
-  ((CTable)handle).setColumnOrder(order);
+	int columnCount = getColumnCount();
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	((CTable)handle).setColumnOrder(order);
 //	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 //	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
 //	if (count == 1 && columns [0] == null) {
@@ -1916,11 +1919,11 @@ public void setColumnOrder (int [] order) {
 
 void setFocusIndex (int index) {
 //	checkWidget ();	
-  if(index < 0 || index >= getItemCount()) return;
-  DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
-  selectionModel.addSelectionInterval(index, index);
-  selectionModel.setAnchorSelectionIndex(index);
-  selectionModel.setLeadSelectionIndex(index);
+	if(index < 0 || index >= getItemCount()) return;
+	DefaultListSelectionModel selectionModel = ((CTable)handle).getSelectionModel();
+	selectionModel.addSelectionInterval(index, index);
+	selectionModel.setAnchorSelectionIndex(index);
+	selectionModel.setLeadSelectionIndex(index);
 }
 
 /**
@@ -1991,7 +1994,7 @@ public void setHeaderForeground (Color color) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-  ((CTable)handle).setHeaderVisible(show);
+	((CTable)handle).setHeaderVisible(show);
 }
 
 /**
@@ -2018,7 +2021,7 @@ public void setItemCount (int count) {
 	while (index < tmpItemCount) {
 		TableItem item = (TableItem)itemList.get(tmpItemCount - 1);
 //		if (!isVirtual) {
-//      ((CTable)handle).removeItem(index);
+//			((CTable)handle).removeItem(index);
 //		}
 		if (item != null && !item.isDisposed ()) {
 		  item.release (true);
@@ -2029,15 +2032,15 @@ public void setItemCount (int count) {
 		tmpItemCount--;
 	}
 //	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
-  itemList.ensureCapacity(count);
-  for(int i=itemCount; i<count; i++) {
-    if (isVirtual) {
-      itemList.add(null);
-      ((CTable)handle).addItem(i);
-    } else {
-      new TableItem (this, SWT.NONE, i, true);
-    }
-  }
+	itemList.ensureCapacity(count);
+	for(int i=itemCount; i<count; i++) {
+		if (isVirtual) {
+			itemList.add(null);
+			((CTable)handle).addItem(i);
+		} else {
+			new TableItem (this, SWT.NONE, i, true);
+		}
+	}
 //	if (isVirtual) {
 ////  TODO: notify item deleted?
 //	} else {
@@ -2045,7 +2048,7 @@ public void setItemCount (int count) {
 //			itemList.set(i, new TableItem (this, SWT.NONE, i, false));
 //		}
 //	}
-  ((CTable)handle).getModel().fireTableDataChanged();
+	((CTable)handle).getModel().fireTableDataChanged();
 //	if (!isVirtual) setRedraw (true);
 }
 
@@ -2063,9 +2066,9 @@ public void setItemCount (int count) {
  * @since 3.2
  */
 /*public*/ void setItemHeight (int itemHeight) {
-  checkWidget ();
-  if (itemHeight < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-  ((CTable)handle).setRowHeight(itemHeight);
+	checkWidget ();
+	if (itemHeight < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	((CTable)handle).setRowHeight(itemHeight);
 }
 
 /**
@@ -2086,7 +2089,7 @@ public void setItemCount (int count) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
-  ((CTable)handle).setGridVisible(show);
+	((CTable)handle).setGridVisible(show);
 }
 
 //public void setRedraw (boolean redraw) {
@@ -2311,9 +2314,9 @@ public void setSelection (int [] indices) {
  * @since 3.2
  */
 public void setSelection (TableItem  item) {
-  checkWidget ();
-  if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-  setSelection (new TableItem [] {item});
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (new TableItem [] {item});
 }
 
 /**
@@ -2343,9 +2346,9 @@ public void setSelection (TableItem  item) {
 public void setSelection (TableItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-  isAdjustingSelection = true;
+	isAdjustingSelection = true;
 	deselectAll ();
-  isAdjustingSelection = false;
+	isAdjustingSelection = false;
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int focusIndex = -1;
@@ -2407,7 +2410,7 @@ public void setSelection (int start, int end) {
 	checkWidget ();
 	deselectAll ();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
-  ((CTable)handle).getSelectionModel().setSelectionInterval(start, end);
+	((CTable)handle).getSelectionModel().setSelectionInterval(start, end);
 	showSelection ();
 }
 
@@ -2429,10 +2432,10 @@ public void setSelection (int start, int end) {
  * @since 3.2
  */
 public void setSortColumn (TableColumn column) {
-  checkWidget ();
-  if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-  sortColumn = column;
-  handle.repaint();
+	checkWidget ();
+	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	sortColumn = column;
+	handle.repaint();
 }
 
 /**
@@ -2449,10 +2452,10 @@ public void setSortColumn (TableColumn column) {
  * @since 3.2
  */
 public void setSortDirection (int direction) {
-  checkWidget ();
-  if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
-  sortDirection = direction;
-  handle.repaint();
+	checkWidget ();
+	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
+	sortDirection = direction;
+	handle.repaint();
 }
 
 /**
@@ -2469,7 +2472,7 @@ public void setSortDirection (int direction) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
-  ((CTable)handle).setTopIndex(index);
+	((CTable)handle).setTopIndex(index);
 }
 
 /**
@@ -2497,7 +2500,7 @@ public void showColumn (TableColumn column) {
 	if (column.parent != this) return;
 	int index = indexOf (column);
 	if (index == -1) return;
-  ((CTable)handle).ensureColumnVisible(index);
+	((CTable)handle).ensureColumnVisible(index);
 }
 
 //void showItem (int index) {
@@ -2553,8 +2556,8 @@ public void showItem (TableItem item) {
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int index = indexOf (item);
 	if (index != -1) {
-    ((CTable)handle).ensureRowVisible(index);
-  }
+		((CTable)handle).ensureRowVisible(index);
+	}
 }
 
 /**
@@ -2571,15 +2574,15 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget (); 
-  int selectionIndex = getSelectionIndex();
-  if(selectionIndex == -1) {
-    return;
-  }
-  ((CTable)handle).ensureRowVisible(selectionIndex);
+	int selectionIndex = getSelectionIndex();
+	if(selectionIndex == -1) {
+		return;
+	}
+	((CTable)handle).ensureRowVisible(selectionIndex);
 }
 
 static int checkStyle (int style) {
-  style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
@@ -3391,174 +3394,174 @@ static int checkStyle (int style) {
 //}
 
 public void processEvent(EventObject e) {
-  if(e instanceof CellPaintEvent) {
-    switch(((CellPaintEvent)e).getType()) {
-    case CellPaintEvent.ERASE_TYPE: if(!hooks(SWT.EraseItem)) { super.processEvent(e); return; } break;
-    case CellPaintEvent.PAINT_TYPE: if(!hooks(SWT.PaintItem)) { super.processEvent(e); return; } break;
-    case CellPaintEvent.MEASURE_TYPE: if(!hooks(SWT.MeasureItem)) { super.processEvent(e); return; } break;
-    default: super.processEvent(e); return;
-    }
-  } else if(e instanceof ListSelectionEvent) {
-    if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; };
-  } else {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof CellPaintEvent) {
-      CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
-      switch(cellPaintEvent.getType()) {
-      case CellPaintEvent.ERASE_TYPE: {
-        TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
-        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-        Event event = new Event();
-        event.x = cellBounds.x;
-        event.y = cellBounds.y;
-        event.width = cellBounds.width;
-        event.height = cellBounds.height;
-        event.item = tableItem;
-        event.index = cellPaintEvent.column;
-        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-        event.gc = new GC(this);
-        event.gc.handle.setUserClip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-//        event.gc.isSwingPainting = true;
-        sendEvent(SWT.EraseItem, event);
-        if(event.doit) {
-          cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
-          cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
-          cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-          cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
-        } else {
-          cellPaintEvent.ignoreDrawForeground = true;
-          cellPaintEvent.ignoreDrawBackground = true;
-          cellPaintEvent.ignoreDrawSelection = true;
-          cellPaintEvent.ignoreDrawFocused = true;
-        }
-//        event.gc.isSwingPainting = false; 
-        break;
-      }
-      case CellPaintEvent.PAINT_TYPE: {
-        TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
-        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-        Event event = new Event();
-        event.x = cellBounds.x;
-        event.y = cellBounds.y;
-        event.width = cellBounds.width;
-        event.height = cellBounds.height;
-        event.item = tableItem;
-        event.index = cellPaintEvent.column;
-        if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
-        if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
-        if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
-        if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
-        event.gc = new GC(this);
-        event.gc.handle.setUserClip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-        sendEvent(SWT.PaintItem, event);
-        break;
-      }
-      case CellPaintEvent.MEASURE_TYPE:
-        TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
-//        Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
-        Event event = new Event();
-//        event.x = cellBounds.x;
-//        event.y = cellBounds.y;
-//        event.width = cellBounds.width;
-//        event.height = cellBounds.height;
-        event.height = cellPaintEvent.rowHeight;
-        event.item = tableItem;
-        event.index = cellPaintEvent.column;
-        event.gc = new GC(this);
-//        event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
-        sendEvent(SWT.MeasureItem, event);
-//        cellPaintEvent.rowHeight -= event.height - cellBounds.height;
-        cellPaintEvent.rowHeight = event.height;
-        break;
-      }
-    } else if(e instanceof ListSelectionEvent) {
-      if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
-        Event event = new Event ();
-        int selectionIndex = ((CTable)handle).getSelectionModel().getLeadSelectionIndex();
-        if(selectionIndex != -1) {
-          // TODO: should we send the previous item?
-          event.item = _getItem(selectionIndex);
-        }
-        sendEvent(SWT.Selection, event);
-      }
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof CellPaintEvent) {
+		switch(((CellPaintEvent)e).getType()) {
+		case CellPaintEvent.ERASE_TYPE: if(!hooks(SWT.EraseItem)) { super.processEvent(e); return; } break;
+		case CellPaintEvent.PAINT_TYPE: if(!hooks(SWT.PaintItem)) { super.processEvent(e); return; } break;
+		case CellPaintEvent.MEASURE_TYPE: if(!hooks(SWT.MeasureItem)) { super.processEvent(e); return; } break;
+		default: super.processEvent(e); return;
+		}
+	} else if(e instanceof ListSelectionEvent) {
+		if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; };
+	} else {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof CellPaintEvent) {
+			CellPaintEvent cellPaintEvent = (CellPaintEvent)e;
+			switch(cellPaintEvent.getType()) {
+			case CellPaintEvent.ERASE_TYPE: {
+				TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+				Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+				Event event = new Event();
+				event.x = cellBounds.x;
+				event.y = cellBounds.y;
+				event.width = cellBounds.width;
+				event.height = cellBounds.height;
+				event.item = tableItem;
+				event.index = cellPaintEvent.column;
+				if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+				if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+				if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+				if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+				event.gc = new GC(this);
+				event.gc.handle.setUserClip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+//				event.gc.isSwingPainting = true;
+				sendEvent(SWT.EraseItem, event);
+				if(event.doit) {
+					cellPaintEvent.ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
+					cellPaintEvent.ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+					cellPaintEvent.ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+					cellPaintEvent.ignoreDrawFocused = (event.detail & SWT.FOCUSED) == 0;
+				} else {
+					cellPaintEvent.ignoreDrawForeground = true;
+					cellPaintEvent.ignoreDrawBackground = true;
+					cellPaintEvent.ignoreDrawSelection = true;
+					cellPaintEvent.ignoreDrawFocused = true;
+				}
+//				event.gc.isSwingPainting = false; 
+				break;
+			}
+			case CellPaintEvent.PAINT_TYPE: {
+				TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+				Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+				Event event = new Event();
+				event.x = cellBounds.x;
+				event.y = cellBounds.y;
+				event.width = cellBounds.width;
+				event.height = cellBounds.height;
+				event.item = tableItem;
+				event.index = cellPaintEvent.column;
+				if(!cellPaintEvent.ignoreDrawForeground) event.detail |= SWT.FOREGROUND;
+				if(!cellPaintEvent.ignoreDrawBackground) event.detail |= SWT.BACKGROUND;
+				if(!cellPaintEvent.ignoreDrawSelection) event.detail |= SWT.SELECTED;
+				if(!cellPaintEvent.ignoreDrawFocused) event.detail |= SWT.FOCUSED;
+				event.gc = new GC(this);
+				event.gc.handle.setUserClip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+				sendEvent(SWT.PaintItem, event);
+				break;
+			}
+			case CellPaintEvent.MEASURE_TYPE:
+				TableItem tableItem = cellPaintEvent.tableItem.getTableItem();
+//				Rectangle cellBounds = tableItem.getBounds(cellPaintEvent.column);
+				Event event = new Event();
+//				event.x = cellBounds.x;
+//				event.y = cellBounds.y;
+//				event.width = cellBounds.width;
+//				event.height = cellBounds.height;
+				event.height = cellPaintEvent.rowHeight;
+				event.item = tableItem;
+				event.index = cellPaintEvent.column;
+				event.gc = new GC(this);
+//				event.gc.handle.clip(((CTable)handle).getCellRect(cellPaintEvent.row, cellPaintEvent.column, false));
+				sendEvent(SWT.MeasureItem, event);
+//				cellPaintEvent.rowHeight -= event.height - cellBounds.height;
+				cellPaintEvent.rowHeight = event.height;
+				break;
+			}
+		} else if(e instanceof ListSelectionEvent) {
+			if(!((ListSelectionEvent)e).getValueIsAdjusting()) {
+				Event event = new Event ();
+				int selectionIndex = ((CTable)handle).getSelectionModel().getLeadSelectionIndex();
+				if(selectionIndex != -1) {
+					// TODO: should we send the previous item?
+					event.item = _getItem(selectionIndex);
+				}
+				sendEvent(SWT.Selection, event);
+			}
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 public void processEvent(AWTEvent e) {
-  int id = e.getID();
-  switch(id) {
-  case KeyEvent.KEY_PRESSED: {
-    KeyEvent ke = (KeyEvent)e;
-    if(ke.getKeyCode() != KeyEvent.VK_ENTER || ((CTable)handle).getSelectionModel().getLeadSelectionIndex() == -1 || !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; } break;
-  }
-  case MouseEvent.MOUSE_PRESSED: {
-    MouseEvent me = (MouseEvent)e;
-    if(me.getID() != MouseEvent.MOUSE_PRESSED || me.getClickCount() != 2 || ((CTable)handle).getSelectionModel().getLeadSelectionIndex() == -1 || !hooks(SWT.DefaultSelection)) {
-      super.processEvent(e);
-      return;
-    };
-    break;
-  }
-  case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; } break;
-  default: { super.processEvent(e); return; }
-  }
-  if(isDisposed()) {
-    super.processEvent(e);
-    return;
-  }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    switch(id) {
-    case KeyEvent.KEY_PRESSED:
-      if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
-        Event event = new Event ();
-        event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
-        sendEvent(SWT.DefaultSelection, event);
-      }
-      break;
-    case MouseEvent.MOUSE_PRESSED:
-      if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
-        Event event = new Event ();
-        event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
-        sendEvent(SWT.DefaultSelection, event);
-      }
-      break;
-    case ItemEvent.ITEM_STATE_CHANGED:
-      Event event = new Event();
-      event.detail = SWT.CHECK;
-      event.item = ((CTableItem)((ItemEvent)e).getItem()).getTableItem();
-      sendEvent(SWT.Selection, event);
-      break;
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	int id = e.getID();
+	switch(id) {
+	case KeyEvent.KEY_PRESSED: {
+		KeyEvent ke = (KeyEvent)e;
+		if(ke.getKeyCode() != KeyEvent.VK_ENTER || ((CTable)handle).getSelectionModel().getLeadSelectionIndex() == -1 || !hooks(SWT.DefaultSelection)) { super.processEvent(e); return; } break;
+	}
+	case MouseEvent.MOUSE_PRESSED: {
+		MouseEvent me = (MouseEvent)e;
+		if(me.getID() != MouseEvent.MOUSE_PRESSED || me.getClickCount() != 2 || ((CTable)handle).getSelectionModel().getLeadSelectionIndex() == -1 || !hooks(SWT.DefaultSelection)) {
+			super.processEvent(e);
+			return;
+		};
+		break;
+	}
+	case ItemEvent.ITEM_STATE_CHANGED: if(!hooks(SWT.Selection) || isAdjustingSelection) { super.processEvent(e); return; } break;
+	default: { super.processEvent(e); return; }
+	}
+	if(isDisposed()) {
+		super.processEvent(e);
+		return;
+	}
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		switch(id) {
+		case KeyEvent.KEY_PRESSED:
+			if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
+				Event event = new Event ();
+				event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
+				sendEvent(SWT.DefaultSelection, event);
+			}
+			break;
+		case MouseEvent.MOUSE_PRESSED:
+			if(((CTable)handle).getSelectionModel().getLeadSelectionIndex() != -1) {
+				Event event = new Event ();
+				event.item = _getItem(((CTable)handle).getSelectionModel().getLeadSelectionIndex());
+				sendEvent(SWT.DefaultSelection, event);
+			}
+			break;
+		case ItemEvent.ITEM_STATE_CHANGED:
+			Event event = new Event();
+			event.detail = SWT.CHECK;
+			event.item = ((CTableItem)((ItemEvent)e).getItem()).getTableItem();
+			sendEvent(SWT.Selection, event);
+			break;
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

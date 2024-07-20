@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -230,41 +233,41 @@ protected void checkSubclass() {
  * </ul>
  */
 public PrinterData open() {
-  PrinterJob printerJob = PrinterJob.getPrinterJob();
-  java.util.List printRequestAttributeList = new ArrayList();
-  if(printToFile) {
-    printRequestAttributeList.add(new Destination(new File("out.prn").toURI()));
-  }
-  if(scope == PrinterData.PAGE_RANGE) {
-    printRequestAttributeList.add(new PageRanges(startPage, endPage));
-  }
-  HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0]));
-  if(!printerJob.printDialog(hashPrintRequestAttributeSet)) {
-    return null;
-  }
-  Destination destination = (Destination)hashPrintRequestAttributeSet.get(Destination.class);
-  printToFile = destination != null;
-  PageRanges pageRanges = (PageRanges)hashPrintRequestAttributeSet.get(PageRanges.class);
-  if(pageRanges == null) {
-    scope = PrinterData.ALL_PAGES;
-  } else {
-    scope = PrinterData.PAGE_RANGE;
-    int[][] members = pageRanges.getMembers();
-    startPage = members[0][0];
-    endPage = members[0][1];
-  }
-  PrintService printService = printerJob.getPrintService();
-  PrinterData printerData = new PrinterData(printService.getClass().getName(), printService.getName());
-//  Copies copies = (Copies)hashPrintRequestAttributeSet.get(Copies.class);
-  printerData.copyCount = 1;//copies != null? copies.getValue(): 1;
-  printerData.collate = false;//hashPrintRequestAttributeSet.get(SheetCollate.class) == SheetCollate.COLLATED;
-  printerData.startPage = startPage;
-  printerData.endPage = endPage;
-  printerData.scope = scope;
-  printerData.printToFile = printToFile;
-  printerData.fileName = destination != null? destination.getURI().toString(): null;
-  printerData.otherData = hashPrintRequestAttributeSet;
-  return printerData;
+	PrinterJob printerJob = PrinterJob.getPrinterJob();
+	java.util.List printRequestAttributeList = new ArrayList();
+	if(printToFile) {
+		printRequestAttributeList.add(new Destination(new File("out.prn").toURI()));
+	}
+	if(scope == PrinterData.PAGE_RANGE) {
+		printRequestAttributeList.add(new PageRanges(startPage, endPage));
+	}
+	HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0]));
+	if(!printerJob.printDialog(hashPrintRequestAttributeSet)) {
+		return null;
+	}
+	Destination destination = (Destination)hashPrintRequestAttributeSet.get(Destination.class);
+	printToFile = destination != null;
+	PageRanges pageRanges = (PageRanges)hashPrintRequestAttributeSet.get(PageRanges.class);
+	if(pageRanges == null) {
+		scope = PrinterData.ALL_PAGES;
+	} else {
+		scope = PrinterData.PAGE_RANGE;
+		int[][] members = pageRanges.getMembers();
+		startPage = members[0][0];
+		endPage = members[0][1];
+	}
+	PrintService printService = printerJob.getPrintService();
+	PrinterData printerData = new PrinterData(printService.getClass().getName(), printService.getName());
+//	Copies copies = (Copies)hashPrintRequestAttributeSet.get(Copies.class);
+	printerData.copyCount = 1;//copies != null? copies.getValue(): 1;
+	printerData.collate = false;//hashPrintRequestAttributeSet.get(SheetCollate.class) == SheetCollate.COLLATED;
+	printerData.startPage = startPage;
+	printerData.endPage = endPage;
+	printerData.scope = scope;
+	printerData.printToFile = printToFile;
+	printerData.fileName = destination != null? destination.getURI().toString(): null;
+	printerData.otherData = hashPrintRequestAttributeSet;
+	return printerData;
 //	PRINTDLG pd = new PRINTDLG();
 //	pd.lStructSize = PRINTDLG.sizeof;
 //	Control parent = getParent();

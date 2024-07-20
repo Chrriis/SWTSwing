@@ -16,37 +16,37 @@ import org.eclipse.swt.widgets.ExpandItem;
 
 class CExpandItemImplementation extends JPanel implements CExpandItem {
 
-  protected ExpandItem handle;
+	protected ExpandItem handle;
 
-  public CExpandItemImplementation(ExpandItem expandItem, int style) {
-    super(new BorderLayout(0, 0));
-    setOpaque(false);
-    this.handle = expandItem;
-    init(style);
-  }
+	public CExpandItemImplementation(ExpandItem expandItem, int style) {
+		super(new BorderLayout(0, 0));
+		setOpaque(false);
+		this.handle = expandItem;
+		init(style);
+	}
 
-  protected void init(int style) {
-  }
+	protected void init(int style) {
+	}
 
-  public Component getContent() {
-    if(getComponentCount() > 0) {
-      return getComponent(0);
-    }
-    return null;
-  }
+	public Component getContent() {
+		if(getComponentCount() > 0) {
+			return getComponent(0);
+		}
+		return null;
+	}
 
 }
 
 public interface CExpandItem {
 
-  public static class Factory {
-    private Factory() {}
+	public static class Factory {
+		private Factory() {}
 
-    public static CExpandItem newInstance(ExpandItem expandItem, int style) {
-      return new CExpandItemImplementation(expandItem, style);
-    }
-  }
+		public static CExpandItem newInstance(ExpandItem expandItem, int style) {
+			return new CExpandItemImplementation(expandItem, style);
+		}
+	}
 
-  public Component getContent();
+	public Component getContent();
 
 }

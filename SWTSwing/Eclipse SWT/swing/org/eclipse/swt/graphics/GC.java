@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -151,10 +154,10 @@ public GC(Drawable drawable, int style) {
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  this.device = data.device = device;
-  CGC handle = drawable.internal_new_GC(data);
-  if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-  data.background = java.awt.Color.WHITE;
+	this.device = data.device = device;
+	CGC handle = drawable.internal_new_GC(data);
+	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.background = java.awt.Color.WHITE;
 	init (drawable, data, handle);
 	if (device.tracking) device.new_Object(this);
 }
@@ -185,14 +188,14 @@ public void copyArea(Image image, int x, int y) {
 		Control control = (Control) drawable;
 		Graphics graphics = image.handle.getGraphics();
 		graphics.translate(-x, -y);
-    control.handle.paint(graphics);
-    graphics.translate(x, y);
-    return;
+		control.handle.paint(graphics);
+		graphics.translate(x, y);
+		return;
 	}
 	if (drawable instanceof Display) {
 	  // TODO: better way?
 		Rectangle r = image.getBounds();
-    try {
+		try {
 			image.handle = new Robot().createScreenCapture(new java.awt.Rectangle(r.x, r.y, r.width, r.height));
 		} catch (AWTException e) {
 			e.printStackTrace();
@@ -203,25 +206,25 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  
-  // TODO: check that it works
-  java.awt.Composite oldComposite = handle.getComposite();
-  java.awt.Composite newComposite = new java.awt.Composite() {
-    public java.awt.CompositeContext createContext(java.awt.image.ColorModel srcColorModel, java.awt.image.ColorModel dstColorModel, java.awt.RenderingHints hints) {
-      return new java.awt.CompositeContext() {
-        public void compose(java.awt.image.Raster src, java.awt.image.Raster dstIn, java.awt.image.WritableRaster dstOut) {
-          // TODO: do the composition
-        }
-        public void dispose() {
-        }
-      };
-    }
-  };
-  handle.setComposite(newComposite);
-  // TODO: find how to flush
-  handle.setComposite(oldComposite);
-//  
-//  
+	
+	// TODO: check that it works
+	java.awt.Composite oldComposite = handle.getComposite();
+	java.awt.Composite newComposite = new java.awt.Composite() {
+		public java.awt.CompositeContext createContext(java.awt.image.ColorModel srcColorModel, java.awt.image.ColorModel dstColorModel, java.awt.RenderingHints hints) {
+			return new java.awt.CompositeContext() {
+				public void compose(java.awt.image.Raster src, java.awt.image.Raster dstIn, java.awt.image.WritableRaster dstOut) {
+					// TODO: do the composition
+				}
+				public void dispose() {
+				}
+			};
+		}
+	};
+	handle.setComposite(newComposite);
+	// TODO: find how to flush
+	handle.setComposite(oldComposite);
+//	
+//	
 //	/* Get the HDC for the device */
 //	Device device = data.device;
 // 	int hDC = device.internal_new_GC(null);
@@ -254,7 +257,7 @@ public void copyArea(Image image, int x, int y) {
  * </ul>
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
-  copyArea(srcX, srcY, width, height, destX, destY, true);
+	copyArea(srcX, srcY, width, height, destX, destY, true);
 }
 
 /**
@@ -276,10 +279,10 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  * @since 3.1 
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
-  // TODO: check what to do with the paint argument
+	// TODO: check what to do with the paint argument
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.copyArea(srcX, srcY, width, height, destX - srcX, destY - srcY);
-//  ensureAreaClean(destX, destY, width, height);
+	handle.copyArea(srcX, srcY, width, height, destX - srcX, destY - srcY);
+//	ensureAreaClean(destX, destY, width, height);
 }
 
 //int createDIB(int width, int height) {
@@ -442,7 +445,7 @@ public void dispose() {
 //	/*
 //	* Dispose the HDC.
 //	*/
-  handle.dispose();
+	handle.dispose();
 	Device device = data.device;
 	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 	drawable = null;
@@ -494,8 +497,8 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-  handle.drawArc(x, y, width, height, startAngle, arcAngle);
-//  ensureAreaClean(x, y, width, height);
+	handle.drawArc(x, y, width, height, startAngle, arcAngle);
+//	ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -517,11 +520,11 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  */	 
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(LookAndFeelUtils.getFocusColor());
-  handle.drawRect(x, y, width, height);
-  handle.setColor(oldColor);
-//  ensureAreaClean(x, y, width, height);
+	java.awt.Color oldColor = handle.getColor();
+	handle.setColor(LookAndFeelUtils.getFocusColor());
+	handle.drawRect(x, y, width, height);
+	handle.setColor(oldColor);
+//	ensureAreaClean(x, y, width, height);
 }
 
 /**
@@ -594,29 +597,29 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-  if(srcWidth == -1) {
-    srcWidth = srcImage.handle.getWidth();
-  }
-  if(srcHeight == -1) {
-    srcHeight = srcImage.handle.getHeight();
-  }
-  if(destWidth == -1) {
-    destWidth = srcWidth;
-  }
-  if(destHeight == -1) {
-    destHeight = srcHeight;
-  }
-  // Simple == no stretch
-  if(!simple || srcWidth == destWidth && srcHeight == destHeight) {
-    handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
-  } else {
-//    Shape oldClip = handle.getClip();
-//    handle.setClip(systemClip);
-//    handle.clipRect(destX, destY, destWidth, destHeight);
-    handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
-//    handle.setClip(oldClip);
-  }
-//  ensureAreaClean(destX, destY, destWidth, destHeight);
+	if(srcWidth == -1) {
+		srcWidth = srcImage.handle.getWidth();
+	}
+	if(srcHeight == -1) {
+		srcHeight = srcImage.handle.getHeight();
+	}
+	if(destWidth == -1) {
+		destWidth = srcWidth;
+	}
+	if(destHeight == -1) {
+		destHeight = srcHeight;
+	}
+	// Simple == no stretch
+	if(!simple || srcWidth == destWidth && srcHeight == destHeight) {
+		handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
+	} else {
+//		Shape oldClip = handle.getClip();
+//		handle.setClip(systemClip);
+//		handle.clipRect(destX, destY, destWidth, destHeight);
+		handle.drawImage(srcImage.handle, destX, destY, destX + destWidth, destY + destHeight, srcX, srcY, srcX + srcWidth, srcY + srcHeight, null);
+//		handle.setClip(oldClip);
+	}
+//	ensureAreaClean(destX, destY, destWidth, destHeight);
 //	switch (srcImage.type) {
 //		case SWT.BITMAP:
 //			drawBitmap(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
@@ -972,8 +975,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 //				pBits[0] = (byte)((srcImage.transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
 //				OS.MoveMemory(bm.bmBits, pBits, 1);
 //				int color = OS.GetPixel(srcHdc, 0, 0);
-//          		pBits[0] = oldValue;
-//           		OS.MoveMemory(bm.bmBits, pBits, 1);				
+//							pBits[0] = oldValue;
+//					 		OS.MoveMemory(bm.bmBits, pBits, 1);				
 //				transBlue = (color & 0xFF0000) >> 16;
 //				transGreen = (color & 0xFF00) >> 8;
 //				transRed = color & 0xFF;				
@@ -1133,10 +1136,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.drawLine(x1, y1, x2, y2);
-//  Point p1 = new Point(Math.min(x1, x2), Math.min(y1, y2));
-//  Point p2 = new Point(Math.max(x1, x2), Math.max(y1, y2));
-//  ensureAreaClean(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
+	handle.drawLine(x1, y1, x2, y2);
+//	Point p1 = new Point(Math.min(x1, x2), Math.min(y1, y2));
+//	Point p2 = new Point(Math.max(x1, x2), Math.max(y1, y2));
+//	ensureAreaClean(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);
 }
 
 /** 
@@ -1162,8 +1165,8 @@ public void drawLine (int x1, int y1, int x2, int y2) {
  */	 
 public void drawOval (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.drawOval(x, y, width, height);
-//  ensureAreaClean(x, y, width, height);
+	handle.drawOval(x, y, width, height);
+//	ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -1187,8 +1190,8 @@ public void drawPath (Path path) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	handle.draw(path.handle);
-//  java.awt.Rectangle bounds = path.handle.getBounds();
-//  ensureAreaClean(bounds.x, bounds.y, bounds.width, bounds.height);
+//	java.awt.Rectangle bounds = path.handle.getBounds();
+//	ensureAreaClean(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /** 
@@ -1210,8 +1213,8 @@ public void drawPath (Path path) {
  */
 public void drawPoint (int x, int y) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.drawLine(x, y, x, y);
-//  ensureAreaClean(x, y, 1, 1);
+	handle.drawLine(x, y, x, y);
+//	ensureAreaClean(x, y, 1, 1);
 }
 
 /** 
@@ -1234,22 +1237,22 @@ public void drawPoint (int x, int y) {
 public void drawPolygon(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-//  int maxX = Integer.MIN_VALUE;
-//  int maxY = Integer.MIN_VALUE;
-//  int minX = Integer.MAX_VALUE;
-//  int minY = Integer.MAX_VALUE;
-  int[] xPoints = new int[pointArray.length/2];
-  int[] yPoints = new int[xPoints.length];
-  for(int i=0; i<xPoints.length; i++) {
-    xPoints[i] = pointArray[i * 2];
-    yPoints[i] = pointArray[i * 2 + 1];
-//    maxX = Math.max(maxX, xPoints[i]);
-//    maxY = Math.max(maxY, yPoints[i]);
-//    minX = Math.min(minX, xPoints[i]);
-//    minY = Math.min(minY, yPoints[i]);
-  }
-  handle.drawPolygon(xPoints, yPoints, xPoints.length);
-//  ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
+//	int maxX = Integer.MIN_VALUE;
+//	int maxY = Integer.MIN_VALUE;
+//	int minX = Integer.MAX_VALUE;
+//	int minY = Integer.MAX_VALUE;
+	int[] xPoints = new int[pointArray.length/2];
+	int[] yPoints = new int[xPoints.length];
+	for(int i=0; i<xPoints.length; i++) {
+		xPoints[i] = pointArray[i * 2];
+		yPoints[i] = pointArray[i * 2 + 1];
+//		maxX = Math.max(maxX, xPoints[i]);
+//		maxY = Math.max(maxY, yPoints[i]);
+//		minX = Math.min(minX, xPoints[i]);
+//		minY = Math.min(minY, yPoints[i]);
+	}
+	handle.drawPolygon(xPoints, yPoints, xPoints.length);
+//	ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
 }
 
 /** 
@@ -1272,22 +1275,22 @@ public void drawPolygon(int[] pointArray) {
 public void drawPolyline(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-//  int maxX = Integer.MIN_VALUE;
-//  int maxY = Integer.MIN_VALUE;
-//  int minX = Integer.MAX_VALUE;
-//  int minY = Integer.MAX_VALUE;
-  int[] xPoints = new int[pointArray.length/2];
-  int[] yPoints = new int[xPoints.length];
-  for(int i=0; i<xPoints.length; i++) {
-    xPoints[i] = pointArray[i * 2];
-    yPoints[i] = pointArray[i * 2 + 1];
-//    maxX = Math.max(maxX, xPoints[i]);
-//    maxY = Math.max(maxY, yPoints[i]);
-//    minX = Math.min(minX, xPoints[i]);
-//    minY = Math.min(minY, yPoints[i]);
-  }
-  handle.drawPolyline(xPoints, yPoints, xPoints.length);
-//  ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
+//	int maxX = Integer.MIN_VALUE;
+//	int maxY = Integer.MIN_VALUE;
+//	int minX = Integer.MAX_VALUE;
+//	int minY = Integer.MAX_VALUE;
+	int[] xPoints = new int[pointArray.length/2];
+	int[] yPoints = new int[xPoints.length];
+	for(int i=0; i<xPoints.length; i++) {
+		xPoints[i] = pointArray[i * 2];
+		yPoints[i] = pointArray[i * 2 + 1];
+//		maxX = Math.max(maxX, xPoints[i]);
+//		maxY = Math.max(maxY, yPoints[i]);
+//		minX = Math.min(minX, xPoints[i]);
+//		minY = Math.min(minY, yPoints[i]);
+	}
+	handle.drawPolyline(xPoints, yPoints, xPoints.length);
+//	ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
 }
 
 /** 
@@ -1307,8 +1310,8 @@ public void drawPolyline(int[] pointArray) {
  */
 public void drawRectangle (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.drawRect(x, y, width, height);
-//  ensureAreaClean(x, y, width, height);
+	handle.drawRect(x, y, width, height);
+//	ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -1355,8 +1358,8 @@ public void drawRectangle (Rectangle rect) {
  */
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  handle.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
-//  ensureAreaClean(x, y, width, height);
+	handle.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
+//	ensureAreaClean(x, y, width, height);
 }
 
 //void drawRoundRectangleGdip (int gdipGraphics, int brush, int x, int y, int width, int height, int arcWidth, int arcHeight) {
@@ -1456,18 +1459,18 @@ public void drawString (String string, int x, int y) {
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  drawText(string, x, y, isTransparent? SWT.DRAW_TRANSPARENT: 0);
-//  if(!isTransparent) {
-//    java.awt.Color oldColor = handle.getColor();
-//    handle.setColor(data.background);
-//    Point extent = stringExtent(string);
-//    fillRectangle(x, y, extent.x, extent.y);
-//    handle.setColor(oldColor);
-//  }
-//  handle.drawString(string, x, y + handle.getFontMetrics().getMaxAscent());
-//  // TODO: optimize if the ensureAreaClean works
-//  Point extent = stringExtent(string);
-//  ensureAreaClean(x, y, extent.x, extent.y);
+	drawText(string, x, y, isTransparent? SWT.DRAW_TRANSPARENT: 0);
+//	if(!isTransparent) {
+//		java.awt.Color oldColor = handle.getColor();
+//		handle.setColor(data.background);
+//		Point extent = stringExtent(string);
+//		fillRectangle(x, y, extent.x, extent.y);
+//		handle.setColor(oldColor);
+//	}
+//	handle.drawString(string, x, y + handle.getFontMetrics().getMaxAscent());
+//	// TODO: optimize if the ensureAreaClean works
+//	Point extent = stringExtent(string);
+//	ensureAreaClean(x, y, extent.x, extent.y);
 }
 
 /** 
@@ -1579,38 +1582,38 @@ public void drawText (String string, int x, int y, int flags) {
 	} else {
 	  tokens = new String[] {string};
 	}
-  boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
-  java.awt.FontMetrics fm = handle.getFontMetrics();
-  int fmHeight = fm.getHeight();
-  int maxAscent = fm.getMaxAscent();
-  int currentHeight = 0;
-  for(int i=0; i<tokens.length; i++) {
-    y += currentHeight;
-    currentHeight += fmHeight;
-    if(!isTransparent) {
-      java.awt.Color oldColor = handle.getColor();
-      handle.setColor(data.background);
-      fillRectangle(x, y, stringExtent(tokens[i]).x, currentHeight);
-      handle.setColor(oldColor);
-    }
-    handle.drawString(tokens[i], x, y + maxAscent);
-  }
-  // TODO: optimize if the ensureAreaClean works
-//  int width = 0;
-//  int height = tokens.length * fmHeight;
-//  for(int i=0; i<tokens.length; i++) {
-//    width = Math.max(width, fm.stringWidth(tokens[i]));
-//  }
-//  ensureAreaClean(x, y, width, height);
+	boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
+	java.awt.FontMetrics fm = handle.getFontMetrics();
+	int fmHeight = fm.getHeight();
+	int maxAscent = fm.getMaxAscent();
+	int currentHeight = 0;
+	for(int i=0; i<tokens.length; i++) {
+		y += currentHeight;
+		currentHeight += fmHeight;
+		if(!isTransparent) {
+			java.awt.Color oldColor = handle.getColor();
+			handle.setColor(data.background);
+			fillRectangle(x, y, stringExtent(tokens[i]).x, currentHeight);
+			handle.setColor(oldColor);
+		}
+		handle.drawString(tokens[i], x, y + maxAscent);
+	}
+	// TODO: optimize if the ensureAreaClean works
+//	int width = 0;
+//	int height = tokens.length * fmHeight;
+//	for(int i=0; i<tokens.length; i++) {
+//		width = Math.max(width, fm.stringWidth(tokens[i]));
+//	}
+//	ensureAreaClean(x, y, width, height);
 //	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 //	int length = buffer.length();
 //	if (length == 0) return;
 //	RECT rect = new RECT();
 //	/*
 //	* Feature in Windows.  For some reason DrawText(), the maximum
-//    * value for the bottom and right coordinates for the RECT that
-//    * is used to position the text is different on between Windows
-//    * versions.  If this value is larger than the maximum, nothing
+//		* value for the bottom and right coordinates for the RECT that
+//		* is used to position the text is different on between Windows
+//		* versions.  If this value is larger than the maximum, nothing
 //	* is drawn.  On Windows 98, the limit is 0x7FFF.  On Windows CE,
 //	* NT, and 2000 it is 0x6FFFFFF. And on XP, it is 0x7FFFFFFF.
 //	* The fix is to use the the smaller limit for Windows 98 and the
@@ -1664,15 +1667,15 @@ public void drawText (String string, int x, int y, int flags) {
 
 // Copied from Widget
 int findMnemonicIndex (String string) {
-  int index = 0;
-  int length = string.length ();
-  do {
-    while (index < length && string.charAt (index) != '&') index++;
-    if (++index >= length) return -1;
-    if (string.charAt (index) != '&') return index;
-    index++;
-  } while (index < length);
-  return -1;
+	int index = 0;
+	int length = string.length ();
+	do {
+		while (index < length && string.charAt (index) != '&') index++;
+		if (++index >= length) return -1;
+		if (string.charAt (index) != '&') return index;
+		index++;
+	} while (index < length);
+	return -1;
 }
 
 /**
@@ -1732,11 +1735,11 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
-  handle.fillArc(x, y, width, height, startAngle, arcAngle);
-  handle.setColor(oldColor);
-//  ensureAreaClean(x, y, width, height);
+	java.awt.Color oldColor = handle.getColor();
+	handle.setColor(data.background);
+	handle.fillArc(x, y, width, height, startAngle, arcAngle);
+	handle.setColor(oldColor);
+//	ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillPie(data.gdipGraphics, data.gdipBrush, x, y, width, height, -startAngle, -arcAngle);
@@ -1827,25 +1830,25 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
-  java.awt.Color fromColor = handle.getColor();
-  java.awt.Color toColor = handle.getBackground();
-  Paint oldPaint = handle.getPaint();
-  java.awt.Point p1;
-  java.awt.Point p2;
-  if(vertical) {
-    p1 = new java.awt.Point(x, y);
-    p2 = new java.awt.Point(x, y + height);
-  } else {
-    p1 = new java.awt.Point(x, y);
-    p2 = new java.awt.Point(x + width, y);
-  }
-//  java.awt.Color oldColor = handle.getColor();
-//  handle.setColor(data.background);
-  handle.setPaint(new GradientPaint(p1, fromColor, p2, toColor));
-  handle.fill(new java.awt.Rectangle(x, y, width, height));
-//  handle.setColor(oldColor);
-  handle.setPaint(oldPaint);
-//  ensureAreaClean(x, y, width, height);
+	java.awt.Color fromColor = handle.getColor();
+	java.awt.Color toColor = handle.getBackground();
+	Paint oldPaint = handle.getPaint();
+	java.awt.Point p1;
+	java.awt.Point p2;
+	if(vertical) {
+		p1 = new java.awt.Point(x, y);
+		p2 = new java.awt.Point(x, y + height);
+	} else {
+		p1 = new java.awt.Point(x, y);
+		p2 = new java.awt.Point(x + width, y);
+	}
+//	java.awt.Color oldColor = handle.getColor();
+//	handle.setColor(data.background);
+	handle.setPaint(new GradientPaint(p1, fromColor, p2, toColor));
+	handle.fill(new java.awt.Rectangle(x, y, width, height));
+//	handle.setColor(oldColor);
+	handle.setPaint(oldPaint);
+//	ensureAreaClean(x, y, width, height);
 }
 
 /** 
@@ -1866,11 +1869,11 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  */	 
 public void fillOval (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
-  handle.fillOval(x, y, width, height);
-  handle.setColor(oldColor);
-//  ensureAreaClean(x, y, width, height);
+	java.awt.Color oldColor = handle.getColor();
+	handle.setColor(data.background);
+	handle.fillOval(x, y, width, height);
+	handle.setColor(oldColor);
+//	ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillEllipse(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -1911,8 +1914,8 @@ public void fillPath (Path path) {
 	handle.setPaint(handle.getBackground());
 	handle.fill(path.handle);
 	handle.setPaint(old);
-//  java.awt.Rectangle bounds = path.handle.getBounds();
-//  ensureAreaClean(bounds.x, bounds.y, bounds.width, bounds.height);
+//	java.awt.Rectangle bounds = path.handle.getBounds();
+//	ensureAreaClean(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /** 
@@ -1937,25 +1940,25 @@ public void fillPath (Path path) {
 public void fillPolygon(int[] pointArray) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  int maxX = Integer.MIN_VALUE;
-  int maxY = Integer.MIN_VALUE;
-  int minX = Integer.MAX_VALUE;
-  int minY = Integer.MAX_VALUE;
-  int[] xPoints = new int[pointArray.length/2];
-  int[] yPoints = new int[xPoints.length];
-  for(int i=0; i<xPoints.length; i++) {
-    xPoints[i] = pointArray[i * 2];
-    yPoints[i] = pointArray[i * 2 + 1];
-    maxX = Math.max(maxX, xPoints[i]);
-    maxY = Math.max(maxY, yPoints[i]);
-    minX = Math.min(minX, xPoints[i]);
-    minY = Math.min(minY, yPoints[i]);
-  }
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
-  handle.fillPolygon(xPoints, yPoints, xPoints.length);
-  handle.setColor(oldColor);
-//  ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
+	int maxX = Integer.MIN_VALUE;
+	int maxY = Integer.MIN_VALUE;
+	int minX = Integer.MAX_VALUE;
+	int minY = Integer.MAX_VALUE;
+	int[] xPoints = new int[pointArray.length/2];
+	int[] yPoints = new int[xPoints.length];
+	for(int i=0; i<xPoints.length; i++) {
+		xPoints[i] = pointArray[i * 2];
+		yPoints[i] = pointArray[i * 2 + 1];
+		maxX = Math.max(maxX, xPoints[i]);
+		maxY = Math.max(maxY, yPoints[i]);
+		minX = Math.min(minX, xPoints[i]);
+		minY = Math.min(minY, yPoints[i]);
+	}
+	java.awt.Color oldColor = handle.getColor();
+	handle.setColor(data.background);
+	handle.fillPolygon(xPoints, yPoints, xPoints.length);
+	handle.setColor(oldColor);
+//	ensureAreaClean(minX, minY, maxX - minX, maxY - minY);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
@@ -1985,18 +1988,18 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(data.backgroundPattern != null) {
+	if(data.backgroundPattern != null) {
 	  Paint oldPaint = handle.getPaint();
 	  handle.setPaint(data.backgroundPattern.handle);
 	  handle.fill(new java.awt.Rectangle(x, y, width, height));
 	  handle.setPaint(oldPaint);
-  } else {
+	} else {
 	  java.awt.Color oldColor = handle.getColor();
 	  handle.setColor(data.background);
 	  handle.fillRect(x, y, width, height);
 	  handle.setColor(oldColor);
-  }
-//  ensureAreaClean(x, y, width, height);
+	}
+//	ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
@@ -2030,10 +2033,10 @@ public void fillRectangle (int x, int y, int width, int height) {
  */
 public void fillRectangle (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
-  fillRectangle (rect.x, rect.y, rect.width, rect.height);
-  handle.setColor(oldColor);
+	java.awt.Color oldColor = handle.getColor();
+	handle.setColor(data.background);
+	fillRectangle (rect.x, rect.y, rect.width, rect.height);
+	handle.setColor(oldColor);
 }
 
 /** 
@@ -2055,11 +2058,11 @@ public void fillRectangle (Rectangle rect) {
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  java.awt.Color oldColor = handle.getColor();
-  handle.setColor(data.background);
-  handle.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
-  handle.setColor(oldColor);
-//  ensureAreaClean(x, y, width, height);
+	java.awt.Color oldColor = handle.getColor();
+	handle.setColor(data.background);
+	handle.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+	handle.setColor(oldColor);
+//	ensureAreaClean(x, y, width, height);
 //	if (data.gdipGraphics != 0) {
 //		initGdip(false, true);
 //		fillRoundRectangleGdip(data.gdipGraphics, data.gdipBrush, x, y, width, height, arcWidth, arcHeight);
@@ -2137,7 +2140,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public int getAdvanceWidth(char ch) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return handle.getFontMetrics().charWidth(ch);
+	return handle.getFontMetrics().charWidth(ch);
 //	if (OS.IsWinCE) {
 //		SIZE size = new SIZE();
 //		OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
@@ -2178,8 +2181,8 @@ public int getAdvanceWidth(char ch) {
  * @since 3.1
  */
 public boolean getAdvanced() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return data.advanced;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.advanced;
 }
 
 /**
@@ -2215,11 +2218,11 @@ public int getAlpha() {
  * @since 3.1
  */
 public int getAntialias() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  Object value = handle.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-  if(value == RenderingHints.VALUE_ANTIALIAS_OFF) return SWT.OFF;
-  if(value == RenderingHints.VALUE_ANTIALIAS_ON) return SWT.ON;
-  return SWT.DEFAULT;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Object value = handle.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+	if(value == RenderingHints.VALUE_ANTIALIAS_OFF) return SWT.OFF;
+	if(value == RenderingHints.VALUE_ANTIALIAS_ON) return SWT.ON;
+	return SWT.DEFAULT;
 }
 
 /** 
@@ -2233,7 +2236,7 @@ public int getAntialias() {
  */
 public Color getBackground() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return Color.swing_new(data.device, handle.getBackground());
+	return Color.swing_new(data.device, handle.getBackground());
 //	int color = OS.GetBkColor(handle);
 //	if (color == OS.CLR_INVALID) {
 //		color = OS.GetSysColor(OS.COLOR_WINDOW);
@@ -2256,8 +2259,8 @@ public Color getBackground() {
  * @since 3.1
  */
 public Pattern getBackgroundPattern() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return data.backgroundPattern;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.backgroundPattern;
 }
 
 /**
@@ -2278,8 +2281,8 @@ public Pattern getBackgroundPattern() {
  */
 public int getCharWidth(char ch) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  // TODO: find the difference between advance width and char width
-  return handle.getFontMetrics().charWidth(ch);
+	// TODO: find the difference between advance width and char width
+	return handle.getFontMetrics().charWidth(ch);
 //	
 //	/* GetCharABCWidths only succeeds on truetype fonts */
 //	if (!OS.IsWinCE) {
@@ -2315,15 +2318,15 @@ public int getCharWidth(char ch) {
  * </ul>
  */
 public Rectangle getClipping() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  Shape userClip = handle.getUserClip();
-  java.awt.Rectangle bounds;
-  if(userClip != null) {
-    bounds = userClip.getBounds();
-  } else {
-    bounds = new java.awt.Rectangle(handle.getDeviceSize());
-  }
-  return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Shape userClip = handle.getUserClip();
+	java.awt.Rectangle bounds;
+	if(userClip != null) {
+		bounds = userClip.getBounds();
+	} else {
+		bounds = new java.awt.Rectangle(handle.getDeviceSize());
+	}
+	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 }
 
 /** 
@@ -2344,11 +2347,11 @@ public void getClipping (Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-  Shape userClip = handle.getUserClip();
-  if(userClip == null) {
-    userClip = new java.awt.Rectangle(handle.getDeviceSize());
-  }
-  region.add(new Region(data.device, userClip));
+	Shape userClip = handle.getUserClip();
+	if(userClip == null) {
+		userClip = new java.awt.Rectangle(handle.getDeviceSize());
+	}
+	region.add(new Region(data.device, userClip));
 //	int result = OS.GetClipRgn (handle, region.handle);
 //	if (result != 1) {
 //		RECT rect = new RECT();
@@ -2413,7 +2416,7 @@ public int getFillRule() {
  */
 public Font getFont () {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return Font.swing_new(data.device, handle.getFont());
+	return Font.swing_new(data.device, handle.getFont());
 }
 
 /**
@@ -2429,7 +2432,7 @@ public Font getFont () {
  */
 public FontMetrics getFontMetrics() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return FontMetrics.swing_new(handle.getFontMetrics());
+	return FontMetrics.swing_new(handle.getFontMetrics());
 }
 
 /** 
@@ -2443,7 +2446,7 @@ public FontMetrics getFontMetrics() {
  */
 public Color getForeground() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return Color.swing_new(data.device, handle.getColor());
+	return Color.swing_new(data.device, handle.getColor());
 }
 
 /** 
@@ -2461,8 +2464,8 @@ public Color getForeground() {
  * @since 3.1
  */
 public Pattern getForegroundPattern() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return data.foregroundPattern;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.foregroundPattern;
 }
 
 /** 
@@ -2486,8 +2489,8 @@ public Pattern getForegroundPattern() {
  * @since 3.2
  */
 public GCData getGCData() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return data;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data;
 }
 
 /** 
@@ -2504,21 +2507,21 @@ public GCData getGCData() {
  * @since 3.1
  */
 public int getInterpolation() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  Utils.notImplemented(); return SWT.DEFAULT;
-//  if (data.gdipGraphics == 0) return SWT.DEFAULT;
-//  int mode = Gdip.Graphics_GetInterpolationMode(data.gdipGraphics);
-//  switch (mode) {
-//    case Gdip.InterpolationModeDefault: return SWT.DEFAULT;
-//    case Gdip.InterpolationModeNearestNeighbor: return SWT.NONE;
-//    case Gdip.InterpolationModeBilinear:
-//    case Gdip.InterpolationModeLowQuality: return SWT.LOW;
-//    case Gdip.InterpolationModeBicubic:
-//    case Gdip.InterpolationModeHighQualityBilinear:
-//    case Gdip.InterpolationModeHighQualityBicubic:
-//    case Gdip.InterpolationModeHighQuality: return SWT.HIGH;
-//  }
-//  return SWT.DEFAULT;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Utils.notImplemented(); return SWT.DEFAULT;
+//	if (data.gdipGraphics == 0) return SWT.DEFAULT;
+//	int mode = Gdip.Graphics_GetInterpolationMode(data.gdipGraphics);
+//	switch (mode) {
+//		case Gdip.InterpolationModeDefault: return SWT.DEFAULT;
+//		case Gdip.InterpolationModeNearestNeighbor: return SWT.NONE;
+//		case Gdip.InterpolationModeBilinear:
+//		case Gdip.InterpolationModeLowQuality: return SWT.LOW;
+//		case Gdip.InterpolationModeBicubic:
+//		case Gdip.InterpolationModeHighQualityBilinear:
+//		case Gdip.InterpolationModeHighQualityBicubic:
+//		case Gdip.InterpolationModeHighQuality: return SWT.HIGH;
+//	}
+//	return SWT.DEFAULT;
 }
 
 /** 
@@ -2536,13 +2539,13 @@ public int getInterpolation() {
  */
 public int getLineCap() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  switch(getCurrentBasicStroke().getEndCap()) {
-    case BasicStroke.CAP_ROUND:
-      return SWT.CAP_ROUND;
-    case BasicStroke.CAP_SQUARE:
-      return SWT.CAP_SQUARE;
-  }
-  return SWT.CAP_FLAT;
+	switch(getCurrentBasicStroke().getEndCap()) {
+		case BasicStroke.CAP_ROUND:
+			return SWT.CAP_ROUND;
+		case BasicStroke.CAP_SQUARE:
+			return SWT.CAP_SQUARE;
+	}
+	return SWT.CAP_FLAT;
 }
 
 /** 
@@ -2559,12 +2562,12 @@ public int getLineCap() {
  */
 public int[] getLineDash() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  float[] dashArray = getCurrentBasicStroke().getDashArray();
-  if(dashArray == null) return null;
-  int[] dashes = new int[dashArray.length];
-  for(int i=0; i<dashes.length; i++) {
-    dashes[i] = Math.round(dashArray[i]);
-  }
+	float[] dashArray = getCurrentBasicStroke().getDashArray();
+	if(dashArray == null) return null;
+	int[] dashes = new int[dashArray.length];
+	for(int i=0; i<dashes.length; i++) {
+		dashes[i] = Math.round(dashArray[i]);
+	}
 	return dashes;	
 }
 
@@ -2583,13 +2586,13 @@ public int[] getLineDash() {
  */
 public int getLineJoin() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  switch(getCurrentBasicStroke().getLineJoin()) {
-    case BasicStroke.JOIN_BEVEL:
-      return SWT.JOIN_BEVEL;
-    case BasicStroke.JOIN_ROUND:
-      return SWT.JOIN_ROUND;
-  }
-  return SWT.JOIN_MITER;
+	switch(getCurrentBasicStroke().getLineJoin()) {
+		case BasicStroke.JOIN_BEVEL:
+			return SWT.JOIN_BEVEL;
+		case BasicStroke.JOIN_ROUND:
+			return SWT.JOIN_ROUND;
+	}
+	return SWT.JOIN_MITER;
 }
 
 /** 
@@ -2606,21 +2609,21 @@ public int getLineJoin() {
  */
 public int getLineStyle() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  float[] dashArray = getCurrentBasicStroke().getDashArray();
-  if(dashArray == null) {
-    return SWT.LINE_SOLID;
-  } else if(dashArray == lineDashArray) {
-    return SWT.LINE_DASH;
-  } else if(dashArray == lineDotArray) {
-    return SWT.LINE_DOT;
-  } else if(dashArray == lineDashDotArray) {
-    return SWT.LINE_DASHDOT;
-  } else if(dashArray == lineDashDotDotArray) {
-    return SWT.LINE_DASHDOTDOT;
-  } else if(dashArray != null && dashArray == data.dashes) {
-    return SWT.LINE_CUSTOM;
-  }
-  return SWT.LINE_SOLID;
+	float[] dashArray = getCurrentBasicStroke().getDashArray();
+	if(dashArray == null) {
+		return SWT.LINE_SOLID;
+	} else if(dashArray == lineDashArray) {
+		return SWT.LINE_DASH;
+	} else if(dashArray == lineDotArray) {
+		return SWT.LINE_DOT;
+	} else if(dashArray == lineDashDotArray) {
+		return SWT.LINE_DASHDOT;
+	} else if(dashArray == lineDashDotDotArray) {
+		return SWT.LINE_DASHDOTDOT;
+	} else if(dashArray != null && dashArray == data.dashes) {
+		return SWT.LINE_CUSTOM;
+	}
+	return SWT.LINE_SOLID;
 //
 //	int style, size;
 //	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
@@ -2666,7 +2669,7 @@ public int getLineStyle() {
  */
 public int getLineWidth() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return (int)getCurrentBasicStroke().getLineWidth();
+	return (int)getCurrentBasicStroke().getLineWidth();
 }
 
 /**
@@ -2709,11 +2712,11 @@ public int getStyle () {
  * @since 3.1
  */
 public int getTextAntialias() {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  Object value = handle.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
-  if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_OFF) return SWT.OFF;
-  if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_ON) return SWT.ON;
-  return SWT.DEFAULT;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Object value = handle.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING);
+	if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_OFF) return SWT.OFF;
+	if(value == RenderingHints.VALUE_TEXT_ANTIALIAS_ON) return SWT.ON;
+	return SWT.DEFAULT;
 }
 
 /** 
@@ -2763,8 +2766,8 @@ boolean isXORMode = false;
  */
 public boolean getXORMode() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  // TODO: Not a solution because if swing is used directly in future implementation, this does not detect.
-  return isXORMode;
+	// TODO: Not a solution because if swing is used directly in future implementation, this does not detect.
+	return isXORMode;
 //	int rop2 = 0;
 //	if (OS.IsWinCE) {
 //		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
@@ -2785,15 +2788,15 @@ public boolean getXORMode() {
 //}
 
 void init(Drawable drawable, GCData data, CGC handle) {
-  if(data.foreground != null) {
-    handle.setColor(data.foreground);
-  }
-  if(data.background != null) {
-    handle.setBackground(data.background);
-  }
-  if(data.hFont != null) {
-    handle.setFont(data.hFont);
-  }
+	if(data.foreground != null) {
+		handle.setColor(data.foreground);
+	}
+	if(data.background != null) {
+		handle.setBackground(data.background);
+	}
+	if(data.hFont != null) {
+		handle.setFont(data.hFont);
+	}
 //	int foreground = data.foreground;
 //	if (foreground != -1 && OS.GetTextColor(hDC) != foreground) {
 //		OS.SetTextColor(hDC, foreground);
@@ -2853,7 +2856,7 @@ void init(Drawable drawable, GCData data, CGC handle) {
  * @see #equals
  */
 public int hashCode () {
-  return handle == null? 0: handle.hashCode();
+	return handle == null? 0: handle.hashCode();
 }
 
 /**
@@ -2872,7 +2875,7 @@ public int hashCode () {
  */
 public boolean isClipped() {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  return handle.getUserClip() != null;
+	return handle.getUserClip() != null;
 }
 
 /**
@@ -2937,8 +2940,8 @@ public boolean isDisposed() {
  * @since 3.1
  */
 public void setAdvanced(boolean advanced) {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  data.advanced = advanced;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	data.advanced = advanced;
 }
 
 /**
@@ -2962,20 +2965,20 @@ public void setAdvanced(boolean advanced) {
  * @since 3.1
  */
 public void setAntialias(int antialias) {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  switch (antialias) {
-    case SWT.DEFAULT:
-      handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
-      break;
-    case SWT.OFF:
-      handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-      break;
-    case SWT.ON:
-      handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      break;      
-    default:
-      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  }
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (antialias) {
+		case SWT.DEFAULT:
+			handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_DEFAULT);
+			break;
+		case SWT.OFF:
+			handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			break;
+		case SWT.ON:
+			handle.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			break;      
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 }
 
 /**
@@ -3015,8 +3018,8 @@ public void setBackground (Color color) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  data.background = color.handle;
-  handle.setBackground(color.handle);
+	data.background = color.handle;
+	handle.setBackground(color.handle);
 //	if (OS.GetBkColor(handle) == color.handle) return;
 //	data.background = color.handle;
 //	OS.SetBkColor (handle, color.handle);
@@ -3047,18 +3050,18 @@ public void setBackground (Color color) {
  * @since 3.1
  */
 public void setBackgroundPattern (Pattern pattern) {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//  Utils.notImplemented();
-//  if (data.gdipGraphics == 0 && pattern == null) return;
-//  initGdip(false, false);
-//  if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
-//  if (pattern != null) {
-//    data.gdipBrush = Gdip.Brush_Clone(pattern.handle);
-//  } else {
-//    data.gdipBrush = 0;
-//  }
-  data.backgroundPattern = pattern;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+//	Utils.notImplemented();
+//	if (data.gdipGraphics == 0 && pattern == null) return;
+//	initGdip(false, false);
+//	if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
+//	if (pattern != null) {
+//		data.gdipBrush = Gdip.Brush_Clone(pattern.handle);
+//	} else {
+//		data.gdipBrush = 0;
+//	}
+	data.backgroundPattern = pattern;
 }
 
 //void setClipping(int clipRgn) {
@@ -3111,7 +3114,7 @@ public void setBackgroundPattern (Pattern pattern) {
  */
 public void setClipping (int x, int y, int width, int height) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  setClipping(new Rectangle(x, y, width, height));
+	setClipping(new Rectangle(x, y, width, height));
 }
 
 /**
@@ -3176,7 +3179,7 @@ public void setClipping (Rectangle rect) {
 public void setClipping (Region region) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  handle.setUserClip(region.handle);
+	handle.setUserClip(region.handle);
 }
 
 /** 
@@ -3225,7 +3228,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
-    handle.setFont(LookAndFeelUtils.getSystemFont());
+		handle.setFont(LookAndFeelUtils.getSystemFont());
 	} else {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		handle.setFont(font.handle);
@@ -3251,7 +3254,7 @@ public void setForeground (Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
-  handle.setColor(color.handle);
+	handle.setColor(color.handle);
 }
 
 /** 
@@ -3271,20 +3274,20 @@ public void setForeground (Color color) {
  * @since 3.1
  */
 public void setForegroundPattern (Pattern pattern) {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  Utils.notImplemented();
-//  if (data.gdipGraphics == 0 && pattern == null) return;
-//  initGdip(false, false);
-//  if (pattern != null) {
-//    if (data.gdipPen != 0) Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
-//  } else {
-//    if (data.gdipPen != 0) {
-//      Gdip.Pen_delete(data.gdipPen);
-//      data.gdipPen = 0;
-//    }
-//  }
-  data.foregroundPattern = pattern;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	Utils.notImplemented();
+//	if (data.gdipGraphics == 0 && pattern == null) return;
+//	initGdip(false, false);
+//	if (pattern != null) {
+//		if (data.gdipPen != 0) Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
+//	} else {
+//		if (data.gdipPen != 0) {
+//			Gdip.Pen_delete(data.gdipPen);
+//			data.gdipPen = 0;
+//		}
+//	}
+	data.foregroundPattern = pattern;
 }
 
 /** 
@@ -3305,20 +3308,20 @@ public void setForegroundPattern (Pattern pattern) {
  * @since 3.1
  */
 public void setInterpolation(int interpolation) {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  Utils.notImplemented();
-//  if (data.gdipGraphics == 0 && interpolation == SWT.DEFAULT) return;
-//  int mode = 0;
-//  switch (interpolation) {
-//    case SWT.DEFAULT: mode = Gdip.InterpolationModeDefault; break;
-//    case SWT.NONE: mode = Gdip.InterpolationModeNearestNeighbor; break;
-//    case SWT.LOW: mode = Gdip.InterpolationModeLowQuality; break;
-//    case SWT.HIGH: mode = Gdip.InterpolationModeHighQuality; break;
-//    default:
-//      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//  }
-//  initGdip(false, false);
-//  Gdip.Graphics_SetInterpolationMode(data.gdipGraphics, mode);
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Utils.notImplemented();
+//	if (data.gdipGraphics == 0 && interpolation == SWT.DEFAULT) return;
+//	int mode = 0;
+//	switch (interpolation) {
+//		case SWT.DEFAULT: mode = Gdip.InterpolationModeDefault; break;
+//		case SWT.NONE: mode = Gdip.InterpolationModeNearestNeighbor; break;
+//		case SWT.LOW: mode = Gdip.InterpolationModeLowQuality; break;
+//		case SWT.HIGH: mode = Gdip.InterpolationModeHighQuality; break;
+//		default:
+//			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+//	}
+//	initGdip(false, false);
+//	Gdip.Graphics_SetInterpolationMode(data.gdipGraphics, mode);
 }
 
 /** 
@@ -3339,7 +3342,7 @@ public void setInterpolation(int interpolation) {
  */
 public void setLineCap(int cap) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  BasicStroke stroke = getCurrentBasicStroke();
+	BasicStroke stroke = getCurrentBasicStroke();
 	int capStyle = 0;
 	switch (cap) {
 		case SWT.CAP_ROUND:
@@ -3354,7 +3357,7 @@ public void setLineCap(int cap) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-  handle.setStroke(new BasicStroke(stroke.getLineWidth(), capStyle, stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), 0));
+	handle.setStroke(new BasicStroke(stroke.getLineWidth(), capStyle, stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), 0));
 }
 
 /** 
@@ -3376,13 +3379,13 @@ public void setLineCap(int cap) {
  */
 public void setLineDash(int[] dashes) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  BasicStroke stroke = getCurrentBasicStroke();
-  if(dashes == null) dashes = new int[0];
-  data.dashes = new float[dashes.length];
-  for(int i=0; i<dashes.length; i++) {
-    data.dashes[i] = dashes[i];
-  }
-  handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), data.dashes, 0));
+	BasicStroke stroke = getCurrentBasicStroke();
+	if(dashes == null) dashes = new int[0];
+	data.dashes = new float[dashes.length];
+	for(int i=0; i<dashes.length; i++) {
+		data.dashes[i] = dashes[i];
+	}
+	handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), data.dashes, 0));
 }
 
 /** 
@@ -3403,22 +3406,22 @@ public void setLineDash(int[] dashes) {
  */
 public void setLineJoin(int join) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  BasicStroke stroke = getCurrentBasicStroke();
-  int joinStyle = 0;
-  switch (join) {
-    case SWT.JOIN_MITER:
-      joinStyle = BasicStroke.JOIN_MITER;
-      break;
-    case SWT.JOIN_ROUND:
-      joinStyle = BasicStroke.JOIN_ROUND;
-      break;
-    case SWT.JOIN_BEVEL:
-      joinStyle = BasicStroke.JOIN_BEVEL;
-      break;
-    default:
-      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), joinStyle, stroke.getMiterLimit(), stroke.getDashArray(), 0));
+	BasicStroke stroke = getCurrentBasicStroke();
+	int joinStyle = 0;
+	switch (join) {
+		case SWT.JOIN_MITER:
+			joinStyle = BasicStroke.JOIN_MITER;
+			break;
+		case SWT.JOIN_ROUND:
+			joinStyle = BasicStroke.JOIN_ROUND;
+			break;
+		case SWT.JOIN_BEVEL:
+			joinStyle = BasicStroke.JOIN_BEVEL;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), joinStyle, stroke.getMiterLimit(), stroke.getDashArray(), 0));
 }
 
 /** 
@@ -3438,30 +3441,30 @@ public void setLineJoin(int join) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  BasicStroke stroke = getCurrentBasicStroke();
-  float[] array = null;
-  switch(lineStyle) {
-    case SWT.LINE_SOLID:
-      break;
-    case SWT.LINE_DASH:
-      array = lineDashArray;
-      break;
-    case SWT.LINE_DOT:
-      array = lineDotArray;
-      break;
-    case SWT.LINE_DASHDOT:
-      array = lineDashDotArray;
-      break;
-    case SWT.LINE_DASHDOTDOT:
-      array = lineDashDotDotArray;
-      break;
-    case SWT.LINE_CUSTOM:
-      array = data.dashes;
-      break;
-    default:
-      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  }
-  handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), array, 0));
+	BasicStroke stroke = getCurrentBasicStroke();
+	float[] array = null;
+	switch(lineStyle) {
+		case SWT.LINE_SOLID:
+			break;
+		case SWT.LINE_DASH:
+			array = lineDashArray;
+			break;
+		case SWT.LINE_DOT:
+			array = lineDotArray;
+			break;
+		case SWT.LINE_DASHDOT:
+			array = lineDashDotArray;
+			break;
+		case SWT.LINE_DASHDOTDOT:
+			array = lineDashDotDotArray;
+			break;
+		case SWT.LINE_CUSTOM:
+			array = data.dashes;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	handle.setStroke(new BasicStroke(stroke.getLineWidth(), stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), array, 0));
 }
 
 /** 
@@ -3484,8 +3487,8 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int lineWidth) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  BasicStroke stroke = getCurrentBasicStroke();
-  handle.setStroke(new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
+	BasicStroke stroke = getCurrentBasicStroke();
+	handle.setStroke(new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(), stroke.getMiterLimit(), stroke.getDashArray(), stroke.getDashPhase()));
 }
 
 //void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinStyle, int[] dashes) {
@@ -3608,14 +3611,14 @@ public void setLineWidth(int lineWidth) {
  * @deprecated this functionality is not supported on some platforms
  */
 public void setXORMode(boolean xor) {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  if(xor) {
-    // need to check if "handle.setXORMode(getBackground().handle)" must be called any time the background color changes.
-    handle.setXORMode(getBackground().handle);
-  } else {
-    handle.setPaintMode();
-  }
-  isXORMode = xor;
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if(xor) {
+		// need to check if "handle.setXORMode(getBackground().handle)" must be called any time the background color changes.
+		handle.setXORMode(getBackground().handle);
+	} else {
+		handle.setPaintMode();
+	}
+	isXORMode = xor;
 }
 
 /**
@@ -3639,20 +3642,20 @@ public void setXORMode(boolean xor) {
  * @since 3.1
  */
 public void setTextAntialias(int antialias) {
-  if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-  switch (antialias) {
-    case SWT.DEFAULT:
-      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
-      break;
-    case SWT.OFF:
-      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-      break;
-    case SWT.ON:
-      handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-      break;      
-    default:
-      SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-  }
+	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (antialias) {
+		case SWT.DEFAULT:
+			handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
+			break;
+		case SWT.OFF:
+			handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+			break;
+		case SWT.ON:
+			handle.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+			break;      
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 }
 
 /** 
@@ -3679,7 +3682,7 @@ public void setTransform(Transform transform) {
 		saveAT = handle.getTransform();
 	} else {
 	  handle.setTransform(saveAT);
-  }
+	}
 	AffineTransform at;
 	if (transform == null) {
 	  at = new AffineTransform();
@@ -3714,10 +3717,10 @@ public Point stringExtent(String string) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return textExtent(string, 0);
-//  java.awt.FontMetrics fm = handle.getFontMetrics();
-//  // TODO: check why the StyledText queries the stringExtent and this is null sometimes (cf RSSOwl)
-//  if(fm == null) return new Point(0, 0);
-//  return new Point(fm.stringWidth(string), fm.getMaxAscent() + fm.getMaxDescent());
+//	java.awt.FontMetrics fm = handle.getFontMetrics();
+//	// TODO: check why the StyledText queries the stringExtent and this is null sometimes (cf RSSOwl)
+//	if(fm == null) return new Point(0, 0);
+//	return new Point(fm.stringWidth(string), fm.getMaxAscent() + fm.getMaxDescent());
 }
 
 /**
@@ -3777,44 +3780,44 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-  if((flags & SWT.DRAW_TAB) != 0) {
-    string = string.replaceAll("\t", "    ");
-  }
-  int mnemonicIndex = -1;
-  if((flags & SWT.DRAW_MNEMONIC) != 0) {
-    // Copied from Label
-    mnemonicIndex = findMnemonicIndex(string);
-    if(mnemonicIndex > 0) {
-      String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
-      string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
-      mnemonicIndex -= mnemonicIndex - 1 - s.length();
-      mnemonicIndex--;
-    } else {
-      string = string.replaceAll("&&", "&");
-    }
-  }
-  String[] tokens;
-  if((flags & SWT.DRAW_DELIMITER) != 0) {
-    tokens = string.split("\n");
-  } else {
-    tokens = new String[] {string};
-  }
-//  boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
-  java.awt.FontMetrics fm = handle.getFontMetrics();
-  int fmHeight = fm.getHeight();
-  int currentHeight = fmHeight;
-  int maxWidth = 0;
-  int maxHeight = 0;
-  FontRenderContext fontRenderContext = handle.getFontRenderContext();
-  java.awt.Font font = handle.getFont();
-  for(int i=0; i<tokens.length; i++) {
-//    if(!isTransparent) {
-      maxWidth = Math.max(maxWidth, font.getStringBounds(tokens[i], fontRenderContext).getBounds().width);
-      maxHeight = currentHeight;
-//    }
-    currentHeight += fmHeight;
-  }
-  return new Point(maxWidth, maxHeight);
+	if((flags & SWT.DRAW_TAB) != 0) {
+		string = string.replaceAll("\t", "    ");
+	}
+	int mnemonicIndex = -1;
+	if((flags & SWT.DRAW_MNEMONIC) != 0) {
+		// Copied from Label
+		mnemonicIndex = findMnemonicIndex(string);
+		if(mnemonicIndex > 0) {
+			String s = string.substring(0, mnemonicIndex - 1).replaceAll("&&", "&");
+			string = s + string.substring(mnemonicIndex).replaceAll("&&", "&");
+			mnemonicIndex -= mnemonicIndex - 1 - s.length();
+			mnemonicIndex--;
+		} else {
+			string = string.replaceAll("&&", "&");
+		}
+	}
+	String[] tokens;
+	if((flags & SWT.DRAW_DELIMITER) != 0) {
+		tokens = string.split("\n");
+	} else {
+		tokens = new String[] {string};
+	}
+//	boolean isTransparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
+	java.awt.FontMetrics fm = handle.getFontMetrics();
+	int fmHeight = fm.getHeight();
+	int currentHeight = fmHeight;
+	int maxWidth = 0;
+	int maxHeight = 0;
+	FontRenderContext fontRenderContext = handle.getFontRenderContext();
+	java.awt.Font font = handle.getFont();
+	for(int i=0; i<tokens.length; i++) {
+//		if(!isTransparent) {
+			maxWidth = Math.max(maxWidth, font.getStringBounds(tokens[i], fontRenderContext).getBounds().width);
+			maxHeight = currentHeight;
+//		}
+		currentHeight += fmHeight;
+	}
+	return new Point(maxWidth, maxHeight);
 }
 
 /**
@@ -3877,11 +3880,11 @@ static final float[] lineDashDotArray = new float[] {9, 6, 3, 6};
 static final float[] lineDashDotDotArray = new float[] {9, 3, 3, 3, 3, 3};
 
 BasicStroke getCurrentBasicStroke() {
-  Stroke stroke = handle.getStroke();
-  if(stroke instanceof BasicStroke) {
-    return (BasicStroke)stroke;
-  }
-  return new BasicStroke();
+	Stroke stroke = handle.getStroke();
+	if(stroke instanceof BasicStroke) {
+		return (BasicStroke)stroke;
+	}
+	return new BasicStroke();
 }
 
 }

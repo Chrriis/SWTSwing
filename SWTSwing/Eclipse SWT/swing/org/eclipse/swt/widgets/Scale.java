@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -112,12 +115,12 @@ static int checkStyle (int style) {
 }
 
 void createHandleInit() {
-  super.createHandleInit();
-  state |= THEME_BACKGROUND | DRAW_BACKGROUND;
+	super.createHandleInit();
+	state |= THEME_BACKGROUND | DRAW_BACKGROUND;
 }
 
 Container createHandle () {
-  return (Container)CScale.Factory.newInstance(this, style);
+	return (Container)CScale.Factory.newInstance(this, style);
 }
 
 /**
@@ -134,7 +137,7 @@ Container createHandle () {
  */
 public int getIncrement () {
 	checkWidget ();
-  return ((CScale)handle).getMinorTickSpacing();
+	return ((CScale)handle).getMinorTickSpacing();
 }
 
 /**
@@ -164,7 +167,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-  return ((CScale)handle).getMinimum();
+	return ((CScale)handle).getMinimum();
 }
 
 /**
@@ -196,7 +199,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-  return ((CScale)handle).getValue();
+	return ((CScale)handle).getValue();
 }
 
 /**
@@ -243,7 +246,7 @@ public void setIncrement (int increment) {
 	int minimum = getMinimum();
 	int maximum = getMaximum();
 	if (increment > maximum - minimum) return;
-  ((CScale)handle).setMinorTickSpacing(increment);
+	((CScale)handle).setMinorTickSpacing(increment);
 }
 
 /**
@@ -263,7 +266,7 @@ public void setMaximum (int value) {
 	checkWidget ();
 	int minimum = getMinimum();
 	if (0 <= minimum && minimum < value) {
-    ((CScale)handle).setMaximum(value);
+		((CScale)handle).setMaximum(value);
 	}
 }
 
@@ -307,7 +310,7 @@ public void setPageIncrement (int pageIncrement) {
 	int minimum = getMinimum();
 	int maximum = getMaximum();
 	if (pageIncrement > maximum - minimum) return;
-  ((CScale)handle).setMajorTickSpacing(pageIncrement);
+	((CScale)handle).setMajorTickSpacing(pageIncrement);
 }
 
 /**
@@ -323,31 +326,31 @@ public void setPageIncrement (int pageIncrement) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-  ((CScale)handle).setValue(value);
+	((CScale)handle).setValue(value);
 }
 
 public void processEvent(EventObject e) {
-  if(e instanceof ChangeEvent) {
-    if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
-  } else { super.processEvent(e); return; }
-  UIThreadUtils.startExclusiveSection(getDisplay());
-  if(isDisposed()) {
-    UIThreadUtils.stopExclusiveSection();
-    super.processEvent(e);
-    return;
-  }
-  try {
-    if(e instanceof ChangeEvent) {
-//      if(!((ChangeEvent)e).getValueIsAdjusting()) {
-        sendEvent(SWT.Selection);
-//      }
-    }
-    super.processEvent(e);
-  } catch(Throwable t) {
-    UIThreadUtils.storeException(t);
-  } finally {
-    UIThreadUtils.stopExclusiveSection();
-  }
+	if(e instanceof ChangeEvent) {
+		if(!hooks(SWT.Selection)) { super.processEvent(e); return; }
+	} else { super.processEvent(e); return; }
+	UIThreadUtils.startExclusiveSection(getDisplay());
+	if(isDisposed()) {
+		UIThreadUtils.stopExclusiveSection();
+		super.processEvent(e);
+		return;
+	}
+	try {
+		if(e instanceof ChangeEvent) {
+//			if(!((ChangeEvent)e).getValueIsAdjusting()) {
+				sendEvent(SWT.Selection);
+//			}
+		}
+		super.processEvent(e);
+	} catch(Throwable t) {
+		UIThreadUtils.storeException(t);
+	} finally {
+		UIThreadUtils.stopExclusiveSection();
+	}
 }
 
 }

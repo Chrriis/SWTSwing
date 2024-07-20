@@ -1,9 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
@@ -186,39 +189,39 @@ public DragSource(Control control, int style) {
 			DragSource.this.onDispose();
 		}
 	});
-  boolean isPropertySet = true;
-  try {
-    System.setProperty("awt.dnd.drag.threshold", "0");
-    Method method = Toolkit.class.getDeclaredMethod("setDesktopProperty", new Class[] {String.class, Object.class});
-    method.setAccessible(true);
-    method.invoke(Toolkit.getDefaultToolkit(), new Object[] {"DnD.gestureMotionThreshold", new Integer(0)});
-    method.setAccessible(false);
-  } catch(Throwable e) {
-    isPropertySet = false;
-  }
-  Container swingComponent = ((CControl)control.handle).getClientArea();
-  // We need to be first to process the mouse event.
-  MouseListener[] mouseListeners = swingComponent.getMouseListeners();
-  for(int i=0; i<mouseListeners.length; i++) {
-    swingComponent.removeMouseListener(mouseListeners[i]);
-  }
-  MouseMotionListener[] mouseMotionListeners = swingComponent.getMouseMotionListeners();
-  for(int i=0; i<mouseMotionListeners.length; i++) {
-    swingComponent.removeMouseMotionListener(mouseMotionListeners[i]);
-  }
-  if(isPropertySet) {
-    java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
-  } else {
-    // We don't use the default cross platform drag recognizer, because SWT does not want a threshold, and we failed to set it to 0.
-    new SWTDragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
-  }
-  for(int i=0; i<mouseListeners.length; i++) {
-    swingComponent.addMouseListener(mouseListeners[i]);
-  }
-  for(int i=0; i<mouseMotionListeners.length; i++) {
-    swingComponent.addMouseMotionListener(mouseMotionListeners[i]);
-  }
-  // TODO: implement
+	boolean isPropertySet = true;
+	try {
+		System.setProperty("awt.dnd.drag.threshold", "0");
+		Method method = Toolkit.class.getDeclaredMethod("setDesktopProperty", new Class[] {String.class, Object.class});
+		method.setAccessible(true);
+		method.invoke(Toolkit.getDefaultToolkit(), new Object[] {"DnD.gestureMotionThreshold", new Integer(0)});
+		method.setAccessible(false);
+	} catch(Throwable e) {
+		isPropertySet = false;
+	}
+	Container swingComponent = ((CControl)control.handle).getClientArea();
+	// We need to be first to process the mouse event.
+	MouseListener[] mouseListeners = swingComponent.getMouseListeners();
+	for(int i=0; i<mouseListeners.length; i++) {
+		swingComponent.removeMouseListener(mouseListeners[i]);
+	}
+	MouseMotionListener[] mouseMotionListeners = swingComponent.getMouseMotionListeners();
+	for(int i=0; i<mouseMotionListeners.length; i++) {
+		swingComponent.removeMouseMotionListener(mouseMotionListeners[i]);
+	}
+	if(isPropertySet) {
+		java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
+	} else {
+		// We don't use the default cross platform drag recognizer, because SWT does not want a threshold, and we failed to set it to 0.
+		new SWTDragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
+	}
+	for(int i=0; i<mouseListeners.length; i++) {
+		swingComponent.addMouseListener(mouseListeners[i]);
+	}
+	for(int i=0; i<mouseMotionListeners.length; i++) {
+		swingComponent.addMouseMotionListener(mouseMotionListeners[i]);
+	}
+	// TODO: implement
 //	if (control instanceof Tree) {
 //		effect = new TreeDragAndDropEffect((Tree)control);
 //	} else if (control instanceof Table) {
@@ -310,7 +313,7 @@ private void onDispose() {
 	control.setData(DRAGSOURCEID, null);
 	control = null;
 	transferAgents = null;
-  // TODO: release resources?
+	// TODO: release resources?
 }
 
 /**
@@ -350,184 +353,184 @@ public void setTransfer(Transfer[] transferAgents){
 }
 
 class SWTDragGestureRecognizer extends MouseDragGestureRecognizer {
-  protected SWTDragGestureRecognizer(java.awt.dnd.DragSource dragsource, Component component, int actions, DragGestureListener draggesturelistener) {
-    super(dragsource, component, actions, draggesturelistener);
-  }
-  public void mouseClicked(MouseEvent e) {
-  }
-  public void mousePressed(MouseEvent e) {
-    events.clear();
-    if(getDragAction(e) != 0) {
-      appendEvent(e);
-    }
-  }
-  public void mouseReleased(MouseEvent e) {
-    events.clear();
-  }
-  public void mouseEntered(MouseEvent e) {
-    events.clear();
-  }
-  public void mouseExited(MouseEvent e) {
-    if(!events.isEmpty()) {
-      int dragAction = getDragAction(e);
-      if(dragAction == 0) {
-        events.clear();
-      }
-    }
-  }
-  public void mouseDragged(MouseEvent e) {
-    if(!events.isEmpty()) {
-      int dragAction = getDragAction(e);
-      if(dragAction == 0) {
-        return;
-      }
-//      MouseEvent me = (MouseEvent)events.get(0);
-//      Point p1 = e.getPoint();
-//      Point p2 = me.getPoint();
-//      int j = Math.abs(p2.x - p1.x);
-//      int k = Math.abs(p2.y - p1.y);
-//      if(j > 0 || k > 0) {
-        fireDragGestureRecognized(dragAction, ((MouseEvent)getTriggerEvent()).getPoint());
-//      } else {
-//        appendEvent(e);
-//      }
-    }
-  }
-  public void mouseMoved(MouseEvent mouseevent) {
-  }
-  protected int getDragAction(MouseEvent e) {
-    int modifiers = e.getModifiersEx();
-    if((modifiers & MouseEvent.BUTTON1_DOWN_MASK) == 0) {
-      return 0;
-    }
-    int dropAction = 0;
-    int sourceActions = getSourceActions();
-    switch(modifiers & (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK)) {
-    case MouseEvent.CTRL_DOWN_MASK: 
-      dropAction = DnDConstants.ACTION_COPY;
-      break;
-    case MouseEvent.SHIFT_DOWN_MASK: 
-      dropAction = DnDConstants.ACTION_MOVE;
-      break;
-    case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
-      dropAction = DnDConstants.ACTION_LINK;
-      break;
-    default:
-      if((sourceActions & DnDConstants.ACTION_COPY) != 0) {
-        dropAction = DnDConstants.ACTION_COPY;
-        break;
-      }
-      if((sourceActions & DnDConstants.ACTION_MOVE) != 0) {
-        dropAction = DnDConstants.ACTION_MOVE;
-        break;
-      }
-      if((sourceActions & DnDConstants.ACTION_LINK) != 0)
-        dropAction = DnDConstants.ACTION_LINK;
-      break;
-    }
-    return dropAction & sourceActions;
-  }
+	protected SWTDragGestureRecognizer(java.awt.dnd.DragSource dragsource, Component component, int actions, DragGestureListener draggesturelistener) {
+		super(dragsource, component, actions, draggesturelistener);
+	}
+	public void mouseClicked(MouseEvent e) {
+	}
+	public void mousePressed(MouseEvent e) {
+		events.clear();
+		if(getDragAction(e) != 0) {
+			appendEvent(e);
+		}
+	}
+	public void mouseReleased(MouseEvent e) {
+		events.clear();
+	}
+	public void mouseEntered(MouseEvent e) {
+		events.clear();
+	}
+	public void mouseExited(MouseEvent e) {
+		if(!events.isEmpty()) {
+			int dragAction = getDragAction(e);
+			if(dragAction == 0) {
+				events.clear();
+			}
+		}
+	}
+	public void mouseDragged(MouseEvent e) {
+		if(!events.isEmpty()) {
+			int dragAction = getDragAction(e);
+			if(dragAction == 0) {
+				return;
+			}
+//			MouseEvent me = (MouseEvent)events.get(0);
+//			Point p1 = e.getPoint();
+//			Point p2 = me.getPoint();
+//			int j = Math.abs(p2.x - p1.x);
+//			int k = Math.abs(p2.y - p1.y);
+//			if(j > 0 || k > 0) {
+				fireDragGestureRecognized(dragAction, ((MouseEvent)getTriggerEvent()).getPoint());
+//			} else {
+//				appendEvent(e);
+//			}
+		}
+	}
+	public void mouseMoved(MouseEvent mouseevent) {
+	}
+	protected int getDragAction(MouseEvent e) {
+		int modifiers = e.getModifiersEx();
+		if((modifiers & MouseEvent.BUTTON1_DOWN_MASK) == 0) {
+			return 0;
+		}
+		int dropAction = 0;
+		int sourceActions = getSourceActions();
+		switch(modifiers & (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK)) {
+		case MouseEvent.CTRL_DOWN_MASK: 
+			dropAction = DnDConstants.ACTION_COPY;
+			break;
+		case MouseEvent.SHIFT_DOWN_MASK: 
+			dropAction = DnDConstants.ACTION_MOVE;
+			break;
+		case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+			dropAction = DnDConstants.ACTION_LINK;
+			break;
+		default:
+			if((sourceActions & DnDConstants.ACTION_COPY) != 0) {
+				dropAction = DnDConstants.ACTION_COPY;
+				break;
+			}
+			if((sourceActions & DnDConstants.ACTION_MOVE) != 0) {
+				dropAction = DnDConstants.ACTION_MOVE;
+				break;
+			}
+			if((sourceActions & DnDConstants.ACTION_LINK) != 0)
+				dropAction = DnDConstants.ACTION_LINK;
+			break;
+		}
+		return dropAction & sourceActions;
+	}
 }
 
 class SWTDragGestureListener implements DragGestureListener {
-  public void dragGestureRecognized(DragGestureEvent e) {
-    if (DragSource.this.isDisposed()) {
-      return;
-    }
-    java.awt.Point dragOrigin = e.getDragOrigin();
-    DNDEvent event = new DNDEvent();
-    event.widget = DragSource.this;
-    event.x = dragOrigin.x;
-    event.y = dragOrigin.y;
-    event.time = Utils.getCurrentTime();
-    event.doit = true;
-    notifyListeners(DND.DragStart,event);
-    if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
-    TransferData transferData = new TransferData();
-    event = new DNDEvent();
-    event.widget = DragSource.this;
-    event.time = Utils.getCurrentTime();
-    event.dataType = transferData;
-    notifyListeners(DND.DragSetData,event);
-    // START - copy from clipboard
-    // TODO: refactor to share code?
-    ArrayList transferableList = new ArrayList();
-    ArrayList flavorList = new ArrayList();
-    for(int i=0; i<transferAgents.length; i++) {
-      transferData = new TransferData();
-      Transfer transfer = transferAgents[i];
-      transferData.dataFlavor = transfer.getDataFlavor();
-      transfer.javaToNative(event.data, transferData);
-      flavorList.add(transferData.dataFlavor);
-      transferableList.add(transferData.transferable);
-    }
-    final Transferable[] transferables = (Transferable[])transferableList.toArray(new Transferable[0]);
-    final DataFlavor[] flavors = (DataFlavor[])flavorList.toArray(new DataFlavor[0]);
-    Transferable transferable = new Transferable() {
-      public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-        for(int i=0; i<flavors.length; i++) {
-          if(flavors[i].equals(flavor)) {
-            try {
-              return transferables[i].getTransferData(flavor);
-            } catch(IOException e) {
-            } catch(UnsupportedFlavorException e) {
-            }
-          }
-        }
-        throw new UnsupportedFlavorException(flavor);
-      }
-      public DataFlavor[] getTransferDataFlavors() {
-        return (DataFlavor[])flavors.clone();
-      }
-      public boolean isDataFlavorSupported(DataFlavor flavor) {
-        for(int i=0; i<flavors.length; i++) {
-          if(flavors[i].equals(flavor)) {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-    // END - copy from clipboard
-//    int operations = Utils.convertDnDActionsToSwing(getStyle());
-    Display display = DragSource.this.control.getDisplay();
-    // TODO: implement
-    //ImageData imageData = effect.getDragSourceImage(dragOrigin.x, dragOrigin.y);
-    dragCursor = null;
-    /*if (imageData != null) {
-      dragCursor = new Image(display, imageData);
-    }*/
-    Utils.isLocalDragAndDropInProgress = true;
-    e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
-      int action;
-      public void dragEnter(DragSourceDragEvent e) {
-        Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
-        action = e.getDropAction();
-      }
-      public void dragOver(DragSourceDragEvent e) {
-        Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
-        action = e.getDropAction();
-        // TODO: set the cursor with given image
-//        e.getDragSourceContext().setCursor(dragCursor);
-      }
-      public void dropActionChanged(DragSourceDragEvent e) {
-        Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
-        action = e.getDropAction();
-      }
-      public void dragExit(java.awt.dnd.DragSourceEvent e) {
-      }
-      public void dragDropEnd(DragSourceDropEvent e) {
-        Utils.isLocalDragAndDropInProgress = false;
-        DNDEvent event = new DNDEvent();
-        event.widget = DragSource.this;
-        event.time = Utils.getCurrentTime();
-        event.doit = e.getDropSuccess() || action == 0;
-        event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
-        notifyListeners(DND.DragEnd,event);
-        dataEffect = DND.DROP_NONE;
-      }
-    });
-  }
+	public void dragGestureRecognized(DragGestureEvent e) {
+		if (DragSource.this.isDisposed()) {
+			return;
+		}
+		java.awt.Point dragOrigin = e.getDragOrigin();
+		DNDEvent event = new DNDEvent();
+		event.widget = DragSource.this;
+		event.x = dragOrigin.x;
+		event.y = dragOrigin.y;
+		event.time = Utils.getCurrentTime();
+		event.doit = true;
+		notifyListeners(DND.DragStart,event);
+		if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
+		TransferData transferData = new TransferData();
+		event = new DNDEvent();
+		event.widget = DragSource.this;
+		event.time = Utils.getCurrentTime();
+		event.dataType = transferData;
+		notifyListeners(DND.DragSetData,event);
+		// START - copy from clipboard
+		// TODO: refactor to share code?
+		ArrayList transferableList = new ArrayList();
+		ArrayList flavorList = new ArrayList();
+		for(int i=0; i<transferAgents.length; i++) {
+			transferData = new TransferData();
+			Transfer transfer = transferAgents[i];
+			transferData.dataFlavor = transfer.getDataFlavor();
+			transfer.javaToNative(event.data, transferData);
+			flavorList.add(transferData.dataFlavor);
+			transferableList.add(transferData.transferable);
+		}
+		final Transferable[] transferables = (Transferable[])transferableList.toArray(new Transferable[0]);
+		final DataFlavor[] flavors = (DataFlavor[])flavorList.toArray(new DataFlavor[0]);
+		Transferable transferable = new Transferable() {
+			public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+				for(int i=0; i<flavors.length; i++) {
+					if(flavors[i].equals(flavor)) {
+						try {
+							return transferables[i].getTransferData(flavor);
+						} catch(IOException e) {
+						} catch(UnsupportedFlavorException e) {
+						}
+					}
+				}
+				throw new UnsupportedFlavorException(flavor);
+			}
+			public DataFlavor[] getTransferDataFlavors() {
+				return (DataFlavor[])flavors.clone();
+			}
+			public boolean isDataFlavorSupported(DataFlavor flavor) {
+				for(int i=0; i<flavors.length; i++) {
+					if(flavors[i].equals(flavor)) {
+						return true;
+					}
+				}
+				return false;
+			}
+		};
+		// END - copy from clipboard
+//		int operations = Utils.convertDnDActionsToSwing(getStyle());
+		Display display = DragSource.this.control.getDisplay();
+		// TODO: implement
+		//ImageData imageData = effect.getDragSourceImage(dragOrigin.x, dragOrigin.y);
+		dragCursor = null;
+		/*if (imageData != null) {
+			dragCursor = new Image(display, imageData);
+		}*/
+		Utils.isLocalDragAndDropInProgress = true;
+		e.getDragSource().startDrag(e, null, transferable, new java.awt.dnd.DragSourceListener() {
+			int action;
+			public void dragEnter(DragSourceDragEvent e) {
+				Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
+				action = e.getDropAction();
+			}
+			public void dragOver(DragSourceDragEvent e) {
+				Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
+				action = e.getDropAction();
+				// TODO: set the cursor with given image
+//				e.getDragSourceContext().setCursor(dragCursor);
+			}
+			public void dropActionChanged(DragSourceDragEvent e) {
+				Utils.storeModifiersEx(Utils.modifiersEx = e.getGestureModifiersEx());
+				action = e.getDropAction();
+			}
+			public void dragExit(java.awt.dnd.DragSourceEvent e) {
+			}
+			public void dragDropEnd(DragSourceDropEvent e) {
+				Utils.isLocalDragAndDropInProgress = false;
+				DNDEvent event = new DNDEvent();
+				event.widget = DragSource.this;
+				event.time = Utils.getCurrentTime();
+				event.doit = e.getDropSuccess() || action == 0;
+				event.detail = Utils.convertDnDActionsToSWT(e.getDropAction());
+				notifyListeners(DND.DragEnd,event);
+				dataEffect = DND.DROP_NONE;
+			}
+		});
+	}
 };
 
 

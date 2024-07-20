@@ -137,8 +137,8 @@ public class UIThreadUtils {
             runnable_.run();
           } catch(Throwable t) {
             t.printStackTrace();
-            monitorShutdown();
           }
+          monitorShutdown();
         }
       };
     }
@@ -214,25 +214,42 @@ public class UIThreadUtils {
     }
   }
   
-  protected static void exitSystemIfNoThreads() {
+  public static void exitSystemIfNoThreads() {
     ThreadGroup group;
     for(group = Thread.currentThread().getThreadGroup(); group.getParent() != null; group = group.getParent());
     Thread[] threads = new Thread[group.activeCount() + 10];
     group.enumerate(threads);
     boolean isExit = true;
     // There are 2 VM non daemon threads (AWT-Shutdown and DestroyJavaVM) + the main thread
-    int skippedThreadCount = 3;
     for(int i=0; i<threads.length; i++) {
       Thread thread = threads[i];
       if(thread == null) {
         break;
       }
-      if(isExit && thread.isAlive() && !thread.isDaemon()) {
-        if(skippedThreadCount > 0) {
-          skippedThreadCount--;
-        } else {
-          isExit = false;
-        }
+      boolean isDestroyJavaVMThreadFound = false;
+      boolean isAWTShutdownThreadFound = false;
+      boolean isAWTEventQueue0Found = false;
+      boolean isAWTEventQueue1Found = false;
+      if(thread.isAlive() && !thread.isDaemon()) {
+    	String threadName = thread.getName();
+    	if(!isDestroyJavaVMThreadFound && "DestroyJavaVM".equals(threadName)) {
+    	  isDestroyJavaVMThreadFound = false;
+    		continue;
+    	}
+    	if(!isAWTShutdownThreadFound && "AWT-Shutdown".equals(threadName)) {
+    		isAWTShutdownThreadFound = false;
+    		continue;
+    	}
+    	if(!isAWTEventQueue0Found && "AWT-EventQueue-0".equals(threadName)) {
+    		isAWTEventQueue0Found = false;
+    		continue;
+    	}
+    	if(!isAWTEventQueue1Found && "AWT-EventQueue-1".equals(threadName)) {
+    		isAWTEventQueue1Found = false;
+    		continue;
+    	}
+        isExit = false;
+        break;
       }
     }
     if(isExit) {

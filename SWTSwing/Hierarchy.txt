@@ -11,29 +11,51 @@ Widget
       Composite              ScrollPane (PI), JPanel
         Browser
         Canvas
+          CLabel
           Decorations
             Shell            JFrame, JDialog
+          StyledText
+          TableCursor
+          TreeCursor
+        CBanner
+        CCombo
         Combo                JPanel (JTextField + JList), JComboBox
         CoolBar
+        CTabFolder
+        DateTime
+        ExpandBar
         Group                JPanel (w/ TitledBorder)
+        SashForm
+        ScrolledComposite
         Spinner
         TabFolder            JLayeredPane
         Table                JTable
         ToolBar              JToolBar
         Tree                 JTree
+        ViewForm
       List                   JList
       Text                   JTextArea, JPasswordField
     Slider                   JScrollBar
+  DragSource
+  DropTarget
+  IME
   Item
     CoolItem                 CCoolItem
+    CTabItem
+    ExpandItem
     MenuItem                 JSeparator, JMenu, JMenuItem, JCheckBoxMenuItem, JRadioButtonMenuItem
     TabItem
     TableColumn
     TableItem
     ToolItem                 JButton, JToggleButton, CComboButton, JToolBar.Separator
+    TaskItem
+    ToolItem
     TrayItem
     TreeColumn
     TreeItem
   Menu                       JPopupMenu, JMenuBar, JMenu
   ScrollBar                  parent.getXxxScrollBar()
+  TaskBar
+  ToolTip
+  Tracker
   Tray

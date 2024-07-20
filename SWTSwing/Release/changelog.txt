@@ -1,12 +1,14 @@
 The SWTSwing project - SWT running on Swing
 http://swtswing.sourceforge.net
 Christopher Deckers (chrriis@nextencia.net)
-Licence terms: EPL 1.0 (see licence.html)
+Licence terms: EPL 2.0 (see licence.txt)
 
 ---------------------------------- Change log ----------------------------------
 
 * Version 3.2.0006 (xxxxxxxxxxxxxxx):
 
+- Update to Java 1.8 and SWT 4.944r26, branch R4_20_maintenance (was 3.232r0)
+- Adapted many APIs to launch Eclipse R4_20.
 - Group font can now be set.
 - Coordinate mapping from Display class now considers parent offsets properly.
 - DragSource now uses the mouse-related component of the hierarchy to hook DnD.

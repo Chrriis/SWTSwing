@@ -1,7 +1,7 @@
 The SWTSwing project - SWT running on Swing
 http://swtswing.sourceforge.net
 Christopher Deckers (chrriis@nextencia.net)
-Licence terms: EPL 1.0 (see licence.html)
+Licence terms: EPL 2.0 (see licence.txt)
 
 
 1. What is SWTSwing?
@@ -17,9 +17,7 @@ A port to Swing has many benefits, including true portability (no native
 libraries), can act as a bridge between Swing and SWT components, support for
 look and feels.
 
-SWTSwing requires the latest official version of the Java Runtime Environment
-(6.0) in order to provide a maximum coverage of the SWT API. It can be used on
-on older runtimes (1.4+) with a few less functionalities.
+SWTSwing requires the Java Runtime Environment 1.8 minimum.
 
 
 2. How to use it?
@@ -41,21 +39,21 @@ You can set the Look And Feel of your application by setting the system property
 metal Look And Feel, the system property should be set to
 "javax.swing.plaf.metal.MetalLookAndFeel".
 
-If you want to try Eclipse Java SDK 3.2 with SWTSwing, the easiest way is to
-place SWTSwing.jar in the eclipse folder (let's assume it is C:\eclipse) and run
-the following command:
-java -cp SWTSwing.jar;startup.jar -Dosgi.install.area=C:\eclipse 
--Dosgi.parentClassloader=app -Dswt.swing.debug=true 
-org.eclipse.swt.widgets.Display org.eclipse.core.launcher.Main
+If you want to try Eclipse Java SDK R4_20_maintenance with SWTSwing, the easiest
+way is to place SWTSwing.jar in the eclipse folder (let's assume it is
+C:\eclipse), remove org.eclipse.e4.ui.swt.win32_1.1.0.v20201119-1132.jar and
+org.eclipse.swt.win32.win32.x86_64_3.116.100.v20210602-2209.jar from the plugins
+folder and run the following command: java -cp
+SWTSwing.jar;plugins\org.eclipse.equinox.launcher_1.6.200.v20210416-2027.jar
+-Dosgi.install.area=C:\eclipse -Dosgi.parentClassloader=app
+-Dswt.swing.debug=true org.eclipse.swt.widgets.Display
+org.eclipse.core.launcher.Main
 
 
 3. Any demo?
 
 The Snippet launcher is there to demonstrate the current support of the
 snippets: simply launch SWTSwingSnippetLauncher.jar.
-
-The SWT control example shows the support of the controls with SWTSwing:
-http://swtswing.sf.net/webstart/SWTSwingControlExample.jnlp
 
 
 4. What is the development status?
@@ -72,9 +70,7 @@ SWTSwing's website.
 The sources are part of the distribution, both for SWTSwing and the
 SnippetLauncher.
 
-There is of course some access to the various CVS trees, composed of the SWT
-standard source tree and the SWTSwing sources. The setup process is documented
-on the SWTSwing web site.
+The sources are available on GitHub.
 
 
 6. How to contribute?

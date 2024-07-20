@@ -15,12 +15,14 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -39,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -169,8 +172,16 @@ class CShellFrame extends JFrame implements CShell {
       public boolean isOptimizedDrawingEnabled() {
         return getComponentCount() < 2 || Utils.isFlatLayout(handle);
       }
+      private Map<?, ?> desktopHints = null;
       protected void paintComponent (Graphics g) {
         graphics = g;
+        if (desktopHints == null) { 
+            Toolkit tk = Toolkit.getDefaultToolkit(); 
+            desktopHints = (Map<?, ?>) (tk.getDesktopProperty("awt.font.desktophints")); 
+        }
+        if (desktopHints != null) { 
+            ((Graphics2D)g).addRenderingHints(desktopHints); 
+        }
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         super.paintComponent(g);
         Utils.paintTiledImage(this, g, backgroundImageIcon);
@@ -538,8 +549,16 @@ class CShellDialog extends JDialog implements CShell {
       public boolean isOptimizedDrawingEnabled() {
         return getComponentCount() < 2 || Utils.isFlatLayout(handle);
       }
+      private Map<?, ?> desktopHints = null;
       protected void paintComponent (Graphics g) {
         graphics = g;
+        if (desktopHints == null) { 
+            Toolkit tk = Toolkit.getDefaultToolkit(); 
+            desktopHints = (Map<?, ?>) (tk.getDesktopProperty("awt.font.desktophints")); 
+        }
+        if (desktopHints != null) { 
+            ((Graphics2D)g).addRenderingHints(desktopHints); 
+        }
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         super.paintComponent(g);
         Utils.paintTiledImage(this, g, backgroundImageIcon);

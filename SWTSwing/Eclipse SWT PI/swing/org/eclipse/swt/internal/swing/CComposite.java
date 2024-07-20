@@ -14,8 +14,11 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.PaintEvent;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -88,8 +91,16 @@ class CCompositeImplementation extends JPanel implements CComposite {
       public boolean isOpaque() {
         return (CCompositeImplementation.this == null || backgroundImageIcon == null) && super.isOpaque();
       }
+      private Map<?, ?> desktopHints = null;
       protected void paintComponent (Graphics g) {
         graphics = g;
+        if (desktopHints == null) { 
+            Toolkit tk = Toolkit.getDefaultToolkit(); 
+            desktopHints = (Map<?, ?>) (tk.getDesktopProperty("awt.font.desktophints")); 
+        }
+        if (desktopHints != null) { 
+            ((Graphics2D)g).addRenderingHints(desktopHints); 
+        }
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         if(!(getParent() instanceof JViewport)) {
           Utils.paintTiledImage(this, g, backgroundImageIcon);

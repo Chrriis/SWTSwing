@@ -15,17 +15,20 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.PaintEvent;
 import java.util.EventObject;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -313,8 +316,16 @@ class CTreeImplementation extends JScrollPane implements CTree {
       public boolean isOpaque() {
         return backgroundImageIcon == null && super.isOpaque();
       }
+      private Map<?, ?> desktopHints = null;
       protected void paintComponent (Graphics g) {
         graphics = g;
+        if (desktopHints == null) { 
+            Toolkit tk = Toolkit.getDefaultToolkit(); 
+            desktopHints = (Map<?, ?>) (tk.getDesktopProperty("awt.font.desktophints")); 
+        }
+        if (desktopHints != null) { 
+            ((Graphics2D)g).addRenderingHints(desktopHints); 
+        }
         putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
         super.paintComponent(g);
         handle.processEvent(new PaintEvent(this, PaintEvent.PAINT, null));

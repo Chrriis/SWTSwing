@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Control;
  * @since 2.0
  */
 public class Accessible {
+	static final int MAX_RELATION_TYPES = 15;
 	Control control;
 	AccessibleContext accessibleContext;
 	List<AccessibleListener> accessibleListeners;
@@ -60,6 +61,7 @@ public class Accessible {
 	List<AccessibleTextExtendedListener> accessibleTextExtendedListeners;
 	List<AccessibleValueListener> accessibleValueListeners;
 	List<AccessibleAttributeListener> accessibleAttributeListeners;
+	Relation relations[] = new Relation[MAX_RELATION_TYPES];
 
 	Accessible(Control control) {
 		this.control = control;
@@ -372,6 +374,24 @@ public class Accessible {
 	}
 
 	/**
+	 * Adds a relation with the specified type and target
+	 * to the receiver's set of relations.
+	 *
+	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
+	 * @param target the accessible that is the target for this relation
+	 * @exception IllegalArgumentException ERROR_NULL_ARGUMENT - if the Accessible target is null
+	 * @since 3.6
+	 */
+	public void addRelation(int type, Accessible target) {
+		checkWidget();
+		if (target == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		if (relations[type] == null) {
+			relations[type] = new Relation(this, type);
+		}
+		relations[type].addTarget(target);
+	}
+	
+	/**
 	 * Returns the control for this Accessible object. 
 	 *
 	 * @return the receiver's control
@@ -682,6 +702,28 @@ public class Accessible {
 		if (accessibleAttributeListeners != null) {
 			accessibleAttributeListeners.remove(listener);
 			if (accessibleAttributeListeners.isEmpty()) accessibleAttributeListeners = null;
+		}
+	}
+
+	/**
+	 * Removes the relation with the specified type and target
+	 * from the receiver's set of relations.
+	 *
+	 * @param type an <code>ACC</code> constant beginning with RELATION_* indicating the type of relation
+	 * @param target the accessible that is the target for this relation
+	 * @exception IllegalArgumentException ERROR_NULL_ARGUMENT - if the Accessible target is null
+	 * @since 3.6
+	 */
+	public void removeRelation(int type, Accessible target) {
+		checkWidget();
+		if (target == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		Relation relation = relations[type];
+		if (relation != null) {
+			relation.removeTarget(target);
+			if (!relation.hasTargets()) {
+				relations[type].Release();
+				relations[type] = null;
+			}
 		}
 	}
 

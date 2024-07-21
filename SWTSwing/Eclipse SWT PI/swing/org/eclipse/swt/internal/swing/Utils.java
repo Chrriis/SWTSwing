@@ -10,12 +10,14 @@ package org.eclipse.swt.internal.swing;
 import java.awt.AWTEvent;
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -394,12 +396,40 @@ public class Utils {
 		return;
 	}
 
+	public static void dumpTree(Component component) {
+		Component topComponent = component;
+		for(; topComponent.getParent() != null; topComponent = topComponent.getParent());
+		dumpComponentTree(topComponent, 0, topComponent == component? null: component);
+	}
+
+	private static void dumpComponentTree(Component control, int depth, Component referenceControl) {
+		StringBuffer sb = new StringBuffer();
+		if(depth > 0) {
+			int count = depth;
+			if(control == referenceControl) {
+				sb.append("> ");
+				count--;
+			}
+			while(count-- > 0) {
+				sb.append("  ");
+			}
+		}
+		sb.append(control);
+		System.out.println(sb.toString());
+		if(control instanceof Container) {
+			Component[] children = ((Container)control).getComponents();
+			for(int i=0; i<children.length; i++) {
+				dumpComponentTree(children[i], depth + 1, referenceControl);
+			}
+		}
+	}
+	
 	public static void dumpTree(Control control) {
 		Shell shell = control.getShell();
 		dumpControlTree(shell, 0, shell == control? null: control);
 	}
 
-	protected static void dumpControlTree(Control control, int depth, Control referenceControl) {
+	private static void dumpControlTree(Control control, int depth, Control referenceControl) {
 		StringBuffer sb = new StringBuffer();
 		if(depth > 0) {
 			int count = depth;

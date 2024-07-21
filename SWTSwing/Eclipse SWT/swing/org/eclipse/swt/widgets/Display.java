@@ -332,22 +332,27 @@ public class Display extends Device {
 				}
 				if(ie.getID() == KeyEvent.KEY_PRESSED) {
 					int dumpModifiers = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
-					if((Utils.modifiersEx & dumpModifiers) == dumpModifiers && ((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
-						Component component = ie.getComponent();
-						Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
-						if(window instanceof CShell) {
-							Component targetComponent;
-							java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
-							SwingUtilities.convertPointFromScreen(mouseLocation, window);
-							targetComponent = window.findComponentAt(mouseLocation);
-							for(; targetComponent != null && !(targetComponent instanceof CControl); targetComponent = targetComponent.getParent());
-							Control control;
-							if(targetComponent != null) {
-								control = ((CControl)targetComponent).getSWTHandle();
-							} else {
-								control = ((CShell)window).getSWTHandle();
+					if((Utils.modifiersEx & dumpModifiers) == dumpModifiers) {
+						if(((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F1) {
+							Component component = ie.getComponent();
+							Utils.dumpTree(component);
+						} else if(((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
+							Component component = ie.getComponent();
+							Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
+							if(window instanceof CShell) {
+								Component targetComponent;
+								java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+								SwingUtilities.convertPointFromScreen(mouseLocation, window);
+								targetComponent = window.findComponentAt(mouseLocation);
+								for(; targetComponent != null && !(targetComponent instanceof CControl); targetComponent = targetComponent.getParent());
+								Control control;
+								if(targetComponent != null) {
+									control = ((CControl)targetComponent).getSWTHandle();
+								} else {
+									control = ((CShell)window).getSWTHandle();
+								}
+								Utils.dumpTree(control);
 							}
-							Utils.dumpTree(control);
 						}
 					}
 				}

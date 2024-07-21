@@ -928,6 +928,10 @@ class CShellPanel extends JPanel implements CShell {
 	public void setShape(Shape shape) {
 	  Utils.notImplemented();
 	}
+	@Override
+	public void setOpacity(float f) {
+		Utils.notImplemented();
+	}
 }
 
 /**
@@ -1168,5 +1172,7 @@ public interface CShell extends CScrollable {
 	public void setActivationEventsBlocked(boolean areActivationEventsBlocked);
 	
 	public void setShape(Shape shape);
+	
+	public void setOpacity(float f);
 	
 }

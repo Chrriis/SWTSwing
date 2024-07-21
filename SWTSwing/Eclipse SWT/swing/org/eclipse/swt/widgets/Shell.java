@@ -1086,6 +1086,27 @@ void setActiveControl (Control control) {
 	}
 }
 
+/**
+ * Sets the receiver's alpha value which must be
+ * between 0 (transparent) and 255 (opaque).
+ * <p>
+ * This operation requires the operating system's advanced
+ * widgets subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * @param alpha the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public void setAlpha (int alpha) {
+	((CShell)handle).setOpacity(alpha / 255f);
+}
+
 //void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 //	super.setBounds (x, y, width, height, flags, false);
 //}

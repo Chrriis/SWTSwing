@@ -400,7 +400,9 @@ class CTextField extends JPasswordField implements CText {
 	public CTextField(Text text, int style) {
 		this.handle = text;
 		userAttributeHandler = new UserAttributeHandler(this);
-		setEchoChar('\0');
+		if((style & SWT.PASSWORD) == 0) {
+			setEchoChar('\0');
+		}
 		init(style);
 	}
 	

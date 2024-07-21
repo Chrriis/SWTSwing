@@ -4849,6 +4849,9 @@ public void processEvent(AWTEvent e) {
 				java.awt.event.MouseEvent me = (java.awt.event.MouseEvent)e;
 				sendEvent(SWT.DragDetect, createMouseEvent(me, false));
 			}
+			if(isDisposed()) {
+				break;
+			}
 			// Fall through
 		}
 		case java.awt.event.MouseEvent.MOUSE_MOVED: {

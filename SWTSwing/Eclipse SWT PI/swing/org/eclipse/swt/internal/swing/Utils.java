@@ -131,31 +131,39 @@ public class Utils {
 	static void installMouseListener(Component component, final Control control) {
 		component.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void mouseReleased(MouseEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void mouseClicked(MouseEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void mouseEntered(MouseEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void mouseExited(MouseEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 		});
 		component.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseDragged(MouseEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void mouseMoved(MouseEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 		});
 		component.addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 		});
@@ -167,12 +175,15 @@ public class Utils {
 		component.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
 		component.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void keyReleased(KeyEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void keyTyped(KeyEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 		});
@@ -181,9 +192,11 @@ public class Utils {
 	static void installFocusListener(Component component, final Control control) {
 		component.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void focusLost(FocusEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 		});
@@ -192,15 +205,19 @@ public class Utils {
 	static void installComponentListener(Component component, final Control control) {
 		component.addComponentListener(new ComponentListener() {
 			public void componentHidden(ComponentEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void componentShown(ComponentEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void componentResized(ComponentEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 			public void componentMoved(ComponentEvent e) {
+				if(control.isDisposed()) return;
 				control.processEvent(e);
 			}
 		});

@@ -20,11 +20,17 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar.Separator;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.ToolItem;
 
 class CToolItemPush extends JButton implements CToolItem {
 
 	protected ToolItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CToolItemPush(ToolItem toolItem, int style) {
 		handle = toolItem;
@@ -53,6 +59,11 @@ class CToolItemCheck extends JToggleButton implements CToolItem {
 
 	protected ToolItem handle;
 
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
+
 	public CToolItemCheck(ToolItem toolItem, int style) {
 		handle = toolItem;
 		init(style);
@@ -79,6 +90,11 @@ class CToolItemCheck extends JToggleButton implements CToolItem {
 class CToolItemRadio extends JToggleButton implements CToolItem {
 
 	protected ToolItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CToolItemRadio(ToolItem toolItem, int style) {
 		handle = toolItem;
@@ -107,6 +123,11 @@ class CToolItemDropDown extends CComboButton implements CToolItem {
 
 	protected ToolItem handle;
 
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
+
 	public CToolItemDropDown(ToolItem toolItem, int style) {
 		handle = toolItem;
 		init(style);
@@ -122,7 +143,7 @@ class CToolItemDropDown extends CComboButton implements CToolItem {
 			}
 		});
 	}
-
+	
 	public boolean isSelected() {
 		return false;
 	}
@@ -138,6 +159,11 @@ class CToolItemDropDown extends CComboButton implements CToolItem {
 class CToolItemSeparator extends Separator implements CToolItem {
 
 	protected ToolItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CToolItemSeparator(ToolItem toolItem, int style) {
 		handle = toolItem;
@@ -215,7 +241,7 @@ class CToolItemSeparator extends Separator implements CToolItem {
 
 }
 
-public interface CToolItem {
+public interface CToolItem extends CItem {
 
 	public static class Factory {
 		private Factory() {}

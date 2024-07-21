@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 
 import javax.swing.JComponent;
 
@@ -202,13 +203,11 @@ public Point computeSize (int wHint, int hHint) {
 	int index = parent.indexOf (this);
 	if (index == -1) return new Point (0, 0);
 	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT) width = handle.getWidth();
-	if (hHint == SWT.DEFAULT) height = handle.getHeight();
-//	if ((parent.style & SWT.VERTICAL) != 0) {
-//		height += parent.getMargin (index);
-//	} else {
-//		width += parent.getMargin (index);
-//	}
+	if (wHint == SWT.DEFAULT) width = 32;
+	if (hHint == SWT.DEFAULT) height = 32;
+	Insets insets = ((JComponent)handle).getInsets();
+	width += insets.left + insets.right;
+	height += insets.top + insets.bottom;
 	return new Point (width, height);
 }
 

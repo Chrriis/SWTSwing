@@ -121,7 +121,7 @@ public class JCoolBarItem extends JToolBar {
 		return super.getCursor();
 	}
 
-	private int getGripWidth() {
+	public int getGripSize() {
 		return getInsets().left - 2;
 	}
 
@@ -132,7 +132,7 @@ public class JCoolBarItem extends JToolBar {
 	 */
 	private boolean isInGrip(Point point) {
 		Rectangle gripRect = new Rectangle();
-		int gripWidth = getGripWidth();
+		int gripWidth = getGripSize();
 		int x = getComponentOrientation().isLeftToRight() ? 0 : getWidth() - gripWidth;
 		gripRect.setBounds(x, 0, gripWidth, getHeight());
 		return gripRect.contains(point);
@@ -159,15 +159,6 @@ public class JCoolBarItem extends JToolBar {
 //	public void addSeparator() {
 //		
 //	}
-
-	public Dimension getMinimumSize() {
-		Dimension size = super.getMinimumSize();
-		if(!isLocked()) {
-			// TODO: check why this is needed for Eclipse!
-			size.width += getGripWidth() + 2;
-		}
-		return size;
-	}
 
 	protected boolean isFloating;
 

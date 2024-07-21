@@ -10,6 +10,7 @@ package org.eclipse.swt.internal.swing;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 
@@ -101,6 +102,11 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
 		}
 	}
 
+	@Override
+	public Dimension getMinimumSize() {
+		return getPreferredSize();
+	}
+	
 	public void reshape(int x, int y, int w, int h) {
 		super.reshape(x, y, w, getComponentCount() == 0? h: getPreferredSize().height);
 	}

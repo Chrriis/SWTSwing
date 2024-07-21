@@ -36,8 +36,7 @@ public class JCoolBarLayout implements LayoutManager {
 					if(j != i && coolBarItem.isWrapped()) {
 						break;
 					}
-					// TODO: Check why we have to add "+ 1"
-					lineHeight = Math.max(lineHeight, coolBarItem.getItemPreferredSize().height + 1);
+					lineHeight = Math.max(lineHeight, coolBarItem.getItemPreferredSize().height);
 				}
 				int lineX = 0;
 				boolean isFirst = true;
@@ -49,7 +48,7 @@ public class JCoolBarLayout implements LayoutManager {
 					isFirst = false;
 					int x = lineX + Math.max(0, coolBarItem.getXSpacing());
 					int nextXSpacing = i < j-1? Math.max(0, ((JCoolBarItem)components[i+1]).getXSpacing()): 0;
-					int nextPositionX = i < j-1? Math.max(0, ((JCoolBarItem)components[i+1]).getXSpacing()) + x + coolBarItem.getMinimumSize().width: size.width;
+					int nextPositionX = i < j-1? Math.max(0, ((JCoolBarItem)components[i+1]).getXSpacing()) + x + Math.max(coolBarItem.getMinimumSize().width, coolBarItem.getPreferredSize().width): size.width;
 					if(isLeftToRight) {
 						coolBarItem.setBounds(x, lineY, nextPositionX - x, lineHeight);
 					} else {

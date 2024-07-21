@@ -13,10 +13,16 @@ import java.awt.Component;
 import javax.swing.JPanel;
 
 import org.eclipse.swt.widgets.ExpandItem;
+import org.eclipse.swt.widgets.Item;
 
 class CExpandItemImplementation extends JPanel implements CExpandItem {
 
 	protected ExpandItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CExpandItemImplementation(ExpandItem expandItem, int style) {
 		super(new BorderLayout(0, 0));
@@ -37,7 +43,7 @@ class CExpandItemImplementation extends JPanel implements CExpandItem {
 
 }
 
-public interface CExpandItem {
+public interface CExpandItem extends CItem {
 
 	public static class Factory {
 		private Factory() {}

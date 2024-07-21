@@ -89,6 +89,13 @@ class CButtonArrow extends ArrowButton implements CButton {
 		size.width = size.height;
 		return size;
 	}
+	
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = super.getMinimumSize();
+		size.width = size.height;
+		return size;
+	}
 
 	public Container getClientArea() {
 		return this;

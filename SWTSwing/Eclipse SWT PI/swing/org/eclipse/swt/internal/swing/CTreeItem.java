@@ -13,11 +13,17 @@ import java.awt.Font;
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.TreeItem;
 
 class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTreeItem {
 
 	protected TreeItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CTreeItemImplementation(TreeItem treeItem, int style) {
 		setUserObjects(new Object[] {new TreeItemObject(this)});
@@ -117,7 +123,7 @@ class CTreeItemImplementation extends DefaultMutableTreeTableNode implements CTr
 
 }
 
-public interface CTreeItem {
+public interface CTreeItem extends CItem {
 
 	public static class TreeItemObject {
 

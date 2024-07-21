@@ -17,11 +17,17 @@ import javax.swing.JPanel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.TabItem;
 
 class CTabItemImplementation extends JPanel implements CTabItem {
 
 	protected TabItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CTabItemImplementation(TabItem tabItem, int style) {
 		super(new BorderLayout(0, 0));
@@ -58,7 +64,7 @@ class CTabItemImplementation extends JPanel implements CTabItem {
 	
 }
 
-public interface CTabItem {
+public interface CTabItem extends CItem {
 
 	public static class Factory {
 		private Factory() {}

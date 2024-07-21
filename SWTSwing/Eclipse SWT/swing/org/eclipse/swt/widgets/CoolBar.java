@@ -20,13 +20,15 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CCoolBar;
 import org.eclipse.swt.internal.swing.CCoolItem;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.JCoolBarItem;
 import org.eclipse.swt.internal.swing.Utils;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide an area for dynamically
@@ -91,6 +93,28 @@ public class CoolBar extends Composite {
  */
 public CoolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+Control [] _getChildren () {
+	Component[] children = ((CControl)handle).getClientArea().getComponents();
+	if(children.length == 0) {
+		return new Control[0];
+	}
+	ArrayList controlsList = new ArrayList(children.length);
+	for(int i=0; i<children.length; i++) {
+		Component childComponent = children[i];
+		if(childComponent instanceof JCoolBarItem) {
+			for(Component subChildComponent: ((JCoolBarItem)childComponent).getComponents()) {
+				if(subChildComponent != null && subChildComponent instanceof CControl) {
+					Control control = display.getControl(subChildComponent);
+					if (control != null && control != this) {
+						controlsList.add(control);
+					}
+				}
+			}
+		}
+	}
+	return (Control[])controlsList.toArray(new Control[0]);
 }
 
 static int checkStyle (int style) {
@@ -173,6 +197,13 @@ protected void checkSubclass () {
 //	width += border * 2;	
 //	return new Point (width, height);
 //}
+
+@Override
+public Rectangle computeTrim(int x, int y, int width, int height) {
+//	width += 2;
+//	height += 2;
+	return super.computeTrim(x, y, width, height);
+}
 
 boolean autoAddChildren() {
 	return false;

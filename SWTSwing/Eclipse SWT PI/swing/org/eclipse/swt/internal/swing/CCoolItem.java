@@ -13,10 +13,16 @@ import java.awt.Dimension;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.CoolItem;
+import org.eclipse.swt.widgets.Item;
 
 class CCoolItemImplementation extends JCoolBarItem implements CCoolItem {
 
 	protected CoolItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CCoolItemImplementation(CoolItem coolItem, int style) {
 		setLayout(new BorderLayout(0, 0));
@@ -40,7 +46,7 @@ class CCoolItemImplementation extends JCoolBarItem implements CCoolItem {
 
 }
 
-public interface CCoolItem {
+public interface CCoolItem extends CItem {
 
 	public static class Factory {
 		private Factory() {}
@@ -53,5 +59,5 @@ public interface CCoolItem {
 	public boolean isWrapped();
 
 	public void setWrapped(boolean isWrapped);
-
+	
 }

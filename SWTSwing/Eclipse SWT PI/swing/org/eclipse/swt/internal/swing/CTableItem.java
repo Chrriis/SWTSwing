@@ -12,11 +12,17 @@ import java.awt.Font;
 
 import javax.swing.Icon;
 
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.TableItem;
 
 class CTableItemImplementation implements CTableItem {
 
 	protected TableItem handle;
+
+	@Override
+	public Item getSWTHandle() {
+		return handle;
+	}
 
 	public CTableItemImplementation(TableItem tableItem, int style) {
 		setUserObjects(new TableItemObject[] {new TableItemObject(this)});
@@ -140,7 +146,7 @@ class CTableItemImplementation implements CTableItem {
 
 }
 
-public interface CTableItem {
+public interface CTableItem extends CItem {
 
 	public static class TableItemObject {
 

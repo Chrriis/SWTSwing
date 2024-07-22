@@ -654,6 +654,7 @@ void releaseWidget () {
 void removeControl (Control control) {
 	fixTabList (control);
 //	layout();
+	handle.revalidate();
 	handle.repaint();
 //	resizeChildren ();
 }

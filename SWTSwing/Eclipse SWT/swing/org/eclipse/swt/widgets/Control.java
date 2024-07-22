@@ -730,14 +730,7 @@ void createWidget () {
 	}
 	if(parent != null && !(handle instanceof Window)) {
 		if(parent.autoAddChildren()) {
-			Container clientArea = ((CControl)parent.handle).getClientArea();
-			if(!parent.isLayoutManaged()) {
-				clientArea.setLayout(null);
-			}
-			clientArea.add(handle);
-			updateBackgroundMode();
-			((JComponent)clientArea).revalidate();
-			clientArea.repaint();
+			addToParent();
 		}
 //		if(parent instanceof Shell && parent.getChildren().length == 0) {
 //			handle.requestFocus();
@@ -759,6 +752,17 @@ void createWidget () {
 //	setDefaultFont ();
 //	checkMirrored ();
 //	checkBorder ();
+}
+
+private void addToParent() {
+	Container clientArea = ((CControl)parent.handle).getClientArea();
+	if(!parent.isLayoutManaged()) {
+		clientArea.setLayout(null);
+	}
+	clientArea.add(handle);
+	updateBackgroundMode();
+	((JComponent)clientArea).revalidate();
+	clientArea.repaint();
 }
 
 //int defaultBackground () {
@@ -3844,8 +3848,8 @@ public boolean setParent (Composite parent) {
 		Menu [] menus = oldShell.findMenus (this);
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
-	((CControl)parent.handle).getClientArea().add(handle);
-	updateBackgroundMode();
+	this.parent = parent;
+	addToParent();
 //	int topHandle = topHandle ();
 //	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 //	this.parent = parent;

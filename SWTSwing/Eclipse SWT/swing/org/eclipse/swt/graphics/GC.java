@@ -1459,7 +1459,7 @@ public void drawString (String string, int x, int y) {
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	drawText(string, x, y, isTransparent? SWT.DRAW_TRANSPARENT: 0);
+	drawText(string, x, y + handle.getFontMetrics().getLeading(), isTransparent? SWT.DRAW_TRANSPARENT: 0);
 //	if(!isTransparent) {
 //		java.awt.Color oldColor = handle.getColor();
 //		handle.setColor(data.background);

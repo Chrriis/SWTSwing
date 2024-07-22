@@ -400,7 +400,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							gc.drawString(string, drawX, drawRunY, true);
 							if (run.style != null && run.style.underline) {
 								int underlineY = drawRunY + run.ascent + 1 - run.style.rise;
-								gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);								
+								drawUnderline(gc, drawX, underlineY, drawX + run.width, underlineY, run.style);								
 							}
 							if (run.style != null && run.style.strikeout) {
 								int strikeoutY = drawRunY + (run.ascent + run.descent) - (run.ascent + run.descent)/2 - 1;
@@ -422,7 +422,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								gc.drawString(string, drawX, drawRunY, true);
 								if (run.style != null && run.style.underline) {
 									int underlineY = drawRunY + run.ascent + 1 - run.style.rise;
-									gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);
+									drawUnderline(gc, drawX, underlineY, drawX + run.width, underlineY, run.style);
 								}
 								if (run.style != null && run.style.strikeout) {
 									int strikeoutY = drawRunY + (run.ascent + run.descent) - (run.ascent + run.descent)/2 - 1;
@@ -444,7 +444,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 									gc.drawString(string, selX, drawRunY, true);
 									if (run.style != null && run.style.underline) {
 										int underlineY = drawRunY + run.ascent + 1 - run.style.rise;
-										gc.drawLine (selX, underlineY, selX + selWidth, underlineY);								
+										drawUnderline(gc, selX, underlineY, selX + selWidth, underlineY, run.style);								
 									}
 									if (run.style != null && run.style.strikeout) {
 										int strikeoutY = drawRunY + (run.ascent + run.descent) - (run.ascent + run.descent)/2 - 1;
@@ -462,6 +462,28 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	gc.setForeground(foreground);
 	gc.setBackground(background);
 	gc.setFont(gcFont);
+}
+
+private void drawUnderline(GC gc, int x1, int y1, int x2, int y2, TextStyle style) {
+	if(style.underlineColor != null) {
+		gc.setForeground(style.underlineColor);
+	}
+	switch(style.underlineStyle) {
+	case SWT.UNDERLINE_SQUIGGLE:
+	case SWT.UNDERLINE_ERROR:
+		// TODO: implement
+		gc.drawLine (x1, y1, x2, y2);
+		break;
+	case SWT.UNDERLINE_DOUBLE:
+		gc.drawLine (x1, y1, x2, y2);
+		gc.drawLine (x1, y1 + 2, x2, y2 + 2);
+		break;
+	case SWT.UNDERLINE_SINGLE:
+		gc.drawLine (x1, y1, x2, y2);
+	case SWT.UNDERLINE_LINK:
+		gc.drawLine (x1, y1, x2, y2);
+		break;
+	}
 }
 
 void freeRuns() {

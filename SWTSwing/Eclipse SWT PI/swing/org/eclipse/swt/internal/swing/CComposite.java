@@ -17,6 +17,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.MouseWheelEvent;
 import java.awt.event.PaintEvent;
 import java.util.Map;
 
@@ -127,6 +128,10 @@ class CCompositeImplementation extends JPanel implements CComposite {
 			}
 			protected void processEvent(AWTEvent e) {
 				if(Utils.redispatchEvent(getSWTHandle(), e)) {
+					return;
+				}
+				if(scrollPane != null && e instanceof MouseWheelEvent) {
+					scrollPane.dispatchEvent(e);
 					return;
 				}
 				super.processEvent(e);

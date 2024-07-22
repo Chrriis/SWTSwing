@@ -63,7 +63,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.DisabledStatePanel;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
@@ -5145,7 +5144,12 @@ Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputStat
 	} else if (SwingUtilities.isMiddleMouseButton (me)) {
 		event.button = 3;
 	}
-	event.count = me.getClickCount();
+	if(me instanceof MouseWheelEvent) {
+		event.count = -((MouseWheelEvent)me).getScrollAmount();
+		event.detail = SWT.SCROLL_LINE;
+	} else {
+		event.count = me.getClickCount();
+	}
 	event.stateMask = isPreviousInputState? Display.getPreviousInputState(): Display.getInputState();
 	return event;
 }

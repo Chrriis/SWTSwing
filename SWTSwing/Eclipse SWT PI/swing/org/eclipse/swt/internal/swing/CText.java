@@ -470,6 +470,7 @@ class CTextField extends JPasswordField implements CText {
 		((AbstractDocument)getDocument()).setDocumentFilter(new DocumentFilter() {
 //			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
 //			}
+			@SuppressWarnings("deprecation")
 			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
 				if(getText().length() - length + text.length() > getTextLimit()) {
 					return;
@@ -557,6 +558,7 @@ class CTextField extends JPasswordField implements CText {
 
 	public void setTextLimit(int limit) {
 		textLimit = limit;
+		@SuppressWarnings("deprecation")
 		String text = getText();
 		if(text.length() > limit) {
 			setText(text.substring(0, limit));

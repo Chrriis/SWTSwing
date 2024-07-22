@@ -58,7 +58,7 @@ import org.eclipse.swt.internal.swing.UIThreadUtils;
  */
 public class TabFolder extends Composite {
 
-	ArrayList itemList;
+	ArrayList<TabItem> itemList;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -97,7 +97,7 @@ Control [] _getChildren () {
 	if(children.length == 0) {
 		return new Control[0];
 	}
-	ArrayList controlsList = new ArrayList(children.length);
+	ArrayList<Control> controlList = new ArrayList<>(children.length);
 	for(int i=0; i<children.length; i++) {
 		Component childComponent = children[i];
 		if(childComponent instanceof CTabItem) {
@@ -106,12 +106,12 @@ Control [] _getChildren () {
 			if(childComponent != null) {
 				Control control = display.getControl(childComponent);
 				if (control != null && control != this) {
-					controlsList.add(control);
+					controlList.add(control);
 				}
 			}
 		}
 	}
-	return (Control[])controlsList.toArray(new Control[0]);
+	return controlList.toArray(new Control[0]);
 }
 
 /**
@@ -190,7 +190,7 @@ void createItem (TabItem item, int index) {
 
 void createWidget () {
 	super.createWidget ();
-	itemList = new ArrayList();
+	itemList = new ArrayList<>();
 }
 
 void destroyItem (TabItem item) {
@@ -223,7 +223,7 @@ public TabItem getItem (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	return (TabItem)itemList.get(index);
+	return itemList.get(index);
 }
 
 /**
@@ -259,7 +259,7 @@ public int getItemCount () {
  */
 public TabItem [] getItems () {
 	checkWidget ();
-	return (TabItem[])itemList.toArray(new TabItem [0]);
+	return itemList.toArray(new TabItem [0]);
 }
 
 /**
@@ -282,7 +282,7 @@ public TabItem [] getSelection () {
 	checkWidget ();
 	int index = ((CTabFolder)handle).getSelectedIndex();
 	if (index == -1) return new TabItem [0];
-	return new TabItem [] {(TabItem)itemList.get(index)};
+	return new TabItem [] {itemList.get(index)};
 }
 
 /**
@@ -356,7 +356,7 @@ void releaseChildren (boolean destroy) {
 	if(itemList != null) {
 		int count = getItemCount();
 		for (int i=0; i<count; i++) {
-			TabItem item = (TabItem)itemList.get(i);
+			TabItem item = itemList.get(i);
 			if (!item.isDisposed ()) item.release (false);
 		}
 		itemList = null;
@@ -373,7 +373,7 @@ void removeControl (Control control) {
 	super.removeControl (control);
 	int count = getItemCount();
 	for (int i=0; i<count; i++) {
-		TabItem item = (TabItem)itemList.get(i);
+		TabItem item = itemList.get(i);
 		if (item.control == control) item.setControl (null);
 	}
 }
@@ -492,7 +492,7 @@ public void processEvent(EventObject e) {
 			int index = ((CTabFolder)handle).getSelectedIndex();
 			Event event = new Event();
 			if(index >= 0) {
-				event.item = (Widget)itemList.get(index);
+				event.item = itemList.get(index);
 			}
 			sendEvent(SWT.Selection, event);
 		}

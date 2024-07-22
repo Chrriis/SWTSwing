@@ -38,7 +38,7 @@ import java.util.Map;
 public class NullGraphics2D extends Graphics2D implements Cloneable {
 	
 	// TODO: save the attributes for the copyAttributes()
-	public void addRenderingHints(Map arg0) {
+	public void addRenderingHints(Map<?, ?> arg0) {
 	}
 	public void clip(Shape s) {
 	}
@@ -116,8 +116,8 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
 	public void setRenderingHint(Key hintKey, Object hintValue) {
 		renderingHints.put(hintKey, hintValue);
 	}
-	protected RenderingHints renderingHints = new RenderingHints(new HashMap());
-	public void setRenderingHints(Map renderingHints) {
+	protected RenderingHints renderingHints = new RenderingHints(new HashMap<>());
+	public void setRenderingHints(Map<?, ?> renderingHints) {
 		this.renderingHints.putAll(renderingHints);
 	}
 	protected Stroke stroke;
@@ -215,6 +215,7 @@ public class NullGraphics2D extends Graphics2D implements Cloneable {
 	public FontMetrics getFontMetrics() {
 		return getFontMetrics(getFont());
 	}
+	@SuppressWarnings("deprecation")
 	public FontMetrics getFontMetrics(Font f) {
 		return Toolkit.getDefaultToolkit().getFontMetrics(f);
 	}

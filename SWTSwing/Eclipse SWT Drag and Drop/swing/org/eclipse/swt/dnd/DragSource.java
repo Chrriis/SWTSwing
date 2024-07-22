@@ -37,7 +37,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Control;
@@ -478,8 +477,8 @@ class SWTDragGestureListener implements DragGestureListener {
 		notifyListeners(DND.DragSetData,event);
 		// START - copy from clipboard
 		// TODO: refactor to share code?
-		ArrayList transferableList = new ArrayList();
-		ArrayList flavorList = new ArrayList();
+		ArrayList<Transferable> transferableList = new ArrayList<>();
+		ArrayList<DataFlavor> flavorList = new ArrayList<>();
 		for(int i=0; i<transferAgents.length; i++) {
 			transferData = new TransferData();
 			Transfer transfer = transferAgents[i];
@@ -488,8 +487,8 @@ class SWTDragGestureListener implements DragGestureListener {
 			flavorList.add(transferData.dataFlavor);
 			transferableList.add(transferData.transferable);
 		}
-		final Transferable[] transferables = (Transferable[])transferableList.toArray(new Transferable[0]);
-		final DataFlavor[] flavors = (DataFlavor[])flavorList.toArray(new DataFlavor[0]);
+		final Transferable[] transferables = transferableList.toArray(new Transferable[0]);
+		final DataFlavor[] flavors = flavorList.toArray(new DataFlavor[0]);
 		Transferable transferable = new Transferable() {
 			public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
 				for(int i=0; i<flavors.length; i++) {
@@ -504,7 +503,7 @@ class SWTDragGestureListener implements DragGestureListener {
 				throw new UnsupportedFlavorException(flavor);
 			}
 			public DataFlavor[] getTransferDataFlavors() {
-				return (DataFlavor[])flavors.clone();
+				return flavors.clone();
 			}
 			public boolean isDataFlavorSupported(DataFlavor flavor) {
 				for(int i=0; i<flavors.length; i++) {

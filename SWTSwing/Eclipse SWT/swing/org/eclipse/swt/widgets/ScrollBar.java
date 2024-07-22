@@ -21,7 +21,6 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.internal.swing.CScrollable;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;

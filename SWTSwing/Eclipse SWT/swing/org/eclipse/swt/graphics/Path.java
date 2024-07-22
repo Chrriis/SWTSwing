@@ -324,8 +324,8 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	List typeList = new ArrayList();
-	List pointList = new ArrayList();
+	List<Byte> typeList = new ArrayList<>();
+	List<Float> pointList = new ArrayList<>();
 	float[] values = new float[6];
 	for(PathIterator pathIterator = handle.getPathIterator(null); !pathIterator.isDone(); pathIterator.next()) {
 		switch(pathIterator.currentSegment(values)) {
@@ -360,11 +360,11 @@ public PathData getPathData() {
 	}
 	byte[] types = new byte[typeList.size()];
 	for(int i=typeList.size()-1; i>=0; i--) {
-		types[i] = ((Byte)typeList.get(i)).byteValue();
+		types[i] = typeList.get(i).byteValue();
 	}
 	float[] points = new float[pointList.size()];
 	for(int i=pointList.size()-1; i>=0; i--) {
-		points[i] = ((Float)typeList.get(i)).floatValue();
+		points[i] = pointList.get(i).floatValue();
 	}
 	PathData result = new PathData();
 	result.types = types;

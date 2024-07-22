@@ -25,7 +25,6 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.internal.swing.CExpandBar;
 import org.eclipse.swt.internal.swing.CExpandItem;
-import org.eclipse.swt.internal.swing.Compatibility;
 
 /**
  * Instances of this class represent a selectable user interface object

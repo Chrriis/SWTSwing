@@ -133,6 +133,7 @@ class CButtonArrow extends ArrowButton implements CButton {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void reshape(int x, int y, int w, int h) {
 		super.reshape(x, y, h, h);
 	}

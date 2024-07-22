@@ -139,7 +139,7 @@ public class JTreeTable extends JPanel implements Scrollable {
 //			return headerValue == null? null: headerValue.toString();
 		}
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			return null;
 		}
 
@@ -265,6 +265,7 @@ public class JTreeTable extends JPanel implements Scrollable {
 			return tree.getRowBounds(row).height + getRowMargin();
 		}
 
+		@SuppressWarnings("deprecation")
 		public void reshape(int x, int y, int w, int h) {
 			super.reshape(x, y, w, h);
 			TableColumnModel columnModel = getColumnModel();
@@ -363,8 +364,8 @@ public class JTreeTable extends JPanel implements Scrollable {
 		add(table, BorderLayout.CENTER);
 		tree = new JTree() {
 			public boolean hasFocus() {
-				// this happens when the look and feel queries the focus owner and the object is not yet constructed.
 				if(JTreeTable.this == null) {
+					// this happens when the look and feel queries the focus owner and the object is not yet constructed.
 					return false;
 				}
 				return table.hasFocus();

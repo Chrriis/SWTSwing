@@ -256,7 +256,7 @@ protected boolean hasMetas() {
 }
 
 boolean setDragEventData(DNDEvent event, java.awt.dnd.DropTargetDragEvent e) {
-	ArrayList transferDataList = new ArrayList();
+	ArrayList<TransferData> transferDataList = new ArrayList<>();
 	Transferable transferable = e.getTransferable();
 	DataFlavor[] flavors = transferable.getTransferDataFlavors();
 	for(int i=0; i<transferAgents.length; i++) {
@@ -281,7 +281,7 @@ boolean setDragEventData(DNDEvent event, java.awt.dnd.DropTargetDragEvent e) {
 	event.y = location.y;
 	event.time = Utils.getCurrentTime();
 	event.feedback = DND.FEEDBACK_SELECT;
-	event.dataTypes = (TransferData[])transferDataList.toArray(new TransferData[0]);
+	event.dataTypes = transferDataList.toArray(new TransferData[0]);
 	event.dataType = event.dataTypes[0];
 	event.item = effect.getItem(location.x, location.y);
 	event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());
@@ -294,7 +294,7 @@ boolean setDragEventData(DNDEvent event, java.awt.dnd.DropTargetDragEvent e) {
 }
 
 boolean setDropEventData(DNDEvent event, java.awt.dnd.DropTargetDropEvent e) {
-	ArrayList transferDataList = new ArrayList();
+	ArrayList<TransferData> transferDataList = new ArrayList<>();
 	Transferable transferable = e.getTransferable();
 	DataFlavor[] flavors = transferable.getTransferDataFlavors();
 	for(int i=0; i<transferAgents.length; i++) {
@@ -319,7 +319,7 @@ boolean setDropEventData(DNDEvent event, java.awt.dnd.DropTargetDropEvent e) {
 	event.y = location.y;
 	event.time = Utils.getCurrentTime();
 	event.feedback = DND.FEEDBACK_SELECT;
-	event.dataTypes = (TransferData[])transferDataList.toArray(new TransferData[0]);
+	event.dataTypes = transferDataList.toArray(new TransferData[0]);
 	event.dataType = event.dataTypes[0];
 	event.item = effect.getItem(location.x, location.y);
 	event.operations = Utils.convertDnDActionsToSWT(e.getSourceActions());

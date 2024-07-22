@@ -20,7 +20,6 @@ import java.net.URI;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.Utils;
 
 /**

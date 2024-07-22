@@ -110,14 +110,14 @@ Control [] _getChildren () {
 	if(children.length == 0) {
 		return new Control[0];
 	}
-	ArrayList controlsList = new ArrayList(children.length);
+	ArrayList<Control> controlList = new ArrayList<>(children.length);
 	for(int i=0; i<children.length; i++) {
 		Control control = display.getControl(children[i]);
 		if (control != null && control != this) {
-			controlsList.add(control);
+			controlList.add(control);
 		}
 	}
-	return (Control[])controlsList.toArray(new Control[0]);
+	return controlList.toArray(new Control[0]);
 }
 
 Control [] _getTabList () {

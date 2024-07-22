@@ -491,7 +491,7 @@ public class JTracker {
 	}
 	
 	public TrackerListener[] getTrackerListeners() {
-		return (TrackerListener[])listenerList.getListeners(TrackerListener.class);
+		return listenerList.getListeners(TrackerListener.class);
 	}
 	
 }

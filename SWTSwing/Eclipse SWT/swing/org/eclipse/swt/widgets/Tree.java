@@ -98,8 +98,8 @@ import org.eclipse.swt.internal.swing.Utils;
  * </p>
  */
 public class Tree extends Composite {
-	ArrayList itemList;
-	ArrayList columnList;
+	ArrayList<TreeItem> itemList;
+	ArrayList<TreeColumn> columnList;
 	TreeItem currentItem;
 //	TreeColumn [] columns;
 //	int hwndParent, hwndHeader, hAnchor;
@@ -387,7 +387,7 @@ protected Container createHandle () {
 void createItem (TreeColumn column, int index) {
 //	int columnCount = getColumnCount();
 	for (int i=0; i<itemList.size(); i++) {
-		TreeItem item = (TreeItem)itemList.get(i);
+		TreeItem item = itemList.get(i);
 		item.handle.insertColumn(index);
 		if (index == 0) {
 			item.text = "";
@@ -416,7 +416,7 @@ void createItem (TreeItem item, int index) {
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {
 	if(parentItem.itemList == null) {
-		parentItem.itemList = new ArrayList();
+		parentItem.itemList = new ArrayList<>();
 	}
 	parentItem.itemList.add(index, item);
 	((MutableTreeNode)parentItem.handle).insert((MutableTreeNode)item.handle, index);
@@ -504,8 +504,8 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 
 void createWidget () {
 	super.createWidget ();
-	itemList = new ArrayList();
-	columnList = new ArrayList();
+	itemList = new ArrayList<>();
+	columnList = new ArrayList<>();
 }
 
 //void deregister () {
@@ -529,7 +529,7 @@ public void deselectAll () {
 void destroyItem (TreeColumn column) {
 	int index = columnList.indexOf(column);
 	for (int i=0; i<itemList.size(); i++) {
-		TreeItem item = (TreeItem)itemList.get(i);
+		TreeItem item = itemList.get(i);
 		item.handle.removeColumn(index);
 	}
 	columnList.remove(index);
@@ -716,7 +716,7 @@ public TreeColumn getColumn (int index) {
 	if (columnList == null) error (SWT.ERROR_INVALID_RANGE);
 	int count = getColumnCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	return (TreeColumn)columnList.get(index);
+	return columnList.get(index);
 }
 
 /**
@@ -811,7 +811,7 @@ public int[] getColumnOrder () {
 public TreeColumn [] getColumns () {
 	checkWidget ();
 	if (columnList == null) return new TreeColumn [0];
-	return (TreeColumn[])columnList.toArray(new TreeColumn[0]);
+	return columnList.toArray(new TreeColumn[0]);
 }
 
 /**
@@ -835,7 +835,7 @@ public TreeItem getItem (int index) {
 	checkWidget ();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	if (index >= itemList.size()) error (SWT.ERROR_INVALID_RANGE);
-	return (TreeItem)itemList.get(index);
+	return itemList.get(index);
 }
 
 /**
@@ -934,7 +934,7 @@ public int getItemHeight () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
-	return (TreeItem[])itemList.toArray(new TreeItem[0]);
+	return itemList.toArray(new TreeItem[0]);
 }
 
 //TreeItem [] getItems (int hTreeItem) {
@@ -1238,14 +1238,14 @@ public int indexOf (TreeItem item) {
 void releaseChildren (boolean destroy) {
 	if(itemList != null) {
 		for (int i=0; i<itemList.size(); i++) {
-			TreeItem item = (TreeItem)itemList.get(i);
+			TreeItem item = itemList.get(i);
 			if (item != null && !item.isDisposed ()) item.release(false);
 		}
 		itemList = null;
 	}
 	if(columnList != null) {
 		for(int i=0; i<columnList.size(); i++) {
-			TreeColumn column = (TreeColumn)columnList.get(i);
+			TreeColumn column = columnList.get(i);
 			if (column != null && !column.isDisposed ()) column.release(false);
 		}
 		columnList = null;
@@ -1307,7 +1307,7 @@ void releaseItem (TreeItem treeItem, boolean release) {
 public void removeAll () {
 	checkWidget ();
 	for (int i=itemList.size()-1; i>=0; i--) {
-		TreeItem item = (TreeItem)itemList.get(i);
+		TreeItem item = itemList.get(i);
 		if (item != null && !item.isDisposed ()) {
 			item.dispose();
 //			item.release (false);
@@ -1422,15 +1422,15 @@ public void setItemCount (int count) {
 
 void setItemCount (TreeItem treeItem, int count) {
 	if(treeItem.itemList == null) {
-		treeItem.itemList = new ArrayList();
+		treeItem.itemList = new ArrayList<>();
 	}
 	setItemCount (treeItem, treeItem.itemList, count);
 }
 
-void setItemCount (TreeItem parentItem, ArrayList itemList, int count) {
+void setItemCount (TreeItem parentItem, ArrayList<TreeItem> itemList, int count) {
 	count = Math.max (0, count);
 	for(int i=itemList.size()-1; i>= count; i--) {
-		TreeItem item = (TreeItem)itemList.get(i);
+		TreeItem item = itemList.get(i);
 		if (item != null && !item.isDisposed ()) {
 			item.release (false);
 		}

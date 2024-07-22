@@ -54,7 +54,7 @@ import org.eclipse.swt.internal.swing.JExpandPane.JExpandPaneItem;
  */
 public class ExpandBar extends Composite {
 	
-	ArrayList itemList;
+	ArrayList<ExpandItem> itemList;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -92,7 +92,7 @@ Control [] _getChildren () {
 	if(children.length == 0) {
 		return new Control[0];
 	}
-	ArrayList controlsList = new ArrayList(children.length);
+	ArrayList<Control> controlList = new ArrayList<>(children.length);
 	for(int i=0; i<children.length; i++) {
 		Component childComponent = children[i];
 		if(childComponent instanceof JExpandPaneItem) {
@@ -101,12 +101,12 @@ Control [] _getChildren () {
 				childComponent = ((CExpandItem)childComponent).getContent();
 				Control control = display.getControl(childComponent);
 				if (control != null && control != this) {
-					controlsList.add(control);
+					controlList.add(control);
 				}
 			}
 		}
 	}
-	return (Control[])controlsList.toArray(new Control[0]);
+	return controlList.toArray(new Control[0]);
 }
 
 /**
@@ -169,7 +169,7 @@ void createItem (ExpandItem item, int style, int index) {
 
 void createWidget () {
 	super.createWidget ();
-	itemList = new ArrayList();
+	itemList = new ArrayList<>();
 }
 
 void destroyItem (ExpandItem item) {
@@ -202,7 +202,7 @@ public ExpandItem getItem (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	return (ExpandItem)itemList.get(index);
+	return itemList.get(index);
 }
 
 /**
@@ -238,7 +238,7 @@ public int getItemCount () {
  */
 public ExpandItem [] getItems () {
 	checkWidget ();
-	return (ExpandItem[])itemList.toArray(new ExpandItem [0]);
+	return itemList.toArray(new ExpandItem [0]);
 }
 
 /**
@@ -294,7 +294,7 @@ void releaseChildren (boolean destroy) {
 	if(itemList != null) {
 		int count = getItemCount();
 		for (int i=0; i<count; i++) {
-			ExpandItem item = (ExpandItem)itemList.get(i);
+			ExpandItem item = itemList.get(i);
 			if (!item.isDisposed ()) item.release (false);
 		}
 		itemList = null;

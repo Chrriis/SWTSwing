@@ -13,36 +13,28 @@
  *******************************************************************************/
 package org.eclipse.swt.awt;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-/* SWT Imports */
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.internal.Library;
-import org.eclipse.swt.internal.swing.CComposite;
-import org.eclipse.swt.internal.swing.Utils;
-
 /* AWT Imports */
 import java.awt.BorderLayout;
+import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.EventQueue;
-import java.awt.Canvas;
 import java.awt.Frame;
-import java.awt.Dimension;
 import java.awt.LayoutManager;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowEvent;
 import java.awt.event.FocusEvent;
+import java.awt.event.WindowEvent;
+
+/* SWT Imports */
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.swing.CComposite;
+import org.eclipse.swt.internal.swing.Utils;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it

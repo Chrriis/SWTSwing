@@ -39,7 +39,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
@@ -67,7 +66,6 @@ import org.eclipse.swt.internal.DefaultExceptionHandler;
 import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.CShell;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 import org.eclipse.swt.internal.swing.LookAndFeelUtils;
@@ -153,11 +151,11 @@ public class Display extends Device {
 
 	Event [] eventQueue;
 	EventTable eventTable, filterTable;
-	Vector timerList = new Vector();
+	Vector<Runnable> timerList = new Vector<>();
 	
 	/* Menus */
 	Menu [] bars, popups;
-	ArrayList menuItemsList = new ArrayList();
+	ArrayList<MenuItem> menuItemsList = new ArrayList<>();
 	
 //	static final String AWT_WINDOW_CLASS = "SunAwtWindow";
 
@@ -749,7 +747,7 @@ boolean filters (int eventType) {
 	return filterTable.hooks (eventType);
 }
 
-HashMap componentToControlMap = new HashMap();
+HashMap<Component, Control> componentToControlMap = new HashMap<>();
 
 Control findControl (Component handle) {
 	if (handle == null) return null;
@@ -855,7 +853,7 @@ public Rectangle getClientArea () {
 }
 
 Control getControl (Component handle) {
-	return (Control)componentToControlMap.get(handle);
+	return componentToControlMap.get(handle);
 }
 
 /**
@@ -919,7 +917,7 @@ public Point getCursorLocation () {
  */
 public Point [] getCursorSizes () {
 	checkDevice ();
-	HashSet set = new HashSet();
+	HashSet<Dimension> set = new HashSet<>();
 	Toolkit toolkit = Toolkit.getDefaultToolkit();
 	for(int i=8; i<64; i++) {
 		set.add(toolkit.getBestCursorSize(i, i));
@@ -927,8 +925,7 @@ public Point [] getCursorSizes () {
 	set.remove(new java.awt.Dimension(0, 0));
 	Point[] sizes = new Point[set.size()];
 	int i=0;
-	for(Iterator it=set.iterator(); it.hasNext(); ) {
-		java.awt.Dimension d = ((java.awt.Dimension)it.next());
+	for(java.awt.Dimension d: set) {
 		sizes[i++] = new Point(d.width, d.height);
 	}
 	return sizes;
@@ -946,7 +943,7 @@ public static synchronized Display getDefault () {
 	return Default;
 }
 
-static boolean isValidClass (Class clazz) {
+static boolean isValidClass (Class<?> clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
 	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
@@ -1147,7 +1144,7 @@ public Point [] getIconSizes () {
 
 MenuItem getMenuItem (JComponent component) {
 	for(int i=0; i<menuItemsList.size(); i++) {
-		MenuItem menuItem = (MenuItem)menuItemsList.get(i);
+		MenuItem menuItem = menuItemsList.get(i);
 		if(menuItem.handle == component) {
 			return menuItem;
 		}
@@ -1170,8 +1167,8 @@ public Monitor [] getMonitors () {
 	checkDevice ();
 	GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	GraphicsDevice[] gs = ge.getScreenDevices();
-	ArrayList monitorsList = new ArrayList();
-	Set boundsSet = new HashSet();
+	ArrayList<Monitor> monitorsList = new ArrayList<>();
+	Set<java.awt.Rectangle> boundsSet = new HashSet<>();
 	for (int j = 0; j < gs.length; j++) {
 		GraphicsDevice gd = gs[j];
 		// Always true isnt'it?
@@ -1194,7 +1191,7 @@ public Monitor [] getMonitors () {
 		}
 //		}
 	}
-	return (Monitor[])monitorsList.toArray(new Monitor[0]);
+	return monitorsList.toArray(new Monitor[0]);
 }
 
 /**
@@ -1235,18 +1232,17 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	ArrayList controlsList = new ArrayList();
-	for(Iterator it = componentToControlMap.keySet().iterator(); it.hasNext(); ) {
-		Component component = (Component)it.next();
+	ArrayList<Shell> controlList = new ArrayList<>();
+	for(Component component: componentToControlMap.keySet()) {
 		// TODO: what about file dialogs and such?
 		if(component instanceof Window) {
 			Control control = findControl(component);
 			if(control instanceof Shell) {
-				controlsList.add(control);
+				controlList.add((Shell)control);
 			}
 		}
 	}
-	return (Shell[])controlsList.toArray(new Shell[0]);
+	return controlList.toArray(new Shell[0]);
 }
 
 /**
@@ -2186,7 +2182,7 @@ void removeBar (Menu menu) {
 
 Control removeControl (Component handle) {
 	if (handle == null) return null;
-	return (Control)componentToControlMap.remove(handle);
+	return componentToControlMap.remove(handle);
 }
 
 void removeMenuItem (MenuItem item) {

@@ -32,7 +32,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.internal.swing.CTree;
 import org.eclipse.swt.internal.swing.CTreeColumn;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
-import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent a column in a tree widget.

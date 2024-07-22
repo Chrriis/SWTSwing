@@ -49,6 +49,7 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
 			return new Dimension(Integer.MAX_VALUE, super.getMaximumSize().height);
 		}
 
+		@SuppressWarnings("deprecation")
 		public void reshape(int x, int y, int w, int h) {
 			super.reshape(x, y, w, h);
 			View globalView = (View)getClientProperty(BasicHTML.propertyKey);
@@ -191,6 +192,7 @@ public class JMultiLineLabel extends JPanel implements SwingConstants {
 //		validate();
 //	}
 	
+	@SuppressWarnings("deprecation")
 	public void reshape(int x, int y, int w, int h) {
 		super.reshape(x, y, w, h);
 		for(int i=getComponentCount()-1; i>=0; i--) {

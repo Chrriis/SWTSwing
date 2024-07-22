@@ -30,7 +30,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.swing.CSpinner;
 import org.eclipse.swt.internal.swing.TextFilterEvent;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
-import org.eclipse.swt.internal.win32.OS;
 
 /**
  * Instances of this class are selectable user interface

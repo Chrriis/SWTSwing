@@ -72,7 +72,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String[] fileNames = (String[]) object;
-	final List fileList = new ArrayList(fileNames.length);
+	final List<File> fileList = new ArrayList<>(fileNames.length);
 	for(int i=0; i<fileNames.length; i++) {
 		fileList.add(new File(fileNames[i]));
 	}
@@ -105,8 +105,9 @@ public void javaToNative(Object object, TransferData transferData) {
  */
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.transferable == null) return null;
-	List fileList = (List)super.nativeToJava(transferData);
-	File[] files = (File[])fileList.toArray(new File[0]);
+	@SuppressWarnings("unchecked")
+	List<File> fileList = (List<File>)super.nativeToJava(transferData);
+	File[] files = fileList.toArray(new File[0]);
 	String[] fileNames = new String[files.length];
 	for(int i=0; i<fileNames.length; i++) {
 		fileNames[i] = files[i].getAbsolutePath();

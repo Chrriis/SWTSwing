@@ -107,6 +107,7 @@ class CToolBarImplementation extends JToolBar implements CToolBar {
 		return getPreferredSize();
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void reshape(int x, int y, int w, int h) {
 		super.reshape(x, y, w, getComponentCount() == 0? h: getPreferredSize().height);
 	}

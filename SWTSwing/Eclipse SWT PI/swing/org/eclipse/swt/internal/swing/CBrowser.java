@@ -135,8 +135,8 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
 	}
 	
 //		protected boolean isRunningAction;
-	protected ArrayList backActionList = new ArrayList();
-	protected ArrayList forwardActionList = new ArrayList();
+	protected ArrayList<Runnable> backActionList = new ArrayList<>();
+	protected ArrayList<Runnable> forwardActionList = new ArrayList<>();
 	
 	public boolean back() {
 		if(!isBackEnabled()) {
@@ -144,7 +144,7 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
 		}
 //			isRunningAction = true;
 		forwardActionList.add(getCurrentCommand());
-		((Runnable)backActionList.remove(backActionList.size() - 1)).run();
+		backActionList.remove(backActionList.size() - 1).run();
 //			isRunningAction = false;
 		return true;
 	}
@@ -155,7 +155,7 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
 		}
 //			isRunningAction = true;
 		backActionList.add(getCurrentCommand());
-		((Runnable)forwardActionList.remove(forwardActionList.size() - 1)).run();
+		forwardActionList.remove(forwardActionList.size() - 1).run();
 //			isRunningAction = false;
 		return true;
 	}
@@ -231,14 +231,14 @@ class CBrowserImplementation extends JScrollPane implements CBrowser {
 	protected void adjustStyles() {
 		StyleSheet styles = ((HTMLDocument)editorPane.getDocument()).getStyleSheet();
 		int screenResolution = Toolkit.getDefaultToolkit().getScreenResolution();
-		for(Enumeration rules = styles.getStyleNames(); rules.hasMoreElements(); ) {
+		for(Enumeration<?> rules = styles.getStyleNames(); rules.hasMoreElements(); ) {
 			String rName = (String) rules.nextElement();
 			adjustStyle(styles, styles.getStyle(rName), screenResolution);
 		}
 	}
 	
 	protected static void adjustStyle(StyleSheet styles, Style rule, int screenResolution) {
-		for(Enumeration e=rule.getAttributeNames(); e.hasMoreElements(); ) {
+		for(Enumeration<?> e=rule.getAttributeNames(); e.hasMoreElements(); ) {
 			Object name = e.nextElement();
 			Object value = rule.getAttribute(name);
 			if(value instanceof Style) {

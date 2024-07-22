@@ -13,19 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.awt.Component;
 import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.TexturePaint;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.swing.Utils;
 
 /**
  * Instances of this class represent patterns to use while drawing. Patterns

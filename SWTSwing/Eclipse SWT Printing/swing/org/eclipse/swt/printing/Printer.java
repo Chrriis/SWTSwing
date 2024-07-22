@@ -40,8 +40,6 @@ import java.awt.print.PrinterJob;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import javax.print.PrintService;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttribute;
@@ -57,7 +55,6 @@ import org.eclipse.swt.graphics.GCData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CGC;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.NullGraphics2D;
 
 /**
@@ -285,7 +282,7 @@ abstract class CGCCommand {
 }
 
 volatile int pageCount;
-volatile List pageCommandList;
+volatile List<List<CGCCommand>> pageCommandList;
 volatile State initialState;
 CGCRecorder lastRecorder;
 
@@ -295,7 +292,7 @@ void addCommand(CGCRecorder recorder, CGCCommand command) {
 			lastRecorder = recorder;
 			addCommand(recorder, recorder.getStateCommand());
 		}
-		((List)pageCommandList.get(pageCount - 1)).add(command);
+		pageCommandList.get(pageCount - 1).add(command);
 	}
 }
 
@@ -600,7 +597,7 @@ class CGCRecorder extends CGC.CGCGraphics2D {
 		});
 		super.setRenderingHint(hintKey, hintValue);
 	}
-	public void setRenderingHints(final Map hints) {
+	public void setRenderingHints(final RenderingHints hints) {
 		addCommand(this, new CGCCommand() {
 			public void run(CGC cgc) {
 				cgc.setRenderingHints(hints);
@@ -709,7 +706,7 @@ public void internal_dispose_GC (CGC hDC, GCData data) {
 }
 
 HashPrintRequestAttributeSet getHashPrintRequestAttributeSet() {
-	java.util.List printRequestAttributeList = new ArrayList();
+	java.util.List<PrintRequestAttribute> printRequestAttributeList = new ArrayList<>();
 	if(data.printToFile) {
 		printRequestAttributeList.add(new Destination(new File(data.fileName).toURI()));
 	}
@@ -720,7 +717,7 @@ HashPrintRequestAttributeSet getHashPrintRequestAttributeSet() {
 	if(data.otherData != null) {
 		hashPrintRequestAttributeSet.addAll(data.otherData);
 	}
-	hashPrintRequestAttributeSet.addAll(new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0])));
+	hashPrintRequestAttributeSet.addAll(new HashPrintRequestAttributeSet(printRequestAttributeList.toArray(new PrintRequestAttribute[0])));
 	return hashPrintRequestAttributeSet;
 }
 
@@ -750,7 +747,7 @@ public boolean startJob(String jobName) {
 	handle.setJobName(jobName);
 //	handle.setCopies(data.copyCount);
 	pageCount = 0;
-	pageCommandList = new ArrayList();
+	pageCommandList = new ArrayList<>();
 	// TODO: Check conditions that return false;
 	return true;
 //	DOCINFO di = new DOCINFO();
@@ -813,12 +810,12 @@ public void endJob() {
 							return new Dimension(bounds.width, bounds.height);
 						}
 					};
-					List commandList = (List)pageCommandList.get(pageIndex);
+					List<CGCCommand> commandList = pageCommandList.get(pageIndex);
 //			int iX = (int)Math.round(referencePageFormat.getImageableX());
 //			int iY = (int)Math.round(referencePageFormat.getImageableY());
 //			g.translate(iX, iY);
 					for(int i=0; i<commandList.size(); i++) {
-						CGCCommand command = (CGCCommand)commandList.get(i);
+						CGCCommand command = commandList.get(i);
 						command.run(cgc);
 					}
 //			g.translate(-iX, -iY);
@@ -875,7 +872,7 @@ public void cancelJob() {
 public boolean startPage() {
 	checkDevice();
 	pageCount++;
-	pageCommandList.add(new ArrayList());
+	pageCommandList.add(new ArrayList<>());
 	lastRecorder = null;
 	// TODO: find if false can happen
 	return true;

@@ -26,10 +26,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.swing.CControl;
 import org.eclipse.swt.internal.swing.CLink;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
-import org.eclipse.swt.internal.win32.OS;
 
 /**
  * Instances of this class represent a selectable

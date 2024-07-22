@@ -95,7 +95,7 @@ public class SnippetLauncherUI extends JFrame {
 
 	protected JButton viewSourceButton;
 	protected JButton launchButton;
-	protected JComboBox swtComboBox;
+	protected JComboBox<String> swtComboBox;
 	protected JTextArea processTextArea;
 	protected JCheckBox lookAndFeelCheckBox;
 	protected JLabel lookAndFeelClassPathLabel;
@@ -154,9 +154,9 @@ public class SnippetLauncherUI extends JFrame {
 		JPanel swtSelectionPane = new JPanel(new BorderLayout());
 		swtSelectionPane.setBorder(BorderFactory.createTitledBorder("SWT Selection"));
 		JPanel swtChoicePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 5));
-		swtComboBox = new JComboBox(new String[] {SWT_SWING, "Native SWT"});
+		swtComboBox = new JComboBox<>(new String[] {SWT_SWING, "Native SWT"});
 		swtComboBox.setRenderer(new DefaultListCellRenderer() {
-			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 				DefaultListCellRenderer renderer = (DefaultListCellRenderer)super.getListCellRendererComponent(list, "", index, isSelected, cellHasFocus);
 				if(NATIVE_SWT.equals(value)) {
 					renderer.setIcon(SWT_ICON);
@@ -241,12 +241,13 @@ public class SnippetLauncherUI extends JFrame {
 				Object jcp = jcpField.get(cl);
 				java.lang.reflect.Field fileToUrlsField = jcp.getClass().getDeclaredField("_fileToUrls");
 				fileToUrlsField.setAccessible(true);
-				java.util.HashMap fileToUrlFieldMap = (java.util.HashMap)fileToUrlsField.get(jcp);
+				@SuppressWarnings("unchecked")
+				java.util.HashMap<File, ?> fileToUrlFieldMap = (java.util.HashMap<File, ?>)fileToUrlsField.get(jcp);
 				StringBuffer sb = new StringBuffer();
-				for(Iterator it = fileToUrlFieldMap.keySet().iterator(); it.hasNext(); ) {
+				for(Iterator<File> it = fileToUrlFieldMap.keySet().iterator(); it.hasNext(); ) {
 					if(sb.length() != 0) {
 						sb.append(pathSeparator);
-						sb.append(((File)it.next()).getAbsolutePath());
+						sb.append(it.next().getAbsolutePath());
 					}
 				}
 				sb.append(classPath);
@@ -595,7 +596,7 @@ public class SnippetLauncherUI extends JFrame {
 		launchButton.setText(TERMINATE_TEXT);
 		processTextArea.setText("");
 		try {
-			ArrayList parameterList = new ArrayList();
+			ArrayList<String> parameterList = new ArrayList<>();
 			if(NATIVE_SWT.equals(swtComboBox.getSelectedItem())) {
 				String pathSeparator = System.getProperty("path.separator");
 				String classPath = classPathField.getText();

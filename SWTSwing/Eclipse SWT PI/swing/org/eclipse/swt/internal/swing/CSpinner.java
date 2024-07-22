@@ -57,12 +57,12 @@ class CSpinnerImplementation extends JSpinner implements CSpinner {
 		userAttributeHandler = new UserAttributeHandler(this);
 		model = new SpinnerNumberModel(0, minimum, maximum, 1.0);
 		setModel(model);
-		model.setMinimum(new Comparable() {
+		model.setMinimum(new Comparable<Object>() {
 			public int compareTo(Object o) {
 				return minimum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
 			}
 		});
-		model.setMaximum(new Comparable() {
+		model.setMaximum(new Comparable<Object>() {
 			public int compareTo(Object o) {
 				return maximum - Math.round(((Number)o).floatValue() * (int)Math.pow(10, digitCount));
 			}

@@ -52,7 +52,7 @@ class CComboSimple extends JPanel implements CCombo {
 	protected Combo handle;
 	protected JTextField textField;
 	protected JScrollPane scrollPane;
-	protected JList list;
+	protected JList<Object> list;
 
 	public void requestFocus() {
 		textField.requestFocus();
@@ -110,7 +110,7 @@ class CComboSimple extends JPanel implements CCombo {
 		userAttributeHandler = new UserAttributeHandler(textField);
 		add(textField, BorderLayout.NORTH);
 		scrollPane = new JScrollPane();
-		list = new JList(new DefaultListModel()) {
+		list = new JList<Object>(new DefaultListModel<>()) {
 			public Dimension getPreferredScrollableViewportSize() {
 				Dimension preferredSize = getPreferredSize();
 				preferredSize.width += scrollPane.getVerticalScrollBar().getPreferredSize().width;
@@ -244,7 +244,7 @@ class CComboSimple extends JPanel implements CCombo {
 	}
 
 	public void addItem(Object o) {
-		((DefaultListModel)list.getModel()).addElement(o);
+		((DefaultListModel<Object>)list.getModel()).addElement(o);
 	}
 
 	public Object getItemAt(int index) {
@@ -252,15 +252,15 @@ class CComboSimple extends JPanel implements CCombo {
 	}
 
 	public void removeItemAt(int index) {
-		((DefaultListModel)list.getModel()).remove(index);
+		((DefaultListModel<Object>)list.getModel()).remove(index);
 	}
 
 	public void removeAllItems() {
-		((DefaultListModel)list.getModel()).removeAllElements();
+		((DefaultListModel<Object>)list.getModel()).removeAllElements();
 	}
 
 	public void insertElementAt(Object o, int index) {
-		((DefaultListModel)list.getModel()).add(index, o);
+		((DefaultListModel<Object>)list.getModel()).add(index, o);
 	}
 
 	public int getItemCount() {
@@ -362,7 +362,7 @@ class CComboSimple extends JPanel implements CCombo {
 
 }
 
-class CComboImplementation extends JComboBox implements CCombo {
+class CComboImplementation extends JComboBox<Object> implements CCombo {
 
 	protected Combo handle;
 
@@ -458,7 +458,7 @@ class CComboImplementation extends JComboBox implements CCombo {
 	}
 
 	public void insertElementAt(Object anObject, int index) {
-		((DefaultComboBoxModel)getModel()).insertElementAt(anObject, index);
+		((DefaultComboBoxModel<Object>)getModel()).insertElementAt(anObject, index);
 	}
 
 	public String getEditorText() {
@@ -527,6 +527,7 @@ class CComboImplementation extends JComboBox implements CCombo {
 		return ((JTextComponent)getEditor().getEditorComponent()).getSize();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void reshape(int x, int y, int w, int h) {
 		super.reshape(x, y, w, getPreferredSize().height);
 	}

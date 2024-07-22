@@ -23,7 +23,6 @@ import javax.swing.filechooser.FileFilter;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.internal.swing.Compatibility;
 
 /**
  * Instances of this class allow the user to navigate

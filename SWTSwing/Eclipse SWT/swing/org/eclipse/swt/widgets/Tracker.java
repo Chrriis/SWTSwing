@@ -30,7 +30,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CControl;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.JTracker;
 import org.eclipse.swt.internal.swing.Utils;
 

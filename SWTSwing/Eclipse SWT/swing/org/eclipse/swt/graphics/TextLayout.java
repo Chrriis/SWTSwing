@@ -15,7 +15,6 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.TextLayout.StyleItem;
 
 /**
  * <code>TextLayout</code> is a graphic object that represents

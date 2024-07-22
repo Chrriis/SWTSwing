@@ -51,7 +51,7 @@ import javax.swing.text.StyleConstants;
 public class JFontChooser extends JDialog {
 
 	private JColorChooser colorChooser;
-	private JComboBox fontNameComboBox;
+	private JComboBox<String> fontNameComboBox;
 	private JCheckBox isFontBoldCheckBox;
 	private JCheckBox isFontItalicCheckBox;
 	private JCheckBox isFontStrikeThroughCheckBox;
@@ -86,7 +86,7 @@ public class JFontChooser extends JDialog {
 		// Start the long process of setting up our interface
 		Container c = getContentPane();
 		Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-		Vector names = new Vector();
+		Vector<String> names = new Vector<>();
 		for (int i=0; i<fonts.length; i++) {
 			Font font = fonts[i];
 			if (!names.contains(font.getFamily())) {
@@ -95,9 +95,9 @@ public class JFontChooser extends JDialog {
 		}
 		JPanel northPanel = new JPanel(new BorderLayout());
 		JPanel fontPanel = new JPanel();
-		fontNameComboBox = new JComboBox(names);
+		fontNameComboBox = new JComboBox<>(names);
 		Font fontNameComboBoxFont = fontNameComboBox.getFont();
-		Map fontNameComboBoxAttributes = fontNameComboBoxFont.getAttributes();
+		Map<TextAttribute, ?> fontNameComboBoxAttributes = fontNameComboBoxFont.getAttributes();
 		fontNameComboBox.setSelectedItem(fontNameComboBoxFont.getFamily());
 		fontNameComboBox.addActionListener(updateActionListener);
 		fontSizeTextField = new JTextField("" + fontNameComboBoxFont.getSize(), 4);
@@ -223,7 +223,8 @@ public class JFontChooser extends JDialog {
 		int size = StyleConstants.getFontSize(attributes);
 		// Bold and italic don't work properly in beta 4.
 		Font f = new Font(name, (isBold ? Font.BOLD : 0) + (isItalic ? Font.ITALIC : 0), size);
-		Map newFontAttributes = f.getAttributes();
+		@SuppressWarnings("unchecked")
+		Map<TextAttribute, Object> newFontAttributes = (Map<TextAttribute, Object>)f.getAttributes();
 		if(isStrikeThrough) {
 			newFontAttributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
 		}
@@ -274,7 +275,7 @@ public class JFontChooser extends JDialog {
 		fontSizeTextField.setText(String.valueOf(defaultFont.getSize()));
 		isFontBoldCheckBox.setSelected(defaultFont.isBold());
 		isFontItalicCheckBox.setSelected(defaultFont.isItalic());
-		Map currentFontAttributes = defaultFont.getAttributes();
+		Map<TextAttribute, ?> currentFontAttributes = defaultFont.getAttributes();
 		isFontStrikeThroughCheckBox.setSelected(currentFontAttributes.get(TextAttribute.STRIKETHROUGH) == TextAttribute.STRIKETHROUGH_ON);
 		isFontUnderlineCheckBox.setSelected(currentFontAttributes.get(TextAttribute.UNDERLINE) == TextAttribute.UNDERLINE_ON);
 		adjustPreview();

@@ -15,14 +15,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
-import java.util.Locale;
-
 import javax.swing.ImageIcon;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.text.View;
 
 import org.eclipse.swt.SWT;
@@ -85,6 +81,7 @@ class CDateTimeImplementation extends JTextField implements CDateTime {
 		reshape(getX(), getY(), getWidth(), getHeight());
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void reshape(int x, int y, int w, int h) {
 		super.reshape(x, y, w, h);
 		View globalView = getUI().getRootView(this);

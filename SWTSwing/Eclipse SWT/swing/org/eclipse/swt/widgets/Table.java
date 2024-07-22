@@ -86,8 +86,8 @@ import org.eclipse.swt.internal.swing.CTable.CellPaintEvent;
  */
 
 public class Table extends Composite {
-	ArrayList itemList;
-	ArrayList columnList;
+	ArrayList<TableItem> itemList;
+	ArrayList<TableColumn> columnList;
 //	ImageList imageList;
 	TableItem currentItem;
 	int lastIndexOf;
@@ -232,7 +232,7 @@ protected void checkSubclass () {
  */
 public void clear (int index) {
 	checkWidget ();
-	TableItem item = (TableItem)itemList.get(index);
+	TableItem item = itemList.get(index);
 	if(item != null) {
 		item.clear();
 	}
@@ -295,7 +295,7 @@ public void clear (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
 	for(int i=start; i<=end; i++) {
-		TableItem item = (TableItem)itemList.get(i);
+		TableItem item = itemList.get(i);
 		if(item != null) {
 			item.clear();
 		}
@@ -377,7 +377,7 @@ public void clear (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
 	for(int i=0; i<indices.length; i++) {
-	  TableItem item = (TableItem)itemList.get(i);
+	  TableItem item = itemList.get(i);
 	  if(item != null) {
 	    item.clear();
 	  }
@@ -447,7 +447,7 @@ public void clear (int [] indices) {
 public void clearAll () {
 	checkWidget ();
 	for (int i=itemList.size()-1; i>=0; i--) {
-		TableItem item = (TableItem)itemList.get(i);
+		TableItem item = itemList.get(i);
 		if(item != null) {
 			item.clear();
 		}
@@ -555,7 +555,7 @@ protected Container createHandle () {
 
 void createItem (TableColumn column, int index) {
 	for (int i=0; i<itemList.size(); i++) {
-		TableItem item = (TableItem)itemList.get(i);
+		TableItem item = itemList.get(i);
 		if(item != null) {
 			item.handle.insertColumn(index);
 			if (index == 0) {
@@ -593,8 +593,8 @@ void createItem (TableItem item, int index) {
 }
 
 void createWidget () {
-	itemList = new ArrayList();
-	columnList = new ArrayList();
+	itemList = new ArrayList<>();
+	columnList = new ArrayList<>();
 	super.createWidget ();
 }
 
@@ -688,7 +688,7 @@ public void deselectAll () {
 void destroyItem (TableColumn column) {
 	int index = columnList.indexOf(column);
 	for (int i=0; i<itemList.size(); i++) {
-		TableItem item = (TableItem)itemList.get(i);
+		TableItem item = itemList.get(i);
 		if(item != null) {
 			item.handle.removeColumn(index);
 		}
@@ -745,7 +745,7 @@ public TableColumn getColumn (int index) {
 	if (columnList == null) error (SWT.ERROR_INVALID_RANGE);
 	int count = getColumnCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	return (TableColumn)columnList.get(index);
+	return columnList.get(index);
 }
 
 /**
@@ -830,7 +830,7 @@ public int[] getColumnOrder () {
 public TableColumn [] getColumns () {
 	checkWidget ();
 	if (columnList == null) return new TableColumn [0];
-	return (TableColumn[])columnList.toArray(new TableColumn[0]);
+	return columnList.toArray(new TableColumn[0]);
 }
 
 ///*
@@ -984,7 +984,7 @@ public TableItem getItem (Point point) {
 }
 
 TableItem _getItem (int index) {
-	TableItem tableItem = (TableItem)itemList.get(index);
+	TableItem tableItem = itemList.get(index);
 	if ((style & SWT.VIRTUAL) == 0) return tableItem;
 	if (tableItem != null) return tableItem;
 	tableItem = new TableItem (this, SWT.NONE, -1, false);
@@ -1048,7 +1048,7 @@ public TableItem [] getItems () {
 		}
 		return items;
 	}
-	return (TableItem[])itemList.toArray(new TableItem[0]);
+	return itemList.toArray(new TableItem[0]);
 }
 
 /**
@@ -1368,14 +1368,14 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 void releaseChildren (boolean destroy) {
 	if(itemList != null) {
 		for (int i=itemList.size()-1; i>=0; i--) {
-			TableItem item = (TableItem)itemList.get(i);
+			TableItem item = itemList.get(i);
 			if (item != null && !item.isDisposed ()) item.release (false);
 		}
 		itemList = null;
 	}
 	if(columnList != null) {
 		for(int i=0; i<columnList.size(); i++) {
-			TableColumn column = (TableColumn)columnList.get(i);
+			TableColumn column = columnList.get(i);
 			if (!column.isDisposed ()) column.release (false);
 		}
 		columnList = null;
@@ -1465,7 +1465,7 @@ public void remove (int [] indices) {
 	}
 	for(int i=0; i<newIndices.length; i++) {
 		int index = newIndices[i];
-		TableItem tableItem = (TableItem)itemList.get(index);
+		TableItem tableItem = itemList.get(index);
 		if(tableItem != null) {
 			tableItem.dispose();
 		} else {
@@ -1493,7 +1493,7 @@ public void remove (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	TableItem tableItem = (TableItem)itemList.get(index);
+	TableItem tableItem = itemList.get(index);
 	if(tableItem != null) {
 		tableItem.dispose();
 	} else {
@@ -1526,7 +1526,7 @@ public void remove (int start, int end) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	for(int i=end; i>=start; i--) {
-		TableItem tableItem = (TableItem)itemList.get(i);
+		TableItem tableItem = itemList.get(i);
 		if(tableItem != null) {
 			tableItem.dispose();
 		} else {
@@ -1547,7 +1547,7 @@ public void remove (int start, int end) {
 public void removeAll () {
 	checkWidget ();
 	for(int i=itemList.size()-1; i>=0; i--) {
-		TableItem tableItem = (TableItem)itemList.get(i);
+		TableItem tableItem = itemList.get(i);
 		if(tableItem != null) {
 			tableItem.dispose();
 		} else {
@@ -2019,7 +2019,7 @@ public void setItemCount (int count) {
 	int index = count;
 	int tmpItemCount = itemCount;
 	while (index < tmpItemCount) {
-		TableItem item = (TableItem)itemList.get(tmpItemCount - 1);
+		TableItem item = itemList.get(tmpItemCount - 1);
 //		if (!isVirtual) {
 //			((CTable)handle).removeItem(index);
 //		}

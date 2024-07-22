@@ -22,7 +22,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -39,7 +38,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -288,6 +286,7 @@ class CShellFrame extends JFrame implements CShell {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void show() {
 		if(!isVisible()) {
 			isPaintActive = true;
@@ -334,6 +333,7 @@ class CShellFrame extends JFrame implements CShell {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void hide() {
 		if(isVisible()) {
 			getModalityHandler().setEnabled(false);
@@ -670,6 +670,7 @@ class CShellDialog extends JDialog implements CShell {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void show() {
 		if(!isVisible()) {
 			isPaintActive = true;
@@ -716,6 +717,7 @@ class CShellDialog extends JDialog implements CShell {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void hide() {
 		if(isVisible()) {
 			getModalityHandler().setEnabled(false);
@@ -945,23 +947,25 @@ public interface CShell extends CScrollable {
 	
 	public static class ModalityHandler {
 		
-		protected List blockerList = new ArrayList(0);
-		protected static List applicationBlockerList = new ArrayList(0);
+		protected List<CShell> blockerList = new ArrayList<>(0);
+		protected static List<CShell> applicationBlockerList = new ArrayList<>(0);
 
 		protected static final CShell[] NO_BLOCKERS = new CShell[0];
-		protected static Set windowSet = new HashSet();
+		protected static Set<Window> windowSet = new HashSet<>();
 		
 		public static void initialize() {
 			Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
 			defaultToolkit.addAWTEventListener(new AWTEventListener() {
 				public void eventDispatched(AWTEvent event) {
-					if(event.getSource() instanceof Window) {
+					Object source = event.getSource();
+					if(source instanceof Window) {
+						Window w = (Window)source;
 						switch(event.getID()) {
 							case ComponentEvent.COMPONENT_SHOWN:
-								windowSet.add(event.getSource());
+								windowSet.add(w);
 								break;
 							case ComponentEvent.COMPONENT_HIDDEN:
-								windowSet.remove(event.getSource());
+								windowSet.remove(w);
 								break;
 						}
 					}
@@ -1019,20 +1023,20 @@ public interface CShell extends CScrollable {
 				}
 				return new CShell[] {blocker};
 			}
-			List shellList = new ArrayList();
+			List<CShell> shellList = new ArrayList<>();
 			for(int i=blockerList.size()-1; i>= 0; i--) {
-				Object blocker = blockerList.get(i);
+				CShell blocker = blockerList.get(i);
 				if(blocker != cShell) {
 					shellList.add(blocker);
 				}
 			}
 			if(!applicationBlockerList.contains(cShell)) {
 				for(int i=applicationBlockerList.size()-1; i>= 0; i--) {
-					Object blocker = applicationBlockerList.get(i);
+					CShell blocker = applicationBlockerList.get(i);
 					shellList.add(blocker);
 				}
 			}
-			return (CShell[])shellList.toArray(new CShell[0]);
+			return shellList.toArray(new CShell[0]);
 		}
 		
 		protected Shell parent;
@@ -1045,8 +1049,7 @@ public interface CShell extends CScrollable {
 		protected boolean isEnabled;
 		
 		protected void adjustBlockedShells() {
-			for(Iterator it=windowSet.iterator(); it.hasNext(); ) {
-				Window window = (Window)it.next();
+			for(Window window: windowSet) {
 				if(window instanceof CShell) {
 					CShell cShell = (CShell)window;
 					cShell.setModallyBlocked(cShell.getModalityHandler().isBlocked());

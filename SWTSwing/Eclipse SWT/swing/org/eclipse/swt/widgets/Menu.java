@@ -32,7 +32,6 @@ import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**
@@ -606,14 +605,14 @@ public int getItemCount () {
 public MenuItem [] getItems () {
 	checkWidget ();
 	int count = handle.getComponentCount();
-	java.util.List arrayList = new ArrayList(count);
+	java.util.List<MenuItem> arrayList = new ArrayList<>(count);
 	for(int i=0; i<count; i++) {
 		MenuItem item = display.getMenuItem ((JComponent)handle.getComponent(i));
 		if(item != null) {
 			arrayList.add(item);
 		}
 	}
-	return (MenuItem[])arrayList.toArray(new MenuItem[0]);
+	return arrayList.toArray(new MenuItem[0]);
 }
 
 //int GetMenuItemCount (int handle) {

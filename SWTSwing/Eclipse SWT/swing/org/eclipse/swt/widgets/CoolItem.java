@@ -27,7 +27,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.swing.CCoolItem;
-import org.eclipse.swt.internal.swing.Compatibility;
 
 /**
  * Instances of this class are selectable user interface

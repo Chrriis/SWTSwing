@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import java.awt.font.TextAttribute;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -55,7 +56,7 @@ public final class FontData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public Map data;
+	public Map<TextAttribute, ?> data;
 	
 	/**
 	 * The height of the font data in points

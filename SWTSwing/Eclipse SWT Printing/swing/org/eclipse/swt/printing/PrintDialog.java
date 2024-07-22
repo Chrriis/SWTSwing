@@ -234,14 +234,14 @@ protected void checkSubclass() {
  */
 public PrinterData open() {
 	PrinterJob printerJob = PrinterJob.getPrinterJob();
-	java.util.List printRequestAttributeList = new ArrayList();
+	java.util.List<PrintRequestAttribute> printRequestAttributeList = new ArrayList<>();
 	if(printToFile) {
 		printRequestAttributeList.add(new Destination(new File("out.prn").toURI()));
 	}
 	if(scope == PrinterData.PAGE_RANGE) {
 		printRequestAttributeList.add(new PageRanges(startPage, endPage));
 	}
-	HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet((PrintRequestAttribute[])printRequestAttributeList.toArray(new PrintRequestAttribute[0]));
+	HashPrintRequestAttributeSet hashPrintRequestAttributeSet = new HashPrintRequestAttributeSet(printRequestAttributeList.toArray(new PrintRequestAttribute[0]));
 	if(!printerJob.printDialog(hashPrintRequestAttributeSet)) {
 		return null;
 	}

@@ -222,7 +222,7 @@ public class JExpandPane extends JPanel {
 	}
 			
 	public ChangeListener[] getChangeListeners() {
-		return (ChangeListener[])listenerList.getListeners(ChangeListener.class);
+		return listenerList.getListeners(ChangeListener.class);
 	}
 
 	public JExpandPaneItem getExpandItem(int index) {

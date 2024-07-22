@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JMenuBar;
@@ -909,7 +910,7 @@ public void setImages (Image [] images) {
 	this.images = images;
 	
 	if(images.length > 0) {
-		java.util.List imageList = new ArrayList(images.length);
+		java.util.List<BufferedImage> imageList = new ArrayList<>(images.length);
 		for(int i=0; i<images.length; i++) {
 			imageList.add(images[i].handle);
 		}

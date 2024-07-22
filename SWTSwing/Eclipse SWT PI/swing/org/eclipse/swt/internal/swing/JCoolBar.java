@@ -14,7 +14,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -164,7 +165,7 @@ public class JCoolBar extends JPanel {
 		if(itemIndex != 0 && !item.isWrapped()) {
 			return getLineItems(itemIndex - 1);
 		}
-		Vector itemList = new Vector();
+		List<JCoolBarItem> itemList = new ArrayList<>();
 		for(int i=itemIndex; i<count; i++) {
 			item = getItem(i);
 			if(i != itemIndex && item.isWrapped()) {
@@ -172,7 +173,7 @@ public class JCoolBar extends JPanel {
 			}
 			itemList.add(item);
 		}
-		return (JCoolBarItem[])itemList.toArray(new JCoolBarItem[0]);
+		return itemList.toArray(new JCoolBarItem[0]);
 	}
 
 	protected boolean isFloatable = false;

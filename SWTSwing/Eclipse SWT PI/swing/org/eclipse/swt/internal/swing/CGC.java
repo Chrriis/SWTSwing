@@ -22,7 +22,6 @@ import java.awt.RenderingHints.Key;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
-import java.util.Map;
 
 public interface CGC {
 
@@ -135,7 +134,7 @@ public interface CGC {
 		public void setRenderingHint(Key hintKey, Object hintValue) {
 			getGraphics().setRenderingHint(hintKey, hintValue);
 		}
-		public void setRenderingHints(Map hints) {
+		public void setRenderingHints(RenderingHints hints) {
 			getGraphics().setRenderingHints(hints);
 		}
 		public void setStroke(Stroke s) {
@@ -226,7 +225,7 @@ public interface CGC {
 	public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue);
 	
 	public RenderingHints getRenderingHints();
-	public void setRenderingHints(Map hints);
+	public void setRenderingHints(RenderingHints hints);
 	
 	public Composite getComposite();
 	public void setComposite(Composite comp);

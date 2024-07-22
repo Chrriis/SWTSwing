@@ -48,12 +48,12 @@ public class RegExTypes {
 		}
 	}
 
-	protected List typeList;
-	protected List wordstyleList;
+	protected List<Type> typeList;
+	protected List<WordStyle> wordstyleList;
 
 	public RegExTypes() {
-		typeList = new ArrayList();
-		wordstyleList = new ArrayList();
+		typeList = new ArrayList<>();
+		wordstyleList = new ArrayList<>();
 	}
 
 	public void addTokenType(String name, String expr, Color color, int fontstyle) {
@@ -65,7 +65,7 @@ public class RegExTypes {
 	}
 
 	protected Type getType(int index) {
-		return (Type)typeList.get(index);
+		return typeList.get(index);
 	}
 
 	public String getExpr(int index) {
@@ -82,7 +82,7 @@ public class RegExTypes {
 		}
 
 		for (int i = 0; i < wordstyleList.size(); i++) {
-			WordStyle wordStyle = (WordStyle)wordstyleList.get(i);
+			WordStyle wordStyle = wordstyleList.get(i);
 			String name = wordStyle.name;
 			Color color = wordStyle.color;
 			int fontStyle = wordStyle.fontstyle;
@@ -122,10 +122,10 @@ public class RegExTypes {
 		return getPattern().matcher(text);
 	}
 
-	protected Map wordToStyleMap = new HashMap();
+	protected Map<String, String> wordToStyleMap = new HashMap<>();
 
 	public String getStyleName(String word) {
-		return (String)wordToStyleMap.get(word);
+		return wordToStyleMap.get(word);
 	}
 
 	public void putStyleName(String word, String styleName) {
@@ -133,7 +133,7 @@ public class RegExTypes {
 	}
 
 	public String getName(int index) {
-		return ((Type)typeList.get(index)).name;
+		return typeList.get(index).name;
 	}
 
 	public int getTypeCount() {
@@ -141,6 +141,6 @@ public class RegExTypes {
 	}
 
 	public Object getColor(int index) {
-		return ((Type)typeList.get(index)).color;
+		return typeList.get(index).color;
 	}
 }

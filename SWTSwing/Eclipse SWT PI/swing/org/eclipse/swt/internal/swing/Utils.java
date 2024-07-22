@@ -16,8 +16,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.KeyboardFocusManager;
-import java.awt.Point;
-import java.awt.Window;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -171,8 +169,8 @@ public class Utils {
 
 	static void installKeyListener(Component component, final Control control) {
 		component.setFocusTraversalKeysEnabled(false);
-		component.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
-		component.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+		component.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.emptySet());
+		component.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.emptySet());
 		component.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if(control.isDisposed()) return;

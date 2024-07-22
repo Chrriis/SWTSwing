@@ -119,7 +119,7 @@ public class SWT_Swing {
 		return control;
 	}
 	
-	protected static List managedCompositeList = new ArrayList();
+	protected static List<Composite> managedCompositeList = new ArrayList<>();
 	
 	/**
 	 * Add the indicated composite to the list of composites managed by the automatic process.
@@ -145,8 +145,8 @@ public class SWT_Swing {
 											display.sleep ();
 										}
 										synchronized(managedCompositeList) {
-											for(Iterator it=managedCompositeList.iterator(); it.hasNext(); ) {
-												if(((Composite)it.next()).isDisposed()) {
+											for(Iterator<Composite> it=managedCompositeList.iterator(); it.hasNext(); ) {
+												if(it.next().isDisposed()) {
 													it.remove();
 												}
 											}

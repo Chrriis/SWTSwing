@@ -99,6 +99,7 @@ class CLinkImplementation extends JEditorPane implements CLink {
 		reshape(getX(), getY(), getWidth(), getHeight());
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void reshape(int x, int y, int w, int h) {
 		super.reshape(x, y, w, h);
 		View globalView = getUI().getRootView(this);

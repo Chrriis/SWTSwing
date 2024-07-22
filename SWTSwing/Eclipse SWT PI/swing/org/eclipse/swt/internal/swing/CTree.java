@@ -162,8 +162,8 @@ class CTreeImplementation extends JScrollPane implements CTree {
 						}
 					}
 					protected void paintSortArrow(Graphics g, Rectangle bounds) {
-//						Color color = new Color(11, 80, 48);             
-						Color color = getBackground().darker();             
+//						Color color = new Color(11, 80, 48);
+						Color color = getBackground().darker();
 						int priority = 0;
 						int height = Math.round(getHeight() / 1.5f);
 						int x = bounds.x + bounds.width;
@@ -348,20 +348,20 @@ class CTreeImplementation extends JScrollPane implements CTree {
 			public Component getTreeTableCellRendererComponent(JTreeTable treeTable, Object value, boolean isSelected, boolean expanded, boolean leaf, int row, int column, boolean hasFocus) {
 				if(value instanceof CTreeItem.TreeItemObject) {
 					treeItemObject = (CTreeItem.TreeItemObject)value;
-					if(!isPaintEventBlocked && row >= 0) {
-							CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.ERASE_TYPE);
-							event.row = row;
-							event.column = column;
-							event.treeItem = treeItemObject.getTreeItem();
-							event.ignoreDrawSelection = !isSelected;
-							event.ignoreDrawFocused = !hasFocus;
-							handle.processEvent(event);
-							ignoreDrawForeground = event.ignoreDrawForeground;
-							ignoreDrawBackground = event.ignoreDrawBackground;
-							ignoreDrawSelection = event.ignoreDrawSelection;
-							ignoreDrawFocused = event.ignoreDrawFocused;
-							isSelected = !event.ignoreDrawSelection;
-							hasFocus = !event.ignoreDrawFocused;
+					if(paintEventBlockedCount == 0 && row >= 0) {
+						CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.ERASE_TYPE);
+						event.row = row;
+						event.column = column;
+						event.treeItem = treeItemObject.getTreeItem();
+						event.ignoreDrawSelection = !isSelected;
+						event.ignoreDrawFocused = !hasFocus;
+						handle.processEvent(event);
+						ignoreDrawForeground = event.ignoreDrawForeground;
+						ignoreDrawBackground = event.ignoreDrawBackground;
+						ignoreDrawSelection = event.ignoreDrawSelection;
+						ignoreDrawFocused = event.ignoreDrawFocused;
+						isSelected = !event.ignoreDrawSelection;
+						hasFocus = !event.ignoreDrawFocused;
 					}
 					this.row = row;
 					this.column = column;
@@ -464,48 +464,50 @@ class CTreeImplementation extends JScrollPane implements CTree {
 			protected boolean ignoreDrawSelection;
 			protected boolean ignoreDrawFocused;
 			protected void paintComponent(CellPainter c, Graphics g) {
-			  /* TODO: I could not make the owner draw algorithm to work...
-			   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/StyledCellLabelProvider.java
-			   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/OwnerDrawLabelProvider.java
-			   * If we succeed one day, remove this variable (should be allowed always)!!*/
-			  boolean IS_OWNER_DRAW_ALLOWED = false;
-			  if(IS_OWNER_DRAW_ALLOWED) {
-				  if(ignoreDrawForeground) {
-					  if(c instanceof JLabel) {
-						  ((JLabel)c).setText("");
-					  }
-				  }
-			  }
+				/* TODO: I could not make the owner draw algorithm to work...
+				 * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/StyledCellLabelProvider.java
+				 * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/OwnerDrawLabelProvider.java
+				 * If we succeed one day, remove this variable (should be allowed always)!!*/
+				boolean IS_OWNER_DRAW_ALLOWED = false;
+				if(IS_OWNER_DRAW_ALLOWED) {
+					if(ignoreDrawForeground) {
+						if(c instanceof JLabel) {
+							((JLabel)c).setText("");
+						}
+					}
+				}
 				if(ignoreDrawBackground) {
 					setOpaque(false);
 				}
 //				graphics = g;
 				super.paintComponent(c, g);
-		  if(IS_OWNER_DRAW_ALLOWED) {
-			  // TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
-			  if(handle.isListening (SWT.MeasureItem) && treeItemObject != null) {
-				  CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.MEASURE_TYPE);
-				  event.row = row;
-				  event.column = column;
-				  event.treeItem = treeItemObject.getTreeItem();
-				  event.ignoreDrawForeground = this.ignoreDrawForeground;
-				  event.ignoreDrawBackground = this.ignoreDrawBackground;
-				  event.ignoreDrawSelection = this.ignoreDrawSelection;
-				  event.ignoreDrawFocused = this.ignoreDrawFocused;
-				  handle.processEvent(event);
-			  }
-			  if(treeItemObject != null) {
-				  CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.PAINT_TYPE);
-				  event.row = row;
-				  event.column = column;
-				  event.treeItem = treeItemObject.getTreeItem();
-				  event.ignoreDrawForeground = this.ignoreDrawForeground;
-				  event.ignoreDrawBackground = this.ignoreDrawBackground;
-				  event.ignoreDrawSelection = this.ignoreDrawSelection;
-				  event.ignoreDrawFocused = this.ignoreDrawFocused;
-				  handle.processEvent(event);
-			  }
-		  }
+				if(IS_OWNER_DRAW_ALLOWED) {
+					if(paintEventBlockedCount == 0 && row >= 0) {
+						// TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
+						if(handle.isListening (SWT.MeasureItem) && treeItemObject != null) {
+							CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.MEASURE_TYPE);
+							event.row = row;
+							event.column = column;
+							event.treeItem = treeItemObject.getTreeItem();
+							event.ignoreDrawForeground = this.ignoreDrawForeground;
+							event.ignoreDrawBackground = this.ignoreDrawBackground;
+							event.ignoreDrawSelection = this.ignoreDrawSelection;
+							event.ignoreDrawFocused = this.ignoreDrawFocused;
+							handle.processEvent(event);
+						}
+						if(treeItemObject != null) {
+							CellPaintEvent event = new CellPaintEvent(treeTable, CellPaintEvent.PAINT_TYPE);
+							event.row = row;
+							event.column = column;
+							event.treeItem = treeItemObject.getTreeItem();
+							event.ignoreDrawForeground = this.ignoreDrawForeground;
+							event.ignoreDrawBackground = this.ignoreDrawBackground;
+							event.ignoreDrawSelection = this.ignoreDrawSelection;
+							event.ignoreDrawFocused = this.ignoreDrawFocused;
+							handle.processEvent(event);
+						}
+					}
+				}
 //				graphics = null;
 			}
 			protected InnerTreeCellRenderer createInnerTreeCellRenderer() {
@@ -710,38 +712,38 @@ class CTreeImplementation extends JScrollPane implements CTree {
 		return (DefaultTreeModel)treeTable.getModel();
 	}
 
-	private boolean isPaintEventBlocked = false;
+	private int paintEventBlockedCount = 0;
 	
 	public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
-	  try {
-		  isPaintEventBlocked = true;
-		    Rectangle cellRect = treeTable.getCellRect(row, column, includeSpacing);
-		    if(column == 0) {
-		    	Rectangle rowBounds = treeTable.getInnerTree().getRowBounds(row);
-		    	if(rowBounds != null) {
-				      int dx = rowBounds.x;
-				      cellRect.x += dx;
-				      cellRect.width -= dx;
-		    	}
-		    }
-		    if(isCheckType && column == 0) {
-		      TreePath treePath = treeTable.getPathForRow(row);
-		      DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode)treePath.getLastPathComponent();
-		      Object value = node.getUserObject();
-		      Component c = treeTable.getCellRenderer().getTreeTableCellRendererComponent(treeTable, value, treeTable.isRowSelected(row), treeTable.isExpanded(treePath), node.isLeaf(), row, column, false);
-		      c.setBounds(cellRect);
-		      if(c instanceof CheckBoxCellRenderer) {
-		        CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
-		        c = checkBoxCellRenderer.getComponent();
-		        int dx = c.getBounds().x;
-		        cellRect.x += dx;
-		        cellRect.width -= dx;
-		      }
-		    }
-		    return cellRect;
-	  } finally {
-		  isPaintEventBlocked = false;
-	  }
+		try {
+			paintEventBlockedCount++;
+			Rectangle cellRect = treeTable.getCellRect(row, column, includeSpacing);
+			if(column == 0) {
+				Rectangle rowBounds = treeTable.getInnerTree().getRowBounds(row);
+				if(rowBounds != null) {
+					int dx = rowBounds.x;
+					cellRect.x += dx;
+					cellRect.width -= dx;
+				}
+			}
+			if(isCheckType && column == 0) {
+				TreePath treePath = treeTable.getPathForRow(row);
+				DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode)treePath.getLastPathComponent();
+				Object value = node.getUserObject();
+				Component c = treeTable.getCellRenderer().getTreeTableCellRendererComponent(treeTable, value, treeTable.isRowSelected(row), treeTable.isExpanded(treePath), node.isLeaf(), row, column, false);
+				c.setBounds(cellRect);
+				if(c instanceof CheckBoxCellRenderer) {
+					CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
+					c = checkBoxCellRenderer.getComponent();
+					int dx = c.getBounds().x;
+					cellRect.x += dx;
+					cellRect.width -= dx;
+				}
+			}
+			return cellRect;
+		} finally {
+			paintEventBlockedCount--;
+		}
 	}
 
 	public int getRowForPath(TreePath path) {

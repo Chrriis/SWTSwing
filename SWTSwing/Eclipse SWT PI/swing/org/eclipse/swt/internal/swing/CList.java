@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.List;
 class CListImplementation extends JScrollPane implements CList {
 
 	protected List handle;
-	protected JList list;
+	protected JList<Object> list;
 
 	public Container getSwingComponent() {
 		return list;
@@ -56,7 +56,7 @@ class CListImplementation extends JScrollPane implements CList {
 	
 	public CListImplementation(List list, int style) {
 		this.handle = list;
-		this.list = new JList(new DefaultListModel()) {
+		this.list = new JList<Object>(new DefaultListModel<>()) {
 			public Color getBackground() {
 				return CListImplementation.this != null && userAttributeHandler != null && userAttributeHandler.background != null? userAttributeHandler.background: super.getBackground();
 			}
@@ -174,23 +174,23 @@ class CListImplementation extends JScrollPane implements CList {
 	}
 
 	public void addElement(Object obj) {
-		((DefaultListModel)list.getModel()).addElement(obj);
+		((DefaultListModel<Object>)list.getModel()).addElement(obj);
 	}
 
 	public void insertElementAt(Object obj, int index) {
-		((DefaultListModel)list.getModel()).insertElementAt(obj, index);
+		((DefaultListModel<Object>)list.getModel()).insertElementAt(obj, index);
 	}
 
 	public void removeElementAt(int index) {
-		((DefaultListModel)list.getModel()).removeElementAt(index);
+		((DefaultListModel<Object>)list.getModel()).removeElementAt(index);
 	}
 
 	public void removeRange(int fromIndex, int toIndex) {
-		((DefaultListModel)list.getModel()).removeRange(fromIndex, toIndex);
+		((DefaultListModel<Object>)list.getModel()).removeRange(fromIndex, toIndex);
 	}
 
 	public void removeAllElements() {
-		((DefaultListModel)list.getModel()).removeAllElements();
+		((DefaultListModel<Object>)list.getModel()).removeAllElements();
 	}
 
 	public Object getElementAt(int index) {
@@ -198,19 +198,19 @@ class CListImplementation extends JScrollPane implements CList {
 	}
 
 	public void setElementAt(Object obj, int index) {
-		((DefaultListModel)list.getModel()).setElementAt(obj, index);
+		((DefaultListModel<Object>)list.getModel()).setElementAt(obj, index);
 	}
 
 	public void setElements(Object[] objects) {
 		removeAllElements();
-		DefaultListModel model = ((DefaultListModel)list.getModel());
+		DefaultListModel<Object> model = ((DefaultListModel<Object>)list.getModel());
 		for(int i=0; i<objects.length; i++) {
 			model.addElement(objects[i]);
 		}
 	}
 
 	public int indexOf(Object obj, int index) {
-		return ((DefaultListModel)list.getModel()).indexOf(obj, index);
+		return ((DefaultListModel<Object>)list.getModel()).indexOf(obj, index);
 	}
 
 	public int getItemCount() {
@@ -231,7 +231,7 @@ class CListImplementation extends JScrollPane implements CList {
 			return new int[0];
 		}
 		int max = getMaxSelectionIndex();
-		ArrayList list = new ArrayList(max - min + 1);
+		ArrayList<Integer> list = new ArrayList<>(max - min + 1);
 		for(int i=min; i<=max; i++) {
 			if(isSelectedIndex(i)) {
 				list.add(new Integer(i));
@@ -239,7 +239,7 @@ class CListImplementation extends JScrollPane implements CList {
 		}
 		int[] selectionIndices = new int[list.size()];
 		for(int i=0; i<list.size(); i++) {
-			selectionIndices[i] = ((Integer)list.get(i)).intValue();
+			selectionIndices[i] = list.get(i).intValue();
 		}
 		return selectionIndices;
 	}
@@ -249,7 +249,7 @@ class CListImplementation extends JScrollPane implements CList {
 	}
 
 	public void setSelectedElements(Object[] elements) {
-		DefaultListModel listModel = ((DefaultListModel)list.getModel());
+		DefaultListModel<Object> listModel = ((DefaultListModel<Object>)list.getModel());
 		for(int i=0; i<elements.length; i++) {
 			int index = listModel.indexOf(elements[i]);
 			if(index >= 0) {

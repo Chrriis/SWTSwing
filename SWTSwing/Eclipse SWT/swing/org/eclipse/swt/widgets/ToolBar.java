@@ -55,7 +55,7 @@ import org.eclipse.swt.internal.swing.Utils;
  */
 public class ToolBar extends Composite {
 //	int lastFocusId;
-	ArrayList itemList = new ArrayList();
+	ArrayList<ToolItem> itemList = new ArrayList<>();
 //	ToolItem [] items;
 //	boolean ignoreResize, ignoreMouse;
 //	ImageList imageList, disabledImageList, hotImageList;
@@ -157,16 +157,16 @@ Control [] _getChildren () {
 	if(children.length == 0) {
 		return new Control[0];
 	}
-	ArrayList controlsList = new ArrayList(children.length);
+	ArrayList<Control> controlList = new ArrayList<>(children.length);
 	if(itemList != null) {
 		for(int i=0; i<itemList.size(); i++) {
-			Control control = ((ToolItem)itemList.get(i)).getControl();
+			Control control = itemList.get(i).getControl();
 			if(control != null) {
-				controlsList.add(control);
+				controlList.add(control);
 			}
 		}
 	}
-	return (Control[])controlsList.toArray(new Control[0]);
+	return controlList.toArray(new Control[0]);
 }
 
 boolean autoAddChildren() {
@@ -203,7 +203,7 @@ void createItem (ToolItem item, int index) {
 
 void createWidget () {
 	super.createWidget ();
-	itemList = new ArrayList();
+	itemList = new ArrayList<>();
 //	items = new ToolItem [4];
 //	lastFocusId = -1;
 }
@@ -255,7 +255,7 @@ void destroyItem (ToolItem item) {
 //	}
 //	if ((style & SWT.VERTICAL) != 0) setRows (count - 1);
 	if(itemList.isEmpty()) {
-		itemList = new ArrayList();
+		itemList = new ArrayList<>();
 	}
 //	layoutItems ();
 }
@@ -291,7 +291,7 @@ public ToolItem getItem (int index) {
 	checkWidget ();
 	int count = getItemCount();
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	return (ToolItem)itemList.get(index);
+	return itemList.get(index);
 //	return items [handle.getclpButton.idCommand];
 }
 
@@ -355,7 +355,7 @@ public int getItemCount () {
  */
 public ToolItem [] getItems () {
 	checkWidget ();
-	return (ToolItem [])itemList.toArray(new ToolItem [0]);
+	return itemList.toArray(new ToolItem [0]);
 //	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 //	TBBUTTON lpButton = new TBBUTTON ();
 //	ToolItem [] result = new ToolItem [count];
@@ -465,7 +465,7 @@ void releaseChildren (boolean destroy) {
 	if (itemList != null) {
 		int count = itemList.size();
 		for (int i=0; i<count; i++) {
-			ToolItem item = (ToolItem)itemList.get(i);
+			ToolItem item = itemList.get(i);
 			if (item != null && !item.isDisposed ()) {
 //				item.releaseImages ();
 				item.release (false);
@@ -493,7 +493,7 @@ void removeControl (Control control) {
 	super.removeControl (control);
 	int count = itemList.size();
 	for (int i=0; i<count; i++) {
-		ToolItem item = (ToolItem)itemList.get(i);
+		ToolItem item = itemList.get(i);
 		if (item != null && item.control == control) {
 			item.setControl (null);
 		}
@@ -565,7 +565,7 @@ boolean setTabItemFocus () {
 	int index = 0;
 	int count = itemList.size();
 	while (index < count) {
-		ToolItem item = (ToolItem)itemList.get(index);
+		ToolItem item = itemList.get(index);
 		if (item != null && (item.style & SWT.SEPARATOR) == 0) {
 			if (item.getEnabled ()) break;
 		}

@@ -59,7 +59,7 @@ public class TreeItem extends Item {
 	CTreeItem handle;
 	Tree parent;
 	TreeItem parentItem;
-	ArrayList itemList;
+	ArrayList<TreeItem> itemList;
 //	String [] strings;
 	Image [] images;
 	boolean cached;
@@ -601,7 +601,7 @@ public TreeItem getItem (int index) {
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if(index < 0 || index >= getItemCount()) error (SWT.ERROR_INVALID_RANGE);
-	return (TreeItem)itemList.get(index);
+	return itemList.get(index);
 //	int hwnd = parent.handle;
 //	int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 //	if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
@@ -646,7 +646,7 @@ public int getItemCount () {
 public TreeItem [] getItems () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return itemList == null? new TreeItem [0]: (TreeItem [])itemList.toArray(new TreeItem [0]);
+	return itemList == null? new TreeItem [0]: itemList.toArray(new TreeItem [0]);
 }
 
 public Image getImage () {
@@ -852,7 +852,7 @@ public void removeAll () {
 	checkWidget ();
 	if(itemList != null) {
 		for (int i=itemList.size()-1; i>=0; i--) {
-			TreeItem item = (TreeItem)itemList.get(i);
+			TreeItem item = itemList.get(i);
 			if (item != null && !item.isDisposed ()) {
 				item.dispose();
 //				item.release(false);

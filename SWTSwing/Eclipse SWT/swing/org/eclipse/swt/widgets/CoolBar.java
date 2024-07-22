@@ -55,8 +55,8 @@ import org.eclipse.swt.internal.swing.Utils;
  */
 
 public class CoolBar extends Composite {
-	ArrayList itemList;
-	ArrayList originalItemList;
+	ArrayList<CoolItem> itemList;
+	ArrayList<CoolItem> originalItemList;
 //	CoolItem [] originalItems;
 //	boolean locked;
 //	boolean ignoreResize;
@@ -100,7 +100,7 @@ Control [] _getChildren () {
 	if(children.length == 0) {
 		return new Control[0];
 	}
-	ArrayList controlsList = new ArrayList(children.length);
+	ArrayList<Control> controlList = new ArrayList<>(children.length);
 	for(int i=0; i<children.length; i++) {
 		Component childComponent = children[i];
 		if(childComponent instanceof JCoolBarItem) {
@@ -108,13 +108,13 @@ Control [] _getChildren () {
 				if(subChildComponent != null && subChildComponent instanceof CControl) {
 					Control control = display.getControl(subChildComponent);
 					if (control != null && control != this) {
-						controlsList.add(control);
+						controlList.add(control);
 					}
 				}
 			}
 		}
 	}
-	return (Control[])controlsList.toArray(new Control[0]);
+	return controlList.toArray(new Control[0]);
 }
 
 static int checkStyle (int style) {
@@ -269,8 +269,8 @@ void createItem (CoolItem item, int index) {
 
 void createWidget () {
 	super.createWidget ();
-	itemList = new ArrayList(4);
-	originalItemList = new ArrayList(4);
+	itemList = new ArrayList<>(4);
+	originalItemList = new ArrayList<>(4);
 //	originalItems = new CoolItem [0];
 }
 
@@ -292,8 +292,8 @@ void destroyItem (CoolItem item) {
 	}
 	originalItemList.remove(item);
 	if(itemList.isEmpty()) {
-		itemList = new ArrayList(4);
-		originalItemList = new ArrayList(4);
+		itemList = new ArrayList<>(4);
+		originalItemList = new ArrayList<>(4);
 	}
 //	int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
 //	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
@@ -408,7 +408,7 @@ public CoolItem getItem (int index) {
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	Component component = handle.getComponent(index);
 	for(int i=itemList.size()-1; i>=0; i--) {
-		CoolItem coolItem = (CoolItem)itemList.get(i);
+		CoolItem coolItem = itemList.get(i);
 		if(coolItem.handle == component) {
 			return coolItem;
 		}
@@ -495,12 +495,13 @@ public CoolItem [] getItems () {
 	checkWidget ();
 	int count = getItemCount();
 	CoolItem[] coolItems = new CoolItem[count];
-	ArrayList itemList = (ArrayList)this.itemList.clone();
+	@SuppressWarnings("unchecked")
+	ArrayList<CoolItem> itemList = (ArrayList<CoolItem>)this.itemList.clone();
 	Component[] components = handle.getComponents();
 	for(int i=0; i<components.length; i++) {
 		Component component = components[i];
 		for(int j=itemList.size()-1; j>=0; j--) {
-			CoolItem coolItem = (CoolItem)itemList.get(j);
+			CoolItem coolItem = itemList.get(j);
 			if(coolItem.handle == component) {
 				itemList.remove(j);
 				coolItems[i] = coolItem;
@@ -594,7 +595,7 @@ public boolean getLocked () {
 public int [] getWrapIndices () {
 	checkWidget ();
 	Component[] components = handle.getComponents();
-	ArrayList wrapIndiceList = new ArrayList();
+	ArrayList<Integer> wrapIndiceList = new ArrayList<>();
 	for(int i=1; i<components.length; i++) {
 		if(((JCoolBarItem)components[i]).isWrapped()) {
 			wrapIndiceList.add(Integer.valueOf(i));
@@ -602,7 +603,7 @@ public int [] getWrapIndices () {
 	}
 	int[] indices = new int[wrapIndiceList.size()];
 	for(int i=0; i<indices.length; i++) {
-		indices[i] = ((Integer)wrapIndiceList.get(i)).intValue();
+		indices[i] = wrapIndiceList.get(i).intValue();
 	}
 	return indices;
 }
@@ -675,7 +676,7 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 void releaseChildren (boolean destroy) {
 	if(itemList != null) {
 		for (int i=itemList.size()-1; i>=0; i--) {
-			CoolItem item = (CoolItem)itemList.get(i);
+			CoolItem item = itemList.get(i);
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -691,7 +692,7 @@ void removeControl (Control control) {
 	super.removeControl (control);
 	int count = itemList.size();
 	for (int i=0; i<count; i++) {
-		CoolItem item = (CoolItem)itemList.get(i);
+		CoolItem item = itemList.get(i);
 		if (item != null && item.control == control) {
 			item.setControl (null);
 		}

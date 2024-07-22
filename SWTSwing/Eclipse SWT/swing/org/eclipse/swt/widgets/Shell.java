@@ -32,7 +32,6 @@ import org.eclipse.swt.events.ShellListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.internal.swing.CShell;
-import org.eclipse.swt.internal.swing.Compatibility;
 import org.eclipse.swt.internal.swing.UIThreadUtils;
 
 /**

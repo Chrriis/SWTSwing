@@ -182,19 +182,21 @@ class CTableImplementation extends JScrollPane implements CTable {
 				public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 					if(value instanceof CTableItem.TableItemObject) {
 						tableItemObject = (CTableItem.TableItemObject)value;
-						CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.ERASE_TYPE);
-						event.row = row;
-						event.column = column;
-						event.tableItem = tableItemObject.getTableItem();
-						event.ignoreDrawSelection = !isSelected;
-						event.ignoreDrawFocused = !hasFocus;
-						handle.processEvent(event);
-						ignoreDrawForeground = event.ignoreDrawForeground;
-						ignoreDrawBackground = event.ignoreDrawBackground;
-						ignoreDrawSelection = event.ignoreDrawSelection;
-						ignoreDrawFocused = event.ignoreDrawFocused;
-						isSelected = !event.ignoreDrawSelection;
-						hasFocus = !event.ignoreDrawFocused;
+						if(paintEventBlockedCount == 0 && row >= 0) {
+							CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.ERASE_TYPE);
+							event.row = row;
+							event.column = column;
+							event.tableItem = tableItemObject.getTableItem();
+							event.ignoreDrawSelection = !isSelected;
+							event.ignoreDrawFocused = !hasFocus;
+							handle.processEvent(event);
+							ignoreDrawForeground = event.ignoreDrawForeground;
+							ignoreDrawBackground = event.ignoreDrawBackground;
+							ignoreDrawSelection = event.ignoreDrawSelection;
+							ignoreDrawFocused = event.ignoreDrawFocused;
+							isSelected = !event.ignoreDrawSelection;
+							hasFocus = !event.ignoreDrawFocused;
+						}
 						this.row = row;
 						this.column = column;
 					} else {
@@ -304,46 +306,48 @@ class CTableImplementation extends JScrollPane implements CTable {
 				protected boolean ignoreDrawSelection;
 				protected boolean ignoreDrawFocused;
 				protected void paintComponent (Graphics g) {
-				  /* TODO: I could not make the owner draw algorithm to work...
-				   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/StyledCellLabelProvider.java
-				   * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/OwnerDrawLabelProvider.java
-				   * If we succeed one day, remove this variable (should be allowed always)!!*/
-				  boolean IS_OWNER_DRAW_ALLOWED = false;
-				  if(IS_OWNER_DRAW_ALLOWED) {
-					  if(ignoreDrawForeground) {
-						  setText(null);
-					  }
-				  }
+					/* TODO: I could not make the owner draw algorithm to work...
+					 * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/StyledCellLabelProvider.java
+					 * https://github.com/eclipse-platform/eclipse.platform.ui/blob/R4_20_maintenance/bundles/org.eclipse.jface/src/org/eclipse/jface/viewers/OwnerDrawLabelProvider.java
+					 * If we succeed one day, remove this variable (should be allowed always)!!*/
+					boolean IS_OWNER_DRAW_ALLOWED = false;
+					if(IS_OWNER_DRAW_ALLOWED) {
+						if(ignoreDrawForeground) {
+							setText(null);
+						}
+					}
 					if(ignoreDrawBackground) {
 						setOpaque(false);
 					}
 //					graphics = g;
 					super.paintComponent(g);
-				  if(IS_OWNER_DRAW_ALLOWED) {
-					  // TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
-					  if (handle.isListening (SWT.MeasureItem)) {
-						  CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.MEASURE_TYPE);
-						  event.row = row;
-						  event.column = column;
-						  event.tableItem = tableItemObject.getTableItem();
-						  event.ignoreDrawForeground = this.ignoreDrawForeground;
-						  event.ignoreDrawBackground = this.ignoreDrawBackground;
-						  event.ignoreDrawSelection = this.ignoreDrawSelection;
-						  event.ignoreDrawFocused = this.ignoreDrawFocused;
-						  handle.processEvent(event);
-					  }
-					  if(tableItemObject != null) {
-						  CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.PAINT_TYPE);
-						  event.row = row;
-						  event.column = column;
-						  event.tableItem = tableItemObject.getTableItem();
-						  event.ignoreDrawForeground = this.ignoreDrawForeground;
-						  event.ignoreDrawBackground = this.ignoreDrawBackground;
-						  event.ignoreDrawSelection = this.ignoreDrawSelection;
-						  event.ignoreDrawFocused = this.ignoreDrawFocused;
-						  handle.processEvent(event);
-					  }
-				  }
+					if(IS_OWNER_DRAW_ALLOWED) {
+						// TODO: we need to send a measure event for the paint event to have the proper size calculations, but where should that be done?
+						if(paintEventBlockedCount == 0 && row >= 0) {
+							if (handle.isListening (SWT.MeasureItem)) {
+								CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.MEASURE_TYPE);
+								event.row = row;
+								event.column = column;
+								event.tableItem = tableItemObject.getTableItem();
+								event.ignoreDrawForeground = this.ignoreDrawForeground;
+								event.ignoreDrawBackground = this.ignoreDrawBackground;
+								event.ignoreDrawSelection = this.ignoreDrawSelection;
+								event.ignoreDrawFocused = this.ignoreDrawFocused;
+								handle.processEvent(event);
+							}
+							if(tableItemObject != null) {
+								CellPaintEvent event = new CellPaintEvent(table, CellPaintEvent.PAINT_TYPE);
+								event.row = row;
+								event.column = column;
+								event.tableItem = tableItemObject.getTableItem();
+								event.ignoreDrawForeground = this.ignoreDrawForeground;
+								event.ignoreDrawBackground = this.ignoreDrawBackground;
+								event.ignoreDrawSelection = this.ignoreDrawSelection;
+								event.ignoreDrawFocused = this.ignoreDrawFocused;
+								handle.processEvent(event);
+							}
+						}
+					}
 //					graphics = null;
 				}
 			};
@@ -389,8 +393,8 @@ class CTableImplementation extends JScrollPane implements CTable {
 						}
 					}
 					protected void paintSortArrow(Graphics g, Rectangle bounds) {
-//						Color color = new Color(11, 80, 48);             
-						Color color = getBackground().darker();             
+//						Color color = new Color(11, 80, 48);
+						Color color = getBackground().darker();
 						int priority = 0;
 						int height = Math.round(getHeight() / 1.5f);
 						int x = bounds.x + bounds.width;
@@ -754,21 +758,28 @@ class CTableImplementation extends JScrollPane implements CTable {
 		return (AbstractTableModel)table.getModel();
 	}
 
+	private int paintEventBlockedCount = 0;
+	
 	public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
-		Rectangle cellRect = table.getCellRect(row, column, includeSpacing);
-		if(isCheckType && column == 0) {
-			Component c = getCellRenderer(row, column).getTableCellRendererComponent(table, getModel().getValueAt(row, column), false, false, row, column);
-			c.setBounds(cellRect);
-			c.validate();
-			if(c instanceof CheckBoxCellRenderer) {
-				CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
-				c = checkBoxCellRenderer.getComponent();
-				int dx = c.getBounds().x;
-				cellRect.x += dx;
-				cellRect.width -= dx;
+		try {
+			paintEventBlockedCount++;
+			Rectangle cellRect = table.getCellRect(row, column, includeSpacing);
+			if(isCheckType && column == 0) {
+				Component c = getCellRenderer(row, column).getTableCellRendererComponent(table, getModel().getValueAt(row, column), false, false, row, column);
+				c.setBounds(cellRect);
+				c.validate();
+				if(c instanceof CheckBoxCellRenderer) {
+					CheckBoxCellRenderer checkBoxCellRenderer = (CheckBoxCellRenderer)c;
+					c = checkBoxCellRenderer.getComponent();
+					int dx = c.getBounds().x;
+					cellRect.x += dx;
+					cellRect.width -= dx;
+				}
 			}
+			return cellRect;
+		} finally {
+			paintEventBlockedCount--;
 		}
-		return cellRect;
 	}
 
 	public TableColumnModel getColumnModel() {

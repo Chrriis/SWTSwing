@@ -216,7 +216,7 @@ void init (Device device, FontData fd) {
 	int style = fd.getStyle();
 	int height = Math.round(fd.getHeight() * device.getDPI().x / 72.0f);
 	if(fontData.data != null) {
-		Map attributeMap = new HashMap(fontData.data);
+		Map<TextAttribute, Object> attributeMap = new HashMap<>(fontData.data);
 		attributeMap.put(TextAttribute.FAMILY, fd.getName());
 		attributeMap.put(TextAttribute.POSTURE, (style & SWT.ITALIC) != 0? TextAttribute.POSTURE_OBLIQUE: TextAttribute.POSTURE_REGULAR);
 		attributeMap.put(TextAttribute.WEIGHT, (style & SWT.BOLD) != 0? TextAttribute.WEIGHT_BOLD: TextAttribute.WEIGHT_REGULAR);

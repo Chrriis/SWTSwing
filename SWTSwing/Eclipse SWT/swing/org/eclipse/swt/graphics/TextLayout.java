@@ -471,29 +471,16 @@ private void drawUnderline(GC gc, int x1, int x2, int y, TextStyle style) {
 	switch(style.underlineStyle) {
 	case SWT.UNDERLINE_SQUIGGLE:
 	case SWT.UNDERLINE_ERROR:
-		int length = x2 - x1;
-		for(int i=0; i<length; i++) {
-			int yOffset1 = 0;
-			int yOffset2 = 0;
-			switch(i % 4) {
-			case 0:
-				yOffset1 = 0;
-				yOffset2 = 1;
-				break;
-			case 1:
-				yOffset1 = 1;
-				yOffset2 = 2;
-				break;
-			case 2:
-				yOffset1 = 2;
-				yOffset2 = 1;
-				break;
-			case 3:
-				yOffset1 = 1;
-				yOffset2 = 0;
-				break;
-			}
-			gc.drawLine (x1 + i, y + yOffset1 - 1, x1 + i + 1, y + yOffset2 - 1);
+		int steps = (x2 - x1 + 1) / 2;
+		for(int i=0; i<steps; i++) {
+			boolean isReversed = i % 2 != 0;
+			int x1_ = x1 + (i * 2);
+			int x2_ = x1 + (i * 2) + 2;
+			int xOffset = x2 >= x2_? 0: x2 - x2_;
+			x2_ += xOffset;
+			int yOffset1 = isReversed? 0: 2;
+			int yOffset2 = isReversed? 2 + xOffset: -xOffset;
+			gc.drawLine (x1_, y + yOffset1 - 1, x2_, y + yOffset2 - 1);
 		}
 		break;
 	case SWT.UNDERLINE_DOUBLE:

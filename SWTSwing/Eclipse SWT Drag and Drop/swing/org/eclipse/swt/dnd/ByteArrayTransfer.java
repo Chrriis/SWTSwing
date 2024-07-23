@@ -128,7 +128,7 @@ public abstract class ByteArrayTransfer extends Transfer {
 public TransferData[] getSupportedTypes() {
 	TransferData transferData = new TransferData();
 	// TODO: how to obtain the list of types?
-	transferData.dataFlavor = byteArrayDataFlavor;
+	transferData.dataFlavor = getDataFlavor();
 	return new TransferData[] {transferData};
 //	int[] types = getTypeNames();
 //	TransferData[] data = new TransferData[names.length];

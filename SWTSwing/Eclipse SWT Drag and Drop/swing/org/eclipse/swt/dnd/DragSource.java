@@ -267,6 +267,7 @@ static int checkStyle(int style) {
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener(listener);
+	typedListener.dndWidget = this;
 	addListener(DND.DragStart, typedListener);
 	addListener(DND.DragSetData, typedListener);
 	addListener(DND.DragEnd, typedListener);

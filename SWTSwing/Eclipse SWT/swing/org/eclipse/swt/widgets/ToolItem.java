@@ -891,6 +891,8 @@ public void processEvent(AWTEvent e) {
 			} else if("Arrow".equals(((java.awt.event.ActionEvent)e).getActionCommand())) {
 				event.detail = SWT.ARROW;
 			}
+			event.x = handle.getX();
+			event.y = handle.getY() + handle.getHeight();
 			if(!isAdjustingSelection) {
 				sendEvent(SWT.Selection, event);
 			}

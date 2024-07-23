@@ -72,6 +72,7 @@ public class Utils {
 		// Specific Sun property to prevent heavyweight components from erasing their background.
 		// Used to enhance visual appearance of the tracker.
 		System.setProperty("sun.awt.noerasebackground", "true");
+		System.setProperty("awt.dnd.drag.threshold", "1");
 		if(System.getProperty(APPLEMENUBAR_PROPERTY) == null) {
 			System.setProperty(APPLEMENUBAR_PROPERTY, "true");
 		}

@@ -188,16 +188,16 @@ public DragSource(Control control, int style) {
 			DragSource.this.onDispose();
 		}
 	});
-	boolean isPropertySet = true;
-	try {
-		System.setProperty("awt.dnd.drag.threshold", "0");
-		Method method = Toolkit.class.getDeclaredMethod("setDesktopProperty", new Class[] {String.class, Object.class});
-		method.setAccessible(true);
-		method.invoke(Toolkit.getDefaultToolkit(), new Object[] {"DnD.gestureMotionThreshold", new Integer(0)});
-		method.setAccessible(false);
-	} catch(Throwable e) {
-		isPropertySet = false;
-	}
+//	boolean isPropertySet = true;
+//	try {
+//		System.setProperty("awt.dnd.drag.threshold", "0");
+//		Method method = Toolkit.class.getDeclaredMethod("setDesktopProperty", new Class[] {String.class, Object.class});
+//		method.setAccessible(true);
+//		method.invoke(Toolkit.getDefaultToolkit(), new Object[] {"DnD.gestureMotionThreshold", new Integer(0)});
+//		method.setAccessible(false);
+//	} catch(Throwable e) {
+//		isPropertySet = false;
+//	}
 	Container swingComponent = ((CControl)control.handle).getClientArea();
 	// We need to be first to process the mouse event.
 	MouseListener[] mouseListeners = swingComponent.getMouseListeners();
@@ -208,12 +208,12 @@ public DragSource(Control control, int style) {
 	for(int i=0; i<mouseMotionListeners.length; i++) {
 		swingComponent.removeMouseMotionListener(mouseMotionListeners[i]);
 	}
-	if(isPropertySet) {
+//	if(isPropertySet) {
 		java.awt.dnd.DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
-	} else {
-		// We don't use the default cross platform drag recognizer, because SWT does not want a threshold, and we failed to set it to 0.
-		new SWTDragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
-	}
+//	} else {
+//		// We don't use the default cross platform drag recognizer, because SWT does not want a threshold, and we failed to set it to 0.
+//		new SWTDragGestureRecognizer(java.awt.dnd.DragSource.getDefaultDragSource(), swingComponent, Utils.convertDnDActionsToSwing(style), new SWTDragGestureListener());
+//	}
 	for(int i=0; i<mouseListeners.length; i++) {
 		swingComponent.addMouseListener(mouseListeners[i]);
 	}

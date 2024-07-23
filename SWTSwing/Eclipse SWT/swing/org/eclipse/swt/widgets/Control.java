@@ -5140,9 +5140,9 @@ Event createMouseEvent(java.awt.event.MouseEvent me, boolean isPreviousInputStat
 	if (SwingUtilities.isLeftMouseButton (me)) {
 		event.button = 1;
 	} else if (SwingUtilities.isRightMouseButton (me)) {
-		event.button = 2;
-	} else if (SwingUtilities.isMiddleMouseButton (me)) {
 		event.button = 3;
+	} else if (SwingUtilities.isMiddleMouseButton (me)) {
+		event.button = 2;
 	}
 	if(me instanceof MouseWheelEvent) {
 		event.count = -((MouseWheelEvent)me).getScrollAmount();

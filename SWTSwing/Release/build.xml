@@ -5,7 +5,7 @@
     <ant antfile="build.xml" inheritall="false"/>
     <ant antfile="../SWTSwingTests/build.xml" inheritall="false"/>
     <delete file="SWTSwing.zip"/>
-    <zip duplicate="preserve" destfile="Release/SWTSwing.zip">
+    <zip duplicate="preserve" destfile="Release/SWTSwing.zip" zip64Mode="always">
       <!-- SWTSwing documents -->
       <zipfileset dir="." includes="licence.txt"/>
       <zipfileset dir="Release" includes="readme.txt,changelog.txt"/>

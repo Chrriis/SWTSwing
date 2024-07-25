@@ -5,10 +5,19 @@ Licence terms: EPL 2.0 (see licence.txt)
 
 ---------------------------------- Change log ----------------------------------
 
-* Version 3.2.0006 (xxxxxxxxxxxxxxx):
+* Version 3.3.0001 (July 35, 2024):
 
 - Update to Java 1.8 and SWT 4.944r26, branch R4_20_maintenance (was 3.232r0)
 - Adapted many APIs to launch Eclipse R4_20.
+- Improved re-parenting.
+- Anti-aliasing is improved.
+- Wheel mouse support is improved.
+- Underline styles (squiggly line).
+- Shell opacity.
+- Improved cool bar and items support.
+- Ctrl+Shift+F1/F2: component tree dump for Swing/SWT.
+- Fixed default size computation of composite.
+- Middle and right mouse button handling were swapped.
 - Group font can now be set.
 - Coordinate mapping from Display class now considers parent offsets properly.
 - DragSource now uses the mouse-related component of the hierarchy to hook DnD.

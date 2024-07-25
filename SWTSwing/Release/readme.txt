@@ -1,5 +1,5 @@
 The SWTSwing project - SWT running on Swing
-http://swtswing.sourceforge.net
+https://github.com/Chrriis/SWTSwing
 Christopher Deckers (chrriis@nextencia.net)
 Licence terms: EPL 2.0 (see licence.txt)
 

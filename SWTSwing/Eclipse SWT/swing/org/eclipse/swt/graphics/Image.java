@@ -196,11 +196,12 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
-			if(device instanceof Display) {
-				handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_RGB);
-			} else {
-				handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			}
+//			if(device instanceof Display) {
+//				handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_RGB);
+//			} else {
+//				handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_ARGB);
+//			}
+			handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), srcImage.handle.getType());
 			Graphics g = handle.getGraphics();
 			g.drawImage(srcImage.handle, 0, 0, null);
 			g.dispose();
@@ -1214,11 +1215,11 @@ static void init(Device device, Image image, ImageData data) {
 	image.device = device;
 	if(image.handle == null) {
 		BufferedImage bufferedImage;
-		if(device instanceof Display) {
-			bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_RGB);
-		} else {
+//		if(device instanceof Display) {
+//			bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_RGB);
+//		} else {
 			bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
-		}
+//		}
 		image.handle = bufferedImage;
 		if(!(device instanceof Display)) {
 			Graphics g = bufferedImage.getGraphics();

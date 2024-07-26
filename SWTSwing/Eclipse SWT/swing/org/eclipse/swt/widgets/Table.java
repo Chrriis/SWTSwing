@@ -1948,7 +1948,10 @@ void setFocusIndex (int index) {
 public void setHeaderBackground (Color color) {
 	checkWidget ();
 	JTableHeader tableHeader = ((CTable)handle).getTableHeader();
-	tableHeader.setBackground(color.handle);
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	tableHeader.setBackground(color == null? null: color.handle);
 }
 
 /**
@@ -1973,7 +1976,10 @@ public void setHeaderBackground (Color color) {
 public void setHeaderForeground (Color color) {
 	checkWidget ();
 	JTableHeader tableHeader = ((CTable)handle).getTableHeader();
-	tableHeader.setForeground(color.handle);
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	tableHeader.setForeground(color == null? null: color.handle);
 }
 
 /**

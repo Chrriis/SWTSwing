@@ -2516,12 +2516,10 @@ public void removeTraverseListener(TraverseListener listener) {
  */
 public void setBackground (Color color) {
 	checkWidget ();
-	if (color != null) {
-		if (color.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-		((CControl)handle).getUserAttributeHandler().setBackground (color.handle);
-	} else {
-		((CControl)handle).getUserAttributeHandler().setBackground (null);
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	((CControl)handle).getUserAttributeHandler().setBackground (color == null? null: color.handle);
 	handle.repaint();
 }
 
@@ -2923,12 +2921,10 @@ public void setFont (Font font) {
  */
 public void setForeground (Color color) {
 	checkWidget ();
-	if (color != null) {
-		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		((CControl)handle).getUserAttributeHandler().setForeground(color.handle);
-	} else {
-	  ((CControl)handle).getUserAttributeHandler().setForeground (null);
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	((CControl)handle).getUserAttributeHandler().setForeground(color == null? null: color.handle);
 	handle.repaint();
 }
 

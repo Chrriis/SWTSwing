@@ -58,6 +58,7 @@ public class Utils {
 
 	protected static final String LIGHTPOPUPS_PROPERTY = "swt.swing.lightpopups";
 	protected static final String LOOK_AND_FEEL_PROPERTY = "swt.swing.laf";
+	protected static final String LOOK_AND_FEEL_DARK_THEME_PROPERTY = "swt.swing.laf.dark";
 	protected static final String LOOK_AND_FEEL_DECORATED_PROPERTY = "swt.swing.laf.decorated";
 	protected static final String DEFAULT_ARROW_BUTTONS_PROPERTY = "swt.swing.defaultarrowbuttons";
 	protected static final String APPLEMENUBAR_PROPERTY = "apple.laf.useScreenMenuBar";
@@ -82,6 +83,14 @@ public class Utils {
 		return System.getProperty(LOOK_AND_FEEL_PROPERTY);
 	}
 
+	public static boolean isDarkTheme() {
+		String darkProperty = System.getProperty(LOOK_AND_FEEL_DARK_THEME_PROPERTY);
+		if(darkProperty != null) {
+			return Boolean.getBoolean(darkProperty);
+		}
+		return javax.swing.UIManager.getLookAndFeel().getClass().getName().contains("Dark");
+	}
+	
 	public static void installDefaultLookAndFeel() {
 		boolean isLookAndFeelInstalled = false;
 		String lafName = getLookAndFeel();

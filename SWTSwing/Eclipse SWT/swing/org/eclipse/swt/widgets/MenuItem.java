@@ -925,8 +925,8 @@ public void setText (String string) {
 	}
 	button.setText(string);
 	java.awt.Component comp = button.getParent();
-	if(comp instanceof javax.swing.JPopupMenu) {
-		((javax.swing.JPopupMenu)comp).pack();
+	if(comp instanceof JPopupMenu) {
+		((JPopupMenu)comp).pack();
 	}
 //	parent.redraw ();
 }

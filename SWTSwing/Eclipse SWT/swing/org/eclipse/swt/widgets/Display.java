@@ -333,7 +333,14 @@ public class Display extends Device {
 					if((Utils.modifiersEx & dumpModifiers) == dumpModifiers) {
 						if(((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F1) {
 							Component component = ie.getComponent();
-							Utils.dumpTree(component);
+							Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
+							if(window instanceof CShell) {
+								Component targetComponent;
+								java.awt.Point mouseLocation = MouseInfo.getPointerInfo().getLocation();
+								SwingUtilities.convertPointFromScreen(mouseLocation, window);
+								targetComponent = window.findComponentAt(mouseLocation);
+								Utils.dumpTree(targetComponent);
+							}
 						} else if(((KeyEvent)ie).getKeyCode() == KeyEvent.VK_F2) {
 							Component component = ie.getComponent();
 							Window window = component instanceof Window? (Window)component: SwingUtilities.getWindowAncestor(component);
@@ -1140,6 +1147,29 @@ public Point [] getIconSizes () {
 		new Point (32, 32),
 		new Point (64, 64),
 	};	
+}
+
+/**
+ * Returns <code>true</code> if the current OS theme has a dark appearance, else
+ * returns <code>false</code>.
+ * <p>
+ * Note: This operation is a hint and is not supported on platforms that do not
+ * have this concept.
+ * </p>
+ * <p>
+ * Note: Windows 10 onwards users can separately configure the theme for OS and
+ * Application level and this can be read from the Windows registry. Since the
+ * application needs to honor the application level theme, this API reads the
+ * Application level theme setting.
+ * </p>
+ *
+ * @return <code>true</code> if the current OS theme has a dark appearance, else
+ *         returns <code>false</code>.
+ *
+ * @since 3.112
+ */
+public static boolean isSystemDarkTheme () {
+	return Utils.isDarkTheme();
 }
 
 MenuItem getMenuItem (JComponent component) {

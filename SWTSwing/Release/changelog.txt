@@ -9,6 +9,7 @@ Licence terms: EPL 2.0 (see licence.txt)
 
 - Update to Java 1.8 and SWT 4.944r26, branch R4_20_maintenance (was 3.232r0)
 - Adapted many APIs to launch Eclipse R4_20.
+- Improved background (which improves dark look and feels).
 - Improved re-parenting.
 - Anti-aliasing is improved.
 - Wheel mouse support is improved.

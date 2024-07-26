@@ -157,7 +157,7 @@ public GC(Drawable drawable, int style) {
 	this.device = data.device = device;
 	CGC handle = drawable.internal_new_GC(data);
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-	data.background = java.awt.Color.WHITE;
+//	data.background = java.awt.Color.WHITE;
 	init (drawable, data, handle);
 	if (device.tracking) device.new_Object(this);
 }

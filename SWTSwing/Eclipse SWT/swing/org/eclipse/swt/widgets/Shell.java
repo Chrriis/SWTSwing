@@ -621,6 +621,25 @@ public void forceActive () {
 //void forceResize () {
 //	/* Do nothing */
 //}
+
+/**
+ * Returns the receiver's alpha value. The alpha value
+ * is between 0 (transparent) and 255 (opaque).
+ *
+ * @return the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.4
+ */
+public int getAlpha () {
+	checkWidget ();
+	return Math.round(((CShell)handle).getOpacity() * 255);
+}
+
 //
 //public Rectangle getBounds () {
 //	checkWidget ();

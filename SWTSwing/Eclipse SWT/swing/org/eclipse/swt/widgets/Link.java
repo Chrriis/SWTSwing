@@ -250,7 +250,10 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setLinkForeground (Color color) {
 	checkWidget ();
-	((CLink)handle).setLinkForeground(color.handle);
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	((CLink)handle).setLinkForeground(color == null? null: color.handle);
 }
 
 /**

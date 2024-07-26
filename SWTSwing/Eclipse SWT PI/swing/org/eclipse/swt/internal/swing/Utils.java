@@ -14,8 +14,10 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -29,6 +31,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -523,6 +526,18 @@ public class Utils {
 			for(int j=0; j<yCount; j++) {
 				g.drawImage(image, i * iconWidth + x, j * iconHeight + y, null);
 			}
+		}
+	}
+	
+	private static Map<?, ?> desktopHints = null;
+	
+	public static void addDesktopRenderingHints(Graphics2D g) {
+		if (desktopHints == null) { 
+			Toolkit tk = Toolkit.getDefaultToolkit(); 
+			desktopHints = (Map<?, ?>) (tk.getDesktopProperty("awt.font.desktophints")); 
+		}
+		if (desktopHints != null) { 
+			g.addRenderingHints(desktopHints); 
 		}
 	}
 	

@@ -39,7 +39,6 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -170,16 +169,9 @@ class CShellFrame extends JFrame implements CShell {
 			public boolean isOptimizedDrawingEnabled() {
 				return getComponentCount() < 2 || Utils.isFlatLayout(handle);
 			}
-			private Map<?, ?> desktopHints = null;
 			protected void paintComponent (Graphics g) {
 				graphics = g;
-				if (desktopHints == null) { 
-						Toolkit tk = Toolkit.getDefaultToolkit(); 
-						desktopHints = (Map<?, ?>) (tk.getDesktopProperty("awt.font.desktophints")); 
-				}
-				if (desktopHints != null) { 
-						((Graphics2D)g).addRenderingHints(desktopHints); 
-				}
+				Utils.addDesktopRenderingHints((Graphics2D)g);
 				putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
 				super.paintComponent(g);
 				Utils.paintTiledImage(this, g, backgroundImageIcon);
@@ -549,16 +541,9 @@ class CShellDialog extends JDialog implements CShell {
 			public boolean isOptimizedDrawingEnabled() {
 				return getComponentCount() < 2 || Utils.isFlatLayout(handle);
 			}
-			private Map<?, ?> desktopHints = null;
 			protected void paintComponent (Graphics g) {
 				graphics = g;
-				if (desktopHints == null) { 
-						Toolkit tk = Toolkit.getDefaultToolkit(); 
-						desktopHints = (Map<?, ?>) (tk.getDesktopProperty("awt.font.desktophints")); 
-				}
-				if (desktopHints != null) { 
-						((Graphics2D)g).addRenderingHints(desktopHints); 
-				}
+				Utils.addDesktopRenderingHints((Graphics2D)g);
 				putClientProperty(Utils.SWTSwingGraphics2DClientProperty, g);
 				super.paintComponent(g);
 				Utils.paintTiledImage(this, g, backgroundImageIcon);

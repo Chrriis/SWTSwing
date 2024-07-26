@@ -16,7 +16,6 @@ package org.eclipse.swt.dnd;
  
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -30,7 +29,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;

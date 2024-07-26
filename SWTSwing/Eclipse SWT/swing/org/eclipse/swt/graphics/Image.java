@@ -24,7 +24,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.io.InputStream;
-
 import javax.swing.GrayFilter;
 import javax.swing.ImageIcon;
 
@@ -33,6 +32,7 @@ import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.swing.CGC;
 import org.eclipse.swt.internal.swing.LookAndFeelUtils;
+import org.eclipse.swt.internal.swing.Utils;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -196,10 +196,14 @@ public Image(Device device, Image srcImage, int flag) {
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
-		  handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		  Graphics g = handle.getGraphics();
-		  g.drawImage(srcImage.handle, 0, 0, null);
-		  g.dispose();
+			if(device instanceof Display) {
+				handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_RGB);
+			} else {
+				handle = new BufferedImage(srcImage.handle.getWidth(), srcImage.handle.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			}
+			Graphics g = handle.getGraphics();
+			g.drawImage(srcImage.handle, 0, 0, null);
+			g.dispose();
 			if (device.tracking) device.new_Object(this);	
 			return;
 		}
@@ -1180,12 +1184,19 @@ void init(Device device, int width, int height) {
 	}
 	this.device = device;
 	type = SWT.BITMAP;
-	handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-	if(!(device instanceof Display)) {
-		Graphics g = handle.getGraphics();
+	if(device instanceof Display) {
+//		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//		GraphicsDevice gs = ge.getDefaultScreenDevice();
+//		GraphicsConfiguration gc = gs.getDefaultConfiguration();
+//		handle = gc.createCompatibleImage(width, height);
+		handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	} else {
+		handle = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = handle.createGraphics();
 		g.setColor(java.awt.Color.WHITE);
-		((Graphics2D)g).setBackground(java.awt.Color.WHITE);
+		g.setBackground(java.awt.Color.WHITE);
 		g.fillRect(0, 0, width, height);
+		g.dispose();
 	}
 }
 
@@ -1202,7 +1213,12 @@ static void init(Device device, Image image, ImageData data) {
 //	if(true) return;
 	image.device = device;
 	if(image.handle == null) {
-		BufferedImage bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bufferedImage;
+		if(device instanceof Display) {
+			bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_RGB);
+		} else {
+			bufferedImage = new BufferedImage(data.width, data.height, BufferedImage.TYPE_INT_ARGB);
+		}
 		image.handle = bufferedImage;
 		if(!(device instanceof Display)) {
 			Graphics g = bufferedImage.getGraphics();
@@ -1564,6 +1580,9 @@ public CGC internal_new_GC (GCData data) {
 	final Graphics2D g = (Graphics2D)handle.getGraphics();
 	if(g == null) {
 		return null;
+	}
+	if(device instanceof Display) {
+		Utils.addDesktopRenderingHints(g);
 	}
 	return new CGC.CGCGraphics2D() {
 		public Graphics2D getGraphics() {

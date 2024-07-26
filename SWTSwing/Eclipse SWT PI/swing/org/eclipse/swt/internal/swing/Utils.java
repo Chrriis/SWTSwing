@@ -425,8 +425,7 @@ public class Utils {
 	}
 
 	public static void dumpTree(Component component) {
-		Component topComponent = component;
-		for(; topComponent.getParent() != null; topComponent = topComponent.getParent());
+		Component topComponent = SwingUtilities.getWindowAncestor(component);
 		dumpComponentTree(topComponent, 0, topComponent == component? null: component);
 	}
 

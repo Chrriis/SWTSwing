@@ -278,24 +278,26 @@ private void init (Device device, int red, int green, int blue, int alpha) {
 	this.handle = new java.awt.Color (red, green, blue);
 }
 
-@Override
-void init() {
-	// Resource init simply tracks this resource in the Device
-	// if DEBUG is on. Since Colors don't require disposal,
-	// the tracking would be a memory leak and a misreport
-	// on what resources are in use.
-}
-
 /**
  * Disposes of the operating system resources associated with
  * the color. Applications must dispose of all colors which
  * they allocate.
  */
-public void dispose() {
-	if (handle == null) return;
-	if (device.isDisposed()) return;
+public void destroy() {
 	handle = null;
-	if (device.tracking) device.dispose_Object(this);
+}
+
+/**
+ * Colors do not need to be disposed, however to maintain compatibility
+ * with older code, disposing a Color is not an error.
+ */
+@Override
+public void dispose() {
+	// Does as below to maintain API contract with Resource. Does
+	// not use super.dispose() because that untracks the Color
+	// from the Device tracking, however init() is overridden
+	// to prevent the tracking in the first place.
+	destroy();
 	device = null;
 }
 
@@ -414,6 +416,14 @@ public RGBA getRGBA () {
  */
 public int hashCode () {
 	return handle == null? 0: handle.hashCode();
+}
+
+@Override
+void init() {
+	// Resource init simply tracks this resource in the Device
+	// if DEBUG is on. Since Colors don't require disposal,
+	// the tracking would be a memory leak and a misreport
+	// on what resources are in use.
 }
 
 /**
